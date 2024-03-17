@@ -12,5 +12,4 @@ const SafetyAndPrivacySettingSchema = new Schema(
 );
 
 const SafetyAndPrivacySetting = mongoose.model("SafetyAndPrivacySetting", SafetyAndPrivacySettingSchema);
-
 module.exports = SafetyAndPrivacySetting;

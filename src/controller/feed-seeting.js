@@ -1,0 +1,1 @@
+const FeedSetting = require('./../modules/feed-setting');

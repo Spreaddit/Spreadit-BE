@@ -1,0 +1,1 @@
+const ProfileSetting = require('./../modules/profile-setting');

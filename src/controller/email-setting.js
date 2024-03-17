@@ -1,0 +1,1 @@
+const EmailSetting = require('./../modules/email-setting');
