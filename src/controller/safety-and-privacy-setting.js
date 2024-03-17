@@ -1,0 +1,1 @@
+const SafetyAndPrivacySetting = require('./../modules/safety-and-privacy-setting');

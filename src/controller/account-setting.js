@@ -1,0 +1,1 @@
+const AccountSetting = require('./../modules/account-setting');
