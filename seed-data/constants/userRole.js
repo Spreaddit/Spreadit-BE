@@ -8,7 +8,7 @@ const defaultRole = {
     name: "Moderator",
   };
   
-  const roles = [defaultRole, moderatorRoleRole];
+  const roles = [defaultRole, moderatorRole];
   
   exports.data = roles;
   exports.defaultRole = defaultRole;
