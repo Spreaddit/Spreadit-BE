@@ -1,4 +1,4 @@
-const AccountSetting = require('./../modules/account-setting');
+const AccountSetting = require('./../models/account-setting');
 
 exports.getAccountSettings = async (req, res) => {
     try {

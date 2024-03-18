@@ -1,1 +1,1 @@
-const FeedSetting = require('./../modules/feed-setting');
+const FeedSetting = require('./../models/feed-setting');

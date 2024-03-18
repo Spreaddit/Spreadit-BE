@@ -1,1 +1,1 @@
-const ProfileSetting = require('./../modules/profile-setting');
+const ProfileSetting = require('./../models/profile-setting');

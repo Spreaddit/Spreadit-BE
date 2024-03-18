@@ -1,1 +1,1 @@
-const NotificationSetting = require('./../modules/notification-setting');
+const NotificationSetting = require('./../models/notification-setting');

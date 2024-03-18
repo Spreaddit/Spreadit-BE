@@ -1,1 +1,1 @@
-const EmailSetting = require('./../modules/email-setting');
+const EmailSetting = require('./../models/email-setting');

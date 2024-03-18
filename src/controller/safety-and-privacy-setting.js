@@ -1,1 +1,1 @@
-const SafetyAndPrivacySetting = require('./../modules/safety-and-privacy-setting');
+const SafetyAndPrivacySetting = require('./../models/safety-and-privacy-setting');

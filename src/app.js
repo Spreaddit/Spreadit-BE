@@ -2,32 +2,33 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const config = require("./configuration");
+const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
 const accountSettingRoutes = require("./routes/account-setting");
 
 const app = express();
 const port = 80;
 const connectionurl = config.cloudConnectString;
-app.use(express.json());
 
+app.use(express.json());
+app.use(cors({
+  origin: '*',
+}));
+
+app.use(authRoutes);
 app.use("/setting", accountSettingRoutes);
 
-
-
-app.listen(port, () => {
-  console.log("Server listening on port", port);
-  mongoose.connect(
-    connectionurl,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    },
-    (error, result) => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Database connected successfully");
-      }
-    }
-  );
+mongoose.connect(connectionurl, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log("Database connected successfully");
+})
+.catch((error) => {
+  console.error("Error connecting to database:", error);
 });
 
+app.listen(port, () => {
+  console.log("Server started on port", port);
+});
