@@ -126,11 +126,19 @@ const UserSchema = new Schema(
       type: Boolean,
       default: 1,
     },
-    comments: {
+    commentsOnYourPost: {
       type: Boolean,
       default: 1,
     },
-    upVotes: {
+    commentsYouFollow: {
+      type: Boolean,
+      default: 1,
+    },
+    upvotesComments: {
+      type: Boolean,
+      default: 1,
+    },
+    upvotesPosts: {
       type: Boolean,
       default: 1,
     },
