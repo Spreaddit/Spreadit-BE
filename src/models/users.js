@@ -207,10 +207,111 @@ const UserSchema = new Schema(
     ],
 
 
+  {
+    name: {
+      type: String,
+      trim: true,
+      maxLength: 50,
+    },
+    username: {
+      type: String,
+      required: true,
+      trim: true,
+      minLength: 5,
+      maxLength: 14,
+      unique: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      minLength: 8,
+      trim: true,
+    },
+    birth_date: {
+      type: Date,
+    },
+    gender: {
+      type: String,
+    },
+    phone_number: {
+      type: String,
+    },
+    location: {
+      type: String,
+      trim: true,
+      maxLength: 30,
+      default: "",
+    },
+    bio: {
+      type: String,
+      trim: true,
+      maxLength: 160,
+      default: "",
+    },
+    followers: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
+    followings: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
+    avatar: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    background_picture: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    roleId: {
+      type: Schema.Types.ObjectId,
+      ref: "userRole",
+      index: true,
+      default: userRole.defaultRole,
+    },
+    isnsfw: {
+      type: Boolean,
+      default: false,
+    },
+    verificationCode: {
+      type: Number,
+      default: -1,
+    },
+    verificationCodeExpiration: {
+      type: Date,
+      default: new Date(new Date().setHours(new Date().getHours() + 24)),
+    },
+    resetPasswordCode: {
+      type: Number,
+      default: -1,
+    },
+    resetPasswordCodeExpiration: {
+      type: Date,
+      default: new Date(new Date().setHours(new Date().getHours() + 24)),
+    },
+    tokens: [
+      {
+        token: {
+          type: String,
+        },
+        token_expiration_date: {
+          type: Date,
+          default: new Date(new Date().setHours(new Date().getHours() + 24)),
+        },
+      },
+    ],
+
+    //what banner is??
 
   },
   {
     timestamps: true,
+  }
+  },
+{
+  timestamps: true,
   }
 );
 
@@ -222,6 +323,7 @@ UserSchema.pre("save", async function (next) {
   if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 12);
   }
+
   next();
 });
 
@@ -266,54 +368,70 @@ UserSchema.statics.verifyCredentials = async function (usernameOremail, password
   const user = await User.findOne({
     $or: [{ email: usernameOremail }, { username: usernameOremail }],
   }).populate("roleId");
+  UserSchema.statics.verifyCredentials = async function (usernameOremail, password) {
 
-  if (user && (await bcrypt.compare(user.password, password)) && user.isVerified) {
-    return user;
-  }
-  else {
-    return null;
-  }
-}
 
-UserSchema.statics.generateUserObject = async function (
-  user,
-  authorizedUserName = null
-) {
-  try {
-    const userObj = {
-      id: user._id,
-      name: user.name,
-      username: user.username,
-      email: user.email,
-      birth_date: user.birth_date,
-      phone: user.phone_number,
-      avatar_url: user.avatar,
-      background_picture_url: user.background_picture,
-      location: user.location,
-      bio: user.bio,
-      followers_count: user.followers.length,
-      following_count: user.followings.length,
-      created_at: user.createdAt,
-      role: user.roleId.name,
-      isnsfw: user.isnsfw,
-    };
-    if (authorizedUserName != null) {
-      const authorizedUser = await User.findOne({
-        username: authorizedUserName,
-      });
-      if (authorizedUser && authorizedUser.followings.includes(user._id)) {
-        userObj.is_followed = true;
-      } else {
-        userObj.is_followed = false;
-      }
+    // const user = await User.findOne({
+    //   $or: [{email: usernameOremail}, {username: usernameOremail}],
+    // }).populate("roleId");
+
+    const userByEmail = await User.findOne({ email: usernameOremail }).populate("roleId");
+    const userByUsername = await User.findOne({ username: usernameOremail }).populate("roleId");
+    //console.log(usernameOremail);
+    //console.log(userByEmail);
+    //console.log(userByUsername);
+    const user = userByUsername;
+    if (userByEmail) {
+      user = userByEmail;
     }
-    return userObj;
-  } catch (err) {
-    return null;
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      return user;
+    }
+    else {
+      return null;
+    }
   }
-};
+
+  UserSchema.statics.generateUserObject = async function (
+    user,
+    authorizedUserName = null
+  ) {
+    try {
+      const userObj = {
+        id: user._id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        birth_date: user.birth_date,
+        phone: user.phone_number,
+        avatar_url: user.avatar,
+        background_picture_url: user.background_picture,
+        location: user.location,
+        bio: user.bio,
+        followers_count: user.followers.length,
+        following_count: user.followings.length,
+        created_at: user.createdAt,
+        role: user.roleId.name,
+        isnsfw: user.isnsfw,
+      };
+      if (authorizedUserName != null) {
+        const authorizedUser = await User.findOne({
+          username: authorizedUserName,
+        });
+        if (authorizedUser && authorizedUser.followings.includes(user._id)) {
+          userObj.is_followed = true;
+        } else {
+          userObj.is_followed = false;
+        }
+      }
+      return userObj;
+    } catch (err) {
+      return null;
+    }
+  };
 
 
-const User = mongoose.model("user", UserSchema);
+  const User = mongoose.model("user", UserSchema);
 
-module.exports = User;
+  module.exports = User;
