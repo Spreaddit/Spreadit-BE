@@ -72,6 +72,11 @@ const PostSchema = new Schema(
         trim: true,
         default: "",
       },
+
+      comments: [{
+        type: Schema.Types.ObjectId, 
+        ref: "comment",
+      }],
     },
     {
       timestamps: true,
