@@ -6,7 +6,7 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const accountSettingRoutes = require("./routes/account-setting");
 // const blockUserRoutes = require("./routes/block-user");
-const followUserRoutes = require("./routes/follow-user");
+// const followUserRoutes = require("./routes/follow-user");
 
 const app = express();
 const port = 80;
