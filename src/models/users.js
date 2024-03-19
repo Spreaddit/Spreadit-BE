@@ -207,8 +207,6 @@ const UserSchema = new Schema(
     ],
 
 
-
-
   },
   {
     timestamps: true,
@@ -292,47 +290,47 @@ UserSchema.statics.verifyCredentials = async function (usernameOremail, password
       return null;
     }
   }
-
-  UserSchema.statics.generateUserObject = async function (
-    user,
-    authorizedUserName = null
-  ) {
-    try {
-      const userObj = {
-        id: user._id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        birth_date: user.birth_date,
-        phone: user.phone_number,
-        avatar_url: user.avatar,
-        background_picture_url: user.background_picture,
-        location: user.location,
-        bio: user.bio,
-        followers_count: user.followers.length,
-        following_count: user.followings.length,
-        created_at: user.createdAt,
-        role: user.roleId.name,
-        isnsfw: user.isnsfw,
-      };
-      if (authorizedUserName != null) {
-        const authorizedUser = await User.findOne({
-          username: authorizedUserName,
-        });
-        if (authorizedUser && authorizedUser.followings.includes(user._id)) {
-          userObj.is_followed = true;
-        } else {
-          userObj.is_followed = false;
-        }
-      }
-      return userObj;
-    } catch (err) {
-      return null;
-    }
-  };
-
-
-  const User = mongoose.model("user", UserSchema);
-
-  module.exports = User;
 }
+
+UserSchema.statics.generateUserObject = async function (
+  user,
+  authorizedUserName = null
+) {
+  try {
+    const userObj = {
+      id: user._id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      birth_date: user.birth_date,
+      phone: user.phone_number,
+      avatar_url: user.avatar,
+      background_picture_url: user.background_picture,
+      location: user.location,
+      bio: user.bio,
+      followers_count: user.followers.length,
+      following_count: user.followings.length,
+      created_at: user.createdAt,
+      role: user.roleId.name,
+      isnsfw: user.isnsfw,
+    };
+    if (authorizedUserName != null) {
+      const authorizedUser = await User.findOne({
+        username: authorizedUserName,
+      });
+      if (authorizedUser && authorizedUser.followings.includes(user._id)) {
+        userObj.is_followed = true;
+      } else {
+        userObj.is_followed = false;
+      }
+    }
+    return userObj;
+  } catch (err) {
+    return null;
+  }
+};
+
+
+const User = mongoose.model("user", UserSchema);
+
+module.exports = User;

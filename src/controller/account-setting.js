@@ -5,7 +5,8 @@ exports.getAccountSettings = async (req, res) => {
     try {
         const accountSettings = await AccountSetting.find().select('email gender country connectedAccounts');
         res.status(200).json(accountSettings);
-    } catch (error) {
+    } catch (err) {
+        console.log(err)
         res.status(500).json({ error: 'Internal server error' });
     }
 };
