@@ -176,6 +176,10 @@ const UserSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    clearHistory: {
+      type: Boolean,
+      default: false,
+    },
     contentVisibility: {
       type: Boolean,
       default: true,
