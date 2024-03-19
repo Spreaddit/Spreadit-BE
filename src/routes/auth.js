@@ -51,9 +51,11 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
     const user = await User.verifyCredentials(
-      req.body.email_or_username,
+      req.body.username,
       req.body.password
     );
+
+    console.log(user);
   
     try {
       if (user) {
