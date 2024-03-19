@@ -5,7 +5,7 @@ const config = require("./configuration");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const accountSettingRoutes = require("./routes/account-setting");
-const blockUserRoutes = require("./routes/block-user");
+// const blockUserRoutes = require("./routes/block-user");
 const followUserRoutes = require("./routes/follow-user");
 
 const app = express();
@@ -21,8 +21,8 @@ app.use(
 
 app.use(authRoutes);
 app.use("/setting", accountSettingRoutes);
-app.use("/users/follow/", followUserRoutes);
-app.use("/user/block", blockUserRoutes);
+// app.use("/users/follow/", followUserRoutes);
+// app.use("/user/block", blockUserRoutes);
 
 mongoose
   .connect(connectionurl, {
