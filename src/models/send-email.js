@@ -2,20 +2,20 @@ const nodemailer = require('nodemailer');
 
 async function sendEmail(recipient, subject, content) {
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: 'smtp.sendgrid.net',
     port: 587,
     secure: false,
     auth: {
-      user: 'spreaditnoreplyservices@gmail.com',
-      pass: 'spreadit123'
-    }
+      user: 'apikey',
+      pass: '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', 
+    },
   });
 
   const mailOptions = {
     from: 'spreaditnoreplyservices@gmail.com',
     to: recipient,
     subject: subject,
-    text: content
+    text: content,
   };
 
   try {

@@ -99,8 +99,7 @@ router.post("/login", async (req, res) => {
   router.post("/forgot-password", async (req, res) => {
     try {
         const { email, username } = req.body;
-        
-        const user = await User.getUserByEmailOrUsername(email);
+        const user = await User.getUserByEmailOrUsername(email || username);
 
         if (!user) {
             return res.status(404).send({ message: "User not found" });
@@ -112,6 +111,63 @@ router.post("/login", async (req, res) => {
     } catch (err) {
         res.status(500).send({ message: "Internal server error" });
     }
+});
+
+router.post("/verify-reset-code", async (req, res) => {
+  try {
+      const { email, verificationCode } = req.body;
+      
+      const user = await User.getUserByEmailOrUsername(email);
+
+      if (!user) {
+          return res.status(404).send({ message: "User not found" });
+      }
+
+      if (user.verificationCode === verificationCode && user.verificationCodeExpiration > Date.now()) {
+          res.status(200).send({ message: "Verification code is valid. You can reset your password now." });
+      } else {
+          res.status(400).send({ message: "Invalid or expired verification code" });
+      }
+  } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+router.post("/reset-password", async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+        
+        const user = await User.getUserByEmailOrUsername(email);
+
+        if (!user) {
+            return res.status(404).send({ message: "User not found" });
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        user.password = hashedPassword;
+        await user.save();
+        res.status(200).send({ message: "Password reset successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ message: "Internal server error" });
+    }
+});
+
+router.post("/check-username", async (req, res) => {
+  try {
+      const { username } = req.body;
+      
+      const exists = await User.getUserByEmailOrUsername(username);
+
+      if (exists) {
+          res.status(200).send({ available: false });
+      } else {
+          res.status(200).send({ available: true });
+      }
+  } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: "Internal server error" });
+  }
 });
 
 
