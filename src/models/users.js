@@ -9,108 +9,108 @@ const userRole = require("../../seed-data/constants/userRole");
 
 
 const UserSchema = new Schema(
-    {
-        name: {
+  {
+      name: {
+        type: String,
+        trim: true,
+        maxLength: 50,
+      },
+      username: {
+        type: String,
+        required: true,
+        trim: true,
+        minLength: 5,
+        maxLength: 14,
+        unique: true,
+      },
+      email: {
+        type: String,
+        required: true,
+        trim: true,
+        unique: true,
+      },
+      password: {
+        type: String,
+        minLength: 8,
+        trim: true,
+      },
+      birth_date: {
+        type: Date,
+      },
+      gender: {
+        type: String,
+      },
+      phone_number: {
+        type: String,
+      },
+      location: {
+        type: String,
+        trim: true,
+        maxLength: 30,
+        default: "",
+      },
+      bio: {
           type: String,
           trim: true,
-          maxLength: 50,
-        },
-        username: {
-          type: String,
-          required: true,
-          trim: true,
-          minLength: 5,
-          maxLength: 14,
-          unique: true,
-        },
-        email: {
-          type: String,
-          required: true,
-          trim: true,
-          unique: true,
-        },
-        password: {
-          type: String,
-          minLength: 8,
-          trim: true,
-        },
-        birth_date: {
-          type: Date,
-        },
-        gender: {
-          type: String,
-        },
-        phone_number: {
-          type: String,
-        },
-        location: {
-          type: String,
-          trim: true,
-          maxLength: 30,
+          maxLength: 160,
           default: "",
-        },
-        bio: {
-            type: String,
-            trim: true,
-            maxLength: 160,
-            default: "",
-        },
-        followers: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
-        followings: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
-        avatar: {
+      },
+      followers: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
+      followings: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
+      avatar: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+      background_picture: {
           type: String,
           trim: true,
           default: "",
-        },
-        background_picture: {
+      },
+      roleId: {
+        type: Schema.Types.ObjectId,
+        ref: "userRole",
+        index: true,
+        default: userRole.defaultRole,
+      },
+      isnsfw: {
+        type: Boolean,
+        default: false,
+      },
+      verificationCode: {
+        type: Number,
+        default: -1,
+      },
+      verificationCodeExpiration: {
+        type: Date,
+        default: new Date(new Date().setHours(new Date().getHours() + 24)),
+      },
+      resetPasswordCode: {
+        type: Number,
+        default: -1,
+      },
+      resetPasswordCodeExpiration: {
+        type: Date,
+        default: new Date(new Date().setHours(new Date().getHours() + 24)),
+      },
+      tokens: [
+        {
+          token: {
             type: String,
-            trim: true,
-            default: "",
-        },
-        roleId: {
-          type: Schema.Types.ObjectId,
-          ref: "userRole",
-          index: true,
-          default: userRole.defaultRole,
-        },
-        isnsfw: {
-          type: Boolean,
-          default: false,
-        },
-        verificationCode: {
-          type: Number,
-          default: -1,
-        },
-        verificationCodeExpiration: {
-          type: Date,
-          default: new Date(new Date().setHours(new Date().getHours() + 24)),
-        },
-        resetPasswordCode: {
-          type: Number,
-          default: -1,
-        },
-        resetPasswordCodeExpiration: {
-          type: Date,
-          default: new Date(new Date().setHours(new Date().getHours() + 24)),
-        },
-        tokens: [
-          {
-            token: {
-              type: String,
-            },
-            token_expiration_date: {
-              type: Date,
-              default: new Date(new Date().setHours(new Date().getHours() + 24)),
-            },
           },
-        ],
-        
-        //what banner is??
+          token_expiration_date: {
+            type: Date,
+            default: new Date(new Date().setHours(new Date().getHours() + 24)),
+          },
+        },
+      ],
+      
+      //what banner is??
 
-    },
-    {
-        timestamps: true,
-    }
+  },
+  {
+      timestamps: true,
+  }
 );
 
 //hash function
@@ -121,6 +121,7 @@ UserSchema.pre("save", async function (next) {
   if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 12);
   }
+
   next();
 });
 
@@ -162,11 +163,23 @@ UserSchema.statics.checkExistence = async function (email) {
 } 
 
 UserSchema.statics.verifyCredentials = async function (usernameOremail, password){
-  const user = await User.findOne({
-    $or: [{email: usernameOremail}, {username: usernameOremail}],
-  }).populate("roleId");
+  
+  
+  // const user = await User.findOne({
+  //   $or: [{email: usernameOremail}, {username: usernameOremail}],
+  // }).populate("roleId");
 
-  if(user && (await bcrypt.compare(user.password, password)) && user.isVerified ){
+  const userByEmail = await User.findOne({email: usernameOremail}).populate("roleId");
+  const userByUsername = await User.findOne({username: usernameOremail}).populate("roleId");
+  //console.log(usernameOremail);
+  //console.log(userByEmail);
+  //console.log(userByUsername);
+  const user = userByUsername;
+  if(userByEmail){
+    user = userByEmail;
+  }
+  
+  if(user && (await bcrypt.compare(password, user.password)) ){
     return user;
   }
   else {
