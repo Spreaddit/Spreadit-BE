@@ -18,8 +18,8 @@ exports.modifyAccountSettings = async (req, res) => {
         const modifiedAccountSetting = req.body;
         const { email } = modifiedAccountSetting;
         console.log('Searching for account setting with email:', email);
-        const emailAccountSetting = await AccountSetting.find({ email }).limit(1);
-        if (emailAccountSetting.length === 0) {
+        const emailAccountSetting = await AccountSetting.findOne({ email });
+        if (!emailAccountSetting) {
             console.error('Account setting not found for email:', email);
             return res.status(404).json({ error: 'Account setting not found' });
         }
@@ -34,7 +34,11 @@ exports.modifyAccountSettings = async (req, res) => {
         }
 
         await emailAccountSetting.save();
-        res.status(200).json(existingAccountSetting);
+        const response = {
+            gender: emailAccountSetting.gender,
+            country: emailAccountSetting.country
+        };
+        res.status(200).json(response);
 
     } catch (err) {
         console.error('Error modifying account settings', err);
