@@ -94,5 +94,23 @@ router.post("/login", async (req, res) => {
     }
   });
 
+  router.post("/forgot-password", async (req, res) => {
+    try {
+        const { email, username } = req.body;
+        
+        const user = await User.getUserByEmailOrUsername(email);
+
+        if (!user) {
+            return res.status(404).send({ message: "User not found" });
+        }
+
+        await user.generateResetCode();
+
+        res.status(200).send({ message: "Reset password code sent successfully" });
+    } catch (err) {
+        res.status(500).send({ message: "Internal server error" });
+    }
+});
+
 
   module.exports = router;
