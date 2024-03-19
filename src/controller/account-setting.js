@@ -1,4 +1,4 @@
-const AccountSetting = require('./../models/users');
+const AccountSetting = require('./../models/user');
 
 
 exports.getAccountSettings = async (req, res) => {

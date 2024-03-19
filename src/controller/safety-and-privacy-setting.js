@@ -1,4 +1,4 @@
-const SafetyAndPrivacySetting = require('./../models/users');
+const SafetyAndPrivacySetting = require('./../models/user');
 
 exports.getSafetyAndPrivacySettings = async (req, res) => {
     try {
