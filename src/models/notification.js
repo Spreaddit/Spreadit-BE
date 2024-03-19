@@ -12,7 +12,7 @@ const NotificationSchema = new Schema(
         index: true,
         ref: "user",
     },
-    tweetId: {
+    postId: {
         type: Schema.Types.ObjectId,
         index: true,
         ref: "post",
