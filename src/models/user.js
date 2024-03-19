@@ -338,23 +338,23 @@ UserSchema.statics.generateUserObject = async function (
 UserSchema.methods.generateResetCode = async function () {
   user = this;
   // Generate a random reset password code (6 Digit number)
-  const tempVerificationCode =  Math.floor(100000 + Math.random() * 900000);
+  const tempVerificationCode = Math.floor(100000 + Math.random() * 900000);
 
   // Set the expiration date for the reset password code (1 Hour from now)
   const tempVerificationCodeExpiration = new Date();
   tempVerificationCodeExpiration.setHours(tempVerificationCodeExpiration.getHours() + 1);
-  
+
   // Set the generated code and its expiration date for the user
   user.verificationCode = tempVerificationCode;
   user.verificationCodeExpiration = tempVerificationCodeExpiration;
 
   // Save the user with the new verification code and expiration date
   await user.save();
-  
+
   // Send the verification code to the user's email
   const emailContent = `Your verification code is: ${tempVerificationCode}`;
   await sendEmail(user.email, 'Verification Code', emailContent);
-  
+
 };
 
 
