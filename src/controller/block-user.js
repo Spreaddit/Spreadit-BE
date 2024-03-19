@@ -1,4 +1,4 @@
-const BlockUser = require("../models/users");
+const BlockUser = require("../models/user");
 const auth = require("../middleware/auth");
 const router = express.Router();
 

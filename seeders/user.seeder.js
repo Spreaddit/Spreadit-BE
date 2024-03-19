@@ -1,7 +1,7 @@
 const Seeder = require("mongoose-data-seed").Seeder;
-const userModel = require("./../src/models/users");
+const userModel = require("./../src/models/user");
 
-const { data } = require("./../seed-data/users");
+const { data } = require("./../seed-data/user");
 
 class UserSeeder extends Seeder {
   async shouldRun() {

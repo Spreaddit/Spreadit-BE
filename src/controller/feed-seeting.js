@@ -1,4 +1,4 @@
-const FeedSetting = require('./../models/users');
+const FeedSetting = require('./../models/user');
 
 exports.getFeedSetting = async (req, res) => {
     try {

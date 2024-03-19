@@ -1,6 +1,6 @@
 const { compareSync } = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/users");
+const User = require("../models/user");
 
 const authentication = async (req, res, next) => {
   try {

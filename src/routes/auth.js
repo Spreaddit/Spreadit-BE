@@ -1,5 +1,5 @@
 const express = require("express");
-const User = require("../models/users.js");
+const User = require("../models/user.js");
 const auth = require("../middleware/authentication");
 const config = require("../configuration");
 const cookieParser = require("cookie-parser");
