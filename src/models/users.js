@@ -207,111 +207,11 @@ const UserSchema = new Schema(
     ],
 
 
-  {
-    name: {
-      type: String,
-      trim: true,
-      maxLength: 50,
-    },
-    username: {
-      type: String,
-      required: true,
-      trim: true,
-      minLength: 5,
-      maxLength: 14,
-      unique: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      trim: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      minLength: 8,
-      trim: true,
-    },
-    birth_date: {
-      type: Date,
-    },
-    gender: {
-      type: String,
-    },
-    phone_number: {
-      type: String,
-    },
-    location: {
-      type: String,
-      trim: true,
-      maxLength: 30,
-      default: "",
-    },
-    bio: {
-      type: String,
-      trim: true,
-      maxLength: 160,
-      default: "",
-    },
-    followers: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
-    followings: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
-    avatar: {
-      type: String,
-      trim: true,
-      default: "",
-    },
-    background_picture: {
-      type: String,
-      trim: true,
-      default: "",
-    },
-    roleId: {
-      type: Schema.Types.ObjectId,
-      ref: "userRole",
-      index: true,
-      default: userRole.defaultRole,
-    },
-    isnsfw: {
-      type: Boolean,
-      default: false,
-    },
-    verificationCode: {
-      type: Number,
-      default: -1,
-    },
-    verificationCodeExpiration: {
-      type: Date,
-      default: new Date(new Date().setHours(new Date().getHours() + 24)),
-    },
-    resetPasswordCode: {
-      type: Number,
-      default: -1,
-    },
-    resetPasswordCodeExpiration: {
-      type: Date,
-      default: new Date(new Date().setHours(new Date().getHours() + 24)),
-    },
-    tokens: [
-      {
-        token: {
-          type: String,
-        },
-        token_expiration_date: {
-          type: Date,
-          default: new Date(new Date().setHours(new Date().getHours() + 24)),
-        },
-      },
-    ],
 
-    //what banner is??
 
   },
   {
     timestamps: true,
-  }
-  },
-{
-  timestamps: true,
   }
 );
 
@@ -435,3 +335,4 @@ UserSchema.statics.verifyCredentials = async function (usernameOremail, password
   const User = mongoose.model("user", UserSchema);
 
   module.exports = User;
+}
