@@ -43,7 +43,6 @@ const CommunitySchema = new Schema(
         //todo add the community settings attributes
         //todo figure out mawdo3 el moderator how is it gonna be saved array or something else?
         //todo mawdo3 el nas ely fi el community how are we gonna save them as well?
-        //todo helper function verfiying that the community 
 
     }
 );

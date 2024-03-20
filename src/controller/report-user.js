@@ -1,16 +1,12 @@
 const FollowUser = require("../models/user");
-const auth = require("../middleware/auth");
-const router = express.Router();
-
-exports.router.route("/:id").post(auth, this.followUser);
 
 exports.followUser = async (req, res) => {
   //const user = req.user;
 
   try {
-    const toFollowUser = req.body;
-    const { toFollowID } = toFollowUser;
-    console.log("Searching for user with ID:", toFollowID);
+    const toFollowUser = req.params.username;
+    // const { toFollowID } = toFollowUser;
+    console.log("Searching for user with username:", toFollowID);
     const follower = await FollowUser.findById(toFollowID);
     if (!follower) {
       console.error("this user not found:");
