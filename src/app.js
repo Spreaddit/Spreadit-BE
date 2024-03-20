@@ -9,8 +9,8 @@ const profileSettingRoutes = require("./routes/profile-setting");
 const safetyAndPrivacySettingRoutes = require("./routes/safety-and-privacy-setting");
 const feedSettingRoutes = require("./routes/feed-setting");
 const notificationSettingRoutes = require("./routes/notification-setting");
-// const blockUserRoutes = require("./routes/block-user");
-// const followUserRoutes = require("./routes/follow-user");
+const blockUserRoutes = require("./routes/block-user");
+const followUserRoutes = require("./routes/follow-user");
 
 const app = express();
 const port = 80;
@@ -30,8 +30,8 @@ app.use("/setting", profileSettingRoutes);
 app.use("/setting", safetyAndPrivacySettingRoutes);
 app.use("/setting", feedSettingRoutes);
 app.use("/setting", notificationSettingRoutes);
-// app.use("/users/follow/", followUserRoutes);
-// app.use("/user/block", blockUserRoutes);
+app.use("/users", followUserRoutes);
+app.use("/users", blockUserRoutes);
 
 mongoose
   .connect(connectionurl, {
