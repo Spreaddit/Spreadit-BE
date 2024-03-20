@@ -4,6 +4,7 @@ const notificationSettingsController = require('../controller/notification-setti
 const auth = require("../middleware/authentication");
 
 router.route('/notifications', auth)
-    .get(notificationSettingsController.getNotificationSetting);
+    .get(notificationSettingsController.getNotificationSetting)
+    .put(notificationSettingsController.modifyNotificationSetting);
 
 module.exports = router;
