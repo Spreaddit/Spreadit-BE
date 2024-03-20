@@ -142,6 +142,10 @@ const UserSchema = new Schema(
       type: Boolean,
       default: 1,
     },
+    newFollowerEmail: {
+      type: Boolean,
+      default: 1,
+    },
     replies: {
       type: Boolean,
       default: 1,
