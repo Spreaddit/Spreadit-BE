@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.post("/", auth, this.createNewCommunity);
 
-exports.createNewCommunity = auth, async (req, res) => {
+exports.createNewCommunity = async (req, res) => {
 
     const user = req.user;
 
