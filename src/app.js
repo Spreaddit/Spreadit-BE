@@ -12,6 +12,7 @@ const notificationSettingRoutes = require("./routes/notification-setting");
 const blockUserRoutes = require("./routes/block-user");
 const followUserRoutes = require("./routes/follow-user");
 const emailSettingRoutes = require("./routes/email-setting");
+const createCommunityRoutes = require("./routes/create-community");
 
 const app = express();
 const port = 80;
@@ -34,6 +35,7 @@ app.use("/setting", notificationSettingRoutes);
 app.use("/setting", emailSettingRoutes);
 app.use("/users", followUserRoutes);
 app.use("/users", blockUserRoutes);
+app.use("/", createCommunityRoutes);
 
 mongoose
   .connect(connectionurl, {
