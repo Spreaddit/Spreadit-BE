@@ -26,7 +26,7 @@ exports.modifyNotificationSetting = async (req, res) => {
         res.status(200).json(response);
 
     } catch (err) {
-        console.error('Error modifying safety and privacy settings', err);
+        console.error('Error modifying notification settings', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
