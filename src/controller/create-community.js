@@ -7,9 +7,7 @@ router.post("/", auth, this.createNewCommunity);
 exports.createNewCommunity = async (req, res) => {
 
     const user = req.user;
-
     const { name, description, rules } = req.body;
-
     const createdCommunity = new Community({
         name: name,
         description: description,
