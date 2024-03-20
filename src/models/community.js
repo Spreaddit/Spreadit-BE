@@ -32,6 +32,12 @@ const CommunitySchema = new Schema(
             required: [true, "A community must have at least one member."],
             ref: "user", 
             index: true
+        },
+        // Note: I din't make it required for the community to have at least one moderator as the creator is the first moderator of the community. Moderators are supposed to have less privileges than creator of the community
+        moderators: {
+            type: [Schema.Types.ObjectId],
+            ref: "user", 
+            index: true
         }
 
         //todo add the community settings attributes
