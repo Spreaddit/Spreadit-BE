@@ -31,6 +31,9 @@ exports.reportUser = async (req, res) => {
     res.status(200).json(response);
   } catch (err) {
     console.error("Error report user", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({
+      status: "fail",
+      message: "Error report user",
+    });
   }
 };

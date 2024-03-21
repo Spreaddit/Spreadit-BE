@@ -1,3 +1,5 @@
+//const https = require('https');
+//const fs = require('fs');
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -19,7 +21,14 @@ const chatAndMessagingSettingRoutes = require("./routes/chat-and-messaging-setti
 
 const app = express();
 const port = 80;
+//const port = 443;
 const connectionurl = config.cloudConnectString;
+
+
+// const options = {
+//   key: fs.readFileSync('path/to/private.key'),
+//   cert: fs.readFileSync('path/to/certificate.crt')
+// };
 
 app.use(express.json());
 app.use(
@@ -55,6 +64,11 @@ mongoose
     console.error("Error connecting to database:", error);
   });
 
-app.listen(port, () => {
-  console.log("Server started on port", port);
-});
+ app.listen(port, () => {
+   console.log("Server started on port", port);
+ });
+
+// // Create HTTPS server
+// https.createServer(options, app).listen(port, () => {
+//   console.log("Server started on port", port);
+// });

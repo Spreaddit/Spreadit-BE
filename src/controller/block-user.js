@@ -34,6 +34,6 @@ exports.blockUser = async (req, res) => {
     res.status(200).json(response);
   } catch (err) {
     console.error("Error block user", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Error block user" });
   }
 };

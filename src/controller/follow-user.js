@@ -44,6 +44,6 @@ exports.followUser = async (req, res) => {
     res.status(200).json(response);
   } catch (err) {
     console.error("Error follow user", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Error follow user" });
   }
 };
