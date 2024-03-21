@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto = require('crypto');
 const jwt = require("jsonwebtoken");
 const config = require("../configuration");
 require("./constants/userRole");
-const sendEmail = require('./send-email');
 
 const Schema = mongoose.Schema;
 const userRole = require("../../seed-data/constants/userRole");
@@ -72,11 +72,11 @@ const UserSchema = new Schema(
       index: true,
       default: userRole.defaultRole,
     },
-    verificationCode: {
-      type: Number,
-      default: -1,
+    resetToken: {
+      type: String,
+      default: "default token",
     },
-    verificationCodeExpiration: {
+    resetTokenExpiration : {
       type: Date,
       default: new Date(new Date().setHours(new Date().getHours() + 24)),
     },
@@ -326,6 +326,8 @@ UserSchema.statics.generateUserObject = async function (
       created_at: user.createdAt,
       role: user.roleId.name,
       isnsfw: user.isnsfw,
+      resetToken: user.resetToken,
+      resetTokenExpiration: user.resetTokenExpiration
     };
     if (authorizedUserName != null) {
       const authorizedUser = await User.findOne({
@@ -343,26 +345,42 @@ UserSchema.statics.generateUserObject = async function (
   }
 };
 
-UserSchema.methods.generateResetCode = async function () {
-  user = this;
-  // Generate a random reset password code (6 Digit number)
-  const tempVerificationCode = Math.floor(100000 + Math.random() * 900000);
+// UserSchema.methods.generateResetCode = async function () {
+//   user = this;
+//   const tempVerificationCode = Math.floor(100000 + Math.random() * 900000);
+//   const tempVerificationCodeExpiration = new Date();
+//   tempVerificationCodeExpiration.setHours(tempVerificationCodeExpiration.getHours() + 1);
+//   user.verificationCode = tempVerificationCode;
+//   user.verificationCodeExpiration = tempVerificationCodeExpiration;
+//   await user.save();
+//   const emailContent = `Your verification code is: ${tempVerificationCode}`;
+//   await sendEmail(user.email, 'Verification Code', emailContent);
+// };
 
-  // Set the expiration date for the reset password code (1 Hour from now)
-  const tempVerificationCodeExpiration = new Date();
-  tempVerificationCodeExpiration.setHours(tempVerificationCodeExpiration.getHours() + 1);
+UserSchema.statics.getUserByResetToken = async function (token) {
+  const user = await this.findOne({ resetToken: token });
 
-  // Set the generated code and its expiration date for the user
-  user.verificationCode = tempVerificationCode;
-  user.verificationCodeExpiration = tempVerificationCodeExpiration;
+  if (user) {
+    return new User(user);
+  } else {
+    return null;
+  }
+};
 
-  // Save the user with the new verification code and expiration date
-  await user.save();
+UserSchema.methods.generateResetToken = async function () {
+  try {
+    user = this;
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiration = new Date();
+    resetTokenExpiration.setHours(resetTokenExpiration.getHours() + 1);
 
-  // Send the verification code to the user's email
-  const emailContent = `Your verification code is: ${tempVerificationCode}`;
-  await sendEmail(user.email, 'Verification Code', emailContent);
-
+    user.resetToken = resetToken;
+    user.resetTokenExpiration = resetTokenExpiration;
+    await user.save();
+    return resetToken;
+  } catch (error) {
+    throw new Error('Failed to generate reset token');
+  }
 };
 
 

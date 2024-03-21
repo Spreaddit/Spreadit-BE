@@ -3,6 +3,7 @@ const User = require("../models/user.js");
 const auth = require("../middleware/authentication");
 const config = require("../configuration");
 const cookieParser = require("cookie-parser");
+const sendEmail = require('../models/send-email.js');
 
 const router = express.Router();
 
@@ -96,77 +97,109 @@ router.post("/login", async (req, res) => {
     }
   });
 
-  router.post("/forgot-password", async (req, res) => {
-    try {
-        const { email, username } = req.body;
-        const user = await User.getUserByEmailOrUsername(email || username);
 
-        if (!user) {
-            return res.status(404).send({ message: "User not found" });
-        }
-
-        await user.generateResetCode();
-
-        res.status(200).send({ message: "Reset password code sent successfully" });
-    } catch (err) {
-        res.status(500).send({ message: "Internal server error" });
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const newUser = new User(req.body);
+    const user = await User.getUserByEmailOrUsername(newUser.username);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
     }
+    const temp = await User.getUserByEmailOrUsername(newUser.email);
+    if (!temp || temp.username !== newUser.username) {
+      return res.status(400).send({ message: "Error, wrong email" });
+    }
+    const resetToken = await user.generateResetToken();
+    const emailContent = `/reset-password-by-token?token=${resetToken}`;
+    await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
+    res.status(200).send({ message: "Password reset link sent successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: "Internal server error" });
+  }
 });
 
-router.post("/verify-reset-code", async (req, res) => {
+router.post("/reset-password-by-token", async (req, res) => {
   try {
-      const { email, verificationCode } = req.body;
-      
-      const user = await User.getUserByEmailOrUsername(email);
-
-      if (!user) {
-          return res.status(404).send({ message: "User not found" });
+    const newUser = new User(req.body);
+    const user = await User.getUserByResetToken(newUser.resetToken);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    if (newUser && user.resetTokenExpiration > Date.now()) {
+      if (newUser.password.length < 8) {
+        return res.status(400).send({ message: "Password must be at least 8 characters" });
       }
-
-      if (user.verificationCode === verificationCode && user.verificationCodeExpiration > Date.now()) {
-          res.status(200).send({ message: "Verification code is valid. You can reset your password now." });
-      } else {
-          res.status(400).send({ message: "Invalid or expired verification code" });
-      }
+      user.password = newUser.password;
+      await user.save();
+      res.status(200).send({ message: "Password reset successfully" });
+    } else {
+      return res.status(400).send({ message: "Invalid or expired reset token" });
+    }
+    
   } catch (err) {
-      console.error(err);
-      res.status(500).send({ message: "Internal server error" });
+    console.log(err);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+router.get('/user-info', async (req, res) => {
+  try {
+    const { token } = req.body;
+    const decodedToken = jwt_decode(token);
+    const userUsername = decodedToken.username;
+    const user = await User.getUserByEmailOrUsername(userUsername);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      const { avatar, email, username } = user;
+      res.status(200).json({ avatar, email, username });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
   }
 });
 
 router.post("/reset-password", async (req, res) => {
-    try {
-        const { email, newPassword } = req.body;
-        
-        const user = await User.getUserByEmailOrUsername(email);
-
-        if (!user) {
-            return res.status(404).send({ message: "User not found" });
-        }
-        const hashedPassword = await bcrypt.hash(newPassword, 12);
-        user.password = hashedPassword;
-        await user.save();
-        res.status(200).send({ message: "Password reset successfully" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send({ message: "Internal server error" });
+  try {
+    
+    const { token, newPassword, currentPassword } = req.body;
+    const decodedToken = jwt_decode(token);
+    const username = decodedToken.username;
+    const user = await User.getUserByEmailOrUsername(username);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
     }
+
+    if(await bcrypt.compare(currentPassword, user.password)) {
+    user.password = newPassword;
+    await user.save();
+    res.status(200).send({ message: "Password reset successfully" });
+    }else{
+      return res.status(400).send({ message: "Invalid current password" });
+    }
+  } catch (err) {
+    res.status(500).send({ message: "Internal server error" });
+  }
 });
+
 
 router.post("/check-username", async (req, res) => {
   try {
-      const { username } = req.body;
-      
-      const exists = await User.getUserByEmailOrUsername(username);
+      const newUser = new User(req.body);
+      const exists = await User.getUserByEmailOrUsername(newUser.username);
 
       if (exists) {
-          res.status(200).send({ available: false });
+          res
+          .status(400).send({ available: false });
       } else {
-          res.status(200).send({ available: true });
+          res
+          .status(200).send({ available: true });
       }
   } catch (err) {
-      console.error(err);
-      res.status(500).send({ message: "Internal server error" });
+      res
+      .status(500).send({ message: "Internal server error" });
   }
 });
 
