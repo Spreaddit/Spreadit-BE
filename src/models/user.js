@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto = require('crypto');
 const jwt = require("jsonwebtoken");
 const config = require("../configuration");
 require("./constants/userRole");
-const sendEmail = require("./send-email");
 
 const Schema = mongoose.Schema;
 const userRole = require("../../seed-data/constants/userRole");
@@ -14,6 +14,7 @@ const UserSchema = new Schema(
       type: String,
       trim: true,
       maxLength: 50,
+      default:" ",
     },
     username: {
       type: String,
@@ -78,13 +79,13 @@ const UserSchema = new Schema(
       index: true,
       default: userRole.defaultRole,
     },
-    verificationCode: {
-      type: Number,
-      default: -1,
+    resetToken: {
+      type: String,
+      default: "",
     },
-    verificationCodeExpiration: {
+    resetTokenExpiration : {
       type: Date,
-      default: new Date(new Date().setHours(new Date().getHours() + 24)),
+      default: Date.now
     },
     resetPasswordCode: {
       type: Number,
@@ -285,43 +286,35 @@ UserSchema.statics.checkExistence = async function (email) {
   }
 };
 
+
 UserSchema.statics.verifyCredentials = async function (
   usernameOremail,
   password
-) {
-  const user = await User.findOne({
-    $or: [{ email: usernameOremail }, { username: usernameOremail }],
-  }).populate("roleId");
-  UserSchema.statics.verifyCredentials = async function (
-    usernameOremail,
-    password
   ) {
-    // const user = await User.findOne({
-    //   $or: [{email: usernameOremail}, {username: usernameOremail}],
-    // }).populate("roleId");
+  // const user = await User.findOne({
+  //   $or: [{email: usernameOremail}, {username: usernameOremail}],
+  // }).populate("roleId");
 
-    const userByEmail = await User.findOne({ email: usernameOremail }).populate(
-      "roleId"
-    );
-    const userByUsername = await User.findOne({
-      username: usernameOremail,
+  const userByEmail = await User.findOne({
+     email: usernameOremail, 
     }).populate("roleId");
-    //console.log(usernameOremail);
-    //console.log(userByEmail);
-    //console.log(userByUsername);
-    const user = userByUsername;
-    if (userByEmail) {
-      user = userByEmail;
-    }
+  const userByUsername = await User.findOne({
+    username: usernameOremail,
+  }).populate("roleId");
+  //console.log(usernameOremail);
+  //console.log(userByEmail);
+  //console.log(userByUsername);
+  const user = userByUsername;
+  if (userByEmail) {
+    user = userByEmail;
+  }
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      return user;
-    } else {
-      return null;
-    }
-  };
+  if (user && (await bcrypt.compare(password, user.password))) {
+    return user;
+  } else {
+    return null;
+  }
 };
-
 UserSchema.statics.generateUserObject = async function (
   user,
   authorizedUserName = null
@@ -387,27 +380,31 @@ UserSchema.statics.generateUserObject = async function (
   }
 };
 
-UserSchema.methods.generateResetCode = async function () {
-  user = this;
-  // Generate a random reset password code (6 Digit number)
-  const tempVerificationCode = Math.floor(100000 + Math.random() * 900000);
 
-  // Set the expiration date for the reset password code (1 Hour from now)
-  const tempVerificationCodeExpiration = new Date();
-  tempVerificationCodeExpiration.setHours(
-    tempVerificationCodeExpiration.getHours() + 1
-  );
+UserSchema.statics.getUserByResetToken = async function (token) {
+  const user = await this.findOne({ resetToken: token });
 
-  // Set the generated code and its expiration date for the user
-  user.verificationCode = tempVerificationCode;
-  user.verificationCodeExpiration = tempVerificationCodeExpiration;
+  if (user) {
+    return new User(user);
+  } else {
+    return null;
+  }
+};
 
-  // Save the user with the new verification code and expiration date
-  await user.save();
+UserSchema.methods.generateResetToken = async function () {
+  try {
+    user = this;
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiration = new Date();
+    resetTokenExpiration.setHours(resetTokenExpiration.getHours() + 1);
 
-  // Send the verification code to the user's email
-  const emailContent = `Your verification code is: ${tempVerificationCode}`;
-  await sendEmail(user.email, "Verification Code", emailContent);
+    user.resetToken = resetToken;
+    user.resetTokenExpiration = resetTokenExpiration;
+    await user.save();
+    return resetToken;
+  } catch (error) {
+    throw new Error('Failed to generate reset token');
+  }
 };
 
 const User = mongoose.model("user", UserSchema);
