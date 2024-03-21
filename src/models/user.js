@@ -92,9 +92,9 @@ const UserSchema = new Schema(
       type: Date,
       default: Date.now
     },
-    resetPasswordCode: {
-      type: Number,
-      default: -1,
+    isVerified: {
+      type: Boolean,
+      default: 0,
     },
     newFollowers: {
       type: Boolean,
@@ -234,10 +234,6 @@ const UserSchema = new Schema(
         type: String,
       },
     ],
-    resetPasswordCodeExpiration: {
-      type: Date,
-      default: new Date(new Date().setHours(new Date().getHours() + 24)),
-    },
     tokens: [
       {
         token: {
@@ -286,6 +282,18 @@ UserSchema.methods.generateToken = async function () {
     {
       _id: user._id,
       username: user.username,
+    },
+    "Spreadit-access-token-CCEC-2024"
+  );
+  return token;
+};
+
+UserSchema.methods.generateEmailToken = async function () {
+  user = this;
+
+  const token = jwt.sign(
+    {
+      email: user.email,
     },
     "Spreadit-access-token-CCEC-2024"
   );
@@ -357,7 +365,7 @@ UserSchema.statics.generateUserObject = async function (
       allowFollow: user.allowFollow,
       blockedUsers: user.blockedUsers,
       mutedCommunities: user.mutedCommunities,
-      resetPasswordCodeExpiration: user.resetPasswordCodeExpiration,
+      isVerified: user.isVerified,
       newFollowers: user.newFollowers,
       chatRequestEmail: user.chatRequestEmail,
       unsubscribeAllEmails: user.unsubscribeAllEmails,

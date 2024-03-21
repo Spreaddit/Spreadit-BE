@@ -27,7 +27,9 @@ router.post("/signup", async (req, res) => {
       }
       //const userObj = await User.generateUserObject(savedUser);
       const token = await savedUser.generateToken();
-
+      const emailToken = await savedUser.generateEmailToken();
+      const emailContent = `To confirm your email, click the link below: /verify-email?emailToken=${emailToken}`;
+      await sendEmail(savedUser.email, 'Please Confirm Your Email', emailContent);
       
       const userObj = await User.generateUserObject(savedUser);
       
@@ -46,8 +48,6 @@ router.post("/signup", async (req, res) => {
         } else {
           //const userObj = await User.generateUserObject(savedUser);
           const token = await savedUser.generateToken();
-
-      
           const userObj = await User.generateUserObject(savedUser);
       
           res.status(200).send({
@@ -314,6 +314,28 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
+router.post("/verify-email/:emailToken", async (req, res) => {
+  try {
+    const { emailToken } = req.params;
+    if (!emailToken) {
+      return res.status(401).json({ message: 'Token is required' });
+    }    
+    
+    const decodedToken = jwt.jwtDecode(emailToken);
+    const email = decodedToken.email;
+    const user = await User.getUserByEmailOrUsername(email);
+    
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    user.isVerified = 1;
+    await user.save();
+    res.status(200).send({ message: "Email verified successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
 
 router.post("/check-username", async (req, res) => {
   try {
@@ -322,7 +344,7 @@ router.post("/check-username", async (req, res) => {
 
       if (exists) {
           res
-          .status(400).send({ available: false });
+          .status(200).send({ available: false });
       } else {
           res
           .status(200).send({ available: true });
