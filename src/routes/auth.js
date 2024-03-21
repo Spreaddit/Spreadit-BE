@@ -4,6 +4,7 @@ const auth = require("../middleware/authentication");
 const config = require("../configuration");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
+const GoogleStrategy = require('passport-google-oauth2').Strategy;
 const sendEmail = require('../models/send-email.js');
 
 const router = express.Router();
@@ -102,7 +103,10 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
+router.use('/auth/google/callback', (req, res, next) => {
+  console.log('Received request at /auth/google/callback:', req.url);
+  next();
+});
 passport.use(
   new GoogleStrategy(
     {
@@ -114,10 +118,12 @@ passport.use(
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
+        console.log('Received Google profile:', profile);
         req.user = await User.googleAuth(profile);
         return done(null, profile);
       } catch (err) {
         //return cb(err, profile);
+        console.error('Error in Google authentication:', err);
         return done(null, profile);
       }
     }
@@ -182,6 +188,7 @@ router.get(
         res.redirect("http://localhost/GoogleRedirect");
       }
     } catch (err) {
+      console.error('Error in Google callback endpoint:', err);
       req.cookie(
         "res",
         {
