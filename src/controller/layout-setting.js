@@ -5,7 +5,7 @@ exports.checkPasswordMatch = async (req, res) => {
         //const userId = req.user;  //return undefined
         const userId = req.body.user; // this will be removed 
         const enteredPassword = req.body.enteredPassword;
-        const userPassword = await LayoutSetting.findOne({ _id: userId }).select(password);
+        const userPassword = await LayoutSetting.findOne({ _id: userId }).select('password');
         if (enteredPassword === userPassword) {
             res.status(200).json({
                 "message": "Password matches"
