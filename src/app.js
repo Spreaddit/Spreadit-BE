@@ -15,6 +15,7 @@ const followUserRoutes = require("./routes/follow-user");
 const reportUserRoutes = require("./routes/report-user");
 const emailSettingRoutes = require("./routes/email-setting");
 const layoutSettingRoutes = require("./routes/email-setting");
+const chatAndMessagingSettingRoutes = require("./routes/chat-and-messaging-setting");
 
 const app = express();
 const port = 80;
@@ -37,6 +38,7 @@ app.use("/setting", notificationSettingRoutes);
 app.use("/", createCommunityRoutes);
 app.use("/setting", emailSettingRoutes);
 app.use("/setting", layoutSettingRoutes);
+app.use("/setting", chatAndMessagingSettingRoutes);
 app.use("/users", followUserRoutes);
 app.use("/users", blockUserRoutes);
 app.use("/users", reportUserRoutes);

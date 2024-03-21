@@ -14,7 +14,7 @@ const UserSchema = new Schema(
       type: String,
       trim: true,
       maxLength: 50,
-      default:" ",
+      default: " ",
     },
     username: {
       type: String,
@@ -55,6 +55,11 @@ const UserSchema = new Schema(
         type: String,
       },
     ],
+    approvedUsers: [
+      {
+        type: String,
+      },
+    ],
     bio: {
       type: String,
       trim: true,
@@ -83,7 +88,7 @@ const UserSchema = new Schema(
       type: String,
       default: "",
     },
-    resetTokenExpiration : {
+    resetTokenExpiration: {
       type: Date,
       default: Date.now
     },
@@ -201,7 +206,17 @@ const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    contentVisibility: {
+    sendYouFriendRequests: {
+      type: String,
+      enum: ["Everyone", "Accounts Older Than 30 Days", "Nobody"],
+      default: "Everyone",
+    },
+    sendYouPrivateMessages: {
+      type: String,
+      enum: ["Everyone", "Nobody"],
+      default: "Everyone",
+    },
+    markAllChatsAsRead: {
       type: Boolean,
       default: true,
     },
@@ -290,14 +305,14 @@ UserSchema.statics.checkExistence = async function (email) {
 UserSchema.statics.verifyCredentials = async function (
   usernameOremail,
   password
-  ) {
+) {
   // const user = await User.findOne({
   //   $or: [{email: usernameOremail}, {username: usernameOremail}],
   // }).populate("roleId");
 
   const userByEmail = await User.findOne({
-     email: usernameOremail, 
-    }).populate("roleId");
+    email: usernameOremail,
+  }).populate("roleId");
   const userByUsername = await User.findOne({
     username: usernameOremail,
   }).populate("roleId");
@@ -363,6 +378,10 @@ UserSchema.statics.generateUserObject = async function (
       posts: user.posts,
       displayName: user.displayName,
       about: user.about,
+      approvedUsers: user.approvedUsers,
+      sendYouFriendRequests: user.sendYouFriendRequests,
+      sendYouPrivateMessages: user.sendYouPrivateMessages,
+      markAllChatsAsRead: user.markAllChatsAsRead,
     };
     if (authorizedUserName != null) {
       const authorizedUser = await User.findOne({
