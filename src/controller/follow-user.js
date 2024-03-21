@@ -19,9 +19,10 @@ exports.followUser = async (req, res) => {
       { $addToSet: { followings: toFollowID } }, // Add follower's ID to the followers array, using $addToSet to ensure uniqueness
       { new: true } // To return the updated document after the update operation
     );
+
     const tofollowUser = await FollowUser.findByIdAndUpdate(
       toFollowID, // User being followed
-      { $addToSet: { followers: followerID } }, // Add follower's ID to the followers array, using $addToSet to ensure uniqueness
+      { $addToSet: { followers: { followerID } } }, // Add follower's ID to the followers array, using $addToSet to ensure uniqueness
       { new: true } // To return the updated document after the update operation
     );
 

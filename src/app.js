@@ -11,6 +11,7 @@ const feedSettingRoutes = require("./routes/feed-setting");
 const notificationSettingRoutes = require("./routes/notification-setting");
 const blockUserRoutes = require("./routes/block-user");
 const followUserRoutes = require("./routes/follow-user");
+const reportUserRoutes = require("./routes/report-user");
 const emailSettingRoutes = require("./routes/email-setting");
 
 const app = express();
@@ -34,6 +35,7 @@ app.use("/setting", notificationSettingRoutes);
 app.use("/setting", emailSettingRoutes);
 app.use("/users", followUserRoutes);
 app.use("/users", blockUserRoutes);
+app.use("/users", reportUserRoutes);
 
 mongoose
   .connect(connectionurl, {
