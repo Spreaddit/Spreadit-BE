@@ -174,6 +174,30 @@ const UserSchema = new Schema(
       type: Boolean,
       default: 0,
     },
+    inboxMessages: {
+      type: Boolean,
+      default: 1,
+    },
+    chatMessages: {
+      type: Boolean,
+      default: 1,
+    },
+    chatRequests: {
+      type: Boolean,
+      default: 1,
+    },
+    repliesToComments: {
+      type: Boolean,
+      default: 1,
+    },
+    cakeDay: {
+      type: Boolean,
+      default: 1,
+    },
+    modNotifications: {
+      type: Boolean,
+      default: 1,
+    },
     displayName: {
       type: String,
       trim: true,
@@ -382,6 +406,12 @@ UserSchema.statics.generateUserObject = async function (
       sendYouFriendRequests: user.sendYouFriendRequests,
       sendYouPrivateMessages: user.sendYouPrivateMessages,
       markAllChatsAsRead: user.markAllChatsAsRead,
+      inboxMessages: user.inboxMessages,
+      chatMessages: user.chatMessages,
+      chatRequests: user.chatRequests,
+      repliesToComments: user.repliesToComments,
+      cakeDay: user.cakeDay,
+      modNotifications: user.modNotifications,
     };
     if (authorizedUserName != null) {
       const authorizedUser = await User.findOne({
