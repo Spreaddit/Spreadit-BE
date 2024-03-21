@@ -6,6 +6,8 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 const sendEmail = require('../models/send-email.js');
+const jwt = require('jwt-decode');
+const bcrypt = require("bcryptjs");
 
 const router = express.Router();
 router.use(passport.initialize());
@@ -254,7 +256,10 @@ router.post("/reset-password-by-token", async (req, res) => {
 router.get('/user-info', async (req, res) => {
   try {
     const { token } = req.body;
-    const decodedToken = jwt_decode(token);
+    if (!token) {
+      return res.status(401).json({ message: 'Token is required' });
+    }  
+    const decodedToken =  jwt.jwtDecode(token);
     const userUsername = decodedToken.username;
     const user = await User.getUserByEmailOrUsername(userUsername);
       if (!user) {
@@ -273,7 +278,11 @@ router.post("/reset-password", async (req, res) => {
   try {
     
     const { token, newPassword, currentPassword } = req.body;
-    const decodedToken = jwt_decode(token);
+    if (!token) {
+      return res.status(401).json({ message: 'Token is required' });
+    }    
+   
+    const decodedToken =  jwt.jwtDecode(token);
     const username = decodedToken.username;
     const user = await User.getUserByEmailOrUsername(username);
     if (!user) {
@@ -288,6 +297,7 @@ router.post("/reset-password", async (req, res) => {
       return res.status(400).send({ message: "Invalid current password" });
     }
   } catch (err) {
+    console.log(err);
     res.status(500).send({ message: "Internal server error" });
   }
 });
@@ -308,6 +318,25 @@ router.post("/check-username", async (req, res) => {
   } catch (err) {
       res
       .status(500).send({ message: "Internal server error" });
+  }
+});
+router.post("/forgot-username", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.getUserByEmailOrUsername(email);
+    
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    const loginLink = `Your username is ${user.username} you can login now: /login`;
+
+    await sendEmail(user.email, 'So you wanna know your username, huh?', loginLink);
+
+    res.status(200).send({ message: "Username sent successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error" });
   }
 });
 
