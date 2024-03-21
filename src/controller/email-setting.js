@@ -1,8 +1,12 @@
 const EmailSetting = require('./../models/user');
+const jwt = require("jsonwebtoken");
 
 exports.getEmailSetting = async (req, res) => {
     try {
-        const emailSetting = await EmailSetting.find().select('newFollowerEmail chatRequestEmail unsubscribeAllEmails');
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
+        const emailSetting = await EmailSetting.findOne({ _id: userId }).select('newFollowerEmail chatRequestEmail unsubscribeAllEmails');
         res.status(200).json(emailSetting);
     } catch (err) {
         res.status(500).json({ err: 'Internal server error' });
@@ -11,8 +15,9 @@ exports.getEmailSetting = async (req, res) => {
 
 exports.modifyEmailSetting = async (req, res) => {
     try {
-        //const userId = req.user;  //return undefined
-        const userId = req.body.user; // this will be removed 
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
         if (!userId) {
             return res.status(400).json({ error: 'User ID is required' });
         }
@@ -22,8 +27,7 @@ exports.modifyEmailSetting = async (req, res) => {
         Object.assign(emailSetting, modifyEmailSetting);
 
         await emailSetting.save();
-        const response = emailSetting;
-        res.status(200).json(response);
+        res.status(200).json({ message: "success" });
 
     } catch (err) {
         console.error('Error modifying email settings', err);

@@ -1,12 +1,15 @@
 const Community = require('./../models/community');
 const auth = require("../middleware/authentication");
 const express = require('express');
+const jwt = require("jsonwebtoken");
+
 
 
 exports.createNewCommunity = async (req, res) => {
 
-    //const user = req.user;
-    const user = req.body.user;
+    const token = req.body.token;
+    const decodeToken = jwt.decode(token);
+    const user = decodeToken._id;
     const { name, description, rules } = req.body;
     const createdCommunity = new Community({
         name: name,

@@ -1,8 +1,12 @@
 const ContactSetting = require('./../models/user');
+const jwt = require("jsonwebtoken");
 
 exports.getContactSetting = async (req, res) => {
     try {
-        const contactSetting = await ContactSetting.find().select('inboxMessages chatMessages chatRequests mentions commentsOnYourPost commentsYouFollow upvotes repliesToComments newFollowers cakeDay modNotifications');
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
+        const contactSetting = await ContactSetting.findOne({ _id: userId }).select('inboxMessages chatMessages chatRequests mentions commentsOnYourPost commentsYouFollow upvotes repliesToComments newFollowers cakeDay modNotifications');
         res.status(200).json(contactSetting);
     } catch (err) {
         res.status(500).json({ err: 'Internal server error' });
@@ -11,8 +15,9 @@ exports.getContactSetting = async (req, res) => {
 
 exports.modifyContactSetting = async (req, res) => {
     try {
-        //const userId = req.user;  //return undefined
-        const userId = req.body.user; // this will be removed 
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
         if (!userId) {
             return res.status(400).json({ error: 'User ID is required' });
         }
@@ -22,8 +27,7 @@ exports.modifyContactSetting = async (req, res) => {
         Object.assign(contactSetting, modifyContactSetting);
 
         await contactSetting.save();
-        const response = contactSetting;
-        res.status(200).json(response);
+        res.status(200).json({ message: "success" });
 
     } catch (err) {
         console.error('Error modifying contact settings', err);

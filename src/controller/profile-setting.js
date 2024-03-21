@@ -1,8 +1,12 @@
 const ProfileSetting = require('./../models/user');
+const jwt = require("jsonwebtoken");
 
 exports.getProfileSetting = async (req, res) => {
     try {
-        const profileSettings = await ProfileSetting.find().select('displayName about socialLinks profilePicture banner nsfw allowFollow contentVisibility activeInCommunityVisibility clearHistory');
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
+        const profileSettings = await ProfileSetting.findOne({ _id: userId }).select('displayName about socialLinks profilePicture banner nsfw allowFollow contentVisibility activeInCommunityVisibility clearHistory');
         res.status(200).json(profileSettings);
     } catch (err) {
         res.status(500).json({ err: 'Internal server error' });
@@ -11,8 +15,9 @@ exports.getProfileSetting = async (req, res) => {
 
 exports.modifyProfileSettings = async (req, res) => {
     try {
-        //const user = req.user;  //return undifined
-        const user = req.body.user; // this will be removed 
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
         if (!user) {
             return res.status(400).json({ error: 'User ID is required' });
         }
@@ -21,8 +26,7 @@ exports.modifyProfileSettings = async (req, res) => {
         Object.assign(profileSetting, modifyProfileSettings);
 
         await profileSetting.save();
-        const response = profileSetting;
-        res.status(200).json(response);
+        res.status(200).json({ message: "success" });
 
     } catch (err) {
         console.error('Error modifying profile settings', err);

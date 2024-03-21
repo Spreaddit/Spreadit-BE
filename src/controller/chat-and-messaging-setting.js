@@ -1,8 +1,12 @@
 const ChatAndMessagingSetting = require('./../models/user');
+const jwt = require("jsonwebtoken");
 
 exports.getChatAndMessagingSetting = async (req, res) => {
     try {
-        const chatAndMessagingSetting = await ChatAndMessagingSetting.find().select('sendYouFriendRequests sendYouPrivateMessages approvedUsers');
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
+        const chatAndMessagingSetting = await ChatAndMessagingSetting.findOne({ _id: userId }).select('sendYouFriendRequests sendYouPrivateMessages approvedUsers');
         res.status(200).json(chatAndMessagingSetting);
     } catch (err) {
         res.status(500).json({ err: 'Internal server error' });
@@ -11,8 +15,9 @@ exports.getChatAndMessagingSetting = async (req, res) => {
 
 exports.modifyChatAndMessagingSetting = async (req, res) => {
     try {
-        //const userId = req.user;  //return undefined
-        const userId = req.body.user; // this will be removed 
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
         if (!userId) {
             return res.status(400).json({ error: 'User ID is required' });
         }
@@ -21,8 +26,7 @@ exports.modifyChatAndMessagingSetting = async (req, res) => {
         const chatAndMessagingSetting = await ChatAndMessagingSetting.findOne({ _id: userId });
         Object.assign(chatAndMessagingSetting, modifyChatAndMessagingSetting);
         await chatAndMessagingSetting.save();
-        const response = chatAndMessagingSetting;
-        res.status(200).json(response);
+        res.status(200).json({ message: success });
 
     } catch (err) {
         console.error('Error modifying chatAndMessaging settings', err);
@@ -31,8 +35,9 @@ exports.modifyChatAndMessagingSetting = async (req, res) => {
 };
 
 exports.makeAllAsRead = async (req, res) => {
-    //const userId = req.user;  //return undefined
-    const userId = req.body.user; // this will be removed 
+    const token = req.body.token;
+    const decodeToken = jwt.decode(token);
+    const userId = decodeToken._id;
     if (!userId) {
         return res.status(400).json({ error: 'User ID is required' });
     }
