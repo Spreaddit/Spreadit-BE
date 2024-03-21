@@ -29,7 +29,9 @@ router.post("/signup", async (req, res) => {
       }
       //const userObj = await User.generateUserObject(savedUser);
       const token = await savedUser.generateToken();
-
+      const emailToken = await savedUser.generateEmailToken();
+      const emailContent = `To confirm your email, click the link below: /verify-email?emailToken=${emailToken}`;
+      await sendEmail(savedUser.email, 'Please Confirm Your Email', emailContent);
       
       const userObj = await User.generateUserObject(savedUser);
       
@@ -48,8 +50,6 @@ router.post("/signup", async (req, res) => {
         } else {
           //const userObj = await User.generateUserObject(savedUser);
           const token = await savedUser.generateToken();
-
-      
           const userObj = await User.generateUserObject(savedUser);
       
           res.status(200).send({
@@ -114,20 +114,19 @@ router.post("/login", async (req, res) => {
   } catch (err) {
     res.status(500).send({
       message:
-        "The server crashed :)",
+        "Internal server error",
     });
   }
 });
 
 router.post('/google/oauth', verifyGoogleToken, async (req, res) => {
-  const { access_token } = req.body;
 
   try{
     const userData = req.decoded;
     console.log(userData);
 
-    let user = await User.findOne({ googleId: userData._id});
-
+    let user = await User.findOne({ googleId: userData.id});
+    console.log(user);
     if(user){
       const token = await user.generateToken();
       const authTokenInfo = { token: token };
@@ -157,7 +156,7 @@ router.post('/google/oauth', verifyGoogleToken, async (req, res) => {
     } else {
       const newUsername = await new User().generateRandomUsername();
       const newUser = new User({
-        googleId: userData._id,
+        googleId: userData.id,
         name: userData.name,
         email: userData.email,
         username: newUsername
@@ -277,6 +276,28 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
+router.post("/verify-email/:emailToken", async (req, res) => {
+  try {
+    const { emailToken } = req.params;
+    if (!emailToken) {
+      return res.status(401).json({ message: 'Token is required' });
+    }    
+    
+    const decodedToken = jwt.jwtDecode(emailToken);
+    const email = decodedToken.email;
+    const user = await User.getUserByEmailOrUsername(email);
+    
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    user.isVerified = 1;
+    await user.save();
+    res.status(200).send({ message: "Email verified successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
 
 router.post("/check-username", async (req, res) => {
   try {
@@ -285,7 +306,7 @@ router.post("/check-username", async (req, res) => {
 
       if (exists) {
           res
-          .status(400).send({ available: false });
+          .status(200).send({ available: false });
       } else {
           res
           .status(200).send({ available: true });

@@ -30,6 +30,12 @@ const UserSchema = new Schema(
       trim: true,
       unique: true,
     },
+    googleId: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
     password: {
       type: String,
       minLength: 8,
@@ -92,9 +98,9 @@ const UserSchema = new Schema(
       type: Date,
       default: Date.now
     },
-    resetPasswordCode: {
-      type: Number,
-      default: -1,
+    isVerified: {
+      type: Boolean,
+      default: 0,
     },
     newFollowers: {
       type: Boolean,
@@ -258,10 +264,6 @@ const UserSchema = new Schema(
         type: String,
       },
     ],
-    resetPasswordCodeExpiration: {
-      type: Date,
-      default: new Date(new Date().setHours(new Date().getHours() + 24)),
-    },
     tokens: [
       {
         token: {
@@ -316,6 +318,18 @@ UserSchema.methods.generateToken = async function () {
   return token;
 };
 
+UserSchema.methods.generateEmailToken = async function () {
+  user = this;
+
+  const token = jwt.sign(
+    {
+      email: user.email,
+    },
+    "Spreadit-access-token-CCEC-2024"
+  );
+  return token;
+};
+
 UserSchema.statics.checkExistence = async function (email) {
   const user = await User.findOne({ email });
   if (user) {
@@ -361,6 +375,7 @@ UserSchema.statics.generateUserObject = async function (
       name: user.name,
       username: user.username,
       email: user.email,
+      googleId: user.googleId,
       birth_date: user.birth_date,
       phone: user.phone_number,
       avatar_url: user.avatar,
@@ -378,7 +393,7 @@ UserSchema.statics.generateUserObject = async function (
       allowFollow: user.allowFollow,
       blockedUsers: user.blockedUsers,
       mutedCommunities: user.mutedCommunities,
-      resetPasswordCodeExpiration: user.resetPasswordCodeExpiration,
+      isVerified: user.isVerified,
       newFollowers: user.newFollowers,
       chatRequestEmail: user.chatRequestEmail,
       unsubscribeAllEmails: user.unsubscribeAllEmails,
@@ -452,22 +467,18 @@ UserSchema.methods.generateResetToken = async function () {
     throw new Error('Failed to generate reset token');
   }
 };
-UserSchema.methods.generateRandomUsername = async () => {
+UserSchema.methods.generateRandomUsername = async function() {
   const randomUsername = this.generateRandomString(); 
 
-  
   let user = await this.constructor.findOne({ username: randomUsername });
   if (user) {
-    
     return this.generateRandomUsername();
   }
 
-  
   return randomUsername;
 }
 
-
-UserSchema.methods.generateRandomString = () => {
+UserSchema.methods.generateRandomString = function() {
   const length = 8; // Length of the random string
   const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; // Characters to choose from
   let randomString = '';
