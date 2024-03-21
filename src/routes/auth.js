@@ -211,9 +211,6 @@ router.post("/reset-password-by-token", async (req, res) => {
       return res.status(404).send({ message: "User not found" });
     }
     if (newUser && user.resetTokenExpiration > Date.now()) {
-      if (newUser.password.length < 8) {
-        return res.status(400).send({ message: "Password must be at least 8 characters" });
-      }
       user.password = newUser.password;
       await user.save();
       res.status(200).send({ message: "Password reset successfully" });
