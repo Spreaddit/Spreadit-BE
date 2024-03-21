@@ -3,9 +3,14 @@ const User = require("../models/user.js");
 const auth = require("../middleware/authentication");
 const config = require("../configuration");
 const cookieParser = require("cookie-parser");
+const passport = require("passport");
 const sendEmail = require('../models/send-email.js');
 
 const router = express.Router();
+router.use(passport.initialize());
+//const express = require('express');
+//router.use(passport.session());
+router.use(cookieParser("spreaditsecret"));
 
 
 router.post("/signup", async (req, res) => {
@@ -97,6 +102,102 @@ router.post("/login", async (req, res) => {
   }
 });
 
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: config.googleClientID,
+      clientSecret: config.googleClientSecret,
+      callbackURL: "https://localhost/auth/google/callback",
+      userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
+      passReqToCallback: true,
+    },
+    async (req, accessToken, refreshToken, profile, done) => {
+      try {
+        req.user = await User.googleAuth(profile);
+        return done(null, profile);
+      } catch (err) {
+        //return cb(err, profile);
+        return done(null, profile);
+      }
+    }
+  )
+);
+  
+router.get("/auth/google",
+  passport.authenticate("google", {
+    scope: ["openid", "email", "profile"],
+    session: false,
+  })
+);
+  
+router.get(
+  "/auth/google/callback",
+
+  passport.authenticate("google", { session: false }),
+  async (req, res) => {
+    try {
+      const user = new User(req.user);
+      console.log(user); 
+      if (user) {
+        const token = await user.generateToken();
+        const authTokenInfo = { token: token };
+        if (req.body.remember_me) {
+          authTokenInfo["token_expiration_date"] = new Date(
+            Date.now() + 7 * 24 * 60 * 60 * 1000
+          );
+        } else {
+          authTokenInfo["token_expiration_date"] = new Date(
+            new Date().setHours(new Date().getHours() + 24)
+          );
+        }
+        user.tokens = user.tokens.concat(authTokenInfo);
+        await User.updateOne(
+          { _id: user._id },
+          { $set: { tokens: user.tokens } }
+        );
+
+        const userObj = await User.generateUserObject(user);
+        res.cookie(
+          "res",
+          {
+            access_token: token,
+            user: userObj,
+            token_expiration_date: authTokenInfo["token_expiration_date"],
+            message: "User logged in successfully",
+            status: 200,
+          },
+          { domain: "localhost" }
+        );
+        res.redirect("http://localhost/GoogleRedirect");
+      } else {
+        req.cookie(
+          "res",
+          {
+            status: 401,
+            message: "The enetered credentials are invalid.",
+          },
+          { domain: "localhost" }
+        );
+        res.redirect("http://localhost/GoogleRedirect");
+      }
+    } catch (err) {
+      req.cookie(
+        "res",
+        {
+          status: 500,
+          message:
+            "The server encountered an unexpected condition which prevented it from fulfilling the request.",
+        },
+        { domain: "localhost" }
+      );
+      res.status(500).send({
+        message:
+          "The server encountered an unexpected condition which prevented it from fulfilling the request.",
+      });
+    }
+  }
+);
 
 router.post("/forgot-password", async (req, res) => {
   try {
