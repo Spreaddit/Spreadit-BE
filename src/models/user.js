@@ -8,7 +8,6 @@ require("./constants/userRole");
 const Schema = mongoose.Schema;
 const userRole = require("../../seed-data/constants/userRole");
 
-
 const UserSchema = new Schema(
   {
     name: {
@@ -50,9 +49,11 @@ const UserSchema = new Schema(
       maxLength: 30,
       default: "",
     },
-    connectedAccounts: [{
-      type: String,
-    }],
+    connectedAccounts: [
+      {
+        type: String,
+      },
+    ],
     bio: {
       type: String,
       trim: true,
@@ -61,6 +62,11 @@ const UserSchema = new Schema(
     },
     followers: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
     followings: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
+    reportedUsers: [
+      {
+        type: Object,
+      },
+    ],
     background_picture: {
       type: String,
       trim: true,
@@ -98,13 +104,13 @@ const UserSchema = new Schema(
     },
     communityContentSort: {
       type: String,
-      enum: ['Hot', 'New', 'Top', 'Rising'],
-      default: 'Hot',
+      enum: ["Hot", "New", "Top", "Rising"],
+      default: "Hot",
     },
     globalContentView: {
       type: String,
-      enum: ['Card', 'Classic', 'Compact'],
-      default: 'Card',
+      enum: ["Card", "Classic", "Compact"],
+      default: "Card",
     },
     communityThemes: {
       type: Boolean,
@@ -142,6 +148,10 @@ const UserSchema = new Schema(
       type: Boolean,
       default: 1,
     },
+    newFollowerEmail: {
+      type: Boolean,
+      default: 1,
+    },
     replies: {
       type: Boolean,
       default: 1,
@@ -157,7 +167,8 @@ const UserSchema = new Schema(
     posts: {
       type: Boolean,
       default: 0,
-    }, displayName: {
+    },
+    displayName: {
       type: String,
       trim: true,
       maxLength: 20,
@@ -197,12 +208,16 @@ const UserSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    blockedUsers: [{
-      type: String,
-    }],
-    mutedCommunities: [{
-      type: String,
-    }],
+    blockedUsers: [
+      {
+        type: String,
+      },
+    ],
+    mutedCommunities: [
+      {
+        type: String,
+      },
+    ],
     resetPasswordCodeExpiration: {
       type: Date,
       default: new Date(new Date().setHours(new Date().getHours() + 24)),
@@ -218,8 +233,6 @@ const UserSchema = new Schema(
         },
       },
     ],
-
-
   },
   {
     timestamps: true,
@@ -245,8 +258,7 @@ UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
 
   if (user[0]) {
     return new User(user[0]);
-  }
-  else {
+  } else {
     return null;
   }
 };
@@ -260,34 +272,40 @@ UserSchema.methods.generateToken = async function () {
       username: user.username,
     },
     "Spreadit-access-token-CCEC-2024"
-  )
+  );
   return token;
-
 };
 
 UserSchema.statics.checkExistence = async function (email) {
   const user = await User.findOne({ email });
   if (user) {
     return true;
-  }
-  else {
+  } else {
     return false;
   }
-}
+};
 
-UserSchema.statics.verifyCredentials = async function (usernameOremail, password) {
+UserSchema.statics.verifyCredentials = async function (
+  usernameOremail,
+  password
+) {
   const user = await User.findOne({
     $or: [{ email: usernameOremail }, { username: usernameOremail }],
   }).populate("roleId");
-  UserSchema.statics.verifyCredentials = async function (usernameOremail, password) {
-
-
+  UserSchema.statics.verifyCredentials = async function (
+    usernameOremail,
+    password
+  ) {
     // const user = await User.findOne({
     //   $or: [{email: usernameOremail}, {username: usernameOremail}],
     // }).populate("roleId");
 
-    const userByEmail = await User.findOne({ email: usernameOremail }).populate("roleId");
-    const userByUsername = await User.findOne({ username: usernameOremail }).populate("roleId");
+    const userByEmail = await User.findOne({ email: usernameOremail }).populate(
+      "roleId"
+    );
+    const userByUsername = await User.findOne({
+      username: usernameOremail,
+    }).populate("roleId");
     //console.log(usernameOremail);
     //console.log(userByEmail);
     //console.log(userByUsername);
@@ -298,12 +316,11 @@ UserSchema.statics.verifyCredentials = async function (usernameOremail, password
 
     if (user && (await bcrypt.compare(password, user.password))) {
       return user;
-    }
-    else {
+    } else {
       return null;
     }
-  }
-}
+  };
+};
 
 UserSchema.statics.generateUserObject = async function (
   user,
@@ -382,7 +399,6 @@ UserSchema.methods.generateResetToken = async function () {
     throw new Error('Failed to generate reset token');
   }
 };
-
 
 const User = mongoose.model("user", UserSchema);
 

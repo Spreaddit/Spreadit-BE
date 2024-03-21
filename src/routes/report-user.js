@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const followUserController = require("../controller/follow-user");
+const reportUserController = require("../controller/report-user");
 const auth = require("../middleware/authentication");
 
-router.route("/follow", auth).post(followUserController.followUser);
+router.route("/report", auth).post(reportUserController.reportUser);
 
 module.exports = router;

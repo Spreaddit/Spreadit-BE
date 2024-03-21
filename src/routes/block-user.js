@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const followUserController = require("../controller/follow-user");
+const blockUserController = require("../controller/block-user");
 const auth = require("../middleware/authentication");
 
-router.route("/follow", auth).post(followUserController.followUser);
+router.route("/block", auth).post(blockUserController.blockUser);
 
 module.exports = router;
