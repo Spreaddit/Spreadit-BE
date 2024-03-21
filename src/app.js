@@ -13,6 +13,7 @@ const createCommunityRoutes = require("./routes/create-community");
 const blockUserRoutes = require("./routes/block-user");
 const followUserRoutes = require("./routes/follow-user");
 const emailSettingRoutes = require("./routes/email-setting");
+const layoutSettingRoutes = require("./routes/email-setting");
 
 const app = express();
 const port = 80;
