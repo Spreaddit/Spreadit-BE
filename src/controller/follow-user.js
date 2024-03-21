@@ -1,11 +1,17 @@
 const FollowUser = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 exports.followUser = async (req, res) => {
   //const followerID = req.user;
-
   try {
-    const toFollowID = req.body.userID;
-    const followerID = req.body.followID; //will be removed
+    const username = req.body.username;
+    const user = await FollowUser.getUserByEmailOrUsername(username);
+    const toFollowID = user._id;
+    const token = req.body.token;
+    const decodedToken = jwt.decode(token);
+
+    const followerID = decodedToken._id;
+    // const username = decodedToken.username;
     // const { toFollowID } = toFollowUser;
 
     // const tofollow = await FollowUser.findById(toFollowID);
