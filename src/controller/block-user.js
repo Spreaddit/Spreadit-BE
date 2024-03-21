@@ -1,39 +1,43 @@
 const BlockUser = require("../models/user");
-
+const jwt = require("jsonwebtoken");
 exports.blockUser = async (req, res) => {
   //const followerID = req.user;
 
   try {
-    const toBlockID = req.body.userID;
-    const blockerID = req.body.followID; //will be removed
-    // const { toBlock } = toBlockUser;
-
-    // const tofollow = await BlockUser.findById(toBlock);
-    // if (!tofollow) {
-    //   console.error("this user not found:");
-    //   return res.status(404).json({ error: "User not found" });
-    // }
-
+    const username = req.body.username;
+    if (!username) {
+      return res.status(400).json({ error: "Username is required" });
+    }
+    const user = await BlockUser.getUserByEmailOrUsername(username);
+    if (!user) {
+      console.error("User not found");
+      return res.status(404).json({ error: "User not found" });
+    }
+    const toBlockID = user._id;
+    const token = req.body.token;
+    const decodedToken = jwt.decode(token);
+    const blockerID = decodedToken._id;
+    if (!blockerID) {
+      console.error("please login first:");
+      return res.status(404).json({ error: "user not found" });
+    }
+    if (!toBlockID) {
+      console.error("user not found:");
+      return res.status(404).json({ error: "user not found" });
+    }
     const blockerUser = await BlockUser.findByIdAndUpdate(
       blockerID,
       { $addToSet: { blockedUsers: toBlockID } },
       { new: true }
     );
     const toBlockUser = await BlockUser.findById(toBlockID);
-    if (!blockerUser) {
-      console.error("please login first:");
-      return res.status(404).json({ error: "please loin first" });
-    }
-    if (!toBlockUser) {
-      console.error("user not found:");
-      return res.status(404).json({ error: "user not found" });
-    }
+
     const response = {
-      status: "success",
+      description: "User blocked successfully",
     };
     res.status(200).json(response);
   } catch (err) {
     console.error("Error block user", err);
-    res.status(500).json({ error: "Error block user" });
+    res.status(500).json({ error: "Internal server error" });
   }
 };

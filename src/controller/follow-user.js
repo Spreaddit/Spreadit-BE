@@ -5,21 +5,24 @@ exports.followUser = async (req, res) => {
   //const followerID = req.user;
   try {
     const username = req.body.username;
+    if (!username) {
+      return res.status(400).json({ error: "Username is required" });
+    }
     const user = await FollowUser.getUserByEmailOrUsername(username);
+    if (!user) {
+      console.error("User not found");
+      return res.status(404).json({ error: "User not found" });
+    }
     const toFollowID = user._id;
+
     const token = req.body.token;
     const decodedToken = jwt.decode(token);
 
     const followerID = decodedToken._id;
-    // const username = decodedToken.username;
-    // const { toFollowID } = toFollowUser;
-
-    // const tofollow = await FollowUser.findById(toFollowID);
     if (!toFollowID || !followerID) {
-      console.error("User ID is required");
-      return res.status(404).json({ error: "User ID is required" });
+      console.error("this user not found:");
+      return res.status(404).json({ error: "User not found" });
     }
-
     const followerUser = await FollowUser.findByIdAndUpdate(
       followerID, // User being followed
       { $addToSet: { followings: toFollowID } }, // Add follower's ID to the followers array, using $addToSet to ensure uniqueness
@@ -37,19 +40,14 @@ exports.followUser = async (req, res) => {
       { $set: { newFollowers: true } } // Update operation using $set to set 'newFollowers' to true
     );
     if (!followerUser) {
-      console.error("please login first:");
-      return res.status(404).json({ error: "please loin first" });
-    }
-    if (!tofollowUser) {
-      console.error("user not found:");
       return res.status(404).json({ error: "user not found" });
     }
     const response = {
-      status: "success",
+      description: "User followed successfully",
     };
     res.status(200).json(response);
   } catch (err) {
-    console.error("Error follow user", err);
-    res.status(500).json({ error: "Error follow user" });
+    console.error("Internal server error", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
