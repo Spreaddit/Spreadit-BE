@@ -80,11 +80,11 @@ const UserSchema = new Schema(
     },
     resetToken: {
       type: String,
-      default: "default token",
+      default: "",
     },
     resetTokenExpiration : {
       type: Date,
-      default: new Date(new Date().setHours(new Date().getHours() + 24)),
+      default: new Date.now(),
     },
     resetPasswordCode: {
       type: Number,
@@ -387,17 +387,6 @@ UserSchema.statics.generateUserObject = async function (
   }
 };
 
-// UserSchema.methods.generateResetCode = async function () {
-//   user = this;
-//   const tempVerificationCode = Math.floor(100000 + Math.random() * 900000);
-//   const tempVerificationCodeExpiration = new Date();
-//   tempVerificationCodeExpiration.setHours(tempVerificationCodeExpiration.getHours() + 1);
-//   user.verificationCode = tempVerificationCode;
-//   user.verificationCodeExpiration = tempVerificationCodeExpiration;
-//   await user.save();
-//   const emailContent = `Your verification code is: ${tempVerificationCode}`;
-//   await sendEmail(user.email, 'Verification Code', emailContent);
-// };
 
 UserSchema.statics.getUserByResetToken = async function (token) {
   const user = await this.findOne({ resetToken: token });
