@@ -30,6 +30,12 @@ const UserSchema = new Schema(
       trim: true,
       unique: true,
     },
+    googleId: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
     password: {
       type: String,
       minLength: 8,
@@ -361,6 +367,7 @@ UserSchema.statics.generateUserObject = async function (
       name: user.name,
       username: user.username,
       email: user.email,
+      googleId: user.googleId,
       birth_date: user.birth_date,
       phone: user.phone_number,
       avatar_url: user.avatar,
@@ -452,22 +459,18 @@ UserSchema.methods.generateResetToken = async function () {
     throw new Error('Failed to generate reset token');
   }
 };
-UserSchema.methods.generateRandomUsername = async () => {
+UserSchema.methods.generateRandomUsername = async function() {
   const randomUsername = this.generateRandomString(); 
 
-  
   let user = await this.constructor.findOne({ username: randomUsername });
   if (user) {
-    
     return this.generateRandomUsername();
   }
 
-  
   return randomUsername;
 }
 
-
-UserSchema.methods.generateRandomString = () => {
+UserSchema.methods.generateRandomString = function() {
   const length = 8; // Length of the random string
   const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; // Characters to choose from
   let randomString = '';

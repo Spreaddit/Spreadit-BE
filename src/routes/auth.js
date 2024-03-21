@@ -114,20 +114,19 @@ router.post("/login", async (req, res) => {
   } catch (err) {
     res.status(500).send({
       message:
-        "The server crashed :)",
+        "Internal server error",
     });
   }
 });
 
 router.post('/google/oauth', verifyGoogleToken, async (req, res) => {
-  const { access_token } = req.body;
 
   try{
     const userData = req.decoded;
     console.log(userData);
 
-    let user = await User.findOne({ googleId: userData._id});
-
+    let user = await User.findOne({ googleId: userData.id});
+    console.log(user);
     if(user){
       const token = await user.generateToken();
       const authTokenInfo = { token: token };
@@ -157,7 +156,7 @@ router.post('/google/oauth', verifyGoogleToken, async (req, res) => {
     } else {
       const newUsername = await new User().generateRandomUsername();
       const newUser = new User({
-        googleId: userData._id,
+        googleId: userData.id,
         name: userData.name,
         email: userData.email,
         username: newUsername
