@@ -1,11 +1,16 @@
 const ReportUser = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 exports.reportUser = async (req, res) => {
   //const followerID = req.user;
 
   try {
-    const toReportID = req.body.userID;
-    const reporterID = req.body.followID; //will be removed
+    const username = req.body.username;
+    const user = await ReportUser.getUserByEmailOrUsername(username);
+    const toReportID = user._id;
+    const token = req.body.token;
+    const decodedToken = jwt.decode(token);
+    const reporterID = decodedToken._id;
     const reason = req.body.reason;
     if (!toReportID || !reporterID) {
       return res.status(400).json({ error: "User ID is required" });
