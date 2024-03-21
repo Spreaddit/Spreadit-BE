@@ -18,12 +18,12 @@ const reportUserRoutes = require("./routes/report-user");
 const emailSettingRoutes = require("./routes/email-setting");
 const layoutSettingRoutes = require("./routes/email-setting");
 const chatAndMessagingSettingRoutes = require("./routes/chat-and-messaging-setting");
+const showFriendRoutes = require("./routes/show-friend-information");
 
 const app = express();
 const port = 80;
 //const port = 443;
 const connectionurl = config.cloudConnectString;
-
 
 // const options = {
 //   key: fs.readFileSync('path/to/private.key'),
@@ -51,6 +51,7 @@ app.use("/setting", chatAndMessagingSettingRoutes);
 app.use("/users", followUserRoutes);
 app.use("/users", blockUserRoutes);
 app.use("/users", reportUserRoutes);
+app.use("/users", showFriendRoutes);
 
 mongoose
   .connect(connectionurl, {
@@ -64,9 +65,9 @@ mongoose
     console.error("Error connecting to database:", error);
   });
 
- app.listen(port, () => {
-   console.log("Server started on port", port);
- });
+app.listen(port, () => {
+  console.log("Server started on port", port);
+});
 
 // // Create HTTPS server
 // https.createServer(options, app).listen(port, () => {
