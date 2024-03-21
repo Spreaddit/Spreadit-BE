@@ -40,15 +40,16 @@ app.use(
 
 app.use(authRoutes);
 
-app.use("/setting", accountSettingRoutes);
-app.use("/setting", profileSettingRoutes);
-app.use("/setting", safetyAndPrivacySettingRoutes);
-app.use("/setting", feedSettingRoutes);
-app.use("/setting", notificationSettingRoutes);
+app.use("/settings", accountSettingRoutes);
+app.use("/settings", profileSettingRoutes);
+app.use("/settings", safetyAndPrivacySettingRoutes);
+app.use("/settings", feedSettingRoutes);
+app.use("/settings", notificationSettingRoutes);
 app.use("/", createCommunityRoutes);
-app.use("/setting", emailSettingRoutes);
-app.use("/setting", layoutSettingRoutes);
-app.use("/setting", chatAndMessagingSettingRoutes);
+app.use("/settings", emailSettingRoutes);
+app.use("/settings", layoutSettingRoutes);
+app.use("/settings", chatAndMessagingSettingRoutes);
+app.use("/mobile/settings", accountSettingRoutes);
 app.use("/users", followUserRoutes);
 app.use("/users", unfollowUserRoutes);
 app.use("/users", blockUserRoutes);
