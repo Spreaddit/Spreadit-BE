@@ -218,7 +218,7 @@ const UserSchema = new Schema(
     },
     markAllChatsAsRead: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     allowFollow: {
       type: Boolean,

@@ -9,10 +9,10 @@ exports.followUser = async (req, res) => {
     // const { toFollowID } = toFollowUser;
 
     // const tofollow = await FollowUser.findById(toFollowID);
-    // if (!tofollow) {
-    //   console.error("this user not found:");
-    //   return res.status(404).json({ error: "User not found" });
-    // }
+    if (!toFollowID || !followerID) {
+      console.error("User ID is required");
+      return res.status(404).json({ error: "User ID is required" });
+    }
 
     const followerUser = await FollowUser.findByIdAndUpdate(
       followerID, // User being followed
@@ -22,7 +22,7 @@ exports.followUser = async (req, res) => {
 
     const tofollowUser = await FollowUser.findByIdAndUpdate(
       toFollowID, // User being followed
-      { $addToSet: { followers: { followerID } } }, // Add follower's ID to the followers array, using $addToSet to ensure uniqueness
+      { $addToSet: { followers: followerID } }, // Add follower's ID to the followers array, using $addToSet to ensure uniqueness
       { new: true } // To return the updated document after the update operation
     );
 

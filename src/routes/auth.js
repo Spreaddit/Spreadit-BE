@@ -25,10 +25,16 @@ router.post("/signup", async (req, res) => {
       if (!savedUser) {
         return res.status(400).send({ error: "User not saved" });
       }
+      //const userObj = await User.generateUserObject(savedUser);
+      const token = await savedUser.generateToken();
+
+      
       const userObj = await User.generateUserObject(savedUser);
+      
       res.status(200).send({
         user: userObj,
-        message: "User Signed up successfully",
+        access_token: token,
+        message: "User signed up successfully",
       });
     } else {
       const user = await User.getUserByEmailOrUsername(req.body.email);
@@ -38,10 +44,16 @@ router.post("/signup", async (req, res) => {
         if (!savedUser) {
           return res.status(400).send({ error: "User not saved" });
         } else {
+          //const userObj = await User.generateUserObject(savedUser);
+          const token = await savedUser.generateToken();
+
+      
           const userObj = await User.generateUserObject(savedUser);
+      
           res.status(200).send({
             user: userObj,
-            message: "Sign up is complete and password was added successfully",
+            access_token: token,
+            message: "User signed up successfully",
           });
         }
       } else {
