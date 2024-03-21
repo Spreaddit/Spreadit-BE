@@ -17,11 +17,11 @@ exports.modifyProfileSettings = async (req, res) => {
             return res.status(400).json({ error: 'User ID is required' });
         }
         const modifyProfileSettings = req.body;
-        const profileAccountSetting = await ProfileSetting.findOne({ _id: user });
-        Object.assign(profileAccountSetting, modifyProfileSettings);
+        const profileSetting = await ProfileSetting.findOne({ _id: user });
+        Object.assign(profileSetting, modifyProfileSettings);
 
-        await profileAccountSetting.save();
-        const response = profileAccountSetting;
+        await profileSetting.save();
+        const response = profileSetting;
         res.status(200).json(response);
 
     } catch (err) {

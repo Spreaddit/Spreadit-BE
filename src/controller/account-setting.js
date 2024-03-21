@@ -13,31 +13,18 @@ exports.getAccountSettings = async (req, res) => {
 
 
 exports.modifyAccountSettings = async (req, res) => {
-    //const user = req.user;
     try {
-        const modifiedAccountSetting = req.body;
-        const { email } = modifiedAccountSetting;
-        console.log('Searching for account setting with email:', email);
-        const emailAccountSetting = await AccountSetting.findOne({ email });
-        if (!emailAccountSetting) {
-            console.error('Account setting not found for email:', email);
-            return res.status(404).json({ error: 'Account setting not found' });
+        //const user = req.user;  //return undifined
+        const user = req.body.user; // this will be removed 
+        if (!user) {
+            return res.status(400).json({ error: 'User ID is required' });
         }
-        if (modifiedAccountSetting.password) {
-            emailAccountSetting.password = modifiedAccountSetting.password;
-        }
-        if (modifiedAccountSetting.gender) {
-            emailAccountSetting.gender = modifiedAccountSetting.gender;
-        }
-        if (modifiedAccountSetting.country) {
-            emailAccountSetting.country = modifiedAccountSetting.country;
-        }
+        const modifyAccountSettings = req.body;
+        const accountSetting = await AccountSetting.findOne({ _id: user });
+        Object.assign(accountSetting, modifyAccountSettings);
 
-        await emailAccountSetting.save();
-        const response = {
-            gender: emailAccountSetting.gender,
-            country: emailAccountSetting.country
-        };
+        await accountSetting.save();
+        const response = accountSetting;
         res.status(200).json(response);
 
     } catch (err) {
