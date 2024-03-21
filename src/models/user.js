@@ -14,6 +14,7 @@ const UserSchema = new Schema(
       type: String,
       trim: true,
       maxLength: 50,
+      default:" ",
     },
     username: {
       type: String,
@@ -285,43 +286,35 @@ UserSchema.statics.checkExistence = async function (email) {
   }
 };
 
+
 UserSchema.statics.verifyCredentials = async function (
   usernameOremail,
   password
-) {
-  const user = await User.findOne({
-    $or: [{ email: usernameOremail }, { username: usernameOremail }],
-  }).populate("roleId");
-  UserSchema.statics.verifyCredentials = async function (
-    usernameOremail,
-    password
   ) {
-    // const user = await User.findOne({
-    //   $or: [{email: usernameOremail}, {username: usernameOremail}],
-    // }).populate("roleId");
+  // const user = await User.findOne({
+  //   $or: [{email: usernameOremail}, {username: usernameOremail}],
+  // }).populate("roleId");
 
-    const userByEmail = await User.findOne({ email: usernameOremail }).populate(
-      "roleId"
-    );
-    const userByUsername = await User.findOne({
-      username: usernameOremail,
+  const userByEmail = await User.findOne({
+     email: usernameOremail, 
     }).populate("roleId");
-    //console.log(usernameOremail);
-    //console.log(userByEmail);
-    //console.log(userByUsername);
-    const user = userByUsername;
-    if (userByEmail) {
-      user = userByEmail;
-    }
+  const userByUsername = await User.findOne({
+    username: usernameOremail,
+  }).populate("roleId");
+  //console.log(usernameOremail);
+  //console.log(userByEmail);
+  //console.log(userByUsername);
+  const user = userByUsername;
+  if (userByEmail) {
+    user = userByEmail;
+  }
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      return user;
-    } else {
-      return null;
-    }
-  };
+  if (user && (await bcrypt.compare(password, user.password))) {
+    return user;
+  } else {
+    return null;
+  }
 };
-
 UserSchema.statics.generateUserObject = async function (
   user,
   authorizedUserName = null
