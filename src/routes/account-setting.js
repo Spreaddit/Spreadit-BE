@@ -5,6 +5,7 @@ const auth = require("../middleware/authentication");
 
 router.route('/account', auth)
     .get(accountSettingsController.getAccountSettings)
-    .put(accountSettingsController.modifyAccountSettings);
+    .put(accountSettingsController.modifyAccountSettings)
+    .delete(accountSettingsController.deleteAccount);
 
 module.exports = router;

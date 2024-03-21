@@ -45,3 +45,21 @@ exports.modifyAccountSettings = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.deleteAccount = async (req, res) => {
+    try {
+        //const userId = req.user;  //return undefined
+        const userId = req.body.user; // this will be removed 
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        await AccountSetting.deleteOne({ _id: userId });
+
+        res.status(200).json({ message: 'Account deleted successfully' });
+
+    } catch (err) {
+        console.error('Error deleting account:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
