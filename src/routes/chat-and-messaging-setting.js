@@ -5,7 +5,8 @@ const auth = require("../middleware/authentication");
 
 router.route('/chat-and-messaging', auth)
     .get(chatandmessagingController.getChatAndMessagingSetting)
-    .put(chatandmessagingController.modifyChatAndMessagingSetting);
+    .put(chatandmessagingController.modifyChatAndMessagingSetting)
+    .post(chatandmessagingController.makeAllAsRead);
 
 
 module.exports = router;

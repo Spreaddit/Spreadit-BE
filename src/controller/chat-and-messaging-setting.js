@@ -1,4 +1,5 @@
 const ChatAndMessagingSetting = require('./../models/user');
+const Message = require('./../models/message');
 const jwt = require("jsonwebtoken");
 
 exports.getChatAndMessagingSetting = async (req, res) => {
@@ -35,11 +36,21 @@ exports.modifyChatAndMessagingSetting = async (req, res) => {
 };
 
 exports.makeAllAsRead = async (req, res) => {
-    const token = req.body.token;
-    const decodeToken = jwt.decode(token);
-    const userId = decodeToken._id;
-    if (!userId) {
-        return res.status(400).json({ error: 'User ID is required' });
+
+    try {
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+        const updatedMessages = await Message.updateMany({ userId }, { isRead: 'true' });
+
+        res.status(200).json(updatedMessages);
+
+    } catch (err) {
+        console.error('Error updating message status:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 
 }
