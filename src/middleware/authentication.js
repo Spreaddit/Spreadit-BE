@@ -1,5 +1,6 @@
 const { compareSync } = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const axios = require('axios');
 const User = require("../models/user");
 
 const authentication = async (req, res, next) => {
@@ -49,4 +50,29 @@ const authentication = async (req, res, next) => {
   }
 };
 
-module.exports = authentication;
+
+const verifyGoogleToken = async (req, res, next) => {
+  const token = req.body.googleToken;
+  console.log(token);
+  if(!token){
+    return res.status(401).json({message: "unauthorized user"});
+  }
+
+  try{
+    const response = await axios.get( `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+      }
+    })
+
+    req.decoded = response.data;
+    next();
+
+  } catch(error){
+    console.error("Error verifying the google token", error);
+    return res.status(400).json({ message: "Invalid token"});
+  }
+}
+
+module.exports = { authentication, verifyGoogleToken };

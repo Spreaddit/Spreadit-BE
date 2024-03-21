@@ -30,6 +30,12 @@ const UserSchema = new Schema(
       trim: true,
       unique: true,
     },
+    googleId: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
     password: {
       type: String,
       minLength: 8,
@@ -174,6 +180,30 @@ const UserSchema = new Schema(
       type: Boolean,
       default: 0,
     },
+    inboxMessages: {
+      type: Boolean,
+      default: 1,
+    },
+    chatMessages: {
+      type: Boolean,
+      default: 1,
+    },
+    chatRequests: {
+      type: Boolean,
+      default: 1,
+    },
+    repliesToComments: {
+      type: Boolean,
+      default: 1,
+    },
+    cakeDay: {
+      type: Boolean,
+      default: 1,
+    },
+    modNotifications: {
+      type: Boolean,
+      default: 1,
+    },
     displayName: {
       type: String,
       trim: true,
@@ -313,10 +343,7 @@ UserSchema.statics.checkExistence = async function (email) {
 UserSchema.statics.verifyCredentials = async function (
   usernameOremail,
   password
-) {
-  // const user = await User.findOne({
-  //   $or: [{email: usernameOremail}, {username: usernameOremail}],
-  // }).populate("roleId");
+  ) {
 
   const userByEmail = await User.findOne({
     email: usernameOremail,
@@ -348,6 +375,7 @@ UserSchema.statics.generateUserObject = async function (
       name: user.name,
       username: user.username,
       email: user.email,
+      googleId: user.googleId,
       birth_date: user.birth_date,
       phone: user.phone_number,
       avatar_url: user.avatar,
@@ -390,6 +418,12 @@ UserSchema.statics.generateUserObject = async function (
       sendYouFriendRequests: user.sendYouFriendRequests,
       sendYouPrivateMessages: user.sendYouPrivateMessages,
       markAllChatsAsRead: user.markAllChatsAsRead,
+      inboxMessages: user.inboxMessages,
+      chatMessages: user.chatMessages,
+      chatRequests: user.chatRequests,
+      repliesToComments: user.repliesToComments,
+      cakeDay: user.cakeDay,
+      modNotifications: user.modNotifications,
     };
     if (authorizedUserName != null) {
       const authorizedUser = await User.findOne({
@@ -433,6 +467,28 @@ UserSchema.methods.generateResetToken = async function () {
     throw new Error('Failed to generate reset token');
   }
 };
+UserSchema.methods.generateRandomUsername = async function() {
+  const randomUsername = this.generateRandomString(); 
+
+  let user = await this.constructor.findOne({ username: randomUsername });
+  if (user) {
+    return this.generateRandomUsername();
+  }
+
+  return randomUsername;
+}
+
+UserSchema.methods.generateRandomString = function() {
+  const length = 8; // Length of the random string
+  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; // Characters to choose from
+  let randomString = '';
+
+  for (let i = 0; i < length; i++) {
+    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+
+  return randomString;
+}
 
 const User = mongoose.model("user", UserSchema);
 

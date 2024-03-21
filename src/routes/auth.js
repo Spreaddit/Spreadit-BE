@@ -1,6 +1,8 @@
 const express = require("express");
 const User = require("../models/user.js");
-const auth = require("../middleware/authentication");
+const axios = require('axios');
+//const auth = require("../middleware/authentication");
+const { verifyGoogleToken } = require('../middleware/authentication');
 const config = require("../configuration");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
@@ -112,111 +114,71 @@ router.post("/login", async (req, res) => {
   } catch (err) {
     res.status(500).send({
       message:
-        "The server crashed :)",
+        "Internal server error",
     });
   }
 });
 
-router.use('/auth/google/callback', (req, res, next) => {
-  console.log('Received request at /auth/google/callback:', req.url);
-  next();
-});
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: config.googleClientID,
-      clientSecret: config.googleClientSecret,
-      callbackURL: "https://localhost/auth/google/callback",
-      userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
-      passReqToCallback: true,
-    },
-    async (req, accessToken, refreshToken, profile, done) => {
-      try {
-        console.log('Received Google profile:', profile);
-        req.user = await User.googleAuth(profile);
-        return done(null, profile);
-      } catch (err) {
-        //return cb(err, profile);
-        console.error('Error in Google authentication:', err);
-        return done(null, profile);
-      }
-    }
-  )
-);
-  
-router.get("/auth/google",
-  passport.authenticate("google", {
-    scope: ["openid", "email", "profile"],
-    session: false,
-  })
-);
-  
-router.get(
-  "/auth/google/callback",
+router.post('/google/oauth', verifyGoogleToken, async (req, res) => {
 
-  passport.authenticate("google", { session: false }),
-  async (req, res) => {
-    try {
-      const user = new User(req.user);
-      console.log(user); 
-      if (user) {
-        const token = await user.generateToken();
-        const authTokenInfo = { token: token };
-        if (req.body.remember_me) {
-          authTokenInfo["token_expiration_date"] = new Date(
-            Date.now() + 7 * 24 * 60 * 60 * 1000
-          );
-        } else {
-          authTokenInfo["token_expiration_date"] = new Date(
-            new Date().setHours(new Date().getHours() + 24)
-          );
-        }
-        user.tokens = user.tokens.concat(authTokenInfo);
-        await User.updateOne(
-          { _id: user._id },
-          { $set: { tokens: user.tokens } }
-        );
+  try{
+    const userData = req.decoded;
+    console.log(userData);
 
-        const userObj = await User.generateUserObject(user);
-        res.cookie(
-          "res",
-          {
-            access_token: token,
-            user: userObj,
-            token_expiration_date: authTokenInfo["token_expiration_date"],
-            message: "User logged in successfully",
-            status: 200,
-          },
-          { domain: "localhost" }
+    let user = await User.findOne({ googleId: userData.id});
+    console.log(user);
+    if(user){
+      const token = await user.generateToken();
+      const authTokenInfo = { token: token };
+      if (req.body.remember_me) {
+        authTokenInfo["token_expiration_date"] = new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000 //one month from the current time
         );
-        res.redirect("http://localhost/GoogleRedirect");
       } else {
-        req.cookie(
-          "res",
-          {
-            status: 401,
-            message: "The enetered credentials are invalid.",
-          },
-          { domain: "localhost" }
+        authTokenInfo["token_expiration_date"] = new Date(
+          new Date().setHours(new Date().getHours() + 24)
         );
-        res.redirect("http://localhost/GoogleRedirect");
       }
-    } catch (err) {
-      console.error('Error in Google callback endpoint:', err);
-      req.cookie(
-        "res",
-        {
-          status: 500,
-          message:
-            "The server encountered an unexpected condition which prevented it from fulfilling the request.",
-        },
-        { domain: "localhost" }
+      user.tokens = user.tokens.concat(authTokenInfo);
+      await User.updateOne(
+        { _id: user._id },
+        { $set: { tokens: user.tokens } }
       );
-      res.status(500).send({
-        message:
-          "The server encountered an unexpected condition which prevented it from fulfilling the request.",
+
+      const userObj = await User.generateUserObject(user);
+      res.status(200).send({
+        access_token: token,
+        user: userObj,
+        token_expiration_date: authTokenInfo["token_expiration_date"],
+        message: "User logged in successfully",
+      });
+
+    } else {
+      const newUsername = await new User().generateRandomUsername();
+      const newUser = new User({
+        googleId: userData.id,
+        name: userData.name,
+        email: userData.email,
+        username: newUsername
+      });
+
+      const savedUser = await newUser.save();
+      const token = await savedUser.generateToken();
+      const userObj = await User.generateUserObject(savedUser);
+      
+      res.status(200).send({
+        user: userObj,
+        access_token: token,
+        message: "User signed up successfully",
       });
     }
+
+  }catch(error){
+    console.error('Error during token verification:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+
+
   }
 );
 
@@ -375,4 +337,4 @@ router.post("/forgot-username", async (req, res) => {
 });
 
 
-  module.exports = router;
+module.exports = router;

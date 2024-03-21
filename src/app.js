@@ -17,6 +17,8 @@ const followUserRoutes = require("./routes/follow-user");
 const unfollowUserRoutes = require("./routes/unfollow-user");
 const reportUserRoutes = require("./routes/report-user");
 const emailSettingRoutes = require("./routes/email-setting");
+const contactSettingRoutes = require("./routes/mobile-contact-setting");
+const blockingSettingRoutes = require("./routes/mobile-blocking-permissions-setting");
 const layoutSettingRoutes = require("./routes/email-setting");
 const chatAndMessagingSettingRoutes = require("./routes/chat-and-messaging-setting");
 const showFriendRoutes = require("./routes/show-friend-information");
@@ -39,16 +41,19 @@ app.use(
 );
 
 app.use(authRoutes);
-
-app.use("/setting", accountSettingRoutes);
-app.use("/setting", profileSettingRoutes);
-app.use("/setting", safetyAndPrivacySettingRoutes);
-app.use("/setting", feedSettingRoutes);
-app.use("/setting", notificationSettingRoutes);
+app.use('/auth', authRoutes);
+app.use("/settings", accountSettingRoutes);
+app.use("/settings", profileSettingRoutes);
+app.use("/settings", safetyAndPrivacySettingRoutes);
+app.use("/settings", feedSettingRoutes);
+app.use("/settings", notificationSettingRoutes);
 app.use("/", createCommunityRoutes);
-app.use("/setting", emailSettingRoutes);
-app.use("/setting", layoutSettingRoutes);
-app.use("/setting", chatAndMessagingSettingRoutes);
+app.use("/settings", emailSettingRoutes);
+app.use("/settings", layoutSettingRoutes);
+app.use("/settings", chatAndMessagingSettingRoutes);
+app.use("/mobile/settings", accountSettingRoutes);
+app.use("/mobile/settings", contactSettingRoutes);
+app.use("/mobile/settings", blockingSettingRoutes);
 app.use("/users", followUserRoutes);
 app.use("/users", unfollowUserRoutes);
 app.use("/users", blockUserRoutes);

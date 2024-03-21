@@ -1,11 +1,17 @@
 const UnfollowUser = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 exports.unfollowUser = async (req, res) => {
   //const followerID = req.user;
 
   try {
-    const toUnfollowID = req.body.userID;
-    const unfollowerID = req.body.followID; //will be removed
+    const username = req.body.username;
+    const user = await UnfollowUser.getUserByEmailOrUsername(username);
+    const toUnfollowID = user._id;
+    const token = req.body.token;
+    const decodedToken = jwt.decode(token);
+
+    const unfollowerID = decodedToken._id;
     if (!toUnfollowID || !unfollowerID) {
       console.error("this user not found:");
       return res.status(404).json({ error: "User not found" });

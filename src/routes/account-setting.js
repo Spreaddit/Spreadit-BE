@@ -8,4 +8,9 @@ router.route('/account', auth)
     .put(accountSettingsController.modifyAccountSettings)
     .delete(accountSettingsController.deleteAccount);
 
+router.route('/general/account', auth)
+    .get(accountSettingsController.getAccountSettings)
+    .put(accountSettingsController.modifyAccountSettings)
+    .delete(accountSettingsController.deleteAccount)
+
 module.exports = router;
