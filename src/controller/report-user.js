@@ -7,7 +7,7 @@ exports.reportUser = async (req, res) => {
     const toReportID = req.body.userID;
     const reporterID = req.body.followID; //will be removed
     const reason = req.body.reason;
-    if (!toReportID) {
+    if (!toReportID || !reporterID) {
       return res.status(400).json({ error: "User ID is required" });
     }
 
