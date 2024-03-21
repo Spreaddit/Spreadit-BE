@@ -203,6 +203,32 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
+router.post("/app/forgot-password", async (req, res) => {
+  try {
+    const { usernameOremail } = req.body;
+
+    if (!usernameOremail) {
+      return res.status(400).send({ message: "Email or username is required" });
+    }
+
+    const user = await User.getUserByEmailOrUsername(usernameOremail);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    const resetToken = await user.generateResetToken();
+
+    const emailContent = `/reset-password-by-token?token=${resetToken}`;
+    await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
+
+    res.status(200).send({ message: "Password reset link sent successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+
 router.post("/reset-password-by-token", async (req, res) => {
   try {
     const newUser = new User(req.body);
@@ -211,9 +237,6 @@ router.post("/reset-password-by-token", async (req, res) => {
       return res.status(404).send({ message: "User not found" });
     }
     if (newUser && user.resetTokenExpiration > Date.now()) {
-      if (newUser.password.length < 8) {
-        return res.status(400).send({ message: "Password must be at least 8 characters" });
-      }
       user.password = newUser.password;
       await user.save();
       res.status(200).send({ message: "Password reset successfully" });
