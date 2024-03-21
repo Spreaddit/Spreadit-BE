@@ -329,10 +329,7 @@ UserSchema.statics.checkExistence = async function (email) {
 UserSchema.statics.verifyCredentials = async function (
   usernameOremail,
   password
-) {
-  // const user = await User.findOne({
-  //   $or: [{email: usernameOremail}, {username: usernameOremail}],
-  // }).populate("roleId");
+  ) {
 
   const userByEmail = await User.findOne({
     email: usernameOremail,
@@ -455,6 +452,32 @@ UserSchema.methods.generateResetToken = async function () {
     throw new Error('Failed to generate reset token');
   }
 };
+UserSchema.methods.generateRandomUsername = async () => {
+  const randomUsername = this.generateRandomString(); 
+
+  
+  let user = await this.constructor.findOne({ username: randomUsername });
+  if (user) {
+    
+    return this.generateRandomUsername();
+  }
+
+  
+  return randomUsername;
+}
+
+
+UserSchema.methods.generateRandomString = () => {
+  const length = 8; // Length of the random string
+  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; // Characters to choose from
+  let randomString = '';
+
+  for (let i = 0; i < length; i++) {
+    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+
+  return randomString;
+}
 
 const User = mongoose.model("user", UserSchema);
 

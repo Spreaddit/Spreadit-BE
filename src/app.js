@@ -41,7 +41,7 @@ app.use(
 );
 
 app.use(authRoutes);
-
+app.use('/auth', authRoutes);
 app.use("/settings", accountSettingRoutes);
 app.use("/settings", profileSettingRoutes);
 app.use("/settings", safetyAndPrivacySettingRoutes);
