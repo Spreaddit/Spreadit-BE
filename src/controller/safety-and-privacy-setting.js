@@ -1,8 +1,12 @@
 const SafetyAndPrivacySetting = require('./../models/user');
+const jwt = require("jsonwebtoken");
 
 exports.getSafetyAndPrivacySettings = async (req, res) => {
     try {
-        const safetyAndPrivacySettings = await SafetyAndPrivacySetting.find().select('blockedUsers mutedCommunities');
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
+        const safetyAndPrivacySettings = await SafetyAndPrivacySetting({ _id: userId }).select('blockedUsers mutedCommunities');
         res.status(200).json(safetyAndPrivacySettings);
     } catch (err) {
         console.log(err)
@@ -12,8 +16,9 @@ exports.getSafetyAndPrivacySettings = async (req, res) => {
 
 exports.modifySafetyAndPrivacySettings = async (req, res) => {
     try {
-        //const userId = req.user;  //return undefined
-        const userId = req.body.user; // this will be removed 
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
         if (!userId) {
             return res.status(400).json({ error: 'User ID is required' });
         }

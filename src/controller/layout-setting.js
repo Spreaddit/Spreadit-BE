@@ -1,9 +1,11 @@
 const LayoutSetting = require('./../models/user');
+const jwt = require("jsonwebtoken");
 
 exports.checkPasswordMatch = async (req, res) => {
     try {
-        //const userId = req.user;  //return undefined
-        const userId = req.body.user; // this will be removed 
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
         const enteredPassword = req.body.enteredPassword;
         const userPassword = await LayoutSetting.findOne({ _id: userId }).select('password');
         if (enteredPassword === userPassword) {

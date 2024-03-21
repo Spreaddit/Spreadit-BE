@@ -1,8 +1,12 @@
 const FeedSetting = require('./../models/user');
+const jwt = require("jsonwebtoken");
 
 exports.getFeedSetting = async (req, res) => {
     try {
-        const feedSetting = await FeedSetting.find().select('adultContent autoplayMedia communityThemes communityContentSort globalContentView openPostsInNewTab');
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
+        const feedSetting = await FeedSetting.findOne({ _id: userId }).select('adultContent autoplayMedia communityThemes communityContentSort globalContentView openPostsInNewTab');
         res.status(200).json(feedSetting);
     } catch (err) {
         res.status(500).json({ err: 'Internal server error' });
@@ -11,8 +15,9 @@ exports.getFeedSetting = async (req, res) => {
 
 exports.modifyFeedSetting = async (req, res) => {
     try {
-        //const userId = req.user;  //return undefined
-        const userId = req.body.user; // this will be removed 
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
         if (!userId) {
             return res.status(400).json({ error: 'User ID is required' });
         }
@@ -20,8 +25,7 @@ exports.modifyFeedSetting = async (req, res) => {
         const feedSetting = await FeedSetting.findOne({ _id: userId });
         Object.assign(feedSetting, modifyFeedSetting);
         await feedSetting.save();
-        const response = feedSetting;
-        res.status(200).json(response);
+        res.status(200).json({ message: "success" });
 
     } catch (err) {
         console.error('Error modifying feed settings', err);

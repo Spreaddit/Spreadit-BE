@@ -1,9 +1,13 @@
 const AccountSetting = require('./../models/user');
+const jwt = require("jsonwebtoken");
 
 
 exports.getAccountSettings = async (req, res) => {
     try {
-        const accountSettings = await AccountSetting.find().select('email gender country connectedAccounts');
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
+        const accountSettings = await AccountSetting.findOne({ _id: userId }).select('email gender country connectedAccounts');
         res.status(200).json(accountSettings);
     } catch (err) {
         console.log(err)
@@ -15,17 +19,20 @@ exports.getAccountSettings = async (req, res) => {
 exports.modifyAccountSettings = async (req, res) => {
     try {
         //const user = req.user;  //return undifined
-        const user = req.body.user; // this will be removed 
-        if (!user) {
+        //const user = req.body.user; // this will be removed 
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
+
+        if (!userId) {
             return res.status(400).json({ error: 'User ID is required' });
         }
         const modifyAccountSettings = req.body;
-        const accountSetting = await AccountSetting.findOne({ _id: user });
+        const accountSetting = await AccountSetting.findOne({ _id: userId });
         Object.assign(accountSetting, modifyAccountSettings);
 
         await accountSetting.save();
-        const response = accountSetting;
-        res.status(200).json(response);
+        res.status(200).json({ message: "success" });
 
     } catch (err) {
         console.error('Error modifying account settings', err);
