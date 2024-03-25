@@ -19,7 +19,7 @@ const reportUserRoutes = require("./routes/report-user");
 const emailSettingRoutes = require("./routes/email-setting");
 const contactSettingRoutes = require("./routes/mobile-contact-setting");
 const blockingSettingRoutes = require("./routes/mobile-blocking-permissions-setting");
-const layoutSettingRoutes = require("./routes/email-setting");
+const layoutSettingRoutes = require("./routes/layout-setting");
 const chatAndMessagingSettingRoutes = require("./routes/chat-and-messaging-setting");
 const showFriendRoutes = require("./routes/show-friend-information");
 
