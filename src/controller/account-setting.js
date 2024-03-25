@@ -1,6 +1,10 @@
 const AccountSetting = require('./../models/user');
 const jwt = require("jsonwebtoken");
 
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
 
 exports.getAccountSettings = async (req, res) => {
     try {
@@ -18,8 +22,6 @@ exports.getAccountSettings = async (req, res) => {
 
 exports.modifyAccountSettings = async (req, res) => {
     try {
-        //const user = req.user;  //return undifined
-        //const user = req.body.user; // this will be removed 
         const token = req.body.token;
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
@@ -28,6 +30,9 @@ exports.modifyAccountSettings = async (req, res) => {
             return res.status(400).json({ error: 'User ID is required' });
         }
         const modifyAccountSettings = req.body;
+        if (!isValidEmail(modifyAccountSettings.email)) {
+            return res.status(400).json({ error: 'Invalid email format' });
+        }
         const accountSetting = await AccountSetting.findOne({ _id: userId });
         Object.assign(accountSetting, modifyAccountSettings);
 
@@ -42,8 +47,9 @@ exports.modifyAccountSettings = async (req, res) => {
 
 exports.deleteAccount = async (req, res) => {
     try {
-        //const userId = req.user;  //return undefined
-        const userId = req.body.user; // this will be removed 
+        const token = req.body.token;
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
         if (!userId) {
             return res.status(400).json({ error: 'User ID is required' });
         }
