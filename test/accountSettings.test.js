@@ -1,6 +1,6 @@
 const accountSettingsController = require('./src/controller/account-settings');
 const jwt = require('jsonwebtoken');
-const AccountSetting = require('./../models/account-setting');
+const AccountSetting = require('./../models/user');
 
 // Mocking jwt decode function
 jest.mock('jsonwebtoken', () => ({

@@ -18,11 +18,11 @@ exports.modifyProfileSettings = async (req, res) => {
         const token = req.body.token;
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
-        if (!user) {
+        if (!userId) {
             return res.status(400).json({ error: 'User ID is required' });
         }
         const modifyProfileSettings = req.body;
-        const profileSetting = await ProfileSetting.findOne({ _id: user });
+        const profileSetting = await ProfileSetting.findOne({ _id: userId });
         Object.assign(profileSetting, modifyProfileSettings);
 
         await profileSetting.save();
