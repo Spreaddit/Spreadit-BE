@@ -1,0 +1,11 @@
+{
+    "source": {
+      "include": ["../src/models/user.js"],
+      "includePattern": ".+\\.js(doc|x)?$",
+      "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "opts": {
+      "destination": "./docs"
+    }
+  }
+  

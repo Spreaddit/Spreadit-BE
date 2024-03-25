@@ -1,3 +1,6 @@
+/**
+ * Module dependencies.
+ */
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const crypto = require('crypto');
@@ -8,6 +11,11 @@ require("./constants/userRole");
 const Schema = mongoose.Schema;
 const userRole = require("../../seed-data/constants/userRole");
 
+
+/**
+ * User Schema definition.
+ * @type {import('mongoose').Schema<any>}
+ */
 const UserSchema = new Schema(
   {
     name: {
@@ -32,7 +40,7 @@ const UserSchema = new Schema(
     },
     googleId: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       unique: true,
     },
@@ -281,8 +289,10 @@ const UserSchema = new Schema(
   }
 );
 
-//hash function
-//still verification needs to be figured out and reseting pasword
+/**
+ * Middleware: Hashes user's password before saving.
+ * @param {Function} next
+ */
 
 UserSchema.pre("save", async function (next) {
   const user = this;
@@ -292,6 +302,12 @@ UserSchema.pre("save", async function (next) {
 
   next();
 });
+
+/**
+ * Static method: Retrieves a user by email or username.
+ * @param {string} usernameOremail - Username or email of the user.
+ * @returns {Promise<MongooseDocument|null>} User object if found, otherwise null.
+ */
 
 UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
   const user = await User.find({
@@ -304,6 +320,10 @@ UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
     return null;
   }
 };
+/**
+ * Instance method: Generates a token for the user.
+ * @returns {Promise<string>} Generated token.
+ */
 
 UserSchema.methods.generateToken = async function () {
   user = this;
@@ -318,6 +338,11 @@ UserSchema.methods.generateToken = async function () {
   return token;
 };
 
+/**
+ * Instance method: Generates a token based on user's email.
+ * @returns {Promise<string>} Generated token.
+ */
+
 UserSchema.methods.generateEmailToken = async function () {
   user = this;
 
@@ -330,6 +355,11 @@ UserSchema.methods.generateEmailToken = async function () {
   return token;
 };
 
+/**
+ * Static method: Checks if a user with given email exists.
+ * @param {string} email - Email to check.
+ * @returns {Promise<boolean>} True if user exists, otherwise false.
+ */
 UserSchema.statics.checkExistence = async function (email) {
   const user = await User.findOne({ email });
   if (user) {
@@ -339,7 +369,12 @@ UserSchema.statics.checkExistence = async function (email) {
   }
 };
 
-
+/**
+ * Static method: Verifies user's credentials.
+ * @param {string} usernameOremail - Username or email of the user.
+ * @param {string} password - User's password.
+ * @returns {Promise<User|null>} User object if credentials are valid, otherwise null.
+ */
 UserSchema.statics.verifyCredentials = async function (
   usernameOremail,
   password
@@ -351,9 +386,7 @@ UserSchema.statics.verifyCredentials = async function (
   const userByUsername = await User.findOne({
     username: usernameOremail,
   }).populate("roleId");
-  //console.log(usernameOremail);
-  //console.log(userByEmail);
-  //console.log(userByUsername);
+
   const user = userByUsername;
   if (userByEmail) {
     user = userByEmail;
@@ -365,6 +398,12 @@ UserSchema.statics.verifyCredentials = async function (
     return null;
   }
 };
+/**
+ * Static method: Generates a user object for response.
+ * @param {import('mongoose').Document & { roleId: import('../../seed-data/constants/userRole').UserRole }} user - User object.
+ * @param {string|null} authorizedUserName - Authorized user's username.
+ * @returns {Promise<Object>} User object for response.
+ */
 UserSchema.statics.generateUserObject = async function (
   user,
   authorizedUserName = null
@@ -441,6 +480,11 @@ UserSchema.statics.generateUserObject = async function (
   }
 };
 
+/**
+ * Static method: Retrieves a user by reset token.
+ * @param {string} token - Reset token.
+ * @returns {Promise<User|null>} User object if found, otherwise null.
+ */
 
 UserSchema.statics.getUserByResetToken = async function (token) {
   const user = await this.findOne({ resetToken: token });
@@ -452,6 +496,10 @@ UserSchema.statics.getUserByResetToken = async function (token) {
   }
 };
 
+/**
+ * Instance method: Generates a reset token for the user.
+ * @returns {Promise<string>} Generated reset token.
+ */
 UserSchema.methods.generateResetToken = async function () {
   try {
     user = this;
@@ -467,6 +515,10 @@ UserSchema.methods.generateResetToken = async function () {
     throw new Error('Failed to generate reset token');
   }
 };
+/**
+ * Instance method: Generates a random username.
+ * @returns {Promise<string>} Generated random username.
+ */
 UserSchema.methods.generateRandomUsername = async function() {
   const randomUsername = this.generateRandomString(); 
 
@@ -477,7 +529,10 @@ UserSchema.methods.generateRandomUsername = async function() {
 
   return randomUsername;
 }
-
+/**
+ * Instance method: Generates a random string.
+ * @returns {string} Generated random string.
+ */
 UserSchema.methods.generateRandomString = function() {
   const length = 8; // Length of the random string
   const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; // Characters to choose from
@@ -490,6 +545,10 @@ UserSchema.methods.generateRandomString = function() {
   return randomString;
 }
 
+/**
+ * User Model.
+ * @type {mongoose.Model<any>}
+ */
 const User = mongoose.model("user", UserSchema);
 
 module.exports = User;
