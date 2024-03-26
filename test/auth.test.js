@@ -83,5 +83,51 @@ const response = await request(app)
 });
 
 
+test("should login user with valid credentials(username)", async () => {
+    const signup = await request(app).post("/signup").send({
+        email: "amiraelgarf99@gmail.com",
+        username: "amira12",
+        password: "12345678",
+    });
+
+    
+    const response = await request(app)
+      .post("/login")
+      .send({username: "amira12", password: "12345678"})
+      .expect(200);
+});
+
+test("should login user with valid credentials(email)", async () => {
+    const signup = await request(app)
+    .post("/signup")
+    .send({
+        email: "amiraelgarf99@gmail.com",
+        username: "amira12",
+        password: "12345678",
+    });
+
+    const response = await request(app)
+      .post("/login")
+      .send({username: "amiraelgarf99@gmail.com", password: "12345678"})
+      .expect(200);
+}, 10000);
+
+test("should return error for invalid credentials", async () => {
+    const signup = await request(app)
+    .post("/signup")
+    .send({
+        email: "amiraelgarf99@gmail.com",
+        username: "amira12",
+        password: "12345678",
+    });
+    const response = await request(app)
+      .post("/login")
+      .send({username: "amira12", password: "12367845"})
+      .expect(401);
+
+    expect(response.body.message).toBe("The credentials are invalid.");
+});
+
+
 
 
