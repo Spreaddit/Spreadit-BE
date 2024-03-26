@@ -83,7 +83,7 @@ const response = await request(app)
 });
 
 
-test("should login user with valid credentials(username)", async () => {
+test("Test login should login user with valid credentials(username)", async () => {
     const signup = await request(app).post("/signup").send({
         email: "amiraelgarf99@gmail.com",
         username: "amira12",
@@ -97,7 +97,7 @@ test("should login user with valid credentials(username)", async () => {
       .expect(200);
 });
 
-test("should login user with valid credentials(email)", async () => {
+test("Test login should login user with valid credentials(email)", async () => {
     const signup = await request(app)
     .post("/signup")
     .send({
@@ -112,7 +112,7 @@ test("should login user with valid credentials(email)", async () => {
       .expect(200);
 }, 10000);
 
-test("should return error for invalid credentials", async () => {
+test("Test login should return error for invalid credentials", async () => {
     const signup = await request(app)
     .post("/signup")
     .send({
@@ -129,7 +129,7 @@ test("should return error for invalid credentials", async () => {
 });
 
 
-test('should return 404 if user not found', async () => {
+test('Test forgot-password should return 404 if user not found', async () => {
 
     await request(app)
       .post('/forgot-password')
@@ -140,7 +140,7 @@ test('should return 404 if user not found', async () => {
     });
 });
 
-test('should return 400 if email does not match username', async () => {
+test('Test forgot-passwordshould return 400 if email does not match username', async () => {
     
     const signup = await request(app)
     .post("/signup")
@@ -159,7 +159,7 @@ test('should return 400 if email does not match username', async () => {
     });
 });
 
-test('should send reset password email and return 200 if user found', async () => {
+test('Test forgot-password should send reset password email and return 200 if user found', async () => {
     const signup = await request(app)
     .post("/signup")
     .send({
@@ -172,6 +172,59 @@ test('should send reset password email and return 200 if user found', async () =
       .send({ username: "amira12", email: "amiraelgarf99@gmail.com"})
       .expect(200)
 });
+
+test('should return 401 if token is missing', async () => {
+    await request(app)
+      .post('/reset-password')
+      .expect(401)
+      .then((response) => {
+        expect(response.body.message).toBe('Token is required');
+    });
+});
+
+test("Test password reset request from inside the settings.", async () => {
+    const signup = await request(app)
+    .post("/signup")
+    .send({
+        email: "amiraelgarf99@gmail.com",
+        username: "amira12",
+        password: "12345678",
+    });
+    const login = await request(app)
+      .post("/login")
+      .send({username: "amira12", password: "12345678"});
+    const tokenlogin = login.body.access_token
+    const response = await request(app)
+    .post('/reset-password')
+      .send({ token: tokenlogin, newPassword:"123321123", currentPassword:"12345678" })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.message).toBe('Password reset successfully');
+    });
+});
+
+
+test('Test reset-password should return 400 if current password is invalid', async () => {
+    const signup = await request(app)
+    .post("/signup")
+    .send({
+        email: "amiraelgarf99@gmail.com",
+        username: "amira12",
+        password: "12345678",
+    });
+    const login = await request(app)
+      .post("/login")
+      .send({username: "amira12", password: "12345678"});
+    const tokenlogin = login.body.access_token
+    const response = await request(app)
+    .post('/reset-password')
+      .send({ token: tokenlogin, newPassword:"123321123", currentPassword:"12345687" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe('Invalid current password');
+    });
+});
+
 
 
 
