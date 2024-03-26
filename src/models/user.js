@@ -152,11 +152,7 @@ const UserSchema = new Schema(
       type: Boolean,
       default: 1,
     },
-    commentsOnYourPost: {
-      type: Boolean,
-      default: 1,
-    },
-    commentsYouFollow: {
+    comments: {
       type: Boolean,
       default: 1,
     },
@@ -378,7 +374,7 @@ UserSchema.statics.checkExistence = async function (email) {
 UserSchema.statics.verifyCredentials = async function (
   usernameOremail,
   password
-  ) {
+) {
 
   const userByEmail = await User.findOne({
     email: usernameOremail,
@@ -519,8 +515,8 @@ UserSchema.methods.generateResetToken = async function () {
  * Instance method: Generates a random username.
  * @returns {Promise<string>} Generated random username.
  */
-UserSchema.methods.generateRandomUsername = async function() {
-  const randomUsername = this.generateRandomString(); 
+UserSchema.methods.generateRandomUsername = async function () {
+  const randomUsername = this.generateRandomString();
 
   let user = await this.constructor.findOne({ username: randomUsername });
   if (user) {
@@ -533,7 +529,7 @@ UserSchema.methods.generateRandomUsername = async function() {
  * Instance method: Generates a random string.
  * @returns {string} Generated random string.
  */
-UserSchema.methods.generateRandomString = function() {
+UserSchema.methods.generateRandomString = function () {
   const length = 8; // Length of the random string
   const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; // Characters to choose from
   let randomString = '';

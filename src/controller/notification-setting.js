@@ -6,7 +6,7 @@ exports.getNotificationSetting = async (req, res) => {
         const token = req.body.token;
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
-        const notificationSetting = await NotificationSetting.findOne({ _id: userId }).select('mentions commentsOnYourPost commentsYouFollow upvotesComments upvotesPosts replies newFollowers invitations posts');
+        const notificationSetting = await NotificationSetting.findOne({ _id: userId }).select('mentions comments upvotesComments upvotesPosts replies newFollowers invitations posts');
         res.status(200).json(notificationSetting);
     } catch (err) {
         res.status(500).json({ err: 'Internal server error' });
