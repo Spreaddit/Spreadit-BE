@@ -129,5 +129,51 @@ test("should return error for invalid credentials", async () => {
 });
 
 
+test('should return 404 if user not found', async () => {
+
+    await request(app)
+      .post('/forgot-password')
+      .send({ username: "amira12", email: "amiraelgarf99@gmail.com" })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe('User not found');
+    });
+});
+
+test('should return 400 if email does not match username', async () => {
+    
+    const signup = await request(app)
+    .post("/signup")
+    .send({
+        email: "amiraelgarf99@gmail.com",
+        username: "amira12",
+        password: "12345678",
+    });
+    
+    await request(app)
+      .post('/forgot-password')
+      .send({ username: "amira12", email: "elgarfamira4@gmail.com" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe('Error, wrong email');
+    });
+});
+
+test('should send reset password email and return 200 if user found', async () => {
+    const signup = await request(app)
+    .post("/signup")
+    .send({
+        email: "amiraelgarf99@gmail.com",
+        username: "amira12",
+        password: "12345678",
+    });
+    await request(app)
+      .post('/forgot-password')
+      .send({ username: "amira12", email: "amiraelgarf99@gmail.com"})
+      .expect(200)
+});
+
+
+
 
 

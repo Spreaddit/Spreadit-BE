@@ -383,7 +383,7 @@ UserSchema.statics.verifyCredentials = async function (
     username: usernameOremail,
   }).populate("roleId");
 
-  const user = userByUsername;
+  let user = userByUsername;
   if (userByEmail) {
     user = userByEmail;
   }
