@@ -4,6 +4,9 @@ const jwt = require("jsonwebtoken");
 exports.getSafetyAndPrivacySettings = async (req, res) => {
     try {
         const token = req.body.token;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
         const safetyAndPrivacySettings = await SafetyAndPrivacySetting({ _id: userId }).select('blockedUsers mutedCommunities');
@@ -17,11 +20,11 @@ exports.getSafetyAndPrivacySettings = async (req, res) => {
 exports.modifySafetyAndPrivacySettings = async (req, res) => {
     try {
         const token = req.body.token;
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
-        if (!userId) {
+        if (!token) {
             return res.status(400).json({ error: 'User ID is required' });
         }
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
 
         const modifySafetyAndPrivacySettings = req.body;
         const SafetyAndPrivacySettings = await SafetyAndPrivacySetting.findOne({ _id: userId });

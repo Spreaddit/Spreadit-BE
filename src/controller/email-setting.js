@@ -4,6 +4,9 @@ const jwt = require("jsonwebtoken");
 exports.getEmailSetting = async (req, res) => {
     try {
         const token = req.body.token;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
         const emailSetting = await EmailSetting.findOne({ _id: userId }).select('newFollowerEmail chatRequestEmail unsubscribeAllEmails');
@@ -16,12 +19,11 @@ exports.getEmailSetting = async (req, res) => {
 exports.modifyEmailSetting = async (req, res) => {
     try {
         const token = req.body.token;
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
-        if (!userId) {
+        if (!token) {
             return res.status(400).json({ error: 'User ID is required' });
         }
-
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
         const modifyEmailSetting = req.body;
         const emailSetting = await EmailSetting.findOne({ _id: userId });
         Object.assign(emailSetting, modifyEmailSetting);

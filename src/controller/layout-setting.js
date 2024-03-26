@@ -16,13 +16,13 @@ exports.verifyPassword = async (enteredPassword, storedPassword) => {
 exports.checkPasswordMatch = async (req, res) => {
     try {
         const token = req.body.token;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
         const enteredPassword = req.body.enteredPassword;
         const user = await LayoutSetting.findOne({ _id: userId }).select('password');
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
         const passwordMatch = await bcrypt.compare(enteredPassword, user.password);
         if (passwordMatch) {
             res.status(200).json({ message: 'Password matches' });

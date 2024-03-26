@@ -9,6 +9,9 @@ function isValidEmail(email) {
 exports.getAccountSettings = async (req, res) => {
     try {
         const token = req.body.token;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
         const accountSettings = await AccountSetting.findOne({ _id: userId }).select('email gender country connectedAccounts');
@@ -23,12 +26,12 @@ exports.getAccountSettings = async (req, res) => {
 exports.modifyAccountSettings = async (req, res) => {
     try {
         const token = req.body.token;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
 
-        if (!userId) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
         const modifyAccountSettings = req.body;
         if (!isValidEmail(modifyAccountSettings.email)) {
             return res.status(400).json({ error: 'Invalid email format' });
@@ -48,11 +51,11 @@ exports.modifyAccountSettings = async (req, res) => {
 exports.deleteAccount = async (req, res) => {
     try {
         const token = req.body.token;
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
-        if (!userId) {
+        if (!token) {
             return res.status(400).json({ error: 'User ID is required' });
         }
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
 
         await AccountSetting.deleteOne({ _id: userId });
 

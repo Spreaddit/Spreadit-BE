@@ -8,6 +8,9 @@ const jwt = require("jsonwebtoken");
 exports.createNewCommunity = async (req, res) => {
 
     const token = req.body.token;
+    if (!token) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
     const decodeToken = jwt.decode(token);
     const user = decodeToken._id;
     const { name, description, rules, is18plus, communityType, allowNfsw, allowSpoile } = req.body;

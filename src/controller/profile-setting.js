@@ -4,6 +4,9 @@ const jwt = require("jsonwebtoken");
 exports.getProfileSetting = async (req, res) => {
     try {
         const token = req.body.token;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
         const profileSettings = await ProfileSetting.findOne({ _id: userId }).select('displayName about socialLinks profilePicture banner nsfw allowFollow contentVisibility activeInCommunityVisibility clearHistory');
@@ -16,11 +19,12 @@ exports.getProfileSetting = async (req, res) => {
 exports.modifyProfileSettings = async (req, res) => {
     try {
         const token = req.body.token;
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
-        if (!userId) {
+        if (!token) {
             return res.status(400).json({ error: 'User ID is required' });
         }
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
+
         const modifyProfileSettings = req.body;
         const profileSetting = await ProfileSetting.findOne({ _id: userId });
         Object.assign(profileSetting, modifyProfileSettings);

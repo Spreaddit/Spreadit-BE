@@ -4,6 +4,9 @@ const jwt = require("jsonwebtoken");
 exports.getFeedSetting = async (req, res) => {
     try {
         const token = req.body.token;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
         const feedSetting = await FeedSetting.findOne({ _id: userId }).select('adultContent autoplayMedia communityThemes communityContentSort globalContentView openPostsInNewTab');
@@ -16,11 +19,11 @@ exports.getFeedSetting = async (req, res) => {
 exports.modifyFeedSetting = async (req, res) => {
     try {
         const token = req.body.token;
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
-        if (!userId) {
+        if (!token) {
             return res.status(400).json({ error: 'User ID is required' });
         }
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
         const modifyFeedSetting = req.body;
         const feedSetting = await FeedSetting.findOne({ _id: userId });
         Object.assign(feedSetting, modifyFeedSetting);
