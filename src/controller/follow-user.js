@@ -16,6 +16,9 @@ exports.followUser = async (req, res) => {
     const toFollowID = user._id;
 
     const token = req.body.token;
+    if (!token) {
+      return res.status(400).json({ error: "please login first" });
+    }
     const decodedToken = jwt.decode(token);
 
     const followerID = decodedToken._id;
