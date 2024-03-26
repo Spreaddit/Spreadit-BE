@@ -16,6 +16,9 @@ exports.reportUser = async (req, res) => {
     }
     const toReportID = user._id;
     const token = req.body.token;
+    if (!token) {
+      return res.status(400).json({ error: "please login first" });
+    }
     const decodedToken = jwt.decode(token);
     const reporterID = decodedToken._id;
     const reason = req.body.reason;
