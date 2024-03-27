@@ -1,6 +1,6 @@
 const express = require("express");
 const authRoutes = require("../src/routes/auth");
-//const settingsRoutes = require("../src/routes/feed-setting");
+const settingsRoutes = require("../src/routes/settingtest");
 const app = express();
 const blockRoutes = require("../src/routes/block-user");
 const followRoutes = require("../src/routes/follow-user");
@@ -14,6 +14,7 @@ app.use(blockRoutes);
 app.use(followRoutes);
 app.use(unfollowRoutes);
 app.use(reportRoutes);
+app.use(settingsRoutes);
 //app.use(accountSetting);
 //app.use(settingsRoutes);
 module.exports = app;
