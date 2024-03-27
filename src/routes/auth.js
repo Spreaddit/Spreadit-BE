@@ -54,7 +54,7 @@ router.post("/signup", async (req, res) => {
       const token = await savedUser.generateToken();
       const emailToken = await savedUser.generateEmailToken();
       const emailContent = `To confirm your email, click the link below: /verify-email?emailToken=${emailToken}`;
-      await sendEmail(savedUser.email, 'Please Confirm Your Email', emailContent);
+      //await sendEmail(savedUser.email, 'Please Confirm Your Email', emailContent);
 
       const userObj = await User.generateUserObject(savedUser);
 
