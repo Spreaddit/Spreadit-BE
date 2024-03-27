@@ -385,7 +385,7 @@ test("Test update feed settings success.", async () => {
     .send({ token: tokenlogin, adultContent: "true" })
     .expect(200)
     .then((response) => {
-      expect(response.body.message).toBe("Success");
+      expect(response.body.message).toBe("Successful update");
     });
 });
 
