@@ -634,6 +634,7 @@ test("Test userID not given (email-setting).", async () => {
 
 //end of email setting test
 
+//start of account settings testing
 test("Test get account settings", async () => {
   const signup = await request(app)
     .post("/signup")
@@ -768,6 +769,7 @@ test("Test delete account without id", async () => {
     });
 });
 
+//end of account settings testing
 
 //start of block setting test
 test("Test get block settings.", async () => {
