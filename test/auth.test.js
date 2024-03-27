@@ -841,3 +841,9 @@ test("Test userID not given (block-setting).", async () => {
 });
 
 //end of block setting test
+
+//start of notifications setting test
+
+
+
+//end of notifications setting test
