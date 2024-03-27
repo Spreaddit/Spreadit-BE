@@ -409,3 +409,153 @@ test("Test userID not given (feed-setting).", async () => {
       expect(response.body.error).toBe('User ID is required');
     });
 });
+
+//end of feed setting test
+
+
+//start of profile setting test
+test("Test get profile settings.", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const userId = signup.body.user.id;
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .get('/profile')
+    .send({ token: tokenlogin })
+    .expect(200)
+    .then((response) => {
+      expect(response.body).toEqual({
+        _id: userId,
+        banner: "",
+        nsfw: false,
+        activeInCommunityVisibility: true,
+        clearHistory: false,
+        allowFollow: true
+      });
+    });
+});
+
+test("Test update profile settings success.", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const userId = signup.body.user.id;
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .put('/profile')
+    .send({ token: tokenlogin, nsfw: "true" })
+    .expect(200)
+    .then((response) => {
+      expect(response.body.message).toBe("Successful update");
+    });
+});
+
+test("Test userID not given (profile-setting).", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .get('/profile')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
+
+//end of profile setting test
+
+//start of Safety and Privacy setting test
+test("Test get Safety and Privacy settings.", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const userId = signup.body.user.id;
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .get('/safety-privacy')
+    .send({ token: tokenlogin })
+    .expect(200)
+    .then((response) => {
+      expect(response.body).toEqual({
+        _id: userId,
+        blockedUsers: [],
+        mutedCommunities: []
+      });
+    });
+});
+
+test("Test update Safety and Privacy settings success.", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const userId = signup.body.user.id;
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .put('/safety-privacy')
+    .send({ token: tokenlogin, nsfw: "true" })
+    .expect(200)
+    .then((response) => {
+      expect(response.body.message).toBe("Successful update");
+    });
+});
+
+test("Test userID not given (SafetyandPrivacy-setting).", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .get('/safety-privacy')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
+
+//end of Safety and Privacy setting test

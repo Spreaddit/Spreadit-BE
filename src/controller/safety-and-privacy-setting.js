@@ -9,7 +9,7 @@ exports.getSafetyAndPrivacySettings = async (req, res) => {
         }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
-        const safetyAndPrivacySettings = await SafetyAndPrivacySetting({ _id: userId }).select('blockedUsers mutedCommunities');
+        const safetyAndPrivacySettings = await SafetyAndPrivacySetting.findOne({ _id: userId }).select('blockedUsers mutedCommunities');
         res.status(200).json(safetyAndPrivacySettings);
     } catch (err) {
         console.log(err)

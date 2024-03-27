@@ -29,6 +29,16 @@ router.route('/feed', auth)
   .get(feedSettingsController.getFeedSetting)
   .put(feedSettingsController.modifyFeedSetting);
 
+
+const profileSettingsController = require('../controller/profile-setting');
+router.route('/profile', auth)
+  .get(profileSettingsController.getProfileSetting)
+  .put(profileSettingsController.modifyProfileSettings);
+
+const safetyAndPrivacySettingsController = require('../controller/safety-and-privacy-setting');
+router.route('/safety-privacy', auth)
+  .get(safetyAndPrivacySettingsController.getSafetyAndPrivacySettings)
+  .put(safetyAndPrivacySettingsController.modifySafetyAndPrivacySettings);
 ///////////////////////////////////////////////
 
 router.post("/signup", async (req, res) => {
