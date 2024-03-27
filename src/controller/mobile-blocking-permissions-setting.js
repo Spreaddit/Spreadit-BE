@@ -10,7 +10,7 @@ exports.getBlockingSetting = async (req, res) => {
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
         const blockingSetting = await BlockingSetting.findOne({ _id: userId }).select('blockedAccounts allowFollow');
-        res.status(200).json({ success: 'success process' });
+        res.status(200).json(blockingSetting);
     } catch (err) {
         res.status(500).json({ err: 'Internal server error' });
     }

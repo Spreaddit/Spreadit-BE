@@ -45,6 +45,11 @@ const emailSettingsController = require('../controller/email-setting');
 router.route('/email', auth)
   .get(emailSettingsController.getEmailSetting)
   .put(emailSettingsController.modifyEmailSetting);
+
+const blockingSettingsController = require('../controller/mobile-blocking-permissions-setting');
+router.route('/blocking-permissions', auth)
+  .get(blockingSettingsController.getBlockingSetting)
+  .put(blockingSettingsController.modifyBlockingSetting);
 ///////////////////////////////////////////////
 
 router.post("/signup", async (req, res) => {
