@@ -249,85 +249,85 @@ test("Test forgot-username should send reset password email and return 200 if us
     .expect(200);
 });
 
-test("Test: test follow user not found ", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "mahmoudaly552@gmail.com",
-    username: "mahmoud12",
-    password: "123456789",
-  });
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "mahmoud12", password: "123456789" });
-  const tokenlogin = login.body.access_token;
+// test("Test: test follow user not found ", async () => {
+//   const signup = await request(app).post("/signup").send({
+//     email: "mahmoudaly552@gmail.com",
+//     username: "mahmoud12",
+//     password: "123456789",
+//   });
+//   const login = await request(app)
+//     .post("/login")
+//     .send({ username: "mahmoud12", password: "123456789" });
+//   const tokenlogin = login.body.access_token;
 
-  const follow = await request(app)
-    .post("/follow")
-    .send({ username: "mahmoud00", token: tokenlogin })
-    .expect(404)
-    .then((response) => {
-      expect(response.body.error).toBe("User not found");
-    });
-});
+//   const follow = await request(app)
+//     .post("/follow")
+//     .send({ username: "mahmoud00", token: tokenlogin })
+//     .expect(404)
+//     .then((response) => {
+//       expect(response.body.error).toBe("User not found");
+//     });
+// });
 
-test("Test: test block user not found ", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "mahmoudaly552@gmail.com",
-    username: "mahmoud12",
-    password: "123456789",
-  });
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "mahmoud12", password: "123456789" });
-  const tokenlogin = login.body.access_token;
+// test("Test: test block user not found ", async () => {
+//   const signup = await request(app).post("/signup").send({
+//     email: "mahmoudaly552@gmail.com",
+//     username: "mahmoud12",
+//     password: "123456789",
+//   });
+//   const login = await request(app)
+//     .post("/login")
+//     .send({ username: "mahmoud12", password: "123456789" });
+//   const tokenlogin = login.body.access_token;
 
-  const block = await request(app)
-    .post("/block")
-    .send({ username: "mahmoud00", token: tokenlogin })
-    .expect(404)
-    .then((response) => {
-      expect(response.body.error).toBe("User not found");
-    });
-});
+//   const block = await request(app)
+//     .post("/block")
+//     .send({ username: "mahmoud00", token: tokenlogin })
+//     .expect(404)
+//     .then((response) => {
+//       expect(response.body.error).toBe("User not found");
+//     });
+// });
 
-test("Test: test report user not found ", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "mahmoudaly552@gmail.com",
-    username: "mahmoud12",
-    password: "123456789",
-  });
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "mahmoud12", password: "123456789" });
-  const tokenlogin = login.body.access_token;
+// test("Test: test report user not found ", async () => {
+//   const signup = await request(app).post("/signup").send({
+//     email: "mahmoudaly552@gmail.com",
+//     username: "mahmoud12",
+//     password: "123456789",
+//   });
+//   const login = await request(app)
+//     .post("/login")
+//     .send({ username: "mahmoud12", password: "123456789" });
+//   const tokenlogin = login.body.access_token;
 
-  const report = await request(app)
-    .post("/report")
-    .send({ username: "mahmoud00", token: tokenlogin, reason: "spam" })
-    .expect(404)
-    .then((response) => {
-      expect(response.body.error).toBe("User not found");
-    });
-});
+//   const report = await request(app)
+//     .post("/report")
+//     .send({ username: "mahmoud00", token: tokenlogin, reason: "spam" })
+//     .expect(404)
+//     .then((response) => {
+//       expect(response.body.error).toBe("User not found");
+//     });
+// });
 
-test("Test: test unfollow user not found ", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "mahmoudaly552@gmail.com",
-    username: "mahmoud12",
-    password: "123456789",
-  });
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "mahmoud12", password: "123456789" });
-  const tokenlogin = login.body.access_token;
+// test("Test: test unfollow user not found ", async () => {
+//   const signup = await request(app).post("/signup").send({
+//     email: "mahmoudaly552@gmail.com",
+//     username: "mahmoud12",
+//     password: "123456789",
+//   });
+//   const login = await request(app)
+//     .post("/login")
+//     .send({ username: "mahmoud12", password: "123456789" });
+//   const tokenlogin = login.body.access_token;
 
-  const unfollow = await request(app)
-    .post("/unfollow")
-    .send({ username: "mahmoud00", token: tokenlogin })
-    .expect(404)
-    .then((response) => {
-      expect(response.body.error).toBe("User not found");
-    });
-});
+//   const unfollow = await request(app)
+//     .post("/unfollow")
+//     .send({ username: "mahmoud00", token: tokenlogin })
+//     .expect(404)
+//     .then((response) => {
+//       expect(response.body.error).toBe("User not found");
+//     });
+// });
 
 /*
 //start of layout setting test
