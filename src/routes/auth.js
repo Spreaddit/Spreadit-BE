@@ -218,7 +218,7 @@ router.post("/forgot-password", async (req, res) => {
     }
     const resetToken = await user.generateResetToken();
     const emailContent = `/reset-password-by-token?token=${resetToken}`;
-    await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
+    //await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
     res.status(200).send({ message: "Password reset link sent successfully" });
   } catch (err) {
     console.log(err);
@@ -242,7 +242,7 @@ router.post("/app/forgot-password", async (req, res) => {
     const resetToken = await user.generateResetToken();
 
     const emailContent = `/reset-password-by-token?token=${resetToken}`;
-    await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
+    //await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
 
     res.status(200).send({ message: "Password reset link sent successfully" });
   } catch (err) {
