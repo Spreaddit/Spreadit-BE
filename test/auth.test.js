@@ -559,3 +559,77 @@ test("Test userID not given (SafetyandPrivacy-setting).", async () => {
 });
 
 //end of Safety and Privacy setting test
+
+
+//start of email setting test
+test("Test get email settings.", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const userId = signup.body.user.id;
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .get('/email')
+    .send({ token: tokenlogin })
+    .expect(200)
+    .then((response) => {
+      expect(response.body).toEqual({
+        _id: userId,
+        chatRequestEmail: true,
+        unsubscribeAllEmails: false,
+        newFollowerEmail: true
+      });
+    });
+});
+
+test("Test update email settings success.", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const userId = signup.body.user.id;
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .put('/email')
+    .send({ token: tokenlogin, chatRequestEmail: "false" })
+    .expect(200)
+    .then((response) => {
+      expect(response.body.message).toBe("Successful update");
+    });
+});
+
+test("Test userID not given (email-setting).", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .get('/email')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
+
+//end of email setting test

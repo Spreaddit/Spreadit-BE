@@ -39,6 +39,12 @@ const safetyAndPrivacySettingsController = require('../controller/safety-and-pri
 router.route('/safety-privacy', auth)
   .get(safetyAndPrivacySettingsController.getSafetyAndPrivacySettings)
   .put(safetyAndPrivacySettingsController.modifySafetyAndPrivacySettings);
+
+
+const emailSettingsController = require('../controller/email-setting');
+router.route('/email', auth)
+  .get(emailSettingsController.getEmailSetting)
+  .put(emailSettingsController.modifyEmailSetting);
 ///////////////////////////////////////////////
 
 router.post("/signup", async (req, res) => {
