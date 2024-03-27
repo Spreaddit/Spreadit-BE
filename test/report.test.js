@@ -62,6 +62,38 @@ describe("ReportUser function", () => {
     });
   });
 
+  it("should report user successfully", async () => {
+    // Mock req and res objects
+    const req = {
+      body: {
+        username: "amira12",
+        token:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjA0NTM5NDkwNjVjNDE1ZjdiMjc1MTAiLCJ1c2VybmFtZSI6Im1haG1vdWQxMiIsImlhdCI6MTcxMTU1OTU3Mn0.qK9YHlpsxYJs1DEOyha96hP2MLoScWf3TVr51cQ7Jx0",
+        reason: "spam",
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    // Mock functions to return desired values
+    ReportUser.getUserByEmailOrUsername.mockResolvedValueOnce({
+      _id: "userToreportId",
+    });
+    jwt.decode.mockReturnValueOnce({ _id: "reporterId" });
+    ReportUser.findByIdAndUpdate.mockResolvedValueOnce({});
+
+    // Call the function
+    await reportUser(req, res);
+
+    // Check if the response is as expected
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      description: "User reported successfully",
+    });
+  });
+
   it("should return error in report user if there is no token", async () => {
     // Mock req and res objects
     const req = {

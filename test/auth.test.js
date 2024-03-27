@@ -5,7 +5,6 @@ const config = require("../src/configuration");
 const User = require("../src/models/user");
 const bcrypt = require("bcryptjs");
 
-
 const connectionurl = config.testConnectionString;
 
 getUser = async function (username_email) {
@@ -26,20 +25,17 @@ beforeAll(async () => {
       useUnifiedTopology: true,
     });
   } catch (error) {
-    console.error('Mongoose connection error:', error);
+    console.error("Mongoose connection error:", error);
   }
 });
-
 
 beforeEach(async () => {
   await User.deleteMany({});
 }, 10000);
 
-
 afterAll(() => {
   mongoose.connection.close();
 });
-
 
 test("Test: normal user signup", async () => {
   const response = await request(app)
@@ -82,14 +78,12 @@ test("Test: user signup with missing data", async () => {
     .expect(400);
 });
 
-
 test("Test login should login user with valid credentials(username)", async () => {
   const signup = await request(app).post("/signup").send({
     email: "amiraelgarf99@gmail.com",
     username: "amira12",
     password: "12345678",
   });
-
 
   const response = await request(app)
     .post("/login")
@@ -98,13 +92,11 @@ test("Test login should login user with valid credentials(username)", async () =
 });
 
 test("Test login should login user with valid credentials(email)", async () => {
-  const signup = await request(app)
-    .post("/signup")
-    .send({
-      email: "amiraelgarf99@gmail.com",
-      username: "amira12",
-      password: "12345678",
-    });
+  const signup = await request(app).post("/signup").send({
+    email: "amiraelgarf99@gmail.com",
+    username: "amira12",
+    password: "12345678",
+  });
 
   const response = await request(app)
     .post("/login")
@@ -113,13 +105,11 @@ test("Test login should login user with valid credentials(email)", async () => {
 }, 10000);
 
 test("Test login should return error for invalid credentials", async () => {
-  const signup = await request(app)
-    .post("/signup")
-    .send({
-      email: "amiraelgarf99@gmail.com",
-      username: "amira12",
-      password: "12345678",
-    });
+  const signup = await request(app).post("/signup").send({
+    email: "amiraelgarf99@gmail.com",
+    username: "amira12",
+    password: "12345678",
+  });
   const response = await request(app)
     .post("/login")
     .send({ username: "amira12", password: "12367845" })
@@ -128,126 +118,118 @@ test("Test login should return error for invalid credentials", async () => {
   expect(response.body.message).toBe("The credentials are invalid.");
 });
 
-
-test('Test forgot-password should return 404 if user not found', async () => {
-
+test("Test forgot-password should return 404 if user not found", async () => {
   await request(app)
-    .post('/forgot-password')
+    .post("/forgot-password")
     .send({ username: "amira12", email: "amiraelgarf99@gmail.com" })
     .expect(404)
     .then((response) => {
-      expect(response.body.message).toBe('User not found');
+      expect(response.body.message).toBe("User not found");
     });
 });
 
-test('Test forgot-passwordshould return 400 if email does not match username', async () => {
-
-  const signup = await request(app)
-    .post("/signup")
-    .send({
-      email: "amiraelgarf99@gmail.com",
-      username: "amira12",
-      password: "12345678",
-    });
+test("Test forgot-passwordshould return 400 if email does not match username", async () => {
+  const signup = await request(app).post("/signup").send({
+    email: "amiraelgarf99@gmail.com",
+    username: "amira12",
+    password: "12345678",
+  });
 
   await request(app)
-    .post('/forgot-password')
+    .post("/forgot-password")
     .send({ username: "amira12", email: "elgarfamira4@gmail.com" })
     .expect(400)
     .then((response) => {
-      expect(response.body.message).toBe('Error, wrong email');
+      expect(response.body.message).toBe("Error, wrong email");
     });
 });
 
-test('Test forgot-password should send reset password email and return 200 if user found', async () => {
-  const signup = await request(app)
-    .post("/signup")
-    .send({
-      email: "amiraelgarf99@gmail.com",
-      username: "amira12",
-      password: "12345678",
-    });
+test("Test forgot-password should send reset password email and return 200 if user found", async () => {
+  const signup = await request(app).post("/signup").send({
+    email: "amiraelgarf99@gmail.com",
+    username: "amira12",
+    password: "12345678",
+  });
   await request(app)
-    .post('/forgot-password')
+    .post("/forgot-password")
     .send({ username: "amira12", email: "amiraelgarf99@gmail.com" })
-    .expect(200)
+    .expect(200);
 });
 
-
-test('should return 401 if token is missing', async () => {
+test("should return 401 if token is missing", async () => {
   await request(app)
-    .post('/reset-password')
+    .post("/reset-password")
     .expect(401)
     .then((response) => {
-      expect(response.body.message).toBe('Token is required');
+      expect(response.body.message).toBe("Token is required");
     });
 });
 
 test("Test password reset request from inside the settings.", async () => {
-  const signup = await request(app)
-    .post("/signup")
-    .send({
-      email: "amiraelgarf99@gmail.com",
-      username: "amira12",
-      password: "12345678",
-    });
+  const signup = await request(app).post("/signup").send({
+    email: "amiraelgarf99@gmail.com",
+    username: "amira12",
+    password: "12345678",
+  });
   const login = await request(app)
     .post("/login")
     .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token
+  const tokenlogin = login.body.access_token;
   const response = await request(app)
-    .post('/reset-password')
-    .send({ token: tokenlogin, newPassword: "123321123", currentPassword: "12345678" })
+    .post("/reset-password")
+    .send({
+      token: tokenlogin,
+      newPassword: "123321123",
+      currentPassword: "12345678",
+    })
     .expect(200)
     .then((response) => {
-      expect(response.body.message).toBe('Password reset successfully');
+      expect(response.body.message).toBe("Password reset successfully");
     });
 });
 
-test('Test reset-password should return 400 if current password is invalid', async () => {
-  const signup = await request(app)
-    .post("/signup")
-    .send({
-      email: "amiraelgarf99@gmail.com",
-      username: "amira12",
-      password: "12345678",
-    });
+test("Test reset-password should return 400 if current password is invalid", async () => {
+  const signup = await request(app).post("/signup").send({
+    email: "amiraelgarf99@gmail.com",
+    username: "amira12",
+    password: "12345678",
+  });
   const login = await request(app)
     .post("/login")
     .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token
+  const tokenlogin = login.body.access_token;
   const response = await request(app)
-    .post('/reset-password')
-    .send({ token: tokenlogin, newPassword: "123321123", currentPassword: "12345687" })
+    .post("/reset-password")
+    .send({
+      token: tokenlogin,
+      newPassword: "123321123",
+      currentPassword: "12345687",
+    })
     .expect(400)
     .then((response) => {
-      expect(response.body.message).toBe('Invalid current password');
+      expect(response.body.message).toBe("Invalid current password");
     });
 });
 
-test('Test forgot-username should return 404 if user not found', async () => {
-
+test("Test forgot-username should return 404 if user not found", async () => {
   await request(app)
-    .post('/forgot-username')
+    .post("/forgot-username")
     .send({ email: "amiraelgarf99@gmail.com" })
     .expect(404)
     .then((response) => {
-      expect(response.body.message).toBe('User not found');
+      expect(response.body.message).toBe("User not found");
     });
 });
 
-test('Test forgot-username should return 400 if email does not match username', async () => {
-
-  const signup = await request(app)
-    .post("/signup")
-    .send({
-      email: "amiraelgarf99@gmail.com",
-      username: "amira12",
-      password: "12345678",
-    });
+test("Test forgot-username should return 400 if email does not match username", async () => {
+  const signup = await request(app).post("/signup").send({
+    email: "amiraelgarf99@gmail.com",
+    username: "amira12",
+    password: "12345678",
+  });
 
   await request(app)
-    .post('/forgot-username')
+    .post("/forgot-username")
     .send({ email: "elgarfamira4@gmail.com" })
     .expect(404)
     .then((response) => {
@@ -255,19 +237,98 @@ test('Test forgot-username should return 400 if email does not match username', 
     });
 });
 
-test('Test forgot-username should send reset password email and return 200 if user found', async () => {
-  const signup = await request(app)
-    .post("/signup")
-    .send({
-      email: "amiraelgarf99@gmail.com",
-      username: "amira12",
-      password: "12345678",
-    });
+test("Test forgot-username should send reset password email and return 200 if user found", async () => {
+  const signup = await request(app).post("/signup").send({
+    email: "amiraelgarf99@gmail.com",
+    username: "amira12",
+    password: "12345678",
+  });
   await request(app)
-    .post('/forgot-username')
+    .post("/forgot-username")
     .send({ email: "amiraelgarf99@gmail.com" })
-    .expect(200)
+    .expect(200);
 });
+
+test("Test: test follow user not found ", async () => {
+  const signup = await request(app).post("/signup").send({
+    email: "mahmoudaly552@gmail.com",
+    username: "mahmoud12",
+    password: "123456789",
+  });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "mahmoud12", password: "123456789" });
+  const tokenlogin = login.body.access_token;
+
+  const follow = await request(app)
+    .post("/follow")
+    .send({ username: "mahmoud00", token: tokenlogin })
+    .expect(404)
+    .then((response) => {
+      expect(response.body.error).toBe("User not found");
+    });
+});
+
+test("Test: test block user not found ", async () => {
+  const signup = await request(app).post("/signup").send({
+    email: "mahmoudaly552@gmail.com",
+    username: "mahmoud12",
+    password: "123456789",
+  });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "mahmoud12", password: "123456789" });
+  const tokenlogin = login.body.access_token;
+
+  const block = await request(app)
+    .post("/block")
+    .send({ username: "mahmoud00", token: tokenlogin })
+    .expect(404)
+    .then((response) => {
+      expect(response.body.error).toBe("User not found");
+    });
+});
+
+test("Test: test report user not found ", async () => {
+  const signup = await request(app).post("/signup").send({
+    email: "mahmoudaly552@gmail.com",
+    username: "mahmoud12",
+    password: "123456789",
+  });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "mahmoud12", password: "123456789" });
+  const tokenlogin = login.body.access_token;
+
+  const report = await request(app)
+    .post("/report")
+    .send({ username: "mahmoud00", token: tokenlogin, reason: "spam" })
+    .expect(404)
+    .then((response) => {
+      expect(response.body.error).toBe("User not found");
+    });
+});
+
+test("Test: test unfollow user not found ", async () => {
+  const signup = await request(app).post("/signup").send({
+    email: "mahmoudaly552@gmail.com",
+    username: "mahmoud12",
+    password: "123456789",
+  });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "mahmoud12", password: "123456789" });
+  const tokenlogin = login.body.access_token;
+
+  const unfollow = await request(app)
+    .post("/unfollow")
+    .send({ username: "mahmoud00", token: tokenlogin })
+    .expect(404)
+    .then((response) => {
+      expect(response.body.error).toBe("User not found");
+    });
+});
+
 /*
 //start of layout setting test
 

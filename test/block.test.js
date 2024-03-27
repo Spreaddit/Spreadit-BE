@@ -61,6 +61,37 @@ describe("blockUser function", () => {
     });
   });
 
+  it("should block user successfully", async () => {
+    // Mock req and res objects
+    const req = {
+      body: {
+        token:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjA0NTM5NDkwNjVjNDE1ZjdiMjc1MTAiLCJ1c2VybmFtZSI6Im1haG1vdWQxMiIsImlhdCI6MTcxMTU1OTU3Mn0.qK9YHlpsxYJs1DEOyha96hP2MLoScWf3TVr51cQ7Jx0",
+        username: "amira12",
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    // Mock functions to return desired values
+    BlockUser.getUserByEmailOrUsername.mockResolvedValueOnce({
+      _id: "userToBlockId",
+    });
+    jwt.decode.mockReturnValueOnce({ _id: "blockerId" });
+    BlockUser.findByIdAndUpdate.mockResolvedValueOnce({});
+
+    // Call the function
+    await blockUser(req, res);
+
+    // Check if the response is as expected
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      description: "User blocked successfully",
+    });
+  });
+
   it("should return error if there is no token", async () => {
     // Mock req and res objects
     const req = {

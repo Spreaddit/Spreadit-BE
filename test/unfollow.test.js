@@ -61,6 +61,37 @@ describe("unFollowUser function", () => {
     });
   });
 
+  it("should return error if there is no username", async () => {
+    // Mock req and res objects
+    const req = {
+      body: {
+        token:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjA0NTM5NDkwNjVjNDE1ZjdiMjc1MTAiLCJ1c2VybmFtZSI6Im1haG1vdWQxMiIsImlhdCI6MTcxMTU1OTU3Mn0.qK9YHlpsxYJs1DEOyha96hP2MLoScWf3TVr51cQ7Jx0",
+        username: "amira12",
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    // Mock functions to return desired values
+    UnFollowUser.getUserByEmailOrUsername.mockResolvedValueOnce({
+      _id: "userTounfollowId",
+    });
+    jwt.decode.mockReturnValueOnce({ _id: "unfollowerId" });
+    UnFollowUser.findByIdAndUpdate.mockResolvedValueOnce({});
+
+    // Call the function
+    await unfollowUser(req, res);
+
+    // Check if the response is as expected
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      description: "User unfollowed successfully",
+    });
+  });
+
   it("should return error if there is no token", async () => {
     // Mock req and res objects
     const req = {
