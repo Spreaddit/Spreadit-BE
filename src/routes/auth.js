@@ -52,6 +52,11 @@ router.route('/email', auth)
       .get(accountSettingsController.getAccountSettings)
       .put(accountSettingsController.modifyAccountSettings)
       .delete(accountSettingsController.deleteAccount);
+
+const blockingSettingsController = require('../controller/mobile-blocking-permissions-setting');
+router.route('/blocking-permissions', auth)
+  .get(blockingSettingsController.getBlockingSetting)
+  .put(blockingSettingsController.modifyBlockingSetting);
 ///////////////////////////////////////////////
 
 router.post("/signup", async (req, res) => {

@@ -767,3 +767,75 @@ test("Test delete account without id", async () => {
       expect(response.body.error).toBe('User ID is required');
     });
 });
+
+
+//start of block setting test
+test("Test get block settings.", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const userId = signup.body.user.id;
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .get('/blocking-permissions')
+    .send({ token: tokenlogin })
+    .expect(200)
+    .then((response) => {
+      expect(response.body).toEqual({
+        _id: userId,
+        allowFollow: true
+      });
+    });
+});
+
+test("Test update block settings success.", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const userId = signup.body.user.id;
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .put('/blocking-permissions')
+    .send({ token: tokenlogin, allowFollow: "false" })
+    .expect(200)
+    .then((response) => {
+      expect(response.body.message).toBe("Successful update");
+    });
+});
+
+test("Test userID not given (block-setting).", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+  const response = await request(app)
+    .get('/blocking-permissions')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
+
+//end of block setting test
