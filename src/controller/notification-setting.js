@@ -30,7 +30,7 @@ exports.modifyNotificationSetting = async (req, res) => {
         Object.assign(notificationSetting, modifyNotificationSetting);
 
         await notificationSetting.save();
-        res.status(200).json({ message: "success" });
+        res.status(200).json({ message: "Successful update" });
 
     } catch (err) {
         console.error('Error modifying notification settings', err);

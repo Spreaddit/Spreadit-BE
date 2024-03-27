@@ -4,6 +4,9 @@ const jwt = require("jsonwebtoken");
 exports.getBlockingSetting = async (req, res) => {
     try {
         const token = req.body.token;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
         const blockingSetting = await BlockingSetting.findOne({ _id: userId }).select('blockedAccounts allowFollow');
@@ -16,11 +19,11 @@ exports.getBlockingSetting = async (req, res) => {
 exports.modifyBlockingSetting = async (req, res) => {
     try {
         const token = req.body.token;
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
-        if (!userId) {
+        if (!token) {
             return res.status(400).json({ error: 'User ID is required' });
         }
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
 
         const modifyBlockingSetting = req.body;
         const blockingSetting = await BlockingSetting.findOne({ _id: userId });
@@ -28,7 +31,7 @@ exports.modifyBlockingSetting = async (req, res) => {
 
         await blockingSetting.save();
         const response = blockingSetting;
-        res.status(200).json(response);
+        res.status(200).json({ message: "Successful update" });
 
     } catch (err) {
         console.error('Error modifying blocking Setting', err);

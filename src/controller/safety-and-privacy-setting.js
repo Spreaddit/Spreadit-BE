@@ -32,7 +32,7 @@ exports.modifySafetyAndPrivacySettings = async (req, res) => {
 
         await SafetyAndPrivacySettings.save();
         const response = SafetyAndPrivacySettings;
-        res.status(200).json(response);
+        res.status(200).json({ message: "Successful update" });
 
     } catch (err) {
         console.error('Error modifying safety and privacy settings', err);

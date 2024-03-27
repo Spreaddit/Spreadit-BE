@@ -29,7 +29,7 @@ exports.modifyEmailSetting = async (req, res) => {
         Object.assign(emailSetting, modifyEmailSetting);
 
         await emailSetting.save();
-        res.status(200).json({ message: "success" });
+        res.status(200).json({ message: "Successful update" });
 
     } catch (err) {
         console.error('Error modifying email settings', err);

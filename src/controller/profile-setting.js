@@ -30,7 +30,7 @@ exports.modifyProfileSettings = async (req, res) => {
         Object.assign(profileSetting, modifyProfileSettings);
 
         await profileSetting.save();
-        res.status(200).json({ message: "success" });
+        res.status(200).json({ message: "Successful update" });
 
     } catch (err) {
         console.error('Error modifying profile settings', err);

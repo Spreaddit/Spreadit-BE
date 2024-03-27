@@ -30,7 +30,7 @@ exports.modifyChatAndMessagingSetting = async (req, res) => {
         const chatAndMessagingSetting = await ChatAndMessagingSetting.findOne({ _id: userId });
         Object.assign(chatAndMessagingSetting, modifyChatAndMessagingSetting);
         await chatAndMessagingSetting.save();
-        res.status(200).json({ message: success });
+        res.status(200).json({ message: "Successful update" });
 
     } catch (err) {
         console.error('Error modifying chatAndMessaging settings', err);
