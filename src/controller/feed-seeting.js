@@ -28,7 +28,7 @@ exports.modifyFeedSetting = async (req, res) => {
         const feedSetting = await FeedSetting.findOne({ _id: userId });
         Object.assign(feedSetting, modifyFeedSetting);
         await feedSetting.save();
-        res.status(200).json({ message: "success" });
+        res.status(200).json({ message: "Success" });
 
     } catch (err) {
         console.error('Error modifying feed settings', err);

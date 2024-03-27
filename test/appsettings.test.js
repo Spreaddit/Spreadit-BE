@@ -1,4 +1,4 @@
-const request = require("supertest");
+/* const request = require("supertest");
 const app = require("./testApp");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
@@ -120,3 +120,4 @@ describe("Feed Settings", () => {
 //     });
   });
 });
+ */

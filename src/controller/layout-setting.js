@@ -2,16 +2,6 @@ const LayoutSetting = require('./../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 
-exports.verifyPassword = async (enteredPassword, storedPassword) => {
-    try {
-        // Compare the entered password with the stored hashed password
-        const passwordMatch = await bcrypt.compare(enteredPassword, storedPassword);
-        return passwordMatch;
-    } catch (error) {
-        console.error('Error verifying password:', error);
-        return false;
-    }
-};
 
 exports.checkPasswordMatch = async (req, res) => {
     try {
