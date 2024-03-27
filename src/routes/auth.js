@@ -379,7 +379,7 @@ router.post("/forgot-username", async (req, res) => {
 
     const loginLink = `Your username is ${user.username} you can login now: /login`;
 
-    await sendEmail(user.email, 'So you wanna know your username, huh?', loginLink);
+    //await sendEmail(user.email, 'So you wanna know your username, huh?', loginLink);
 
     res.status(200).send({ message: "Username sent successfully" });
   } catch (err) {
