@@ -633,3 +633,137 @@ test("Test userID not given (email-setting).", async () => {
 });
 
 //end of email setting test
+
+test("Test get account settings", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+    const userId = signup.body.user.id;
+    const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token
+
+  const response = await request(app)
+    .get('/account')
+    .send({ token: tokenlogin })
+    .expect(200)
+    .then((response) => {
+      expect(response.body).toEqual({
+        _id: userId,
+        email: "amiraelgarf99@gmail.com",
+        country: "",
+        connectedAccounts: []
+      });
+    });
+});
+
+test("Test get account settings without id", async () => {
+
+  const response = await request(app)
+    .get('/account')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
+
+test("Test update account settings", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+
+  const tokenlogin = login.body.access_token;
+
+  const response = await request(app)
+    .put('/account')
+    .send({ token: tokenlogin, email: "newemail@gmail.com", gender: "male", country: "Egypt" })
+    .expect(200)
+    .then((response) => {
+      expect(response.body.message).toBe("Successful update");
+    });
+});
+
+test("Test update account settings without id", async () => {
+
+  const response = await request(app)
+    .put('/account')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
+
+test("Test update account settings with invalid email format", async () => {
+
+  const signup = await request(app)
+  .post("/signup")
+  .send({
+    email: "amiraelgarf99@gmail.com",
+    username: "amira12",
+    password: "12345678",
+  });
+
+const login = await request(app)
+  .post("/login")
+  .send({ username: "amira12", password: "12345678" });
+
+const tokenlogin = login.body.access_token;
+  const response = await request(app)
+    .put('/account')
+    .send({token : tokenlogin, email: "" })
+    .expect(403)
+    .then((response) => {
+      expect(response.body.error).toBe('Invalid email format');
+    });
+});
+
+
+test("Test delete account success", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+
+  const tokenlogin = login.body.access_token;
+
+  const response = await request(app)
+    .delete('/account')
+    .send({ token: tokenlogin})
+    .expect(200)
+    .then((response) => {
+      expect(response.body.message).toBe("Account deleted successfully");
+    });
+});
+
+test("Test delete account without id", async () => {
+
+  const response = await request(app)
+    .put('/account')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});

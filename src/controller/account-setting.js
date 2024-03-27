@@ -34,7 +34,7 @@ exports.modifyAccountSettings = async (req, res) => {
 
         const modifyAccountSettings = req.body;
         if (!isValidEmail(modifyAccountSettings.email)) {
-            return res.status(400).json({ error: 'Invalid email format' });
+            return res.status(403).json({ error: 'Invalid email format' });
         }
         const accountSetting = await AccountSetting.findOne({ _id: userId });
         Object.assign(accountSetting, modifyAccountSettings);

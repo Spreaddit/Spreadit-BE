@@ -45,6 +45,13 @@ const emailSettingsController = require('../controller/email-setting');
 router.route('/email', auth)
   .get(emailSettingsController.getEmailSetting)
   .put(emailSettingsController.modifyEmailSetting);
+
+
+  const accountSettingsController = require('../controller/account-setting');  
+  router.route('/account', auth)
+      .get(accountSettingsController.getAccountSettings)
+      .put(accountSettingsController.modifyAccountSettings)
+      .delete(accountSettingsController.deleteAccount);
 ///////////////////////////////////////////////
 
 router.post("/signup", async (req, res) => {
