@@ -844,6 +844,279 @@ test("Test userID not given (block-setting).", async () => {
 
 //start of notifications setting test
 
+test("Test get notification settings", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const userId = signup.body.user.id;
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token;
 
+  const response = await request(app)
+    .get('/notifications')
+    .send({ token: tokenlogin })
+    .expect(200)
+    .then((response) => {
+      expect(response.body).toEqual({
+        _id: userId,
+        mentions: true,
+        comments: true,
+        upvotesComments: true,
+        upvotesPosts: true,
+        replies: true,
+        newFollowers: true,
+        invitations: true,
+        posts: false
+      });
+    });
+});
+
+test("Test get notification settings without token", async () => {
+  const response = await request(app)
+    .get('/notifications')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
+
+test("Test update notification settings", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token;
+
+  const response = await request(app)
+    .put('/notifications')
+    .send({
+      token: tokenlogin,
+      mentions: false,
+      comments: false,
+      upvotesComments: false,
+      upvotesPosts: false,
+      replies: false,
+      newFollowers: false,
+      invitations: false,
+      posts: true
+    })
+    .expect(200)
+    .then((response) => {
+      expect(response.body.message).toBe("Successful update");
+    });
+});
+
+test("Test update notification settings without token", async () => {
+  const response = await request(app)
+    .put('/notifications')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
 
 //end of notifications setting test
+
+//start of chat and messaging settings test
+
+test("Test get chat and messaging settings", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const userId = signup.body.user.id;
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token;
+
+  const response = await request(app)
+    .get('/chat-and-messaging')
+    .send({ token: tokenlogin })
+    .expect(200)
+    .then((response) => {
+      expect(response.body).toEqual({
+        _id: userId,
+        sendYouFriendRequests: "Everyone",
+        sendYouPrivateMessages: "Everyone",
+        approvedUsers: []
+      });
+    });
+});
+
+test("Test get chat and messaging settings without token", async () => {
+  const response = await request(app)
+    .get('/chat-and-messaging')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
+
+test("Test update chat and messaging settings", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token;
+
+  const response = await request(app)
+    .put('/chat-and-messaging')
+    .send({
+      token: tokenlogin,
+      sendYouFriendRequests: "Nobody",
+      sendYouPrivateMessages: "Nobody",
+      approvedUsers: []
+    })
+    .expect(200)
+    .then((response) => {
+      expect(response.body.message).toBe("Successful update");
+    });
+});
+
+test("Test update chat and messaging settings without token", async () => {
+  const response = await request(app)
+    .put('/chat-and-messaging')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
+
+test("Test marking all messages as read", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token;
+
+  const response = await request(app)
+    .post('/chat-and-messaging')
+    .send({ token: tokenlogin })
+    .expect(200);
+});
+
+//end of chat and messaging settings test
+
+//start of contact settings test
+
+test("Test get contact settings", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const userId = signup.body.user.id;
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token;
+
+  const response = await request(app)
+    .get('/contact')
+    .send({ token: tokenlogin })
+    .expect(200)
+    .then((response) => {
+      expect(response.body).toEqual({
+        _id: userId,
+        inboxMessages: true,
+        chatMessages: true,
+        chatRequests: true,
+        mentions: true,
+        repliesToComments: true,
+        newFollowers: true,
+        cakeDay: true,
+        modNotifications: true
+      });
+    });
+});
+
+test("Test get contact settings without token", async () => {
+  const response = await request(app)
+    .get('/contact')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
+
+test("Test update contact settings", async () => {
+  const signup = await request(app)
+    .post("/signup")
+    .send({
+      email: "amiraelgarf99@gmail.com",
+      username: "amira12",
+      password: "12345678",
+    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "amira12", password: "12345678" });
+  const tokenlogin = login.body.access_token;
+
+  const response = await request(app)
+    .put('/contact')
+    .send({
+      token: tokenlogin,
+      inboxMessages: false,
+      chatMessages: false,
+      chatRequests: false,
+      mentions: false,
+      commentsOnYourPost: false,
+      commentsYouFollow: false,
+      upvotes: false,
+      repliesToComments: false,
+      newFollowers: false,
+      cakeDay: false,
+      modNotifications: false
+    })
+    .expect(200)
+    .then((response) => {
+      expect(response.body.message).toBe("Successful update");
+    });
+});
+
+test("Test update contact settings without token", async () => {
+  const response = await request(app)
+    .put('/contact')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.error).toBe('User ID is required');
+    });
+});
+
+//end of contact settings test

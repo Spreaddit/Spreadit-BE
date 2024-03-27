@@ -42,5 +42,21 @@ const blockingSettingsController = require('../controller/mobile-blocking-permis
 router.route('/blocking-permissions', auth)
     .get(blockingSettingsController.getBlockingSetting)
     .put(blockingSettingsController.modifyBlockingSetting);
+
+const notificationSettingsController = require('../controller/notification-setting');
+router.route('/notifications', auth)
+    .get(notificationSettingsController.getNotificationSetting)
+    .put(notificationSettingsController.modifyNotificationSetting);
+
+const chatandmessagingController = require('../controller/chat-and-messaging-setting');
+router.route('/chat-and-messaging', auth)
+    .get(chatandmessagingController.getChatAndMessagingSetting)
+    .put(chatandmessagingController.modifyChatAndMessagingSetting)
+    .post(chatandmessagingController.makeAllAsRead);
+
+const contactSettingsController = require('../controller/mobile-contact-setting');
+router.route('/contact', auth)
+    .get(contactSettingsController.getContactSetting)
+    .put(contactSettingsController.modifyContactSetting);
 ///////////////////////////////////////////////
 module.exports = router;
