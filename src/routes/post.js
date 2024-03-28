@@ -22,4 +22,7 @@ router.route('/:userId/save', auth)
 router.route('/:postId/unsave', auth)
     .post(postController.unsavePost);
 
+router.route('/:postId/edit', auth)
+    .post(postController.editPost);
+
 module.exports = router;    
