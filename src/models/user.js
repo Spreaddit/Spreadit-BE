@@ -263,6 +263,7 @@ const UserSchema = new Schema(
         type: String,
       },
     ],
+    savedPosts: [{ type: Schema.Types.ObjectId, ref: "Posts", index: true }],
     blockedUsers: [
       {
         type: String,
@@ -465,6 +466,7 @@ UserSchema.statics.generateUserObject = async function (
       repliesToComments: user.repliesToComments,
       cakeDay: user.cakeDay,
       modNotifications: user.modNotifications,
+      savedPosts: user.savedPosts,
     };
     if (authorizedUserName != null) {
       const authorizedUser = await User.findOne({

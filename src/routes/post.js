@@ -13,4 +13,10 @@ router.route('/:userId', auth)
 router.route('/community/:community', auth)
     .get(postController.getAllPostsInCommunity)
 
+router.route('/:postId/save', auth)
+    .post(postController.savePost);
+
+router.route('/:userId/save', auth)
+    .get(postController.getSavedPosts);
+
 module.exports = router;    

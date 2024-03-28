@@ -122,3 +122,76 @@ exports.getAllPostsInCommunity = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.savePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const token = req.query.userId;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        const decodeToken = jwt.decode(token);
+        if (!decodeToken || !decodeToken._id) {
+            return res.status(400).json({ error: 'Invalid user ID' });
+        }
+        const userId = decodeToken._id;
+        if (!postId || !userId) {
+            return res.status(400).json({ error: 'Post ID and User ID are required' });
+        }
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        if (user.savedPosts.includes(postId)) {
+            return res.status(400).json({ error: 'Post already saved by the user' });
+        }
+
+        user.savedPosts.push(postId);
+        await user.save();
+
+        return res.status(200).json({ message: 'Post saved successfully' });
+    } catch (err) {
+        console.error('Error saving post:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.getSavedPosts = async (req, res) => {
+    try {
+        const token = req.params.userId;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+        const decodeToken = jwt.decode(token);
+        if (!decodeToken || !decodeToken._id) {
+            return res.status(400).json({ error: 'Invalid user ID' });
+        }
+        const userId = decodeToken._id;
+
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const savedPostIds = user.savedPosts;
+
+        const savedPosts = await Post.find({ _id: { $in: savedPostIds } });
+
+        if (!savedPosts || savedPosts.length === 0) {
+            return res.status(404).json({ error: 'Saved posts not found' });
+        }
+
+        res.status(200).json(savedPosts);
+    } catch (err) {
+        console.error('Error fetching saved posts:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
