@@ -22,6 +22,7 @@ const blockingSettingRoutes = require("./routes/mobile-blocking-permissions-sett
 const layoutSettingRoutes = require("./routes/layout-setting");
 const chatAndMessagingSettingRoutes = require("./routes/chat-and-messaging-setting");
 const showFriendRoutes = require("./routes/show-friend-information");
+const postsRoutes = require("./routes/post");
 
 const app = express();
 const port = 80;
@@ -59,6 +60,7 @@ app.use("/users", unfollowUserRoutes);
 app.use("/users", blockUserRoutes);
 app.use("/users", reportUserRoutes);
 app.use("/users", showFriendRoutes);
+app.use("/posts", postsRoutes);
 
 mongoose
   .connect(connectionurl, {

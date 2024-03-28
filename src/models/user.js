@@ -258,6 +258,11 @@ const UserSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    communities: [
+      {
+        type: String,
+      },
+    ],
     blockedUsers: [
       {
         type: String,
@@ -428,6 +433,7 @@ UserSchema.statics.generateUserObject = async function (
       allowFollow: user.allowFollow,
       blockedUsers: user.blockedUsers,
       mutedCommunities: user.mutedCommunities,
+      communities: user.communities,
       isVerified: user.isVerified,
       newFollowers: user.newFollowers,
       chatRequestEmail: user.chatRequestEmail,

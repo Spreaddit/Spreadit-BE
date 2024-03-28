@@ -7,7 +7,7 @@ const CommentSchema = new Schema(
         content: {
             type: String,
             required: true,
-        }, 
+        },
         userId: {
             type: Schema.Types.ObjectId,
             required: true,
@@ -20,11 +20,10 @@ const CommentSchema = new Schema(
             ref: "post",
         },
         parentCommentId: {
-            //Assumption if it's null then this means that the comment itself is a parent comment
+            // If it's null, then this means that the comment itself is a parent comment
             type: Schema.Types.ObjectId,
-            required: true,
-            ref: "post",
-
+            ref: "comment",
+            default: null,
         },
         isLocked: {
             type: Boolean,
@@ -42,11 +41,8 @@ const CommentSchema = new Schema(
             type: Boolean,
             default: false,
         },
-        vote: {
-            type: Int32,
-            default: 0,
-        },
-    }, 
+
+    },
     {
         timestamps: true,
     }
