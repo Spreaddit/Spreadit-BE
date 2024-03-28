@@ -19,4 +19,7 @@ router.route('/:postId/save', auth)
 router.route('/:userId/save', auth)
     .get(postController.getSavedPosts);
 
+router.route('/:postId/unsave', auth)
+    .post(postController.unsavePost);
+
 module.exports = router;    

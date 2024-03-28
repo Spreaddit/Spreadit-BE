@@ -195,3 +195,44 @@ exports.getSavedPosts = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.unsavePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const token = req.query.userId;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+        const decodeToken = jwt.decode(token);
+        if (!decodeToken || !decodeToken._id) {
+            return res.status(400).json({ error: 'Invalid user ID' });
+        }
+        const userId = decodeToken._id;
+        if (!postId || !userId) {
+            return res.status(400).json({ error: 'Post ID and User ID are required' });
+        }
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const index = user.savedPosts.indexOf(postId);
+        if (index === -1) {
+            return res.status(400).json({ error: 'Post is not saved by the user' });
+        }
+
+        user.savedPosts.splice(index, 1);
+        await user.save();
+
+        return res.status(200).json({ message: 'Post unsaved successfully' });
+    } catch (err) {
+        console.error('Error unsaving post:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
