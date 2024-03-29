@@ -1,10 +1,17 @@
 const AccountSetting = require('./../models/user');
 const jwt = require("jsonwebtoken");
 
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
 
 exports.getAccountSettings = async (req, res) => {
     try {
         const token = req.body.token;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
         const accountSettings = await AccountSetting.findOne({ _id: userId }).select('email gender country connectedAccounts');
@@ -18,21 +25,22 @@ exports.getAccountSettings = async (req, res) => {
 
 exports.modifyAccountSettings = async (req, res) => {
     try {
-        //const user = req.user;  //return undifined
-        //const user = req.body.user; // this will be removed 
         const token = req.body.token;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
 
-        if (!userId) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
         const modifyAccountSettings = req.body;
+        if (!isValidEmail(modifyAccountSettings.email)) {
+            return res.status(403).json({ error: 'Invalid email format' });
+        }
         const accountSetting = await AccountSetting.findOne({ _id: userId });
         Object.assign(accountSetting, modifyAccountSettings);
 
         await accountSetting.save();
-        res.status(200).json({ message: "success" });
+        res.status(200).json({ message: "Successful update" });
 
     } catch (err) {
         console.error('Error modifying account settings', err);
@@ -42,11 +50,12 @@ exports.modifyAccountSettings = async (req, res) => {
 
 exports.deleteAccount = async (req, res) => {
     try {
-        //const userId = req.user;  //return undefined
-        const userId = req.body.user; // this will be removed 
-        if (!userId) {
+        const token = req.body.token;
+        if (!token) {
             return res.status(400).json({ error: 'User ID is required' });
         }
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
 
         await AccountSetting.deleteOne({ _id: userId });
 

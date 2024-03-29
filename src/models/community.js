@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { boolean } = require("yargs");
 const Schema = mongoose.Schema;
 
 const CommunitySchema = new Schema(
@@ -21,6 +22,23 @@ const CommunitySchema = new Schema(
             trim: true,
             maxlength: 200,
             default: ''
+        },
+        is18plus: {
+            type: Boolean,
+            default: 'false'
+        },
+        allowNfsw: {
+            type: Boolean,
+            default: 'true'
+        },
+        allowSpoile: {
+            type: Boolean,
+            default: 'true'
+        },
+        communityType: {
+            type: String,
+            enum: ["Public", "Restricted", "Private"],
+            default: "Public",
         },
         creator: {
             type: Schema.Types.ObjectId,

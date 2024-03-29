@@ -1,89 +1,94 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const commentSchema = require('../models/comment')
 
 require("./user");
 
 const PostSchema = new Schema(
-    {
-      username: {
-        type: String,
-        required: true,
-        index: true,
-        ref: "user",
-      },
-      userId: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        index: true,
-        ref: "user",
-      },
-      content: {
-        type: String,
-        trim: true,
-        maxLength: 280,
-      },
-      title: {
-        type: String,
-        default: null,
-      },
-      attachments: [
-        {
-          type: String,
-          default: [],
-        },
-      ],
-      gif: {
-        type: String,
-        default: "",
-      },
-      mentions: [
-        {
-          type: String,
-          default: [],
-        },
-      ],
-      isSpoiler: {
-        type: Boolean,
-        default: false,
-      },
-      isHidden: {
-        type: Boolean,
-        default: false,
-      },
-      isEdited: {
-        type: Boolean,
-        default: false,
-      },
-      isSpam: {
-        type: Boolean,
-        default: false,
-      },
-      isLocked: {
-        type: Boolean,
-        default: false,
-      },
-      avatar: {
-        type: String,
-        trim: true,
-        default: "",
-      },
-      image: {
-        type: String,
-        trim: true,
-        default: "",
-      },
+  {
 
-      comments: [{
-        type: Schema.Types.ObjectId, 
-        ref: "comment",
-      }],
+    userId: {
+      type: String,
+      required: true
     },
-    {
-      timestamps: true,
-    }
-  );
+    username: {
+      type: String,
+      required: true
+    },
+    userProfilePic: {
+      type: String,
+      required: true
+    },
+    votesUpCount: {
+      type: Number,
+      default: 0
+    },
+    votesDownCount: {
+      type: Number,
+      default: 0
+    },
+    sharesCount: {
+      type: Number,
+      default: 0
+    },
+    commentsCount: {
+      type: Number,
+      default: 0
+    },
+    numberOfViews: {
+      type: Number,
+      default: 0
+    },
+    date: {
+      type: Date,
+      default: Date.now
+    },
+    title: {
+      type: String,
+      required: true
+    },
+    content: {
+      type: String,
+      required: true
+    },
+    community: {
+      type: String,
+      required: true
+    },
+    type: {
+      type: String,
+      enum: ['post'],
+      default: 'post'
+    },
+    pollOptions: {
+      type: [String]
+    },
+    link: {
+      type: String
+    },
+    imageOrVideo: {
+      type: String
+    },
+    isSpoiler: {
+      type: Boolean,
+      default: false
+    },
+    isNsfw: {
+      type: Boolean,
+      default: false
+    },
+    sendPostReplyNotification: {
+      type: Boolean,
+      default: true
+    },
+    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }]
+  },
+  {
+    timestamps: true,
+  }
+);
 
 
-  const Post = mongoose.model('post', PostSchema);
+const Post = mongoose.model('post', PostSchema);
 
-  module.exports = Post;
+module.exports = Post;

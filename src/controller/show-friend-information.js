@@ -14,6 +14,10 @@ exports.showFriend = async (req, res) => {
       console.error("User not found");
       return res.status(404).json({ error: "User not found" });
     }
+    const token = req.body.token;
+    if (!token) {
+      return res.status(400).json({ error: "please login first" });
+    }
     friendID = user._id;
     friendInf = await ShowFriend.findById(friendID);
     if (!friendInf) {

@@ -5,6 +5,9 @@ const jwt = require("jsonwebtoken");
 exports.getChatAndMessagingSetting = async (req, res) => {
     try {
         const token = req.body.token;
+        if (!token) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
         const decodeToken = jwt.decode(token);
         const userId = decodeToken._id;
         const chatAndMessagingSetting = await ChatAndMessagingSetting.findOne({ _id: userId }).select('sendYouFriendRequests sendYouPrivateMessages approvedUsers');
@@ -17,17 +20,17 @@ exports.getChatAndMessagingSetting = async (req, res) => {
 exports.modifyChatAndMessagingSetting = async (req, res) => {
     try {
         const token = req.body.token;
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
-        if (!userId) {
+        if (!token) {
             return res.status(400).json({ error: 'User ID is required' });
         }
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
 
         const modifyChatAndMessagingSetting = req.body;
         const chatAndMessagingSetting = await ChatAndMessagingSetting.findOne({ _id: userId });
         Object.assign(chatAndMessagingSetting, modifyChatAndMessagingSetting);
         await chatAndMessagingSetting.save();
-        res.status(200).json({ message: success });
+        res.status(200).json({ message: "Successful update" });
 
     } catch (err) {
         console.error('Error modifying chatAndMessaging settings', err);
@@ -39,11 +42,11 @@ exports.makeAllAsRead = async (req, res) => {
 
     try {
         const token = req.body.token;
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
-        if (!userId) {
+        if (!token) {
             return res.status(400).json({ error: 'User ID is required' });
         }
+        const decodeToken = jwt.decode(token);
+        const userId = decodeToken._id;
         const updatedMessages = await Message.updateMany({ userId }, { isRead: 'true' });
 
         res.status(200).json(updatedMessages);
