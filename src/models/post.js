@@ -60,15 +60,29 @@ const PostSchema = new Schema(
       enum: ['post'],
       default: 'post'
     },
-    pollOptions: {
-      type: [String]
+    pollOptions: [{
+      option: { type: String, required: true },
+      votes: { type: Number, default: 0 }
+    }],
+    pollExpiration:
+    {
+      type: Date, default: null
+    },
+    isPollEnabled: {
+      type: Boolean,
+      default: false
     },
     link: {
       type: String
     },
-    imageOrVideo: {
-      type: String
-    },
+    images: [{
+      type: String,
+      required: false
+    }],
+    videos: [{
+      type: String,
+      required: false
+    }],
     isSpoiler: {
       type: Boolean,
       default: false

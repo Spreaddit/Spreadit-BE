@@ -114,7 +114,7 @@ router.post("/login", async (req, res) => {
   } catch (err) {
     res.status(500).send({
       message:
-        "Internal server error",
+        "The server crashed :)",
     });
   }
 });

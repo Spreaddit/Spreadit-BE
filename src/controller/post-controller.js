@@ -66,7 +66,7 @@ exports.createPost = async (req, res) => {
         if (!user) {
             return res.status(400).json({ error: 'User ID is invalid' });
         }
-        const { title, content, community, type, pollOptions, link, imageOrVideo, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
+        const { title, content, community, type, pollOptions, pollExpiration, link, imageOrVideo, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
 
         if (!title || !community) {
             return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
@@ -74,6 +74,12 @@ exports.createPost = async (req, res) => {
 
         if (!user.communities.includes(community)) {
             return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
+        }
+
+        if (type === 'poll' && pollOptions && pollOptions.length > 0 && pollExpiration) {
+            const expirationDate = new Date(pollExpiration);
+            const currentTime = new Date();
+            const isPollEnabled = expirationDate > currentTime;
         }
 
         const newPost = new Post({
@@ -85,8 +91,11 @@ exports.createPost = async (req, res) => {
             community,
             type,
             pollOptions,
+            pollExpiration,
+            isPollEnabled,
             link,
-            imageOrVideo,
+            images,
+            videos,
             isSpoiler,
             isNsfw,
             sendPostReplyNotification
