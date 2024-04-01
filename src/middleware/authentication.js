@@ -1,16 +1,19 @@
 const { compareSync } = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const axios = require('axios');
+const mongoose = require("mongoose");
 const User = require("../models/user");
 
 const authentication = async (req, res, next) => {
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
     console.log(token);
-    const decoded = jwt.verify(token, "Spreadit-access-token-CCEC-2024");
+    const decoded = jwt.verify(token, "Spreadit-access-token-CCEC-2024", { algorithms: ['HS256'] });
+    console.log(decoded);
+    console.log(decoded._id)
     const user = await User.findOne({
       _id: decoded._id,
-      tokens: { $elemMatch: { "tokens.token": token } },
+      "tokens.token": token,
       isVerified: true,
     });
     console.log(user);

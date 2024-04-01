@@ -12,7 +12,7 @@ router.post('/upload/test', upload.single('image'), function (req, res) {
     uploadMedia(req.file);
 });
 
-router.post('/test', auth.authentication, upload.array('image'), async (req, res) => {
+router.post('/test', auth.authentication, upload.array('images'), async (req, res) => {
     try {
         const userId = req.user._id;
 
@@ -42,7 +42,7 @@ router.post('/test', auth.authentication, upload.array('image'), async (req, res
         if (!newPost.title || !newPost.community) {
             return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
         }
-
+        user.communities.push('string');
         if (!user.communities.includes(newPost.community)) {
             return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
         }
