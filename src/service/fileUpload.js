@@ -1,6 +1,6 @@
 const multer = require("multer");
 const path = require("path");
-const config = require("./../config");
+const config = require("./../configuration");
 
 const maxFileSize = 50 * 1024 * 1024;
 
