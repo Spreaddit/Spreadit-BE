@@ -68,22 +68,17 @@ const CommentSchema = new Schema(
     }
 );
 
-CommentSchema.statics.getTweetObject = async function (
+CommentSchema.statics.getCommentObject = async function (
     comment,
     username,
     withUserInfo = true
   ) {
     const Like = mongoose.model("like");
   
-    //const likesCount = await Like.count({ commentId: comment._id });
-    
+    const likesCount = comment.votesUpCount - comment.votesDownCount;
     const repliesCount = await Comment.count({
         parentCommentId: comment._id,
     });
-    // const likedTweet = await Like.findOne({
-    //   commentId: comment._id,
-    //   likerUsername: username,
-    // });
   
     let userObject = {};
     if (withUserInfo) {
@@ -96,9 +91,8 @@ CommentSchema.statics.getTweetObject = async function (
       id: comment._id,
       content: comment.content,
       user: userObject,
-      //likes_count: likesCount,
+      likes_count: likesCount,
       replies_count: repliesCount,
-      //is_liked: likedTweet != null ? true : false,
       is_reply: comment.parentCommentId != null ? true : false,
       media: comment.attachments,
       created_at: comment.createdAt,
