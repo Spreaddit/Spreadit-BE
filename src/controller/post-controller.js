@@ -51,7 +51,9 @@ exports.getAllUserPosts = async (req, res) => {
 
 exports.createPost = async (req, res) => {
     try {
-        const token = req.params.userId;
+        // const token = req.params.userId;
+        /*
+        const { token } = req.body;
         if (!token) {
             return res.status(400).json({ error: 'User ID is required' });
         }
@@ -61,45 +63,59 @@ exports.createPost = async (req, res) => {
             return res.status(400).json({ error: 'Invalid user ID' });
         }
         const userId = decodeToken._id;
+        */
+        const userId = req.user._id;
 
         const user = await User.findById(userId);
         if (!user) {
             return res.status(400).json({ error: 'User ID is invalid' });
         }
-        const { title, content, community, type, pollOptions, pollExpiration, link, imageOrVideo, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
-
-        if (!title || !community) {
-            return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
-        }
-
-        if (!user.communities.includes(community)) {
-            return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
-        }
-
-        if (type === 'poll' && pollOptions && pollOptions.length > 0 && pollExpiration) {
-            const expirationDate = new Date(pollExpiration);
-            const currentTime = new Date();
-            const isPollEnabled = expirationDate > currentTime;
-        }
-
+        //const { title, content, community, type, pollOptions, pollExpiration, link, imageOrVideo, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
         const newPost = new Post({
             userId,
             username: user.username,
             userProfilePic: user.avatar || "null",
-            title,
-            content,
-            community,
-            type,
-            pollOptions,
-            pollExpiration,
-            isPollEnabled,
-            link,
-            images,
-            videos,
-            isSpoiler,
-            isNsfw,
-            sendPostReplyNotification
+            title: req.body.title,
+            content: req.body.content,
+            community: req.body.community,
+            type: req.body.type,
+            pollOptions: req.body.pollOptions,
+            pollExpiration: req.body.pollExpiration,
+            isPollEnabled: req.body.isPollEnabled,
+            link: req.body.link,
+            videos: req.body.videos,
+            isSpoiler: req.body.isSpoiler,
+            isNsfw: req.body.isNsfw,
+            sendPostReplyNotification: req.body.sendPostReplyNotification
         });
+
+        console.log(newPost);
+        console.log(newPost.title);
+
+        if (req.file) {
+            for (let i = 0; i < req.file.length; i++) {
+                const result = await uploadMedia(req.file[i]);
+                const url = result.secure_url;
+                newPost.images.push(url);
+                console.log(url);
+            }
+        }
+
+        if (!newPost.title || !newPost.community) {
+            return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
+        }
+
+        if (!user.communities.includes(newPost.community)) {
+            return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
+        }
+
+        if (newPost.type === 'poll' && newPost.pollOptions && newPost.pollOptions.length > 0 && newPost.pollExpiration) {
+            const expirationDate = new Date(newPost.pollExpiration);
+            const currentTime = new Date();
+            const isPollEnabled = expirationDate > currentTime;
+        }
+
+
         await newPost.save();
         return res.status(201).json({ message: 'Post created successfully' });
     } catch (err) {
@@ -107,7 +123,6 @@ exports.createPost = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 
 exports.getAllPostsInCommunity = async (req, res) => {
     try {

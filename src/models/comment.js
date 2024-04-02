@@ -8,12 +8,17 @@ const CommentSchema = new Schema(
             type: String,
             required: true,
         },
-        userId: {
+        username: {
             type: Schema.Types.ObjectId,
             required: true,
             ref: "user",
         },
-
+        userId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            index: true,
+            ref: "user",
+        },
         postId: {
             type: Schema.Types.ObjectId,
             required: true,
@@ -22,8 +27,17 @@ const CommentSchema = new Schema(
         parentCommentId: {
             // If it's null, then this means that the comment itself is a parent comment
             type: Schema.Types.ObjectId,
+            index: true,
             ref: "comment",
             default: null,
+        },
+        votesUpCount: {
+            type: Number,
+            default: 0
+        },
+        votesDownCount: {
+            type: Number,
+            default: 0
         },
         isLocked: {
             type: Boolean,
@@ -41,12 +55,64 @@ const CommentSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        attachments: [
+            {
+              type: String,
+              default: [],
+            },
+        ],
 
     },
     {
         timestamps: true,
     }
 );
+
+CommentSchema.statics.getCommentObject = async function (
+    comment,
+    username,
+    withUserInfo = true
+  ) {
+    const Like = mongoose.model("like");
+  
+    const likesCount = comment.votesUpCount - comment.votesDownCount;
+    const repliesCount = await Comment.count({
+        parentCommentId: comment._id,
+    });
+  
+    let userObject = {};
+    if (withUserInfo) {
+      const User = mongoose.model("user");
+      const user = await User.findOne({ username: comment.username });
+      userObject = await User.generateUserObject(user, username);
+    }
+  
+    const commentInfo = {
+      id: comment._id,
+      content: comment.content,
+      user: userObject,
+      likes_count: likesCount,
+      replies_count: repliesCount,
+      is_reply: comment.parentCommentId != null ? true : false,
+      media: comment.attachments,
+      created_at: comment.createdAt,
+    };
+    return commentInfo;
+};
+
+
+CommentSchema.statics.getCommentReplies = async function (comment, username) {
+    const replyComment = await Comment.find({
+        parentCommentId: comment.id,
+    });
+    comment.replies = [];
+    for (let i = 0; i < replyComment.length; i++) {
+      const commentReply = replyComment[i];
+      const commentObject = await Comment.getCommentObject(commentReply, username);
+      comment.replies.push(commentObject);
+    }
+    return comment;
+};
 
 
 const Comment = mongoose.model("comment", CommentSchema);

@@ -14,7 +14,8 @@ const userRole = require("../../seed-data/constants/userRole");
 
 /**
  * User Schema definition.
- * @type {import('mongoose').Schema<any>}
+ * @type {mongoose.Schema<object>}
+ * @param {mongoose.Document & { roleId: userRole.UserRole }} user - User object
  */
 const UserSchema = new Schema(
   {

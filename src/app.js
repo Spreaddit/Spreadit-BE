@@ -23,6 +23,8 @@ const layoutSettingRoutes = require("./routes/layout-setting");
 const chatAndMessagingSettingRoutes = require("./routes/chat-and-messaging-setting");
 const showFriendRoutes = require("./routes/show-friend-information");
 const postsRoutes = require("./routes/post");
+const uploadRoutes = require("./routes/upload-test");
+
 const listingRoutes = require("./routes/listing");
 
 const app = express();
@@ -62,6 +64,7 @@ app.use("/users", blockUserRoutes);
 app.use("/users", reportUserRoutes);
 app.use("/users", showFriendRoutes);
 app.use("/posts", postsRoutes);
+app.use("/", uploadRoutes);
 app.use("", listingRoutes);
 mongoose
   .connect(connectionurl, {
