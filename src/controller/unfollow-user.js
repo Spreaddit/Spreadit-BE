@@ -20,7 +20,6 @@ exports.unfollowUser = async (req, res) => {
       return res.status(400).json({ error: "please login first" });
     }
     const decodedToken = jwt.decode(token);
-
     const unfollowerID = decodedToken._id;
     if (!toUnfollowID || !unfollowerID) {
       console.error("this user not found:");

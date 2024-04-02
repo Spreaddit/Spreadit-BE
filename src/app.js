@@ -25,6 +25,8 @@ const showFriendRoutes = require("./routes/show-friend-information");
 const postsRoutes = require("./routes/post");
 const uploadRoutes = require("./routes/upload-test");
 
+const listingRoutes = require("./routes/listing");
+
 const app = express();
 const port = 80;
 //const port = 443;
@@ -43,7 +45,7 @@ app.use(
 );
 
 app.use(authRoutes);
-app.use('/auth', authRoutes);
+app.use("/auth", authRoutes);
 app.use("/settings", accountSettingRoutes);
 app.use("/settings", profileSettingRoutes);
 app.use("/settings", safetyAndPrivacySettingRoutes);
@@ -63,6 +65,7 @@ app.use("/users", reportUserRoutes);
 app.use("/users", showFriendRoutes);
 app.use("/posts", postsRoutes);
 app.use("/", uploadRoutes);
+app.use("", listingRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
