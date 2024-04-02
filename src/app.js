@@ -23,6 +23,7 @@ const layoutSettingRoutes = require("./routes/layout-setting");
 const chatAndMessagingSettingRoutes = require("./routes/chat-and-messaging-setting");
 const showFriendRoutes = require("./routes/show-friend-information");
 const postsRoutes = require("./routes/post");
+const listingRoutes = require("./routes/listing");
 
 const app = express();
 const port = 80;
@@ -42,7 +43,7 @@ app.use(
 );
 
 app.use(authRoutes);
-app.use('/auth', authRoutes);
+app.use("/auth", authRoutes);
 app.use("/settings", accountSettingRoutes);
 app.use("/settings", profileSettingRoutes);
 app.use("/settings", safetyAndPrivacySettingRoutes);
@@ -61,7 +62,7 @@ app.use("/users", blockUserRoutes);
 app.use("/users", reportUserRoutes);
 app.use("/users", showFriendRoutes);
 app.use("/posts", postsRoutes);
-
+app.use("", listingRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
