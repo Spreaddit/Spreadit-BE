@@ -259,11 +259,12 @@ const UserSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    communities: [
-      {
-        type: String,
+    communities: {
+      type: [String],
+      default: function () {
+        return [this.username];
       },
-    ],
+    },
     savedPosts: [{ type: Schema.Types.ObjectId, ref: "Posts", index: true }],
     savedComments: [{ type: Schema.Types.ObjectId, ref: "comment", index: true }],
     blockedUsers: [

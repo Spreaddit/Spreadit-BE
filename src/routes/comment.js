@@ -3,10 +3,11 @@ const Comment = require("../models/comment");
 const User = require("../models/user");
 const auth = require("../middleware/authentication");
 const mongoose = require("mongoose");
-const upload = require("../services/fileUpload");
-const { uploadMedia } = require("../services/s3");
-const config = require("./../config");
+const upload = require("../service/fileUpload");
+const { uploadMedia } = require("../service/cloudinary");
+const config = require("./../configuration");
 const router = express.Router();
+
 
 
 router.delete("/posts/comment/delete", auth.authentication, async (req, res) => {
@@ -107,7 +108,7 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
     }
 });
 
-router.post("/posts/comment/:postId", auth.authentication, async (req, res) => {
+router.post("/posts/comment/:postId", auth.authentication, upload.array('attachments'), async (req, res) => {
     try {
         const postId = req.params.postId;
         const userId = req.user.userId;
@@ -124,12 +125,21 @@ router.post("/posts/comment/:postId", auth.authentication, async (req, res) => {
             userId,
             postId,
         });
+        if (req.files) {
+            for (let i = 0; i < req.files.length; i++) {
+              const result = await uploadMedia(req.files[i]);
+              //const url = `${config.baseUrl}/media/${result.Key}`;
+              const url = result.secure_url;
+              newComment.attachments.push(url);
+            }
+        }
 
         await newComment.save();
-
         await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
 
+        const commentObj = await Comment.getCommentObject(newComment, req.user.username);
         res.status(201).send({ 
+            comment: commentObj,
             message: "Comment has been added successfully" 
         });
     } catch (err) {
@@ -329,6 +339,7 @@ router.post("/comments/:commentId/unsave", auth.authentication, async (req, res)
 });
 
 
+module.exports = router;
 
 
 

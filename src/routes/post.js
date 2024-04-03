@@ -1,37 +1,32 @@
 const express = require('express');
 const router = express.Router();
 const postController = require('../controller/post-controller');
+const upload = require("../service/fileUpload");
 const auth = require("../middleware/authentication");
 
-/*
+
+
 router.route('')
     .get(postController.getAllPosts);
-*/
-/*
-router.route('/:userId', auth)
-    .get(postController.getAllUserPosts)
-    .post(postController.createPost);
-*/
-/*
-router.route('', auth)
-    .get(postController.getAllUserPosts)
-    .post(postController.createPost);
-*/
 
 
-router.route('/community/:community', auth)
-    .get(postController.getAllPostsInCommunity)
+router.route('/user')
+    .get(auth.authentication, postController.getAllUserPosts)
+    .post(auth.authentication, upload.array('images'), postController.createPost);
 
-router.route('/:postId/save', auth)
-    .post(postController.savePost);
+router.route('/community/:community')
+    .get(auth.authentication, postController.getAllPostsInCommunity)
 
-router.route('/:userId/save', auth)
-    .get(postController.getSavedPosts);
+router.route('/:postId/save')
+    .post(auth.authentication, postController.savePost);
+
+router.route('/:userId/save')
+    .get(auth.authentication, postController.getSavedPosts);
 
 router.route('/:postId/unsave', auth)
-    .post(postController.unsavePost);
+    .post(auth.authentication, postController.unsavePost);
 
 router.route('/:postId/edit', auth)
-    .post(postController.editPost);
+    .post(auth.authentication, postController.editPost);
 
 module.exports = router;    

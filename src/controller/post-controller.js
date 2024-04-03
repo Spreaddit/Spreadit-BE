@@ -1,6 +1,8 @@
 const Post = require('../models/post');
 const User = require('../models/user');
 const jwt = require("jsonwebtoken");
+const schedule = require("node-schedule");
+const { uploadMedia } = require("../service/cloudinary.js");
 
 exports.getAllPosts = async (req, res) => {
     try {
@@ -22,15 +24,7 @@ exports.getAllPosts = async (req, res) => {
 
 exports.getAllUserPosts = async (req, res) => {
     try {
-        const token = req.params.userId;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        if (!decodeToken || !decodeToken._id) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const userId = decodeToken._id;
+        const userId = req.user._id;
 
         const posts = await Post.find({ userId });
 
@@ -50,19 +44,6 @@ exports.getAllUserPosts = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-    // const token = req.params.userId;
-    /*
-    const { token } = req.body;
-    if (!token) {
-        return res.status(400).json({ error: 'User ID is required' });
-    }
-
-    const decodeToken = jwt.decode(token);
-    if (!decodeToken || !decodeToken._id) {
-        return res.status(400).json({ error: 'Invalid user ID' });
-    }
-    const userId = decodeToken._id;
-    */
     try {
         const userId = req.user._id;
 
@@ -70,49 +51,90 @@ exports.createPost = async (req, res) => {
         if (!user) {
             return res.status(400).json({ error: 'User ID is invalid' });
         }
+        const { title, content, community, type, pollOptions, pollVotingLength, link, videos, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
+        let pollExpiration, isPollEnabled;
+        if (!title || !community) {
+            return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
+        }
+        let images = [];
+        if (req.files && req.files.length > 0) {
+            for (let i = 0; i < req.files.length; i++) {
+                const result = await uploadMedia(req.files[i]); // Corrected accessing req.files array
+                const url = result.secure_url;
+                images.push(url);
+            }
+        }
+        if (type === 'Poll') {
+            if (pollVotingLength) {
+                const days = parseInt(pollVotingLength.split(' ')[0]);
+                if (!isNaN(days)) {
+                    const expirationDate = new Date();
+                    expirationDate.setDate(expirationDate.getDate() + days);
+                    pollExpiration = expirationDate;
+                }
+            }
+            isPollEnabled = 1;
+        }
+        // Validate post data based on post type
+        if (type === 'Post') {
+            if (pollOptions || pollVotingLength) {
+                return res.status(400).json({ error: 'Regular posts cannot have poll options, pollVotingLength' });
+            }
+        } else if (type === 'Images & Video') {
+            if (!images) {
+                return res.status(400).json({ error: 'images are required for image/video posts' });
+            }
+            if (pollOptions || pollVotingLength || link || content) {
+                return res.status(400).json({ error: 'images posts cannot have poll options, pollVotingLength, link, or content' });
+            }
+        } else if (type === 'Link') {
+            if (!link) {
+                return res.status(400).json({ error: 'link are required for link posts' });
+            }
+            if (images.length > 0 || videos || pollOptions || pollVotingLength || content) {
+                return res.status(400).json({ error: 'Link posts cannot have poll options, pollVotingLength, images, or content' });
+            }
+        } else if (type === 'Poll') {
+            if (!pollOptions || !pollVotingLength) {
+                return res.status(400).json({ error: ' poll options, and pollVotingLength are required for poll posts' });
+            }
+        }
+
+
+        if (!user.communities.includes(community)) {
+            return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
+        }
+        if (type != 'Post' && type != 'Images & Video' && type != 'Link' && type != 'Poll') {
+            return res.status(400).json({ error: 'Invalid post data. Please provide real post type' });
+        }
 
         const newPost = new Post({
             userId,
             username: user.username,
             userProfilePic: user.avatar || "null",
-            title: req.body.title,
-            content: req.body.content,
-            community: req.body.community,
-            type: req.body.type,
-            pollOptions: req.body.pollOptions,
-            pollExpiration: req.body.pollExpiration,
-            isPollEnabled: req.body.isPollEnabled, // Assuming isPollEnabled should be set here
-            link: req.body.link,
-            videos: req.body.videos,
-            isSpoiler: req.body.isSpoiler,
-            isNsfw: req.body.isNsfw,
-            sendPostReplyNotification: req.body.sendPostReplyNotification
+            title,
+            content,
+            community,
+            type,
+            pollOptions,
+            pollExpiration,
+            isPollEnabled,
+            pollVotingLength,
+            link,
+            images,
+            videos,
+            isSpoiler,
+            isNsfw,
+            sendPostReplyNotification
         });
 
-        if (!newPost.title || !newPost.community) {
-            return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
-        }
-        user.communities.push('string');
-        if (!user.communities.includes(newPost.community)) {
-            return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
-        }
-
-        if (newPost.type === 'poll' && newPost.pollOptions && newPost.pollOptions.length > 0 && newPost.pollExpiration) {
-            const expirationDate = new Date(newPost.pollExpiration);
-            const currentTime = new Date();
-            newPost.isPollEnabled = expirationDate > currentTime; // Corrected assignment
-        }
-
-        if (req.files && req.files.length > 0) {
-            for (let i = 0; i < req.files.length; i++) {
-                const result = await uploadMedia(req.files[i]); // Corrected accessing req.files array
-                const url = result.secure_url;
-                newPost.images.push(url);
-                console.log(url);
-            }
-        }
-
         await newPost.save();
+        if (type === 'Poll' && pollExpiration) {
+            schedule.scheduleJob(pollExpiration, async () => {
+                newPost.isPollEnabled = false;
+                await newPost.save();
+            });
+        }
         return res.status(201).json({ message: 'Post created successfully' });
     } catch (err) {
         console.error('Error creating post:', err);
@@ -146,16 +168,7 @@ exports.getAllPostsInCommunity = async (req, res) => {
 exports.savePost = async (req, res) => {
     try {
         const { postId } = req.params;
-        const token = req.query.userId;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-
-        const decodeToken = jwt.decode(token);
-        if (!decodeToken || !decodeToken._id) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         if (!postId || !userId) {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
         }
@@ -185,16 +198,7 @@ exports.savePost = async (req, res) => {
 
 exports.getSavedPosts = async (req, res) => {
     try {
-        const token = req.params.userId;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        if (!decodeToken || !decodeToken._id) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const userId = decodeToken._id;
-
+        const userId = req.user._id;
 
         const user = await User.findById(userId);
         if (!user) {
@@ -219,15 +223,7 @@ exports.getSavedPosts = async (req, res) => {
 exports.unsavePost = async (req, res) => {
     try {
         const { postId } = req.params;
-        const token = req.query.userId;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        if (!decodeToken || !decodeToken._id) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         if (!postId || !userId) {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
         }
@@ -259,16 +255,7 @@ exports.unsavePost = async (req, res) => {
 
 exports.editPost = async (req, res) => {
     try {
-        const { postId } = req.params;
-        const token = req.query.userId;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        if (!decodeToken || !decodeToken._id) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const user = await User.findById(userId);
         if (!user) {
             return res.status(400).json({ error: 'User ID is invalid' });
