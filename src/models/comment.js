@@ -1,6 +1,8 @@
 const { Int32 } = require("mongodb");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+require("./user");
+require("./post");
 
 const CommentSchema = new Schema(
     {
@@ -8,14 +10,9 @@ const CommentSchema = new Schema(
             type: String,
             required: true,
         },
-        username: {
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: "user",
-        },
         userId: {
             type: Schema.Types.ObjectId,
-            required: true,
+            //required: true,
             index: true,
             ref: "user",
         },
@@ -70,23 +67,28 @@ const CommentSchema = new Schema(
 
 CommentSchema.statics.getCommentObject = async function (
     comment,
-    username,
+    userid,
     withUserInfo = true
   ) {
-    const Like = mongoose.model("like");
-  
+    //console.log(comment.username);
     const likesCount = comment.votesUpCount - comment.votesDownCount;
-    const repliesCount = await Comment.count({
+    const repliesCount = await Comment.countDocuments({
         parentCommentId: comment._id,
     });
-  
+    console.log(userid);
     let userObject = {};
+    
     if (withUserInfo) {
       const User = mongoose.model("user");
-      const user = await User.findOne({ username: comment.username });
-      userObject = await User.generateUserObject(user, username);
+      if(userid === comment.userId ){
+        const user = await User.findOne({ _id: comment.userId });
+      console.log(user);
+      userObject = await User.generateUserObject(user, userid);
+      }
+      
     }
-  
+    
+    console.log(userObject)
     const commentInfo = {
       id: comment._id,
       content: comment.content,

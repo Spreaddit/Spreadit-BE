@@ -46,9 +46,9 @@ const PostSchema = new Schema(
       type: String,
       required: true
     },
-    content: {
+    content: [{
       type: String,
-    },
+    }],
     community: {
       type: String,
       required: true
