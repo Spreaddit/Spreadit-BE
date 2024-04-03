@@ -1,6 +1,7 @@
 const express = require("express");
 const Comment = require("../models/comment");
 const User = require("../models/user");
+const Post = require("../models/post");
 const auth = require("../middleware/authentication");
 const mongoose = require("mongoose");
 const upload = require("../service/fileUpload");
@@ -110,10 +111,12 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
 
 router.post("/posts/comment/:postId", auth.authentication, upload.array('attachments'), async (req, res) => {
     try {
+        //verify that the post id exists in the post collections
         const postId = req.params.postId;
-        const userId = req.user.userId;
+        const userId = req.user._id;
         const { content } = req.body;
 
+        console.log(userId);
         if (!content) {
             return res.status(400).send({ 
                 message: "Comment content is required" 
@@ -125,6 +128,7 @@ router.post("/posts/comment/:postId", auth.authentication, upload.array('attachm
             userId,
             postId,
         });
+
         if (req.files) {
             for (let i = 0; i < req.files.length; i++) {
               const result = await uploadMedia(req.files[i]);
@@ -133,11 +137,12 @@ router.post("/posts/comment/:postId", auth.authentication, upload.array('attachm
               newComment.attachments.push(url);
             }
         }
-
+        //console.log(newComment);
         await newComment.save();
         await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
-
-        const commentObj = await Comment.getCommentObject(newComment, req.user.username);
+        console.log(userId);
+        const commentObj = await Comment.getCommentObject(newComment, userId);
+        //console.log(commentObj);
         res.status(201).send({ 
             comment: commentObj,
             message: "Comment has been added successfully" 
