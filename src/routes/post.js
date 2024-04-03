@@ -18,10 +18,22 @@ router.route('/:postId/save')
 router.route('/save')
     .get(auth.authentication, postController.getSavedPosts);
 
-router.route('/:postId/unsave', auth)
+router.route('/:postId/unsave')
     .post(auth.authentication, postController.unsavePost);
 
-router.route('/:postId/edit', auth)
-    .post(auth.authentication, postController.editPost);
+router.route('/:postId/edit')
+    .put(auth.authentication, postController.editPost);
+
+router.route('/:postId/spoiler')
+    .post(auth.authentication, postController.spoilerPostContent);
+
+router.route('/:postId/unspoiler')
+    .post(auth.authentication, postController.unspoilerPostContent);
+
+router.route('/:postId/lock')
+    .post(auth.authentication, postController.lockPostComments);
+
+router.route('/:postId/unlock')
+    .post(auth.authentication, postController.unlockPostComments);
 
 module.exports = router;    
