@@ -57,8 +57,8 @@ const PostSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ['post'],
-      default: 'post'
+      enum: ['Post', 'Images & Video', 'Link', 'Poll'],
+      default: 'Post'
     },
     pollOptions: [{
       option: { type: String, required: true },

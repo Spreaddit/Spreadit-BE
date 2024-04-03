@@ -1,6 +1,7 @@
 const Post = require('../models/post');
 const User = require('../models/user');
 const jwt = require("jsonwebtoken");
+const { uploadMedia } = require("../service/cloudinary.js");
 
 exports.getAllPosts = async (req, res) => {
     try {
@@ -22,15 +23,7 @@ exports.getAllPosts = async (req, res) => {
 
 exports.getAllUserPosts = async (req, res) => {
     try {
-        const token = req.params.userId;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        if (!decodeToken || !decodeToken._id) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const userId = decodeToken._id;
+        const userId = req.user._id;
 
         const posts = await Post.find({ userId });
 
@@ -50,19 +43,6 @@ exports.getAllUserPosts = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-    // const token = req.params.userId;
-    /*
-    const { token } = req.body;
-    if (!token) {
-        return res.status(400).json({ error: 'User ID is required' });
-    }
-
-    const decodeToken = jwt.decode(token);
-    if (!decodeToken || !decodeToken._id) {
-        return res.status(400).json({ error: 'Invalid user ID' });
-    }
-    const userId = decodeToken._id;
-    */
     try {
         const userId = req.user._id;
 
@@ -88,11 +68,10 @@ exports.createPost = async (req, res) => {
             isNsfw: req.body.isNsfw,
             sendPostReplyNotification: req.body.sendPostReplyNotification
         });
-
         if (!newPost.title || !newPost.community) {
             return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
         }
-        user.communities.push('string');
+
         if (!user.communities.includes(newPost.community)) {
             return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
         }
@@ -146,16 +125,7 @@ exports.getAllPostsInCommunity = async (req, res) => {
 exports.savePost = async (req, res) => {
     try {
         const { postId } = req.params;
-        const token = req.query.userId;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-
-        const decodeToken = jwt.decode(token);
-        if (!decodeToken || !decodeToken._id) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         if (!postId || !userId) {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
         }
@@ -185,16 +155,7 @@ exports.savePost = async (req, res) => {
 
 exports.getSavedPosts = async (req, res) => {
     try {
-        const token = req.params.userId;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        if (!decodeToken || !decodeToken._id) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const userId = decodeToken._id;
-
+        const userId = req.user._id;
 
         const user = await User.findById(userId);
         if (!user) {
@@ -219,15 +180,7 @@ exports.getSavedPosts = async (req, res) => {
 exports.unsavePost = async (req, res) => {
     try {
         const { postId } = req.params;
-        const token = req.query.userId;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        if (!decodeToken || !decodeToken._id) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         if (!postId || !userId) {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
         }
@@ -259,16 +212,7 @@ exports.unsavePost = async (req, res) => {
 
 exports.editPost = async (req, res) => {
     try {
-        const { postId } = req.params;
-        const token = req.query.userId;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        if (!decodeToken || !decodeToken._id) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const user = await User.findById(userId);
         if (!user) {
             return res.status(400).json({ error: 'User ID is invalid' });
