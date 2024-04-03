@@ -13,22 +13,25 @@ const router = express.Router();
 
 router.delete("/posts/comment/delete", auth.authentication, async (req, res) => {
     try {
+      const userId = req.user._id;
       const comment = await Comment.findByIdAndDelete(req.body.id);
-      const userId = req.user.userId;
+      if (comment.userId.toString() !== userId.toString()) {
+        return res.status(403).send({ 
+            message: "You are not authorized to delete this comment" 
+        });
+        }
+
+      
       if (!comment) {
         return res.status(404).send({ 
             message: "comment not found" 
         });
       }
-      if (comment.userId !== userId) {
-        return res.status(403).send({ 
-            message: "You are not authorized to delete this comment" 
-        });
-        }
+      
   
       await Comment.deleteMany({ parentId: req.body.id });
   
-      const commentObj = await Comment.getCommentObject(comment, req.user.username);
+      const commentObj = await Comment.getCommentObject(comment, userId);
   
       res.status(200).send({
         comment: commentObj,
@@ -114,6 +117,7 @@ router.post("/posts/comment/:postId", auth.authentication, upload.array('attachm
         //verify that the post id exists in the post collections
         const postId = req.params.postId;
         const userId = req.user._id;
+        console.log(userId);
         const { content } = req.body;
 
         console.log(userId);
@@ -123,7 +127,7 @@ router.post("/posts/comment/:postId", auth.authentication, upload.array('attachm
             });
         }
         const existingPost = await Post.findById(postId);
-        
+
         if (!existingPost) {
             return res.status(404).send({
                 message: "Post not found"
