@@ -1,6 +1,7 @@
 const Post = require('../models/post');
 const User = require('../models/user');
 const jwt = require("jsonwebtoken");
+const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
 
 exports.getAllPosts = async (req, res) => {
@@ -50,8 +51,8 @@ exports.createPost = async (req, res) => {
         if (!user) {
             return res.status(400).json({ error: 'User ID is invalid' });
         }
-        const { title, content, community, type, pollOptions, pollVotingLength, pollExpiration, link, videos, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
-
+        const { title, content, community, type, pollOptions, pollVotingLength, link, videos, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
+        let pollExpiration, isPollEnabled;
         if (!title || !community) {
             return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
         }
@@ -63,8 +64,7 @@ exports.createPost = async (req, res) => {
                 images.push(url);
             }
         }
-        if (type === 'poll') {
-            pollVotingLength: pollVotingLength || '3 Days';
+        if (type === 'Poll') {
             if (pollVotingLength) {
                 const days = parseInt(pollVotingLength.split(' ')[0]);
                 if (!isNaN(days)) {
@@ -118,6 +118,7 @@ exports.createPost = async (req, res) => {
             type,
             pollOptions,
             pollExpiration,
+            isPollEnabled,
             pollVotingLength,
             link,
             images,
@@ -127,8 +128,13 @@ exports.createPost = async (req, res) => {
             sendPostReplyNotification
         });
 
-
         await newPost.save();
+        if (type === 'Poll' && pollExpiration) {
+            schedule.scheduleJob(pollExpiration, async () => {
+                newPost.isPollEnabled = false;
+                await newPost.save();
+            });
+        }
         return res.status(201).json({ message: 'Post created successfully' });
     } catch (err) {
         console.error('Error creating post:', err);
