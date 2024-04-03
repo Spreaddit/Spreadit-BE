@@ -338,3 +338,39 @@ exports.unspoilerPostContent = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.lockPostComments = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+        post.isCommentsLocked = true;
+        await post.save();
+        return res.status(200).json({ message: 'Post comments locked successfully' });
+    } catch (error) {
+        console.error('Error locking post comments:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.unlockPostComments = async (req, res) => {
+    try {
+
+        const { postId } = req.params;
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        post.isCommentsLocked = false;
+        await post.save();
+        return res.status(200).json({ message: 'Post comments unlocked successfully' });
+    } catch (error) {
+        console.error('Error unlocking post comments:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};

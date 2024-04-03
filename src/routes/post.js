@@ -30,4 +30,10 @@ router.route('/:postId/spoiler')
 router.route('/:postId/unspoiler')
     .post(auth.authentication, postController.unspoilerPostContent);
 
+router.route('/:postId/lock')
+    .post(auth.authentication, postController.lockPostComments);
+
+router.route('/:postId/unlock')
+    .post(auth.authentication, postController.unlockPostComments);
+
 module.exports = router;    
