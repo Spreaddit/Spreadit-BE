@@ -50,27 +50,27 @@ exports.getAllUserPosts = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-    try {
-        // const token = req.params.userId;
-        /*
-        const { token } = req.body;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
+    // const token = req.params.userId;
+    /*
+    const { token } = req.body;
+    if (!token) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
 
-        const decodeToken = jwt.decode(token);
-        if (!decodeToken || !decodeToken._id) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const userId = decodeToken._id;
-        */
+    const decodeToken = jwt.decode(token);
+    if (!decodeToken || !decodeToken._id) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    const userId = decodeToken._id;
+    */
+    try {
         const userId = req.user._id;
 
         const user = await User.findById(userId);
         if (!user) {
             return res.status(400).json({ error: 'User ID is invalid' });
         }
-        //const { title, content, community, type, pollOptions, pollExpiration, link, imageOrVideo, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
+
         const newPost = new Post({
             userId,
             username: user.username,
@@ -81,7 +81,7 @@ exports.createPost = async (req, res) => {
             type: req.body.type,
             pollOptions: req.body.pollOptions,
             pollExpiration: req.body.pollExpiration,
-            isPollEnabled: req.body.isPollEnabled,
+            isPollEnabled: req.body.isPollEnabled, // Assuming isPollEnabled should be set here
             link: req.body.link,
             videos: req.body.videos,
             isSpoiler: req.body.isSpoiler,
@@ -89,22 +89,10 @@ exports.createPost = async (req, res) => {
             sendPostReplyNotification: req.body.sendPostReplyNotification
         });
 
-        console.log(newPost);
-        console.log(newPost.title);
-
-        if (req.file) {
-            for (let i = 0; i < req.file.length; i++) {
-                const result = await uploadMedia(req.file[i]);
-                const url = result.secure_url;
-                newPost.images.push(url);
-                console.log(url);
-            }
-        }
-
         if (!newPost.title || !newPost.community) {
             return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
         }
-
+        user.communities.push('string');
         if (!user.communities.includes(newPost.community)) {
             return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
         }
@@ -112,9 +100,17 @@ exports.createPost = async (req, res) => {
         if (newPost.type === 'poll' && newPost.pollOptions && newPost.pollOptions.length > 0 && newPost.pollExpiration) {
             const expirationDate = new Date(newPost.pollExpiration);
             const currentTime = new Date();
-            const isPollEnabled = expirationDate > currentTime;
+            newPost.isPollEnabled = expirationDate > currentTime; // Corrected assignment
         }
 
+        if (req.files && req.files.length > 0) {
+            for (let i = 0; i < req.files.length; i++) {
+                const result = await uploadMedia(req.files[i]); // Corrected accessing req.files array
+                const url = result.secure_url;
+                newPost.images.push(url);
+                console.log(url);
+            }
+        }
 
         await newPost.save();
         return res.status(201).json({ message: 'Post created successfully' });
