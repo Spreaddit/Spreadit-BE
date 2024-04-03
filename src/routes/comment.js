@@ -96,7 +96,7 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
 router.post("/posts/comment/:postId", auth.authentication, async (req, res) => {
     try {
         const postId = req.params.postId;
-        
+
         const userId = req.user.userId;
 
         const { content } = req.body;
@@ -120,3 +120,34 @@ router.post("/posts/comment/:postId", auth.authentication, async (req, res) => {
         res.status(500).send(err.toString());
     }
 });
+
+
+router.post("/comments/:commentId/edit", auth.authentication, async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        const userId = req.user.userId;
+        const { content } = req.body;
+
+        if (!content) {
+            return res.status(400).send({ message: "Updated content is required" });
+        }
+
+        const comment = await Comment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).send({ message: "Comment not found" });
+        }
+
+        if (comment.userId !== userId) {
+            return res.status(403).send({ message: "You are not authorized to edit this comment" });
+        }
+
+        comment.content = content;
+
+        await comment.save();
+        res.status(200).send({ message: "Comment has been updated successfully" });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
+
