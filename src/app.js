@@ -6,24 +6,16 @@ const cors = require("cors");
 const config = require("./configuration");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
-const accountSettingRoutes = require("./routes/account-setting");
-const profileSettingRoutes = require("./routes/profile-setting");
-const safetyAndPrivacySettingRoutes = require("./routes/safety-and-privacy-setting");
-const feedSettingRoutes = require("./routes/feed-setting");
-const notificationSettingRoutes = require("./routes/notification-setting");
 const createCommunityRoutes = require("./routes/create-community");
 const blockUserRoutes = require("./routes/block-user");
 const followUserRoutes = require("./routes/follow-user");
 const unfollowUserRoutes = require("./routes/unfollow-user");
 const reportUserRoutes = require("./routes/report-user");
-const emailSettingRoutes = require("./routes/email-setting");
-const contactSettingRoutes = require("./routes/mobile-contact-setting");
-const blockingSettingRoutes = require("./routes/mobile-blocking-permissions-setting");
-const layoutSettingRoutes = require("./routes/layout-setting");
-const chatAndMessagingSettingRoutes = require("./routes/chat-and-messaging-setting");
 const showFriendRoutes = require("./routes/show-friend-information");
 const postsRoutes = require("./routes/post");
 const uploadRoutes = require("./routes/upload-test");
+const settingsRoutes = require("./routes/settings");
+const mobileSettingsRoutes = require("./routes/mobile-settings");
 
 const listingRoutes = require("./routes/listing");
 
@@ -46,18 +38,9 @@ app.use(
 
 app.use(authRoutes);
 app.use("/auth", authRoutes);
-app.use("/settings", accountSettingRoutes);
-app.use("/settings", profileSettingRoutes);
-app.use("/settings", safetyAndPrivacySettingRoutes);
-app.use("/settings", feedSettingRoutes);
-app.use("/settings", notificationSettingRoutes);
+app.use("/settings", settingsRoutes);
+app.use("/mobile/settings", mobileSettingsRoutes);
 app.use("/", createCommunityRoutes);
-app.use("/settings", emailSettingRoutes);
-app.use("/settings", layoutSettingRoutes);
-app.use("/settings", chatAndMessagingSettingRoutes);
-app.use("/mobile/settings", accountSettingRoutes);
-app.use("/mobile/settings", contactSettingRoutes);
-app.use("/mobile/settings", blockingSettingRoutes);
 app.use("/users", followUserRoutes);
 app.use("/users", unfollowUserRoutes);
 app.use("/users", blockUserRoutes);
