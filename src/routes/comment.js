@@ -165,8 +165,6 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
 });
 
 
-
-
 router.post("/comments/:commentId/edit", auth.authentication, async (req, res) => {
     try {
         const commentId = req.params.commentId;
@@ -281,6 +279,104 @@ router.get("/comments/:commentId/replies", auth.authentication, async (req, res)
     }
 });
 
+router.post("/comments/:commentId/hide", auth.authentication, async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+
+        const comment = await Comment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).send({ message: "Comment not found" });
+        }
+
+        comment.isHidden = !comment.isHidden;
+        await comment.save();
+
+        res.status(200).send({ message: `Comment has been ${comment.isHidden ? 'hidden' : 'unhidden'} successfully` });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
+
+router.post("/comments/:commentId/upvote", auth.authentication, async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        const userId = req.user._id;
+
+        const comment = await Comment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).send({ 
+                message: "Comment not found" 
+            });
+        }
+        const downvotesCount = comment.downVotes.length;
+
+        const downvoteIndex = comment.downVotes.indexOf(userId);
+        if (downvoteIndex !== -1) {
+            comment.downVotes.splice(downvoteIndex, 1);
+        }
+        
+        if (comment.upVotes.includes(userId)) {
+            return res.status(400).send({ 
+                message: "You have already upvoted this comment" 
+            });
+        }
+
+        comment.upVotes.push(userId);
+        await comment.save();
+        const upvotesCount = comment.upVotes.length;
+        const netVotes = upvotesCount - downvotesCount;
+
+        res.status(200).send({ 
+            votes: netVotes,
+            message: "Comment has been upvoted successfully" 
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
+
+
+router.post("/comments/:commentId/downvote", auth.authentication, async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        const userId = req.user._id;
+
+        const comment = await Comment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).send({ 
+                message: "Comment not found" 
+            });
+        }
+
+        const upvotesCount = comment.upVotes.length;
+        
+        const upvoteIndex = comment.upVotes.indexOf(userId);
+        if (upvoteIndex !== -1) {
+            comment.upVotes.splice(upvoteIndex, 1);
+        }
+
+        if (comment.downVotes.includes(userId)) {
+            return res.status(400).send({ 
+                message: "You have already downvoted this comment" 
+            });
+        }
+
+        comment.downVotes.push(userId);
+        await comment.save();
+        const downvotesCount = comment.downVotes.length;
+        const netVotes = upvotesCount - downvotesCount;
+
+        res.status(200).send({ 
+            votes: netVotes,
+            message: "Comment has been downvoted successfully" 
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
 
 router.post("/comments/:commentId/report", auth.authentication, async (req, res) => {
     try {
@@ -376,6 +472,7 @@ router.post("/comments/:commentId/unsave", auth.authentication, async (req, res)
     }
 });
 
+//shring a comment ??
 
 module.exports = router;
 

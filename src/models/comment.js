@@ -28,13 +28,17 @@ const CommentSchema = new Schema(
             ref: "comment",
             default: null,
         },
-        votesUpCount: {
-            type: Number,
-            default: 0
+        upVotes: {
+            type: [],
+            default: null
         },
-        votesDownCount: {
-            type: Number,
-            default: 0
+        downVotes: {
+            type: [],
+            default: null
+        },
+        isHidden: {
+            type: Boolean,
+            default: false
         },
         isLocked: {
             type: Boolean,
@@ -71,7 +75,7 @@ CommentSchema.statics.getCommentObject = async function (
     withUserInfo = true
   ) {
     //console.log(comment.username);
-    const likesCount = comment.votesUpCount - comment.votesDownCount;
+    const likesCount = comment.upVotes.length - comment.downVotes.length;
     const repliesCount = await Comment.countDocuments({
         parentCommentId: comment._id,
     });
@@ -87,7 +91,6 @@ CommentSchema.statics.getCommentObject = async function (
       }
       else{
         userObject = await User.generateUserObject(comment.userId, userid);
-
       }
       
     }
