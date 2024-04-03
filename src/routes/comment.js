@@ -95,8 +95,6 @@ router.delete("/posts/comment/delete", auth.authentication, async (req, res) => 
     }
 });
 
-
-
 router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
     try {
         const postId = req.params.postid;
@@ -133,7 +131,7 @@ router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
 
 router.get("/comments/user", auth.authentication, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.user._id;
         
         const comments = await Comment.find({ userId }).populate({
             path: "userId",
@@ -149,7 +147,7 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
 
         const commentObjects = [];
         for (const comment of comments) {
-            const commentObject = await Comment.getCommentObject(comment, req.user.username);
+            const commentObject = await Comment.getCommentObject(comment,  req.user._id, false);
             if (req.query.include_replies === "true") {
                 const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
                 commentObject.replies = commentWithReplies.replies;
