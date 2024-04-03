@@ -132,7 +132,7 @@ router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
 router.get("/comments/user", auth.authentication, async (req, res) => {
     try {
         const userId = req.user._id;
-        
+
         const comments = await Comment.find({ userId }).populate({
             path: "userId",
         });
@@ -378,10 +378,46 @@ router.post("/comments/:commentId/downvote", auth.authentication, async (req, re
     }
 });
 
+router.post("/comments/:commentId/save", auth.authentication, async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        const userId = req.user._id;
+
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.status(404).send({ 
+                message: "Comment not found" 
+            });
+        }
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).send({ 
+                message: "User not found" 
+            });
+        }
+        if (user.savedComments.includes(commentId)) {
+            const index = user.savedComments.indexOf(commentId);
+            user.savedComments.splice(index, 1);
+            await user.save();
+            return res.status(200).send({ 
+                message: "Comment has been unsaved successfully" 
+            });
+        }
+
+        user.savedComments.push(commentId);
+        await user.save();
+        res.status(200).send({ 
+            message: "Comment has been saved successfully" 
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
+
 router.post("/comments/:commentId/report", auth.authentication, async (req, res) => {
     try {
         const commentId = req.params.commentId;
-        const userId = req.user.userId;
+        const userId = req.user._id;
         const { reason } = req.body;
 
         if (!reason) {
@@ -416,61 +452,6 @@ router.post("/comments/:commentId/report", auth.authentication, async (req, res)
 });
 
 
-router.post("/comments/:commentId/save", auth.authentication, async (req, res) => {
-    try {
-        const commentId = req.params.commentId;
-        const userId = req.user.userId;
-        const comment = await Comment.findById(commentId);
-        if (!comment) {
-            return res.status(404).send({ 
-                message: "Comment not found" 
-            });
-        }
-        const user = await User.findById(userId);
-        if (user.savedComments.includes(commentId)) {
-            return res.status(400).send({ 
-                message: "Comment is already saved" 
-            });
-        }
-        user.savedComments.push(commentId);
-        await user.save();
-        res.status(200).send({ 
-            message: "Comment has been saved successfully" 
-        });
-    } catch (err) {
-        res.status(500).send(err.toString());
-    }
-});
-
-
-router.post("/comments/:commentId/unsave", auth.authentication, async (req, res) => {
-    try {
-        const commentId = req.params.commentId;
-        const userId = req.user.userId;
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).send({ 
-                message: "User not found" 
-            });
-        }
-
-        if (!user.savedComments.includes(commentId)) {
-            return res.status(400).send({ 
-                message: "Comment is not saved" 
-            });
-        }
-
-        user.savedComments = user.savedComments.filter(savedCommentId => savedCommentId !== commentId);
-        await user.save();
-
-        res.status(200).send({ 
-            message: "Comment has been unsaved successfully" 
-        });
-    } catch (err) {
-        res.status(500).send(err.toString());
-    }
-});
 
 //shring a comment ??
 
