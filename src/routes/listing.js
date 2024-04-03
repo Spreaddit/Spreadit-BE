@@ -10,17 +10,17 @@ router
   .route("/sort/top")
   .get(auth.authentication, listingController.sortPostTop);
 router
-  .route("/sort/top/:subspreaditname")
+  .route("/subspreadit/:subspreaditname/top/")
   .get(auth.authentication, listingController.sortPostTopCommunity);
 router
-  .route("/sort/new/:subspreaditname")
+  .route("/subspreadit/:subspreaditname/new")
   .get(auth.authentication, listingController.sortPostNewCommunity);
 
 router
   .route("/sort/views")
   .get(auth.authentication, listingController.sortPostViews);
 router
-  .route("/sort/comment")
+  .route("/sort/comments")
   .get(auth.authentication, listingController.sortPostComment);
 router
   .route("/sort/best")
@@ -30,7 +30,11 @@ router
   .get(auth.authentication, listingController.sortPostHot);
 
 router
-  .route("/sort/hot/:subspreaditname")
+  .route("/subspreadit/:subspreaditname/hot")
   .get(auth.authentication, listingController.sortPostHotCommunity);
+
+router
+  .route("/subspreadit/:subspreaditname/random")
+  .get(auth.authentication, listingController.sortPostRandomCommunity);
 
 module.exports = router;
