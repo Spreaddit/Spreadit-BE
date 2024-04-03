@@ -81,9 +81,13 @@ CommentSchema.statics.getCommentObject = async function (
     if (withUserInfo) {
       const User = mongoose.model("user");
       if(userid === comment.userId ){
-        const user = await User.findOne({ _id: comment.userId });
+      const user = await User.findOne({ _id: comment.userId });
       console.log(user);
       userObject = await User.generateUserObject(user, userid);
+      }
+      else{
+        userObject = await User.generateUserObject(comment.userId, userid);
+
       }
       
     }
