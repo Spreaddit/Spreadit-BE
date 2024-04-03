@@ -14,7 +14,7 @@ router.route('/user')
     .get(auth.authentication, postController.getAllUserPosts)
     .post(auth.authentication, upload.array('images'), postController.createPost);
 
-router.route('/community/:community', auth)
+router.route('/community/:community')
     .get(auth.authentication, postController.getAllPostsInCommunity)
 
 router.route('/:postId/save')

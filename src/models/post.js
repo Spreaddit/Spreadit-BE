@@ -17,7 +17,6 @@ const PostSchema = new Schema(
     },
     userProfilePic: {
       type: String,
-      required: true
     },
     votesUpCount: {
       type: Number,
@@ -49,7 +48,6 @@ const PostSchema = new Schema(
     },
     content: {
       type: String,
-      required: true
     },
     community: {
       type: String,
@@ -71,6 +69,11 @@ const PostSchema = new Schema(
     isPollEnabled: {
       type: Boolean,
       default: false
+    },
+    pollVotingLength: {
+      type: String,
+      enum: ['1 Day', '2 Days', '3 Days', '4 Days', '5 Days', '6 Days', '7 Days'],
+      default: '3 Days'
     },
     link: {
       type: String
