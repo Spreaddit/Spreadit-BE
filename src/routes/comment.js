@@ -164,6 +164,43 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
     }
 });
 
+router.get("/comments/saved/user", auth.authentication, async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const user = await User.findById(userId).populate('savedComments');
+
+        if (!user) {
+            return res.status(404).send({ 
+                message: "User not found" 
+            });
+        }
+
+        const savedComments = user.savedComments;
+        if (!savedComments || savedComments.length === 0) {
+            return res.status(404).send({ 
+                message: "No saved comments found for the user" 
+            });
+        }
+
+        const commentObjects = [];
+        for (const comment of savedComments) {
+            const commentObject = await Comment.getCommentObject(comment,  req.user._id, false);
+            if (req.query.include_replies === "true") {
+                const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
+                commentObject.replies = commentWithReplies.replies;
+            }
+            commentObjects.push(commentObject);
+        }
+
+        res.status(200).send({
+            comments: commentObjects,
+            message: "Saved Comments for the user have been retrieved successfully",
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
+
 
 router.post("/comments/:commentId/edit", auth.authentication, async (req, res) => {
     try {
