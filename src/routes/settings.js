@@ -1,47 +1,40 @@
 const express = require('express');
 const router = express.Router();
-const accountSettingsController = require('../controller/account-setting');
-const chatandmessagingController = require('../controller/chat-and-messaging-setting');
-const emailSettingsController = require('../controller/email-setting');
-const feedSettingsController = require('../controller/feed-seeting');
-const layoutSettingsController = require('../controller/layout-setting');
-const notificationSettingsController = require('../controller/notification-setting');
-const profileSettingsController = require('../controller/profile-setting');
-const safetyAndPrivacySettingsController = require('../controller/safety-and-privacy-setting');
+const SettingsController = require('../controller/settings');
 const auth = require("../middleware/authentication");
 
 
 router.route('/account', auth)
-    .get(accountSettingsController.getAccountSettings)
-    .put(accountSettingsController.modifyAccountSettings)
-    .delete(accountSettingsController.deleteAccount);
+    .get(SettingsController.getAccountSettings)
+    .put(SettingsController.modifyAccountSettings)
+    .delete(SettingsController.deleteAccount);
 
 router.route('/chat-and-messaging', auth)
-    .get(chatandmessagingController.getChatAndMessagingSetting)
-    .put(chatandmessagingController.modifyChatAndMessagingSetting)
-    .post(chatandmessagingController.makeAllAsRead);
+    .get(SettingsController.getChatAndMessagingSetting)
+    .put(SettingsController.modifyChatAndMessagingSetting)
+    .post(SettingsController.makeAllAsRead);
 
 router.route('/email', auth)
-    .get(emailSettingsController.getEmailSetting)
-    .put(emailSettingsController.modifyEmailSetting);
+    .get(SettingsController.getEmailSetting)
+    .put(SettingsController.modifyEmailSetting);
 
 router.route('/feed', auth)
-    .get(feedSettingsController.getFeedSetting)
-    .put(feedSettingsController.modifyFeedSetting);
+    .get(SettingsController.getFeedSetting)
+    .put(SettingsController.modifyFeedSetting);
 
 router.route('/layout', auth)
-    .put(layoutSettingsController.checkPasswordMatch);
+    .put(SettingsController.checkPasswordMatch);
 
 router.route('/notifications', auth)
-    .get(notificationSettingsController.getNotificationSetting)
-    .put(notificationSettingsController.modifyNotificationSetting);
+    .get(SettingsController.getNotificationSetting)
+    .put(SettingsController.modifyNotificationSetting);
 
 router.route('/profile', auth)
-    .get(profileSettingsController.getProfileSetting)
-    .put(profileSettingsController.modifyProfileSettings);
+    .get(SettingsController.getProfileSetting)
+    .put(SettingsController.modifyProfileSettings);
 
 router.route('/safety-privacy', auth)
-    .get(safetyAndPrivacySettingsController.getSafetyAndPrivacySettings)
-    .put(safetyAndPrivacySettingsController.modifySafetyAndPrivacySettings);
+    .get(SettingsController.getSafetyAndPrivacySettings)
+    .put(SettingsController.modifySafetyAndPrivacySettings);
 
 module.exports = router;
