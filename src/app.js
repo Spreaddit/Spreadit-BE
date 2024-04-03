@@ -40,7 +40,7 @@ app.use("/", createCommunityRoutes);
 app.use("/users", userActionRoutes);
 app.use("/posts", postsRoutes);
 app.use("/", uploadRoutes);
-app.use("", listingRoutes);
+app.use("/posts", listingRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
