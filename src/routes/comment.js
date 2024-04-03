@@ -192,7 +192,7 @@ router.post("/comments/:commentId/edit", auth.authentication, async (req, res) =
                 message: "You are not authorized to edit this comment" 
             });
         }
-        
+
         comment.content = content;
 
         await comment.save();
@@ -200,6 +200,57 @@ router.post("/comments/:commentId/edit", auth.authentication, async (req, res) =
             message: "Comment has been updated successfully" 
         });
     } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
+
+
+router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array('attachments'), async (req, res) => {
+    try {
+        const parentCommentId = req.params.parentCommentId;
+        //const postId = req.params.postId;
+        const userId = req.user._id;
+        const { content } = req.body;
+
+        if (!content) {
+            return res.status(400).send({ 
+                message: "Reply content is required" 
+            });
+        }
+
+        const existingComment = await Comment.findById(parentCommentId);
+
+        if (!existingComment) {
+            return res.status(404).send({
+                message: "Comment not found"
+            });
+        }
+
+        const newReply = new Comment({
+            content,
+            userId,
+            postId: existingComment.postId,
+            parentCommentId,
+        });
+
+        if (req.files) {
+            for (let i = 0; i < req.files.length; i++) {
+              const result = await uploadMedia(req.files[i]);
+              //const url = `${config.baseUrl}/media/${result.Key}`;
+              const url = result.secure_url;
+              newReply.attachments.push(url);
+            }
+        }
+
+        await newReply.save();
+
+        await Comment.findByIdAndUpdate(parentCommentId, { $inc: { repliesCount: 1 } });
+
+        res.status(201).send({ 
+            message: "Reply has been added successfully" 
+        });
+    } catch (err) {
+        // Handle errors
         res.status(500).send(err.toString());
     }
 });
@@ -224,38 +275,6 @@ router.get("/comments/:commentId/replies", auth.authentication, async (req, res)
             message: "Replies for the comment have been retrieved successfully"
 
          });
-    } catch (err) {
-        // Handle errors
-        res.status(500).send(err.toString());
-    }
-});
-
-
-router.post("/comments/:parentCommentId/reply", auth.authentication, async (req, res) => {
-    try {
-        const parentCommentId = req.params.parentCommentId;
-        const userId = req.user.userId;
-        const { content } = req.body;
-
-        if (!content) {
-            return res.status(400).send({ 
-                message: "Reply content is required" 
-            });
-        }
-
-        const newReply = new Comment({
-            content,
-            userId,
-            parentCommentId,
-        });
-
-        await newReply.save();
-
-        await Comment.findByIdAndUpdate(parentCommentId, { $inc: { repliesCount: 1 } });
-
-        res.status(201).send({ 
-            message: "Reply has been added successfully" 
-        });
     } catch (err) {
         // Handle errors
         res.status(500).send(err.toString());

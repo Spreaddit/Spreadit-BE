@@ -107,14 +107,14 @@ CommentSchema.statics.getCommentObject = async function (
 };
 
 
-CommentSchema.statics.getCommentReplies = async function (comment, username) {
+CommentSchema.statics.getCommentReplies = async function (comment, userId) {
     const replyComment = await Comment.find({
         parentCommentId: comment.id,
     });
     comment.replies = [];
     for (let i = 0; i < replyComment.length; i++) {
       const commentReply = replyComment[i];
-      const commentObject = await Comment.getCommentObject(commentReply, username);
+      const commentObject = await Comment.getCommentObject(commentReply, userId);
       comment.replies.push(commentObject);
     }
     return comment;
