@@ -3,15 +3,34 @@ const router = express.Router();
 const listingController = require("../controller/listing-controller");
 const auth = require("../middleware/authentication");
 
-router.route("/sort/new", auth).get(listingController.sortPostNew);
-router.route("/sort/top", auth).get(listingController.sortPostTop);
 router
-  .route("/sort/top/:subspreaditname", auth)
-  .get(listingController.sortPostTopCommunity);
+  .route("/sort/new")
+  .get(auth.authentication, listingController.sortPostNew);
 router
-  .route("/sort/new/:subspreaditname", auth)
-  .get(listingController.sortPostNewCommunity);
+  .route("/sort/top")
+  .get(auth.authentication, listingController.sortPostTop);
+router
+  .route("/sort/top/:subspreaditname")
+  .get(auth.authentication, listingController.sortPostTopCommunity);
+router
+  .route("/sort/new/:subspreaditname")
+  .get(auth.authentication, listingController.sortPostNewCommunity);
 
-router.route("/sort/views", auth).get(listingController.sortPostViews);
-router.route("/sort/comment", auth).get(listingController.sortPostComment);
+router
+  .route("/sort/views")
+  .get(auth.authentication, listingController.sortPostViews);
+router
+  .route("/sort/comment")
+  .get(auth.authentication, listingController.sortPostComment);
+router
+  .route("/sort/best")
+  .get(auth.authentication, listingController.sortPostBest);
+router
+  .route("/sort/hot")
+  .get(auth.authentication, listingController.sortPostHot);
+
+router
+  .route("/sort/hot/:subspreaditname")
+  .get(auth.authentication, listingController.sortPostHotCommunity);
+
 module.exports = router;

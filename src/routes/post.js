@@ -5,12 +5,7 @@ const upload = require("../service/fileUpload");
 const auth = require("../middleware/authentication");
 
 
-
-router.route('')
-    .get(postController.getAllPosts);
-
-
-router.route('/user')
+router.route('/')
     .get(auth.authentication, postController.getAllUserPosts)
     .post(auth.authentication, upload.array('images'), postController.createPost);
 
@@ -20,7 +15,7 @@ router.route('/community/:community')
 router.route('/:postId/save')
     .post(auth.authentication, postController.savePost);
 
-router.route('/:userId/save')
+router.route('/save')
     .get(auth.authentication, postController.getSavedPosts);
 
 router.route('/:postId/unsave', auth)
