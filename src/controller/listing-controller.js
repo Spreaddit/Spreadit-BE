@@ -219,3 +219,32 @@ exports.sortPostHotCommunity = async (req, res) => {
     return res.status(500).json({ error: "internal server error" });
   }
 };
+
+exports.sortPostRandomCommunity = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    if (!userId) {
+      return res.status(400).json({ error: "please login first" });
+    }
+
+    const communityName = req.params.subspreaditname;
+
+    const posts = await Post.find({
+      community: communityName,
+    }).exec();
+    if (posts.length == 0) {
+      return res.status(404).json({ error: "no posts found" });
+    }
+    const pipeline = [
+      { $sample: { size: posts.length } }, // $sample stage to randomly select documents
+    ];
+
+    // Execute the aggregation pipeline
+    const randomPosts = await Post.aggregate(pipeline);
+
+    res.status(200).json(randomPosts);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "internal server error" });
+  }
+};
