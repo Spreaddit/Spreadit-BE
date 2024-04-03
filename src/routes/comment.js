@@ -31,33 +31,64 @@ router.delete("/posts/comment/delete", auth.authentication, async (req, res) => 
 
 
 
-router.get("/status/tweet/:id", auth, async (req, res) => {
+router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
     try {
-      const tweet = await Tweet.findById(req.params.id).populate({
+        const postId = req.params.postid;
+        const comments = await Comment.find({postId}).populate({
         path: "userId",
-      });
-  
-      if (!tweet) {
-        return res.status(404).send({ message: "Invalid Tweet Id" });
-      }
-  
-      const tweetObject = await Tweet.getTweetObject(tweet, req.user.username);
-      if (req.query.include_replies === "true") {
-        const tweetWithReplies = await Tweet.getTweetReplies(
-          tweetObject,
-          req.user.username
-        );
-        res.status(200).send({
-          tweet: tweetWithReplies,
-          message: "Tweet has been retrieved successfully",
         });
-      } else {
-        res.status(200).send({
-          tweet: tweetObject,
-          message: "Tweet has been retrieved successfully",
-        });
+  
+      if (!comments || comments.length === 0) {
+        return res.status(404).send({ message: "No comments found for the given post Id" });
       }
+
+      const commentObjects =[];
+      for(const comment of comments){
+        const commentObject = await Comment.getCommentObject(comment, req.user.username);
+            if (req.query.include_replies === "true") {
+                const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
+                commentObject.replies = commentWithReplies.replies;
+            }
+        commentObjects.push(commentObject);
+      }
+      res.status(200).send({
+        comments: commentObjects,
+        message: "Comments have been retrieved successfully",
+        });
+
     } catch (err) {
       res.status(500).send(err.toString());
+    }
+});
+
+
+router.get("/comments/user", auth.authentication, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        
+        const comments = await Comment.find({ userId }).populate({
+            path: "userId",
+        });
+
+        if (!comments || comments.length === 0) {
+            return res.status(404).send({ message: "No comments found for the user" });
+        }
+
+        const commentObjects = [];
+        for (const comment of comments) {
+            const commentObject = await Comment.getCommentObject(comment, req.user.username);
+            if (req.query.include_replies === "true") {
+                const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
+                commentObject.replies = commentWithReplies.replies;
+            }
+            commentObjects.push(commentObject);
+        }
+
+        res.status(200).send({
+            comments: commentObjects,
+            message: "Comments for the user have been retrieved successfully",
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
     }
 });
