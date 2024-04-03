@@ -122,6 +122,13 @@ router.post("/posts/comment/:postId", auth.authentication, upload.array('attachm
                 message: "Comment content is required" 
             });
         }
+        const existingPost = await Post.findById(postId);
+        
+        if (!existingPost) {
+            return res.status(404).send({
+                message: "Post not found"
+            });
+        }
 
         const newComment = new Comment({
             content,
