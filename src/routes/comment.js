@@ -170,7 +170,7 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
 router.post("/comments/:commentId/edit", auth.authentication, async (req, res) => {
     try {
         const commentId = req.params.commentId;
-        const userId = req.user.userId;
+        const userId = req.user._id;
         const { content } = req.body;
 
         if (!content) {
@@ -187,12 +187,12 @@ router.post("/comments/:commentId/edit", auth.authentication, async (req, res) =
             });
         }
 
-        if (comment.userId !== userId) {
+        if (comment.userId.toString() !== userId.toString()) {
             return res.status(403).send({ 
                 message: "You are not authorized to edit this comment" 
             });
         }
-
+        
         comment.content = content;
 
         await comment.save();
