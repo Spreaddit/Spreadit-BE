@@ -12,9 +12,17 @@ const router = express.Router();
 router.delete("/posts/comment/delete", auth.authentication, async (req, res) => {
     try {
       const comment = await Comment.findByIdAndDelete(req.body.id);
+      const userId = req.user.userId;
       if (!comment) {
-        return res.status(404).send({ message: "comment not found" });
+        return res.status(404).send({ 
+            message: "comment not found" 
+        });
       }
+      if (comment.userId !== userId) {
+        return res.status(403).send({ 
+            message: "You are not authorized to delete this comment" 
+        });
+        }
   
       await Comment.deleteMany({ parentId: req.body.id });
   
@@ -25,7 +33,9 @@ router.delete("/posts/comment/delete", auth.authentication, async (req, res) => 
         message: "comment deleted successfully",
       });
     } catch {
-      res.status(500).send({ message: "Internal Server Error" });
+      res.status(500).send({ 
+        message: "Internal Server Error" 
+        });
     }
 });
 
@@ -39,7 +49,9 @@ router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
         });
   
       if (!comments || comments.length === 0) {
-        return res.status(404).send({ message: "No comments found for the given post Id" });
+        return res.status(404).send({ 
+            message: "No comments found for the given post Id" 
+        });
       }
 
       const commentObjects =[];
@@ -71,7 +83,9 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
         });
 
         if (!comments || comments.length === 0) {
-            return res.status(404).send({ message: "No comments found for the user" });
+            return res.status(404).send({ 
+                message: "No comments found for the user" 
+            });
         }
 
         const commentObjects = [];
@@ -96,13 +110,13 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
 router.post("/posts/comment/:postId", auth.authentication, async (req, res) => {
     try {
         const postId = req.params.postId;
-
         const userId = req.user.userId;
-
         const { content } = req.body;
 
         if (!content) {
-            return res.status(400).send({ message: "Comment content is required" });
+            return res.status(400).send({ 
+                message: "Comment content is required" 
+            });
         }
 
         const newComment = new Comment({
@@ -115,7 +129,9 @@ router.post("/posts/comment/:postId", auth.authentication, async (req, res) => {
 
         await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
 
-        res.status(201).send({ message: "Comment has been added successfully" });
+        res.status(201).send({ 
+            message: "Comment has been added successfully" 
+        });
     } catch (err) {
         res.status(500).send(err.toString());
     }
@@ -129,25 +145,190 @@ router.post("/comments/:commentId/edit", auth.authentication, async (req, res) =
         const { content } = req.body;
 
         if (!content) {
-            return res.status(400).send({ message: "Updated content is required" });
+            return res.status(400).send({ 
+                message: "Updated content is required" 
+            });
         }
 
         const comment = await Comment.findById(commentId);
 
         if (!comment) {
-            return res.status(404).send({ message: "Comment not found" });
+            return res.status(404).send({ 
+                message: "Comment not found" 
+            });
         }
 
         if (comment.userId !== userId) {
-            return res.status(403).send({ message: "You are not authorized to edit this comment" });
+            return res.status(403).send({ 
+                message: "You are not authorized to edit this comment" 
+            });
         }
 
         comment.content = content;
 
         await comment.save();
-        res.status(200).send({ message: "Comment has been updated successfully" });
+        res.status(200).send({ 
+            message: "Comment has been updated successfully" 
+        });
     } catch (err) {
         res.status(500).send(err.toString());
     }
 });
+
+
+router.get("/comments/:commentId/replies", auth.authentication, async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+
+        const comment = await Comment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).send({ 
+                message: "Comment not found" 
+            });
+        }
+
+        const replies = await Comment.find({ parentCommentId: commentId });
+
+        res.status(200).send({ 
+            replies,
+            message: "Replies for the comment have been retrieved successfully"
+
+         });
+    } catch (err) {
+        // Handle errors
+        res.status(500).send(err.toString());
+    }
+});
+
+
+router.post("/comments/:parentCommentId/reply", auth.authentication, async (req, res) => {
+    try {
+        const parentCommentId = req.params.parentCommentId;
+        const userId = req.user.userId;
+        const { content } = req.body;
+
+        if (!content) {
+            return res.status(400).send({ 
+                message: "Reply content is required" 
+            });
+        }
+
+        const newReply = new Comment({
+            content,
+            userId,
+            parentCommentId,
+        });
+
+        await newReply.save();
+
+        await Comment.findByIdAndUpdate(parentCommentId, { $inc: { repliesCount: 1 } });
+
+        res.status(201).send({ 
+            message: "Reply has been added successfully" 
+        });
+    } catch (err) {
+        // Handle errors
+        res.status(500).send(err.toString());
+    }
+});
+
+
+router.post("/comments/:commentId/report", auth.authentication, async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        const userId = req.user.userId;
+        const { reason } = req.body;
+
+        if (!reason) {
+            return res.status(400).send({ 
+                message: "Report reason is required" 
+            });
+        }
+
+        const comment = await Comment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).send({ 
+                message: "Comment not found" 
+            });
+        }
+
+        const newReport = new Report({
+            commentId,
+            userId,
+            reason,
+        });
+
+        await newReport.save();
+
+        res.status(201).send({ 
+            message: "Comment has been reported successfully" 
+        });
+    } catch (err) {
+
+        res.status(500).send(err.toString());
+    }
+});
+
+
+router.post("/comments/:commentId/save", auth.authentication, async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        const userId = req.user.userId;
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.status(404).send({ 
+                message: "Comment not found" 
+            });
+        }
+        const user = await User.findById(userId);
+        if (user.savedComments.includes(commentId)) {
+            return res.status(400).send({ 
+                message: "Comment is already saved" 
+            });
+        }
+        user.savedComments.push(commentId);
+        await user.save();
+        res.status(200).send({ 
+            message: "Comment has been saved successfully" 
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
+
+
+router.post("/comments/:commentId/unsave", auth.authentication, async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        const userId = req.user.userId;
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).send({ 
+                message: "User not found" 
+            });
+        }
+
+        if (!user.savedComments.includes(commentId)) {
+            return res.status(400).send({ 
+                message: "Comment is not saved" 
+            });
+        }
+
+        user.savedComments = user.savedComments.filter(savedCommentId => savedCommentId !== commentId);
+        await user.save();
+
+        res.status(200).send({ 
+            message: "Comment has been unsaved successfully" 
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
+
+
+
+
 

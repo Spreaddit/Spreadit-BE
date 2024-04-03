@@ -265,6 +265,7 @@ const UserSchema = new Schema(
       },
     ],
     savedPosts: [{ type: Schema.Types.ObjectId, ref: "Posts", index: true }],
+    savedComments: [{ type: Schema.Types.ObjectId, ref: "comment", index: true }],
     blockedUsers: [
       {
         type: String,
