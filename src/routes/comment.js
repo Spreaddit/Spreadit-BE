@@ -1,6 +1,7 @@
 const express = require("express");
 const Comment = require("../models/comment");
 const User = require("../models/user");
+const Post = require("../models/post");
 const auth = require("../middleware/authentication");
 const mongoose = require("mongoose");
 const upload = require("../service/fileUpload");
@@ -10,24 +11,78 @@ const router = express.Router();
 
 
 
+router.post("/posts/comment/:postId", auth.authentication, upload.array('attachments'), async (req, res) => {
+    try {
+        //verify that the post id exists in the post collections
+        const postId = req.params.postId;
+        const userId = req.user._id;
+        console.log(userId);
+        const { content } = req.body;
+
+        console.log(userId);
+        if (!content) {
+            return res.status(400).send({ 
+                message: "Comment content is required" 
+            });
+        }
+        const existingPost = await Post.findById(postId);
+
+        if (!existingPost) {
+            return res.status(404).send({
+                message: "Post not found"
+            });
+        }
+
+        const newComment = new Comment({
+            content,
+            userId,
+            postId,
+        });
+
+        if (req.files) {
+            for (let i = 0; i < req.files.length; i++) {
+              const result = await uploadMedia(req.files[i]);
+              //const url = `${config.baseUrl}/media/${result.Key}`;
+              const url = result.secure_url;
+              newComment.attachments.push(url);
+            }
+        }
+        //console.log(newComment);
+        await newComment.save();
+        await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
+        console.log(userId);
+        const commentObj = await Comment.getCommentObject(newComment, userId);
+        //console.log(commentObj);
+        res.status(201).send({ 
+            comment: commentObj,
+            message: "Comment has been added successfully" 
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
+
 router.delete("/posts/comment/delete", auth.authentication, async (req, res) => {
     try {
+      const userId = req.user._id;
       const comment = await Comment.findByIdAndDelete(req.body.id);
-      const userId = req.user.userId;
+      if (comment.userId.toString() !== userId.toString()) {
+        return res.status(403).send({ 
+            message: "You are not authorized to delete this comment" 
+        });
+        }
+
+      
       if (!comment) {
         return res.status(404).send({ 
             message: "comment not found" 
         });
       }
-      if (comment.userId !== userId) {
-        return res.status(403).send({ 
-            message: "You are not authorized to delete this comment" 
-        });
-        }
+      
   
       await Comment.deleteMany({ parentId: req.body.id });
   
-      const commentObj = await Comment.getCommentObject(comment, req.user.username);
+      const commentObj = await Comment.getCommentObject(comment, userId);
   
       res.status(200).send({
         comment: commentObj,
@@ -40,14 +95,13 @@ router.delete("/posts/comment/delete", auth.authentication, async (req, res) => 
     }
 });
 
-
-
 router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
     try {
         const postId = req.params.postid;
         const comments = await Comment.find({postId}).populate({
         path: "userId",
         });
+        console.log("Comments:", comments);
   
       if (!comments || comments.length === 0) {
         return res.status(404).send({ 
@@ -57,9 +111,9 @@ router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
 
       const commentObjects =[];
       for(const comment of comments){
-        const commentObject = await Comment.getCommentObject(comment, req.user.username);
+        const commentObject = await Comment.getCommentObject(comment, req.user._id);
             if (req.query.include_replies === "true") {
-                const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
+                const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user._id);
                 commentObject.replies = commentWithReplies.replies;
             }
         commentObjects.push(commentObject);
@@ -77,11 +131,13 @@ router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
 
 router.get("/comments/user", auth.authentication, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.user._id;
         
         const comments = await Comment.find({ userId }).populate({
             path: "userId",
         });
+
+        console.log("Comments:", comments);
 
         if (!comments || comments.length === 0) {
             return res.status(404).send({ 
@@ -91,7 +147,7 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
 
         const commentObjects = [];
         for (const comment of comments) {
-            const commentObject = await Comment.getCommentObject(comment, req.user.username);
+            const commentObject = await Comment.getCommentObject(comment,  req.user._id, false);
             if (req.query.include_replies === "true") {
                 const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
                 commentObject.replies = commentWithReplies.replies;
@@ -108,50 +164,13 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
     }
 });
 
-router.post("/posts/comment/:postId", auth.authentication, upload.array('attachments'), async (req, res) => {
-    try {
-        const postId = req.params.postId;
-        const userId = req.user.userId;
-        const { content } = req.body;
 
-        if (!content) {
-            return res.status(400).send({ 
-                message: "Comment content is required" 
-            });
-        }
-
-        const newComment = new Comment({
-            content,
-            userId,
-            postId,
-        });
-        if (req.files) {
-            for (let i = 0; i < req.files.length; i++) {
-              const result = await uploadMedia(req.files[i]);
-              //const url = `${config.baseUrl}/media/${result.Key}`;
-              const url = result.secure_url;
-              newComment.attachments.push(url);
-            }
-        }
-
-        await newComment.save();
-        await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
-
-        const commentObj = await Comment.getCommentObject(newComment, req.user.username);
-        res.status(201).send({ 
-            comment: commentObj,
-            message: "Comment has been added successfully" 
-        });
-    } catch (err) {
-        res.status(500).send(err.toString());
-    }
-});
 
 
 router.post("/comments/:commentId/edit", auth.authentication, async (req, res) => {
     try {
         const commentId = req.params.commentId;
-        const userId = req.user.userId;
+        const userId = req.user._id;
         const { content } = req.body;
 
         if (!content) {
@@ -168,7 +187,7 @@ router.post("/comments/:commentId/edit", auth.authentication, async (req, res) =
             });
         }
 
-        if (comment.userId !== userId) {
+        if (comment.userId.toString() !== userId.toString()) {
             return res.status(403).send({ 
                 message: "You are not authorized to edit this comment" 
             });
@@ -181,6 +200,57 @@ router.post("/comments/:commentId/edit", auth.authentication, async (req, res) =
             message: "Comment has been updated successfully" 
         });
     } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
+
+
+router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array('attachments'), async (req, res) => {
+    try {
+        const parentCommentId = req.params.parentCommentId;
+        //const postId = req.params.postId;
+        const userId = req.user._id;
+        const { content } = req.body;
+
+        if (!content) {
+            return res.status(400).send({ 
+                message: "Reply content is required" 
+            });
+        }
+
+        const existingComment = await Comment.findById(parentCommentId);
+
+        if (!existingComment) {
+            return res.status(404).send({
+                message: "Comment not found"
+            });
+        }
+
+        const newReply = new Comment({
+            content,
+            userId,
+            postId: existingComment.postId,
+            parentCommentId,
+        });
+
+        if (req.files) {
+            for (let i = 0; i < req.files.length; i++) {
+              const result = await uploadMedia(req.files[i]);
+              //const url = `${config.baseUrl}/media/${result.Key}`;
+              const url = result.secure_url;
+              newReply.attachments.push(url);
+            }
+        }
+
+        await newReply.save();
+
+        await Comment.findByIdAndUpdate(parentCommentId, { $inc: { repliesCount: 1 } });
+
+        res.status(201).send({ 
+            message: "Reply has been added successfully" 
+        });
+    } catch (err) {
+        // Handle errors
         res.status(500).send(err.toString());
     }
 });
@@ -205,38 +275,6 @@ router.get("/comments/:commentId/replies", auth.authentication, async (req, res)
             message: "Replies for the comment have been retrieved successfully"
 
          });
-    } catch (err) {
-        // Handle errors
-        res.status(500).send(err.toString());
-    }
-});
-
-
-router.post("/comments/:parentCommentId/reply", auth.authentication, async (req, res) => {
-    try {
-        const parentCommentId = req.params.parentCommentId;
-        const userId = req.user.userId;
-        const { content } = req.body;
-
-        if (!content) {
-            return res.status(400).send({ 
-                message: "Reply content is required" 
-            });
-        }
-
-        const newReply = new Comment({
-            content,
-            userId,
-            parentCommentId,
-        });
-
-        await newReply.save();
-
-        await Comment.findByIdAndUpdate(parentCommentId, { $inc: { repliesCount: 1 } });
-
-        res.status(201).send({ 
-            message: "Reply has been added successfully" 
-        });
     } catch (err) {
         // Handle errors
         res.status(500).send(err.toString());
