@@ -50,46 +50,83 @@ exports.createPost = async (req, res) => {
         if (!user) {
             return res.status(400).json({ error: 'User ID is invalid' });
         }
+        const { title, content, community, type, pollOptions, pollVotingLength, pollExpiration, link, videos, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
+
+        if (!title || !community) {
+            return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
+        }
+        let images = [];
+        if (req.files && req.files.length > 0) {
+            for (let i = 0; i < req.files.length; i++) {
+                const result = await uploadMedia(req.files[i]); // Corrected accessing req.files array
+                const url = result.secure_url;
+                images.push(url);
+            }
+        }
+        if (type === 'poll') {
+            pollVotingLength: pollVotingLength || '3 Days';
+            if (pollVotingLength) {
+                const days = parseInt(pollVotingLength.split(' ')[0]);
+                if (!isNaN(days)) {
+                    const expirationDate = new Date();
+                    expirationDate.setDate(expirationDate.getDate() + days);
+                    pollExpiration = expirationDate;
+                }
+            }
+            isPollEnabled = 1;
+        }
+        // Validate post data based on post type
+        if (type === 'Post') {
+            if (pollOptions || pollVotingLength) {
+                return res.status(400).json({ error: 'Regular posts cannot have poll options, pollVotingLength' });
+            }
+        } else if (type === 'Images & Video') {
+            if (!images) {
+                return res.status(400).json({ error: 'images are required for image/video posts' });
+            }
+            if (pollOptions || pollVotingLength || link || content) {
+                return res.status(400).json({ error: 'images posts cannot have poll options, pollVotingLength, link, or content' });
+            }
+        } else if (type === 'Link') {
+            if (!link) {
+                return res.status(400).json({ error: 'link are required for link posts' });
+            }
+            if (images.length > 0 || videos || pollOptions || pollVotingLength || content) {
+                return res.status(400).json({ error: 'Link posts cannot have poll options, pollVotingLength, images, or content' });
+            }
+        } else if (type === 'Poll') {
+            if (!pollOptions || !pollVotingLength) {
+                return res.status(400).json({ error: ' poll options, and pollVotingLength are required for poll posts' });
+            }
+        }
+
+
+        if (!user.communities.includes(community)) {
+            return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
+        }
+        if (type != 'Post' && type != 'Images & Video' && type != 'Link' && type != 'Poll') {
+            return res.status(400).json({ error: 'Invalid post data. Please provide real post type' });
+        }
 
         const newPost = new Post({
             userId,
             username: user.username,
             userProfilePic: user.avatar || "null",
-            title: req.body.title,
-            content: req.body.content,
-            community: req.body.community,
-            type: req.body.type,
-            pollOptions: req.body.pollOptions,
-            pollExpiration: req.body.pollExpiration,
-            isPollEnabled: req.body.isPollEnabled, // Assuming isPollEnabled should be set here
-            link: req.body.link,
-            videos: req.body.videos,
-            isSpoiler: req.body.isSpoiler,
-            isNsfw: req.body.isNsfw,
-            sendPostReplyNotification: req.body.sendPostReplyNotification
+            title,
+            content,
+            community,
+            type,
+            pollOptions,
+            pollExpiration,
+            pollVotingLength,
+            link,
+            images,
+            videos,
+            isSpoiler,
+            isNsfw,
+            sendPostReplyNotification
         });
-        if (!newPost.title || !newPost.community) {
-            return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
-        }
 
-        if (!user.communities.includes(newPost.community)) {
-            return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
-        }
-
-        if (newPost.type === 'poll' && newPost.pollOptions && newPost.pollOptions.length > 0 && newPost.pollExpiration) {
-            const expirationDate = new Date(newPost.pollExpiration);
-            const currentTime = new Date();
-            newPost.isPollEnabled = expirationDate > currentTime; // Corrected assignment
-        }
-
-        if (req.files && req.files.length > 0) {
-            for (let i = 0; i < req.files.length; i++) {
-                const result = await uploadMedia(req.files[i]); // Corrected accessing req.files array
-                const url = result.secure_url;
-                newPost.images.push(url);
-                console.log(url);
-            }
-        }
 
         await newPost.save();
         return res.status(201).json({ message: 'Post created successfully' });
