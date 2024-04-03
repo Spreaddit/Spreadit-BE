@@ -12,7 +12,7 @@ const postsRoutes = require("./routes/post");
 const uploadRoutes = require("./routes/upload-test");
 const settingsRoutes = require("./routes/settings");
 const mobileSettingsRoutes = require("./routes/mobile-settings");
-
+const commentRoutes = require("./routes/comment");
 const listingRoutes = require("./routes/listing");
 
 const app = express();
@@ -33,6 +33,7 @@ app.use(
 );
 
 app.use(authRoutes);
+app.use("", commentRoutes);
 app.use("/auth", authRoutes);
 app.use("/settings", settingsRoutes);
 app.use("/mobile/settings", mobileSettingsRoutes);
@@ -45,6 +46,7 @@ mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    
   })
   .then(() => {
     console.log("Database connected successfully");
