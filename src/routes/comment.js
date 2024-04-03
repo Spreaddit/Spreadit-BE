@@ -92,3 +92,31 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
         res.status(500).send(err.toString());
     }
 });
+
+router.post("/posts/comment/:postId", auth.authentication, async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        
+        const userId = req.user.userId;
+
+        const { content } = req.body;
+
+        if (!content) {
+            return res.status(400).send({ message: "Comment content is required" });
+        }
+
+        const newComment = new Comment({
+            content,
+            userId,
+            postId,
+        });
+
+        await newComment.save();
+
+        await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
+
+        res.status(201).send({ message: "Comment has been added successfully" });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
