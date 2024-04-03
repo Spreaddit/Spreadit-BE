@@ -301,3 +301,40 @@ exports.editPost = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.spoilerPostContent = async (req, res) => {
+    try {
+        const { postId } = req.params;
+
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+        post.isSpoiler = true;
+        await post.save();
+        return res.status(200).json({ message: 'Post content blurred successfully' });
+    } catch (error) {
+        console.error('Error spoiling post content:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.unspoilerPostContent = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        post.isSpoiler = false;
+
+        await post.save();
+        return res.status(200).json({ message: 'Post content unblurred successfully' });
+    } catch (error) {
+        console.error('Error unspoiling post content:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};

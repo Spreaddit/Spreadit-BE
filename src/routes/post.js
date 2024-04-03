@@ -24,4 +24,10 @@ router.route('/:postId/unsave')
 router.route('/:postId/edit')
     .put(auth.authentication, postController.editPost);
 
+router.route('/:postId/spoiler')
+    .post(auth.authentication, postController.spoilerPostContent);
+
+router.route('/:postId/unspoiler')
+    .post(auth.authentication, postController.unspoilerPostContent);
+
 module.exports = router;    
