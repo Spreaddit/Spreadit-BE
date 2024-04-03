@@ -18,10 +18,10 @@ router.route('/:postId/save')
 router.route('/save')
     .get(auth.authentication, postController.getSavedPosts);
 
-router.route('/:postId/unsave', auth)
+router.route('/:postId/unsave')
     .post(auth.authentication, postController.unsavePost);
 
-router.route('/:postId/edit', auth)
-    .post(auth.authentication, postController.editPost);
+router.route('/:postId/edit')
+    .put(auth.authentication, postController.editPost);
 
 module.exports = router;    
