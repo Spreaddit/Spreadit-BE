@@ -2,8 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const commentSchema = require('../models/comment')
 
-require("./user");
-
 const PostSchema = new Schema(
   {
 
@@ -110,7 +108,14 @@ const PostSchema = new Schema(
       type: Boolean,
       default: false
     },
-    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }]
+    hiddenBy: [{
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    }],
+    comments: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Comment'
+    }]
   },
   {
     timestamps: true,

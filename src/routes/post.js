@@ -51,4 +51,13 @@ router.route('/downvote')
 router.route('/upvote')
     .get(auth.authentication, postController.getUpvotedPosts);
 
+router.route('/:postId/hide')
+    .post(auth.authentication, postController.hidePost);
+
+router.route('/:postId/unhide')
+    .post(auth.authentication, postController.unhidePost);
+
+router.route('/hide')
+    .get(auth.authentication, postController.getHiddenPosts);
+
 module.exports = router;    
