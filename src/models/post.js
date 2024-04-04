@@ -18,6 +18,14 @@ const PostSchema = new Schema(
     userProfilePic: {
       type: String,
     },
+    upVotes: {
+      type: [],
+      default: null
+    },
+    downVotes: {
+      type: [],
+      default: null
+    },
     votesUpCount: {
       type: Number,
       default: 0

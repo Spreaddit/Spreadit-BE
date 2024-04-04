@@ -36,4 +36,16 @@ router.route('/:postId/lock')
 router.route('/:postId/unlock')
     .post(auth.authentication, postController.unlockPostComments);
 
+router.route('/:postId/upvote')
+    .post(auth.authentication, postController.upvotePost);
+
+router.route('/:postId/downvote')
+    .post(auth.authentication, postController.downvotePost);
+
+router.route('/downvote')
+    .get(auth.authentication, postController.getDownvotedPosts);
+
+router.route('/upvote')
+    .get(auth.authentication, postController.getUpvotedPosts);
+
 module.exports = router;    
