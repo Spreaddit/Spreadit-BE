@@ -496,3 +496,21 @@ exports.getDownvotedPosts = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.deletePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const userId = req.user._id;
+
+        const post = await Post.findByIdAndDelete({ _id: postId, userId });
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        res.status(200).json({ message: 'Post deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting post:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};

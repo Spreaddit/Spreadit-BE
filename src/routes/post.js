@@ -9,6 +9,9 @@ router.route('/')
     .get(auth.authentication, postController.getAllUserPosts)
     .post(auth.authentication, upload.array('images'), postController.createPost);
 
+router.route('/:postId')
+    .delete(auth.authentication, postController.deletePost);
+
 router.route('/community/:community')
     .get(auth.authentication, postController.getAllPostsInCommunity)
 
