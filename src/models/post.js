@@ -18,6 +18,14 @@ const PostSchema = new Schema(
     userProfilePic: {
       type: String,
     },
+    upVotes: {
+      type: [],
+      default: null
+    },
+    downVotes: {
+      type: [],
+      default: null
+    },
     votesUpCount: {
       type: Number,
       default: 0
@@ -46,9 +54,9 @@ const PostSchema = new Schema(
       type: String,
       required: true
     },
-    content: {
+    content: [{
       type: String,
-    },
+    }],
     community: {
       type: String,
       required: true
@@ -97,6 +105,10 @@ const PostSchema = new Schema(
     sendPostReplyNotification: {
       type: Boolean,
       default: true
+    },
+    isCommentsLocked: {
+      type: Boolean,
+      default: false
     },
     comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }]
   },
