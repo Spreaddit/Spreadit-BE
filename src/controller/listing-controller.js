@@ -25,10 +25,7 @@ function calculatePostTime(post) {
 exports.sortPostNew = async (req, res) => {
   try {
     const userId = req.user._id;
-    if (!userId) {
-      return res.status(400).json({ error: "please login first" });
-    }
-    const posts = await Post.find({ type: "post" }).sort({ date: -1 }).exec();
+    const posts = await Post.find().sort({ date: -1 }).exec();
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
@@ -41,10 +38,7 @@ exports.sortPostNew = async (req, res) => {
 exports.sortPostTop = async (req, res) => {
   try {
     const userId = req.user._id;
-    if (!userId) {
-      return res.status(400).json({ error: "please login first" });
-    }
-    const posts = await Post.find({ type: "post" }).exec();
+    const posts = await Post.find().exec();
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
@@ -63,9 +57,6 @@ exports.sortPostTop = async (req, res) => {
 exports.sortPostTopCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
-    if (!userId) {
-      return res.status(400).json({ error: "please login first" });
-    }
 
     const communityName = req.params.subspreaditname;
 
@@ -90,11 +81,8 @@ exports.sortPostTopCommunity = async (req, res) => {
 exports.sortPostNewCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
-    if (!userId) {
-      return res.status(400).json({ error: "please login first" });
-    }
     const communityName = req.params.subspreaditname;
-    const posts = await Post.find({ community: communityName, type: "post" })
+    const posts = await Post.find({ community: communityName })
       .sort({ date: -1 })
       .exec();
     if (posts.length == 0) {
@@ -109,12 +97,8 @@ exports.sortPostNewCommunity = async (req, res) => {
 exports.sortPostViews = async (req, res) => {
   try {
     const userId = req.user._id;
-    if (!userId) {
-      return res.status(400).json({ error: "please login first" });
-    }
-    const posts = await Post.find({ type: "post" })
-      .sort({ numberOfViews: -1 })
-      .exec();
+
+    const posts = await Post.find().sort({ numberOfViews: -1 }).exec();
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
@@ -127,12 +111,7 @@ exports.sortPostViews = async (req, res) => {
 exports.sortPostComment = async (req, res) => {
   try {
     const userId = req.user._id;
-    if (!userId) {
-      return res.status(400).json({ error: "please login first" });
-    }
-    const posts = await Post.find({ type: "post" })
-      .sort({ commentsCount: -1 })
-      .exec();
+    const posts = await Post.find().sort({ commentsCount: -1 }).exec();
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
@@ -145,10 +124,7 @@ exports.sortPostComment = async (req, res) => {
 exports.sortPostBest = async (req, res) => {
   try {
     const userId = req.user._id;
-    if (!userId) {
-      return res.status(400).json({ error: "please login first" });
-    }
-    const posts = await Post.find({ type: "post" }).exec();
+    const posts = await Post.find().exec();
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
@@ -174,9 +150,6 @@ exports.sortPostBest = async (req, res) => {
 exports.sortPostHot = async (req, res) => {
   try {
     const userId = req.user._id;
-    if (!userId) {
-      return res.status(400).json({ error: "please login first" });
-    }
     const posts = await Post.find().exec();
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
@@ -198,10 +171,6 @@ exports.sortPostHot = async (req, res) => {
 exports.sortPostHotCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
-    if (!userId) {
-      return res.status(400).json({ error: "please login first" });
-    }
-
     const communityName = req.params.subspreaditname;
 
     const posts = await Post.find({
@@ -227,9 +196,6 @@ exports.sortPostHotCommunity = async (req, res) => {
 exports.sortPostRandomCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
-    if (!userId) {
-      return res.status(400).json({ error: "please login first" });
-    }
 
     const communityName = req.params.subspreaditname;
 
@@ -256,15 +222,12 @@ exports.sortPostRandomCommunity = async (req, res) => {
 exports.sortPostTopTimeCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
-    if (!userId) {
-      return res.status(400).json({ error: "please login first" });
-    }
-
     const communityName = req.params.subspreaditname;
     const time = req.params.time;
-    let sortTime = 99;
+    let sortTime = 24;
     if (time === "now") sortTime = 1;
     else if (time === "today") sortTime = 24;
+    else if (time === "week") sortTime = 24 * 7;
     else if (time === "month") sortTime = 24 * 30;
     else if (time === "year") sortTime = 365 * 24;
     // console.log(sortTime);
@@ -272,6 +235,46 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
     const posts = await Post.find({
       community: communityName,
     }).exec();
+    if (posts.length == 0) {
+      return res.status(404).json({ error: "no posts found" });
+    }
+    const postsWithTime = posts.map((post) => ({
+      ...post.toObject(),
+      postTime: calculatePostTime(post),
+    }));
+    //console.log(postsWithTime);
+    const postsToSort = postsWithTime.filter(
+      (post) => post.postTime <= sortTime
+    );
+    if (postsToSort.length == 0) {
+      return res.status(404).json({ error: "no posts found" });
+      //console.log(postsToSort);
+    }
+    const sortedPosts = postsToSort.sort((a, b) => {
+      return (
+        b.votesUpCount - b.votesDownCount - (a.votesUpCount - a.votesDownCount)
+      );
+    });
+    res.status(200).json(sortedPosts);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "internal server error" });
+  }
+};
+
+exports.sortPostTopTime = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const time = req.params.time;
+    let sortTime = 24;
+    if (time === "now") sortTime = 1;
+    else if (time === "today") sortTime = 24;
+    else if (time === "week") sortTime = 24 * 7;
+    else if (time === "month") sortTime = 24 * 30;
+    else if (time === "year") sortTime = 365 * 24;
+    // console.log(sortTime);
+
+    const posts = await Post.find().exec();
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }

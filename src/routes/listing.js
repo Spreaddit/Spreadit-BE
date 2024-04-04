@@ -4,29 +4,36 @@ const listingController = require("../controller/listing-controller");
 const auth = require("../middleware/authentication");
 
 router
-  .route("/sort/new")
+  .route("/home/new")
   .get(auth.authentication, listingController.sortPostNew);
 router
-  .route("/sort/top")
+  .route("/home/top")
+  .get(auth.authentication, listingController.sortPostTopTime);
+router
+  .route("/home/top/alltime")
   .get(auth.authentication, listingController.sortPostTop);
 router
   .route("/subspreadit/:subspreaditname/top/")
+  .get(auth.authentication, listingController.sortPostTopTimeCommunity);
+
+router
+  .route("/subspreadit/:subspreaditname/top/alltime")
   .get(auth.authentication, listingController.sortPostTopCommunity);
 router
   .route("/subspreadit/:subspreaditname/new")
   .get(auth.authentication, listingController.sortPostNewCommunity);
 
 router
-  .route("/sort/views")
+  .route("/home/views")
   .get(auth.authentication, listingController.sortPostViews);
 router
-  .route("/sort/comments")
+  .route("/home/comments")
   .get(auth.authentication, listingController.sortPostComment);
 router
-  .route("/sort/best")
+  .route("/home/best")
   .get(auth.authentication, listingController.sortPostBest);
 router
-  .route("/sort/hot")
+  .route("/home/hot")
   .get(auth.authentication, listingController.sortPostHot);
 
 router
@@ -40,5 +47,9 @@ router
 router
   .route("/subspreadit/:subspreaditname/top/:time")
   .get(auth.authentication, listingController.sortPostTopTimeCommunity);
+
+router
+  .route("/home/top/:time")
+  .get(auth.authentication, listingController.sortPostTopTime);
 
 module.exports = router;
