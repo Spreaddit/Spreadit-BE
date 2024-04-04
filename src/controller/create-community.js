@@ -13,16 +13,13 @@ exports.createNewCommunity = async (req, res) => {
     }
     const decodeToken = jwt.decode(token);
     const user = decodeToken._id;
-    const { name, description, rules, is18plus, communityType, allowNfsw, allowSpoile } = req.body;
+    const { name, is18plus, communityType, category } = req.body;
     const createdCommunity = new Community({
         name: name,
-        description: description,
-        rules: rules,
         is18plus: is18plus,
         communityType: communityType,
-        allowNfsw: allowNfsw,
-        allowSpoile: allowSpoile,
         creator: user,
+        category: category,
         members: [user]
     });
 

@@ -3,14 +3,13 @@
  */
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const crypto = require('crypto');
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const config = require("../configuration");
 require("./constants/userRole");
 
 const Schema = mongoose.Schema;
 const userRole = require("../../seed-data/constants/userRole");
-
 
 /**
  * User Schema definition.
@@ -105,7 +104,7 @@ const UserSchema = new Schema(
     },
     resetTokenExpiration: {
       type: Date,
-      default: Date.now
+      default: Date.now,
     },
     isVerified: {
       type: Boolean,
@@ -266,7 +265,9 @@ const UserSchema = new Schema(
       },
     },
     savedPosts: [{ type: Schema.Types.ObjectId, ref: "Posts", index: true }],
-    savedComments: [{ type: Schema.Types.ObjectId, ref: "comment", index: true }],
+    savedComments: [
+      { type: Schema.Types.ObjectId, ref: "comment", index: true },
+    ],
     blockedUsers: [
       {
         type: String,
@@ -275,6 +276,12 @@ const UserSchema = new Schema(
     mutedCommunities: [
       {
         type: String,
+      },
+    ],
+    subscribedCommunities: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Community",
       },
     ],
     tokens: [
@@ -384,7 +391,6 @@ UserSchema.statics.verifyCredentials = async function (
   usernameOremail,
   password
 ) {
-
   const userByEmail = await User.findOne({
     email: usernameOremail,
   }).populate("roleId");
@@ -470,6 +476,7 @@ UserSchema.statics.generateUserObject = async function (
       cakeDay: user.cakeDay,
       modNotifications: user.modNotifications,
       savedPosts: user.savedPosts,
+      subscribedCommunities: user.subscribedCommunities, 
     };
     if (authorizedUserName != null) {
       const authorizedUser = await User.findOne({
@@ -510,7 +517,7 @@ UserSchema.statics.getUserByResetToken = async function (token) {
 UserSchema.methods.generateResetToken = async function () {
   try {
     user = this;
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetToken = crypto.randomBytes(32).toString("hex");
     const resetTokenExpiration = new Date();
     resetTokenExpiration.setHours(resetTokenExpiration.getHours() + 1);
 
@@ -519,7 +526,7 @@ UserSchema.methods.generateResetToken = async function () {
     await user.save();
     return resetToken;
   } catch (error) {
-    throw new Error('Failed to generate reset token');
+    throw new Error("Failed to generate reset token");
   }
 };
 /**
@@ -535,22 +542,24 @@ UserSchema.methods.generateRandomUsername = async function () {
   }
 
   return randomUsername;
-}
+};
 /**
  * Instance method: Generates a random string.
  * @returns {string} Generated random string.
  */
 UserSchema.methods.generateRandomString = function () {
   const length = 8; // Length of the random string
-  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; // Characters to choose from
-  let randomString = '';
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789"; // Characters to choose from
+  let randomString = "";
 
   for (let i = 0; i < length; i++) {
-    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+    randomString += characters.charAt(
+      Math.floor(Math.random() * characters.length)
+    );
   }
 
   return randomString;
-}
+};
 
 /**
  * User Model.

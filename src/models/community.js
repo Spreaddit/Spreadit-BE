@@ -11,11 +11,29 @@ const CommunitySchema = new Schema(
             trim: true,
             maxlength: 30
         },
-        rules: {
+        category: {
             type: String,
             trim: true,
-            maxlength: 200,
-            default: ''
+            maxlength: 30
+        },
+        rules: {
+            type: [Schema.Types.ObjectId],
+            ref: "rule",
+            index: true
+        },
+        dateCreated: {
+            type: Date,
+            default: Date.now
+        },
+        communityBanner: {
+            type: String,
+            format: 'url',
+            description: 'Link to the banner of the community'
+        },
+        image: {
+            type: String,
+            format: 'url',
+            description: 'Link to the image of the community'
         },
         description: {
             type: String,
@@ -57,7 +75,7 @@ const CommunitySchema = new Schema(
             ref: "user",
             index: true
         }
-
+        
         //todo add the community settings attributes
         //todo figure out mawdo3 el moderator how is it gonna be saved array or something else?
         //todo mawdo3 el nas ely fi el community how are we gonna save them as well?
