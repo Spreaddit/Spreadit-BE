@@ -37,4 +37,8 @@ router
   .route("/subspreadit/:subspreaditname/random")
   .get(auth.authentication, listingController.sortPostRandomCommunity);
 
+router
+  .route("/subspreadit/:subspreaditname/top/:time")
+  .get(auth.authentication, listingController.sortPostTopTimeCommunity);
+
 module.exports = router;

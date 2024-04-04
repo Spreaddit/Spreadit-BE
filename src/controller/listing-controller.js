@@ -17,6 +17,11 @@ function calculateHotnessScore(post) {
   );
 }
 
+function calculatePostTime(post) {
+  const time = (Date.now() - post.date.getTime()) / (1000 * 3600);
+  return time;
+}
+
 exports.sortPostNew = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -66,7 +71,6 @@ exports.sortPostTopCommunity = async (req, res) => {
 
     const posts = await Post.find({
       community: communityName,
-      type: "post",
     }).exec();
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
@@ -243,6 +247,52 @@ exports.sortPostRandomCommunity = async (req, res) => {
     const randomPosts = await Post.aggregate(pipeline);
 
     res.status(200).json(randomPosts);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "internal server error" });
+  }
+};
+
+exports.sortPostTopTimeCommunity = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    if (!userId) {
+      return res.status(400).json({ error: "please login first" });
+    }
+
+    const communityName = req.params.subspreaditname;
+    const time = req.params.time;
+    let sortTime = 99;
+    if (time === "now") sortTime = 1;
+    else if (time === "today") sortTime = 24;
+    else if (time === "month") sortTime = 24 * 30;
+    else if (time === "year") sortTime = 365 * 24;
+    // console.log(sortTime);
+
+    const posts = await Post.find({
+      community: communityName,
+    }).exec();
+    if (posts.length == 0) {
+      return res.status(404).json({ error: "no posts found" });
+    }
+    const postsWithTime = posts.map((post) => ({
+      ...post.toObject(),
+      postTime: calculatePostTime(post),
+    }));
+    //console.log(postsWithTime);
+    const postsToSort = postsWithTime.filter(
+      (post) => post.postTime <= sortTime
+    );
+    if (postsToSort.length == 0) {
+      return res.status(404).json({ error: "no posts found" });
+      //console.log(postsToSort);
+    }
+    const sortedPosts = postsToSort.sort((a, b) => {
+      return (
+        b.votesUpCount - b.votesDownCount - (a.votesUpCount - a.votesDownCount)
+      );
+    });
+    res.status(200).json(sortedPosts);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
