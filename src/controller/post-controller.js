@@ -25,7 +25,7 @@ exports.getAllPosts = async (req, res) => {
 exports.getAllUserPosts = async (req, res) => {
     try {
         const userId = req.user._id;
-        console.log(userId);
+
         const posts = await Post.find({ userId });
 
         if (!posts || posts.length === 0) {
@@ -34,8 +34,13 @@ exports.getAllUserPosts = async (req, res) => {
         for (let post of posts) {
             post = await Post.findById(post._id);
             post.numberOfViews++;
+            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            post.votesUpCount = upVotesCount;
+            post.votesDownCount = downVotesCount;
             await post.save();
         }
+
         res.status(200).json(posts);
     } catch (err) {
         console.error('Error fetching posts:', err);
@@ -372,5 +377,140 @@ exports.unlockPostComments = async (req, res) => {
     } catch (error) {
         console.error('Error unlocking post comments:', error);
         return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.upvotePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const userId = req.user._id;
+
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).send({
+                message: "post not found"
+            });
+        }
+        const downvotesCount = post.downVotes.length;
+
+        const downvoteIndex = post.downVotes.indexOf(userId);
+        const upvoteIndex = post.upVotes.indexOf(userId);
+        if (downvoteIndex !== -1) {
+            post.downVotes.splice(downvoteIndex, 1);
+            post.upVotes.push(userId);
+        }
+        else if (upvoteIndex !== -1) {
+            post.upVotes.splice(downvoteIndex, 1);
+        }
+        else {
+            post.upVotes.push(userId);
+        }
+
+
+        await post.save();
+        const upvotesCount = post.upVotes.length;
+        const newdownvotesCount = post.downVotes.length;
+        const netVotes = upvotesCount - newdownvotesCount;
+
+        res.status(200).send({
+            votes: netVotes,
+            message: "post has been upvoted successfully"
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+};
+
+exports.downvotePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const userId = req.user._id;
+
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).send({
+                message: "post not found"
+            });
+        }
+        const upvotesCount = post.upVotes.length;
+
+        const downvoteIndex = post.downVotes.indexOf(userId);
+        const upvoteIndex = post.upVotes.indexOf(userId);
+        if (downvoteIndex !== -1) {
+            post.downVotes.splice(downvoteIndex, 1);
+        }
+        else if (upvoteIndex !== -1) {
+            post.upVotes.splice(upvoteIndex, 1);
+            post.downVotes.push(userId);
+        }
+        else {
+            post.downVotes.push(userId);
+        }
+
+
+        await post.save();
+        const downvotesCount = post.downVotes.length;
+        const newupvotesCount = post.upVotes.length;
+        const netVotes = newupvotesCount - downvotesCount;
+
+        res.status(200).send({
+            votes: netVotes,
+            message: "post has been downvoted successfully"
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+};
+
+exports.getUpvotedPosts = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const posts = await Post.find({ upVotes: userId });
+
+        if (!posts || posts.length === 0) {
+            return res.status(404).json({ error: 'Posts not found' });
+        }
+
+        res.status(200).json(posts);
+    } catch (err) {
+        console.error('Error fetching upvoted posts:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.getDownvotedPosts = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const posts = await Post.find({ downVotes: userId });
+
+        if (!posts || posts.length === 0) {
+            return res.status(404).json({ error: 'Posts not found' });
+        }
+
+        res.status(200).json(posts);
+    } catch (err) {
+        console.error('Error fetching downvoted posts:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.deletePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const userId = req.user._id;
+
+        const post = await Post.findByIdAndDelete({ _id: postId, userId });
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        res.status(200).json({ message: 'Post deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting post:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };

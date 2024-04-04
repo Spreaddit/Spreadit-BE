@@ -11,7 +11,7 @@ const router = express.Router();
 
 
 
-router.post("/posts/comment/:postId", auth.authentication, upload.array('attachments'), async (req, res) => {
+router.post("/post/comment/:postId", auth.authentication, upload.array('attachments'), async (req, res) => {
     try {
         //verify that the post id exists in the post collections
         const postId = req.params.postId;
@@ -348,22 +348,32 @@ router.post("/comments/:commentId/upvote", auth.authentication, async (req, res)
             });
         }
         const downvotesCount = comment.downVotes.length;
+        const upvotesCount = comment.upVotes.length;
+        let netVotes = upvotesCount - downvotesCount;
 
         const downvoteIndex = comment.downVotes.indexOf(userId);
         if (downvoteIndex !== -1) {
             comment.downVotes.splice(downvoteIndex, 1);
+            netVotes = netVotes - 1;
         }
         
         if (comment.upVotes.includes(userId)) {
+            const upvoteIndex = comment.upVotes.indexOf(userId);
+            if (upvoteIndex !== -1) {
+                comment.upVotes.splice(upvoteIndex, 1);
+                await comment.save();
+            }
+            netVotes = netVotes - 1;
             return res.status(400).send({ 
-                message: "You have already upvoted this comment" 
+                votes: netVotes,
+                message: "You have removed your upvote this comment" 
             });
         }
 
         comment.upVotes.push(userId);
         await comment.save();
-        const upvotesCount = comment.upVotes.length;
-        const netVotes = upvotesCount - downvotesCount;
+        
+        netVotes = netVotes + 1;
 
         res.status(200).send({ 
             votes: netVotes,
@@ -387,24 +397,37 @@ router.post("/comments/:commentId/downvote", auth.authentication, async (req, re
                 message: "Comment not found" 
             });
         }
-
+        const downvotesCount = comment.downVotes.length;
         const upvotesCount = comment.upVotes.length;
-        
+        let netVotes = upvotesCount - downvotesCount;
+        //console.log(netVotes)
+
         const upvoteIndex = comment.upVotes.indexOf(userId);
         if (upvoteIndex !== -1) {
             comment.upVotes.splice(upvoteIndex, 1);
+            netVotes = netVotes - 1;
+            //console.log(netVotes)
         }
-
+        
         if (comment.downVotes.includes(userId)) {
+            const downvoteIndex = comment.downVotes.indexOf(userId);
+            if (downvoteIndex !== -1) {
+                comment.downVotes.splice(downvoteIndex, 1);
+                await comment.save(); 
+            }
+            netVotes = netVotes + 1;
+            //console.log(netVotes)
             return res.status(400).send({ 
-                message: "You have already downvoted this comment" 
+                votes: netVotes,
+                message: "You have removed your downvote this comment" 
             });
         }
 
+        netVotes = netVotes - 1;
+        //console.log(netVotes)
+
         comment.downVotes.push(userId);
         await comment.save();
-        const downvotesCount = comment.downVotes.length;
-        const netVotes = upvotesCount - downvotesCount;
 
         res.status(200).send({ 
             votes: netVotes,
@@ -451,46 +474,13 @@ router.post("/comments/:commentId/save", auth.authentication, async (req, res) =
     }
 });
 
-router.post("/comments/:commentId/report", auth.authentication, async (req, res) => {
-    try {
-        const commentId = req.params.commentId;
-        const userId = req.user._id;
-        const { reason } = req.body;
 
-        if (!reason) {
-            return res.status(400).send({ 
-                message: "Report reason is required" 
-            });
-        }
-
-        const comment = await Comment.findById(commentId);
-
-        if (!comment) {
-            return res.status(404).send({ 
-                message: "Comment not found" 
-            });
-        }
-
-        const newReport = new Report({
-            commentId,
-            userId,
-            reason,
-        });
-
-        await newReport.save();
-
-        res.status(201).send({ 
-            message: "Comment has been reported successfully" 
-        });
-    } catch (err) {
-
-        res.status(500).send(err.toString());
-    }
-});
 
 
 
 //shring a comment ??
+//reporting a cooment
+//upvote and downvote when requested again btetshal
 
 module.exports = router;
 
