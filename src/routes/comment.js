@@ -149,7 +149,7 @@ router.get("/comments/user/:username", auth.authentication, async (req, res) => 
 
         const commentObjects = [];
         for (const comment of comments) {
-            const commentObject = await Comment.getCommentObject(comment,  req.user._id, false);
+            const commentObject = await Comment.getCommentObject(comment,  req.user._id);
             if (req.query.include_replies === "true") {
                 const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
                 commentObject.replies = commentWithReplies.replies;
@@ -186,14 +186,14 @@ router.get("/comments/saved/user", auth.authentication, async (req, res) => {
 
         const commentObjects = [];
         for (const comment of savedComments) {
-            const commentObject = await Comment.getCommentObject(comment,  req.user._id);
+            const commentObject = await Comment.getCommentObject(comment,  req.user._id, false);
             if (req.query.include_replies === "true") {
                 const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
                 commentObject.replies = commentWithReplies.replies;
             }
             commentObjects.push(commentObject);
         }
-        
+
         res.status(200).send({
             comments: commentObjects,
             message: "Saved Comments for the user have been retrieved successfully",
@@ -545,6 +545,7 @@ router.post("/comments/:commentId/report", auth.authentication, async (req, res)
 
 
 //shring a comment ??
+
 module.exports = router;
 
 

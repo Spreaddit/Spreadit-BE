@@ -1,33 +1,9 @@
-/**
- * Module dependencies.
- */
+
 const { Int32 } = require("mongodb");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 require("./user");
 require("./post");
-
-/**
- * @typedef {Object} CommentObject
- * @property {string} id - The unique identifier of the comment.
- * @property {string} content - The content of the comment.
- * @property {Object} user - The user who made the comment.
- * @property {number} likes_count - The number of likes the comment has received.
- * @property {number} replies_count - The number of replies the comment has received.
- * @property {boolean} is_reply - Indicates whether the comment is a reply to another comment.
- * @property {string[]} media - URLs of any attached media.
- * @property {Date} created_at - The date and time when the comment was created.
- * @property {boolean} is_hidden - Indicates whether the comment is hidden.
- * @property {boolean} is_saved - Indicates whether the comment is saved by the user.
- * @property {string} post_title - The title of the post associated with the comment.
- * @property {string} community_title - The title of the community where the comment was posted.
- */
-
-/**
- * Comment Schema definition.
- * @type {mongoose.Schema<object>}
- * @param {object} comment - Comment object.
- */
 
 const CommentSchema = new Schema(
     {
@@ -98,13 +74,6 @@ const CommentSchema = new Schema(
     }
 );
 
-/**
- * Static method: Retrieves a comment object.
- * @param {object} comment - The comment object.
- * @param {string} userid - The ID of the user.
- * @param {boolean} [withUserInfo=true] - Indicates whether to include user information.
- * @returns {Promise<CommentObject>} The comment object.
- */
 
 CommentSchema.statics.getCommentObject = async function (
     comment,
@@ -154,12 +123,6 @@ CommentSchema.statics.getCommentObject = async function (
     return commentInfo;
 };
 
-/**
- * Static method: Retrieves comment replies.
- * @param {object} comment - The comment object.
- * @param {string} userId - The ID of the user.
- * @returns {Promise<object>} The comment object with replies.
- */
 
 CommentSchema.statics.getCommentReplies = async function (comment, userId) {
     const replyComment = await Comment.find({
