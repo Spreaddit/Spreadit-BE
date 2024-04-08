@@ -108,6 +108,10 @@ const PostSchema = new Schema(
       type: Boolean,
       default: false
     },
+    isSaved: {
+      type: Boolean,
+      default: false
+    },
     hiddenBy: [{
       type: Schema.Types.ObjectId,
       ref: 'User'
