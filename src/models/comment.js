@@ -96,10 +96,13 @@ CommentSchema.statics.getCommentObject = async function (
       else{
         userObject = await User.generateUserObject(comment.userId, userid);
       }
-      
     }
+    const Post = mongoose.model("post");
     const isHidden = comment.hiddenBy.includes(userid);
     const isSaved = comment.savedBy.includes(userid);
+    const post = await Post.findOne({ _id: comment.postId });
+    const postTitle = post.title;
+    const subredditTitle = post.community;
 
     const commentInfo = {
       id: comment._id,
@@ -110,8 +113,10 @@ CommentSchema.statics.getCommentObject = async function (
       is_reply: comment.parentCommentId != null ? true : false,
       media: comment.attachments,
       created_at: comment.createdAt,
-      isHidden: isHidden,
-      isSaved: isSaved,
+      is_hidden: isHidden,
+      is_saved: isSaved,
+      post_title: postTitle,
+      community_title: subredditTitle,
     };
     return commentInfo;
 };

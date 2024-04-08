@@ -186,7 +186,7 @@ router.get("/comments/saved/user", auth.authentication, async (req, res) => {
 
         const commentObjects = [];
         for (const comment of savedComments) {
-            const commentObject = await Comment.getCommentObject(comment,  req.user._id, false);
+            const commentObject = await Comment.getCommentObject(comment,  req.user._id);
             if (req.query.include_replies === "true") {
                 const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
                 commentObject.replies = commentWithReplies.replies;
