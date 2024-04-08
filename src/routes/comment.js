@@ -193,7 +193,7 @@ router.get("/comments/saved/user", auth.authentication, async (req, res) => {
             }
             commentObjects.push(commentObject);
         }
-
+        
         res.status(200).send({
             comments: commentObjects,
             message: "Saved Comments for the user have been retrieved successfully",
