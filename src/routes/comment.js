@@ -62,10 +62,10 @@ router.post("/post/comment/:postId", auth.authentication, upload.array('attachme
     }
 });
 
-router.delete("/posts/comment/delete", auth.authentication, async (req, res) => {
+router.delete("/posts/comment/delete/:commentId", auth.authentication, async (req, res) => {
     try {
       const userId = req.user._id;
-      const comment = await Comment.findByIdAndDelete(req.body.id);
+      const comment = await Comment.findByIdAndDelete(req.params.commentId);
       if (comment.userId.toString() !== userId.toString()) {
         return res.status(403).send({ 
             message: "You are not authorized to delete this comment" 
@@ -129,10 +129,11 @@ router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
 });
 
 
-router.get("/comments/user", auth.authentication, async (req, res) => {
+router.get("/comments/user/:username", auth.authentication, async (req, res) => {
     try {
-        const userId = req.user._id;
-
+        const username = req.params.username;
+        const user = User.getUserByEmailOrUsername(username);
+        const userId= user._id;
         const comments = await Comment.find({ userId }).populate({
             path: "userId",
         });
@@ -350,11 +351,13 @@ router.post("/comments/:commentId/upvote", auth.authentication, async (req, res)
         const downvotesCount = comment.downVotes.length;
         const upvotesCount = comment.upVotes.length;
         let netVotes = upvotesCount - downvotesCount;
+        console.log(netVotes)
 
         const downvoteIndex = comment.downVotes.indexOf(userId);
         if (downvoteIndex !== -1) {
             comment.downVotes.splice(downvoteIndex, 1);
             netVotes = netVotes - 1;
+            console.log(netVotes)
         }
         
         if (comment.upVotes.includes(userId)) {
@@ -364,6 +367,7 @@ router.post("/comments/:commentId/upvote", auth.authentication, async (req, res)
                 await comment.save();
             }
             netVotes = netVotes - 1;
+            console.log(netVotes)
             return res.status(400).send({ 
                 votes: netVotes,
                 message: "You have removed your upvote this comment" 
@@ -374,6 +378,7 @@ router.post("/comments/:commentId/upvote", auth.authentication, async (req, res)
         await comment.save();
         
         netVotes = netVotes + 1;
+        console.log(netVotes)
 
         res.status(200).send({ 
             votes: netVotes,
@@ -400,13 +405,13 @@ router.post("/comments/:commentId/downvote", auth.authentication, async (req, re
         const downvotesCount = comment.downVotes.length;
         const upvotesCount = comment.upVotes.length;
         let netVotes = upvotesCount - downvotesCount;
-        //console.log(netVotes)
+        console.log(netVotes)
 
         const upvoteIndex = comment.upVotes.indexOf(userId);
         if (upvoteIndex !== -1) {
             comment.upVotes.splice(upvoteIndex, 1);
             netVotes = netVotes - 1;
-            //console.log(netVotes)
+            console.log(netVotes)
         }
         
         if (comment.downVotes.includes(userId)) {
@@ -416,7 +421,7 @@ router.post("/comments/:commentId/downvote", auth.authentication, async (req, re
                 await comment.save(); 
             }
             netVotes = netVotes + 1;
-            //console.log(netVotes)
+            console.log(netVotes)
             return res.status(400).send({ 
                 votes: netVotes,
                 message: "You have removed your downvote this comment" 
@@ -424,7 +429,7 @@ router.post("/comments/:commentId/downvote", auth.authentication, async (req, re
         }
 
         netVotes = netVotes - 1;
-        //console.log(netVotes)
+        console.log(netVotes)
 
         comment.downVotes.push(userId);
         await comment.save();
