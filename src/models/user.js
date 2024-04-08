@@ -265,10 +265,16 @@ const UserSchema = new Schema(
         return [this.username];
       },
     },
-    savedPosts: [{ type: Schema.Types.ObjectId, ref: "Posts", index: true }],
-    savedComments: [
-      { type: Schema.Types.ObjectId, ref: "comment", index: true },
-    ],
+    savedPosts: [{ 
+      type: Schema.Types.ObjectId, ref: "Posts", index: true 
+    }],
+    savedComments: [{
+       type: Schema.Types.ObjectId, ref: "comment", index: true 
+    }],
+    hiddenComments: [{
+      type: Schema.Types.ObjectId,
+      ref: 'comment'
+    }],
     hiddenPosts: [{
       type: Schema.Types.ObjectId,
       ref: 'post'

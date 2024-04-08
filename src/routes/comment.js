@@ -320,21 +320,50 @@ router.get("/comments/:commentId/replies", auth.authentication, async (req, res)
 router.post("/comments/:commentId/hide", auth.authentication, async (req, res) => {
     try {
         const commentId = req.params.commentId;
+        const userId = req.user._id;
 
         const comment = await Comment.findById(commentId);
 
         if (!comment) {
-            return res.status(404).send({ message: "Comment not found" });
+            return res.status(404).send({ 
+                message: "Comment not found" 
+            });
+        }
+        
+        const isHidden = comment.hiddenBy.includes(userId);
+        if (isHidden) {
+            // If already hidden, remove from hiddenBy array
+            const index = comment.hiddenBy.indexOf(userId);
+            if (index > -1) {
+                comment.hiddenBy.splice(index, 1);
+            }
+        } else {
+            // If not hidden, add to hiddenBy array
+            comment.hiddenBy.push(userId);
         }
 
-        comment.isHidden = !comment.isHidden;
         await comment.save();
 
-        res.status(200).send({ message: `Comment has been ${comment.isHidden ? 'hidden' : 'unhidden'} successfully` });
+        // Update the user's hiddenComments array
+        const user = await User.findById(userId);
+        if (user) {
+            const hiddenCommentsIndex = user.hiddenComments.indexOf(commentId);
+            if (isHidden && hiddenCommentsIndex > -1) {
+                // If comment was hidden and is now unhidden, remove from hiddenComments
+                user.hiddenComments.splice(hiddenCommentsIndex, 1);
+            } else if (!isHidden && hiddenCommentsIndex === -1) {
+                // If comment was unhidden and is now hidden, add to hiddenComments
+                user.hiddenComments.push(commentId);
+            }
+            await user.save();
+        }
+
+        res.status(200).send({ message: `Comment has been ${isHidden ? 'unhidden' : 'hidden'} successfully` });
     } catch (err) {
         res.status(500).send(err.toString());
     }
 });
+
 
 router.post("/comments/:commentId/upvote", auth.authentication, async (req, res) => {
     try {

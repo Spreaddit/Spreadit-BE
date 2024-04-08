@@ -36,10 +36,6 @@ const CommentSchema = new Schema(
             type: [],
             default: null
         },
-        isHidden: {
-            type: Boolean,
-            default: false
-        },
         isLocked: {
             type: Boolean,
             default: false,
@@ -62,6 +58,10 @@ const CommentSchema = new Schema(
               default: [],
             },
         ],
+        hiddenBy: [{
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }],
 
     },
     {
@@ -94,8 +94,8 @@ CommentSchema.statics.getCommentObject = async function (
       }
       
     }
-    
-    console.log(userObject)
+    const isHidden = comment.hiddenBy.includes(userid);
+
     const commentInfo = {
       id: comment._id,
       content: comment.content,
@@ -105,6 +105,7 @@ CommentSchema.statics.getCommentObject = async function (
       is_reply: comment.parentCommentId != null ? true : false,
       media: comment.attachments,
       created_at: comment.createdAt,
+      isHidden: isHidden,
     };
     return commentInfo;
 };
