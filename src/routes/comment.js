@@ -17,8 +17,7 @@ router.post("/post/comment/:postId", auth.authentication, upload.array('attachme
         //verify that the post id exists in the post collections
         const postId = req.params.postId;
         const userId = req.user._id;
-        console.log(userId);
-        const { content } = req.body;
+        const { content, fileType } = req.body;
 
         console.log(userId);
         if (!content) {
@@ -45,7 +44,8 @@ router.post("/post/comment/:postId", auth.authentication, upload.array('attachme
               const result = await uploadMedia(req.files[i]);
               //const url = `${config.baseUrl}/media/${result.Key}`;
               const url = result.secure_url;
-              newComment.attachments.push(url);
+              const attachmentObj = { type: fileType, link: url };
+              newComment.attachments.push(attachmentObj);
             }
         }
         //console.log(newComment);
@@ -247,8 +247,7 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
         const parentCommentId = req.params.parentCommentId;
         //const postId = req.params.postId;
         const userId = req.user._id;
-        const { content } = req.body;
-
+        const { content, fileType } = req.body;
         if (!content) {
             return res.status(400).send({ 
                 message: "Reply content is required" 
@@ -275,7 +274,8 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
               const result = await uploadMedia(req.files[i]);
               //const url = `${config.baseUrl}/media/${result.Key}`;
               const url = result.secure_url;
-              newReply.attachments.push(url);
+              const attachmentObj = { type: fileType, link: url };
+              newReply.attachments.push(attachmentObj);
             }
         }
 

@@ -55,9 +55,15 @@ const CommentSchema = new Schema(
         },
         attachments: [
             {
-              type: String,
-              default: [],
-            },
+                type: {
+                    type: String,
+                    default: '' 
+                },
+                link: {
+                    type: String,
+                    default: '' 
+                }
+            }
         ],
         hiddenBy: [{
             type: Schema.Types.ObjectId,

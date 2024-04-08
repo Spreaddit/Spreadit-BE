@@ -157,8 +157,8 @@ router.post('/google/oauth', verifyGoogleToken, async (req, res) => {
       const newUsername = await new User().generateRandomUsername();
       const newUser = new User({
         googleId: userData.id,
+        connectedAccounts: [userData.email],
         name: userData.name,
-        email: userData.email,
         username: newUsername
       });
 
