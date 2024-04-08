@@ -60,4 +60,10 @@ router.route('/:postId/unhide')
 router.route('/hide')
     .get(auth.authentication, postController.getHiddenPosts);
 
+router.route('/:postId/nfsw')
+    .post(auth.authentication, postController.markPostAsNsfw);
+
+router.route('/:postId/unnfsw')
+    .post(auth.authentication, postController.markPostAsNotNsfw);
+
 module.exports = router;    
