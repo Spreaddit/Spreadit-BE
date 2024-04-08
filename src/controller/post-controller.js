@@ -32,7 +32,8 @@ exports.getAllUserPosts = async (req, res) => {
             return res.status(404).json({ error: 'User or posts not found' });
         }
         const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
-
+        const user = await User.findById(userId);
+        const savedPostIds = user ? user.savedPosts : [];
         for (let post of visiblePosts) {
             post = await Post.findById(post._id);
             post.numberOfViews++;
@@ -40,6 +41,7 @@ exports.getAllUserPosts = async (req, res) => {
             const downVotesCount = post.downVotes ? post.downVotes.length : 0;
             post.votesUpCount = upVotesCount;
             post.votesDownCount = downVotesCount;
+            post.isSaved = savedPostIds.includes(post._id.toString());
             await post.save();
         }
 
