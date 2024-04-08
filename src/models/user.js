@@ -502,10 +502,11 @@ UserSchema.statics.verifyCredentials = async function (
  * @returns {Promise<Object>} User object for response.
  */
 UserSchema.statics.generateUserObject = async function (
-  user,
-  authorizedUserName = null
+  user
 ) {
   try {
+
+    console.log(user);
     const userObj = {
       id: user._id,
       name: user.name,
@@ -529,16 +530,10 @@ UserSchema.statics.generateUserObject = async function (
       about: user.about,
       cakeDay: user.cakeDay,
     };
-    if (authorizedUserName != null) {
-      const authorizedUser = await User.findOne({
-        username: authorizedUserName,
-      });
-      if (authorizedUser && authorizedUser.followings.includes(user._id)) {
-        userObj.is_followed = true;
-      } else {
-        userObj.is_followed = false;
-      }
-    }
+
+    console.log("USER OBJECT INSIDE");
+    console.log(userObj);
+    
     return userObj;
   } catch (err) {
     return null;
