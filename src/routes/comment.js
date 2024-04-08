@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const upload = require("../service/fileUpload");
 const { uploadMedia } = require("../service/cloudinary");
 const config = require("./../configuration");
+const Report = require("../models/report")
 const router = express.Router();
 
 
@@ -508,14 +509,42 @@ router.post("/comments/:commentId/save", auth.authentication, async (req, res) =
     }
 });
 
+router.post("/comments/:commentId/report", auth.authentication, async (req, res) => {
+    try {
+        const { commentId } = req.params;
+        const { reason, sureason } = req.body;
+        const userId = req.user._id;
 
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.status(404).send({ 
+                message: "Comment not found" 
+            });
+        }
 
+        const report = new Report({
+            userId: userId,
+            postId: comment.postId,
+            commentId: commentId,
+            reason: reason,
+            sureason: sureason
+        });
+
+        await report.save();
+
+        res.status(201).send({ 
+            message: "Comment reported successfully" 
+        });
+    } catch (error) {
+        console.error("Error reporting comment:", error);
+        res.status(500).send({ 
+            error: "An error occurred while reporting the comment" 
+        });
+    }
+});
 
 
 //shring a comment ??
-//reporting a cooment
-//upvote and downvote when requested again btetshal
-
 module.exports = router;
 
 

@@ -11,17 +11,16 @@ const ReportSchema = new Schema(
     },
     postId: {
         type: Schema.Types.ObjectId,
-        required: true,
         ref: "post",
     },
     commentId: {
         type: Schema.Types.ObjectId,
-        required: true,
         ref: "comment",
     },
     reason: {
         type: String,
         trim: true,
+        required: true,
         maxLength: 200,
 
     },
