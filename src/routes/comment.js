@@ -296,7 +296,7 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
 router.get("/comments/:commentId/replies", auth.authentication, async (req, res) => {
     try {
         const commentId = req.params.commentId;
-
+        const userId = req.user._id;
         const comment = await Comment.findById(commentId);
 
         if (!comment) {
@@ -305,7 +305,7 @@ router.get("/comments/:commentId/replies", auth.authentication, async (req, res)
             });
         }
 
-        const replies = await Comment.find({ parentCommentId: commentId });
+        const replies = await Comment.getCommentReplies(comment, userId);
 
         res.status(200).send({ 
             replies,
