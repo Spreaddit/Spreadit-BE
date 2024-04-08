@@ -1,7 +1,7 @@
 /**
  * Module dependencies.
  */
-const Post = require('../models/post');
+const Post = require("../models/post");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
@@ -269,10 +269,12 @@ const UserSchema = new Schema(
     savedComments: [
       { type: Schema.Types.ObjectId, ref: "comment", index: true },
     ],
-    hiddenPosts: [{
-      type: Schema.Types.ObjectId,
-      ref: 'post'
-    }],
+    hiddenPosts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "post",
+      },
+    ],
     blockedUsers: [
       {
         type: String,
@@ -280,10 +282,17 @@ const UserSchema = new Schema(
     ],
     mutedCommunities: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "Community",
       },
     ],
     subscribedCommunities: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Community",
+      },
+    ],
+    favouriteCommunities: [
       {
         type: Schema.Types.ObjectId,
         ref: "Community",
@@ -483,6 +492,7 @@ UserSchema.statics.generateUserObject = async function (
       savedPosts: user.savedPosts,
       blockedUsers: user.blockedUsers,
       subscribedCommunities: user.subscribedCommunities,
+      favouriteCommunities: user.favouriteCommunities,
     };
     if (authorizedUserName != null) {
       const authorizedUser = await User.findOne({

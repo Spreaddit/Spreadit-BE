@@ -12,7 +12,7 @@ const postsRoutes = require("./routes/post");
 const uploadRoutes = require("./routes/upload-test");
 const settingsRoutes = require("./routes/settings");
 const mobileSettingsRoutes = require("./routes/mobile-settings");
-const homepageRoutes = require("./routes/homepage");
+const communityRoutes = require("./routes/community");
 
 const listingRoutes = require("./routes/listing");
 
@@ -42,7 +42,7 @@ app.use("/users", userActionRoutes);
 app.use("/posts", postsRoutes);
 app.use("/", uploadRoutes);
 app.use("/", listingRoutes);
-app.use(homepageRoutes);
+app.use(communityRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
