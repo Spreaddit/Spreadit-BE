@@ -585,3 +585,32 @@ exports.getHiddenPosts = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.markPostAsNsfw = async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const post = await Post.findByIdAndUpdate(postId, { isNsfw: true });
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+        res.status(200).json({ message: "Post updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.markPostAsNotNsfw = async (req, res) => {
+    const postId = req.params.postId;
+    try {
+        const post = await Post.findByIdAndUpdate(postId, { isNsfw: false });
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+        res.status(200).json({ message: "Post updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
