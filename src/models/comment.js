@@ -62,6 +62,10 @@ const CommentSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: 'User'
         }],
+        savedBy: [{
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }],
 
     },
     {
@@ -95,6 +99,7 @@ CommentSchema.statics.getCommentObject = async function (
       
     }
     const isHidden = comment.hiddenBy.includes(userid);
+    const isSaved = comment.savedBy.includes(userid);
 
     const commentInfo = {
       id: comment._id,
@@ -106,10 +111,10 @@ CommentSchema.statics.getCommentObject = async function (
       media: comment.attachments,
       created_at: comment.createdAt,
       isHidden: isHidden,
+      isSaved: isSaved,
     };
     return commentInfo;
 };
-
 
 CommentSchema.statics.getCommentReplies = async function (comment, userId) {
     const replyComment = await Comment.find({

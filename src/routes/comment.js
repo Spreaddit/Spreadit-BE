@@ -95,9 +95,9 @@ router.delete("/posts/comment/delete/:commentId", auth.authentication, async (re
     }
 });
 
-router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
+router.get("/posts/comment/:postId", auth.authentication, async (req, res) => {
     try {
-        const postId = req.params.postid;
+        const postId = req.params.postId;
         const comments = await Comment.find({postId}).populate({
         path: "userId",
         });
@@ -329,7 +329,7 @@ router.post("/comments/:commentId/hide", auth.authentication, async (req, res) =
                 message: "Comment not found" 
             });
         }
-        
+
         const isHidden = comment.hiddenBy.includes(userId);
         if (isHidden) {
             // If already hidden, remove from hiddenBy array
