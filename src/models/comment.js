@@ -1,3 +1,4 @@
+
 const { Int32 } = require("mongodb");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
@@ -36,10 +37,6 @@ const CommentSchema = new Schema(
             type: [],
             default: null
         },
-        isHidden: {
-            type: Boolean,
-            default: false
-        },
         isLocked: {
             type: Boolean,
             default: false,
@@ -58,16 +55,31 @@ const CommentSchema = new Schema(
         },
         attachments: [
             {
-              type: String,
-              default: [],
-            },
+                type: {
+                    type: String,
+                    default: '' 
+                },
+                link: {
+                    type: String,
+                    default: '' 
+                }
+            }
         ],
+        hiddenBy: [{
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }],
+        savedBy: [{
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }],
 
     },
     {
         timestamps: true,
     }
 );
+
 
 CommentSchema.statics.getCommentObject = async function (
     comment,
@@ -92,10 +104,14 @@ CommentSchema.statics.getCommentObject = async function (
       else{
         userObject = await User.generateUserObject(comment.userId, userid);
       }
-      
     }
-    
-    console.log(userObject)
+    const Post = mongoose.model("post");
+    const isHidden = comment.hiddenBy.includes(userid);
+    const isSaved = comment.savedBy.includes(userid);
+    const post = await Post.findOne({ _id: comment.postId });
+    const postTitle = post.title;
+    const subredditTitle = post.community;
+
     const commentInfo = {
       id: comment._id,
       content: comment.content,
@@ -105,6 +121,10 @@ CommentSchema.statics.getCommentObject = async function (
       is_reply: comment.parentCommentId != null ? true : false,
       media: comment.attachments,
       created_at: comment.createdAt,
+      is_hidden: isHidden,
+      is_saved: isSaved,
+      post_title: postTitle,
+      community_title: subredditTitle,
     };
     return commentInfo;
 };

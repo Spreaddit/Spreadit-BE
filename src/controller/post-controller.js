@@ -32,7 +32,8 @@ exports.getAllUserPosts = async (req, res) => {
             return res.status(404).json({ error: 'User or posts not found' });
         }
         const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
-
+        const user = await User.findById(userId);
+        const savedPostIds = user ? user.savedPosts : [];
         for (let post of visiblePosts) {
             post = await Post.findById(post._id);
             post.numberOfViews++;
@@ -40,6 +41,7 @@ exports.getAllUserPosts = async (req, res) => {
             const downVotesCount = post.downVotes ? post.downVotes.length : 0;
             post.votesUpCount = upVotesCount;
             post.votesDownCount = downVotesCount;
+            post.isSaved = savedPostIds.includes(post._id.toString());
             await post.save();
         }
 
@@ -266,7 +268,6 @@ exports.editPost = async (req, res) => {
         const { postId } = req.params;
         const userId = req.user._id;
         const { content, link, videos } = req.body;
-        console.log(req.body);
         let images = [];
         if (req.files && req.files.length > 0) {
             for (let i = 0; i < req.files.length; i++) {
@@ -275,7 +276,6 @@ exports.editPost = async (req, res) => {
                 images.push(url);
             }
         }
-        console.log(content);
         if (!postId || !userId) {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
         }
@@ -573,30 +573,6 @@ exports.unhidePost = async (req, res) => {
     }
 };
 
-exports.getHiddenPosts = async (req, res) => {
-    try {
-        const userId = req.user._id;
-
-        // Find the user by ID and populate the hiddenPosts field to get the hidden posts
-        const user = await User.findById(userId).populate('hiddenPosts');
-
-        if (!user || !user.hiddenPosts || user.hiddenPosts.length === 0) {
-            return res.status(404).json({ message: 'No hidden posts found' });
-        }
-
-        // Extract only the relevant post data to return
-        const hiddenPosts = user.hiddenPosts.map(post => ({
-            _id: post._id,
-            title: post.title,
-            // Add other fields as needed
-        }));
-
-        return res.status(200).json(hiddenPosts);
-    } catch (error) {
-        console.error('Error fetching hidden posts:', error);
-        return res.status(500).json({ error: 'Internal server error' });
-    }
-};
 
 exports.getHiddenPosts = async (req, res) => {
     try {
@@ -611,3 +587,32 @@ exports.getHiddenPosts = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.markPostAsNsfw = async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const post = await Post.findByIdAndUpdate(postId, { isNsfw: true });
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+        res.status(200).json({ message: "Post updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.markPostAsNotNsfw = async (req, res) => {
+    const postId = req.params.postId;
+    try {
+        const post = await Post.findByIdAndUpdate(postId, { isNsfw: false });
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+        res.status(200).json({ message: "Post updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+

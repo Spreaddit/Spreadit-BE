@@ -78,8 +78,6 @@ router.post("/login", async (req, res) => {
     req.body.password
   );
 
-  console.log(user);
-
   try {
     if (user) {
       const token = await user.generateToken();
@@ -98,8 +96,10 @@ router.post("/login", async (req, res) => {
         { _id: user._id },
         { $set: { tokens: user.tokens } }
       );
+      console.log(user);
 
       const userObj = await User.generateUserObject(user);
+      //console.log(userObj);
       res.status(200).send({
         access_token: token,
         user: userObj,
@@ -157,8 +157,8 @@ router.post('/google/oauth', verifyGoogleToken, async (req, res) => {
       const newUsername = await new User().generateRandomUsername();
       const newUser = new User({
         googleId: userData.id,
+        connectedAccounts: [userData.email],
         name: userData.name,
-        email: userData.email,
         username: newUsername
       });
 

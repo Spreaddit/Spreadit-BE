@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const upload = require("../service/fileUpload");
 const { uploadMedia } = require("../service/cloudinary");
 const config = require("./../configuration");
+const Report = require("../models/report")
 const router = express.Router();
 
 
@@ -16,8 +17,7 @@ router.post("/post/comment/:postId", auth.authentication, upload.array('attachme
         //verify that the post id exists in the post collections
         const postId = req.params.postId;
         const userId = req.user._id;
-        console.log(userId);
-        const { content } = req.body;
+        const { content, fileType } = req.body;
 
         console.log(userId);
         if (!content) {
@@ -44,7 +44,8 @@ router.post("/post/comment/:postId", auth.authentication, upload.array('attachme
               const result = await uploadMedia(req.files[i]);
               //const url = `${config.baseUrl}/media/${result.Key}`;
               const url = result.secure_url;
-              newComment.attachments.push(url);
+              const attachmentObj = { type: fileType, link: url };
+              newComment.attachments.push(attachmentObj);
             }
         }
         //console.log(newComment);
@@ -62,10 +63,10 @@ router.post("/post/comment/:postId", auth.authentication, upload.array('attachme
     }
 });
 
-router.delete("/posts/comment/delete", auth.authentication, async (req, res) => {
+router.delete("/posts/comment/delete/:commentId", auth.authentication, async (req, res) => {
     try {
       const userId = req.user._id;
-      const comment = await Comment.findByIdAndDelete(req.body.id);
+      const comment = await Comment.findByIdAndDelete(req.params.commentId);
       if (comment.userId.toString() !== userId.toString()) {
         return res.status(403).send({ 
             message: "You are not authorized to delete this comment" 
@@ -95,9 +96,9 @@ router.delete("/posts/comment/delete", auth.authentication, async (req, res) => 
     }
 });
 
-router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
+router.get("/posts/comment/:postId", auth.authentication, async (req, res) => {
     try {
-        const postId = req.params.postid;
+        const postId = req.params.postId;
         const comments = await Comment.find({postId}).populate({
         path: "userId",
         });
@@ -129,10 +130,11 @@ router.get("/posts/comment/:postid", auth.authentication, async (req, res) => {
 });
 
 
-router.get("/comments/user", auth.authentication, async (req, res) => {
+router.get("/comments/user/:username", auth.authentication, async (req, res) => {
     try {
-        const userId = req.user._id;
-
+        const username = req.params.username;
+        const user = User.getUserByEmailOrUsername(username);
+        const userId= user._id;
         const comments = await Comment.find({ userId }).populate({
             path: "userId",
         });
@@ -147,7 +149,7 @@ router.get("/comments/user", auth.authentication, async (req, res) => {
 
         const commentObjects = [];
         for (const comment of comments) {
-            const commentObject = await Comment.getCommentObject(comment,  req.user._id, false);
+            const commentObject = await Comment.getCommentObject(comment,  req.user._id);
             if (req.query.include_replies === "true") {
                 const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
                 commentObject.replies = commentWithReplies.replies;
@@ -245,8 +247,7 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
         const parentCommentId = req.params.parentCommentId;
         //const postId = req.params.postId;
         const userId = req.user._id;
-        const { content } = req.body;
-
+        const { content, fileType } = req.body;
         if (!content) {
             return res.status(400).send({ 
                 message: "Reply content is required" 
@@ -273,7 +274,8 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
               const result = await uploadMedia(req.files[i]);
               //const url = `${config.baseUrl}/media/${result.Key}`;
               const url = result.secure_url;
-              newReply.attachments.push(url);
+              const attachmentObj = { type: fileType, link: url };
+              newReply.attachments.push(attachmentObj);
             }
         }
 
@@ -294,7 +296,7 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
 router.get("/comments/:commentId/replies", auth.authentication, async (req, res) => {
     try {
         const commentId = req.params.commentId;
-
+        const userId = req.user._id;
         const comment = await Comment.findById(commentId);
 
         if (!comment) {
@@ -303,7 +305,7 @@ router.get("/comments/:commentId/replies", auth.authentication, async (req, res)
             });
         }
 
-        const replies = await Comment.find({ parentCommentId: commentId });
+        const replies = await Comment.getCommentReplies(comment, userId);
 
         res.status(200).send({ 
             replies,
@@ -319,21 +321,50 @@ router.get("/comments/:commentId/replies", auth.authentication, async (req, res)
 router.post("/comments/:commentId/hide", auth.authentication, async (req, res) => {
     try {
         const commentId = req.params.commentId;
+        const userId = req.user._id;
 
         const comment = await Comment.findById(commentId);
 
         if (!comment) {
-            return res.status(404).send({ message: "Comment not found" });
+            return res.status(404).send({ 
+                message: "Comment not found" 
+            });
         }
 
-        comment.isHidden = !comment.isHidden;
+        const isHidden = comment.hiddenBy.includes(userId);
+        if (isHidden) {
+            // If already hidden, remove from hiddenBy array
+            const index = comment.hiddenBy.indexOf(userId);
+            if (index > -1) {
+                comment.hiddenBy.splice(index, 1);
+            }
+        } else {
+            // If not hidden, add to hiddenBy array
+            comment.hiddenBy.push(userId);
+        }
+
         await comment.save();
 
-        res.status(200).send({ message: `Comment has been ${comment.isHidden ? 'hidden' : 'unhidden'} successfully` });
+        // Update the user's hiddenComments array
+        const user = await User.findById(userId);
+        if (user) {
+            const hiddenCommentsIndex = user.hiddenComments.indexOf(commentId);
+            if (isHidden && hiddenCommentsIndex > -1) {
+                // If comment was hidden and is now unhidden, remove from hiddenComments
+                user.hiddenComments.splice(hiddenCommentsIndex, 1);
+            } else if (!isHidden && hiddenCommentsIndex === -1) {
+                // If comment was unhidden and is now hidden, add to hiddenComments
+                user.hiddenComments.push(commentId);
+            }
+            await user.save();
+        }
+
+        res.status(200).send({ message: `Comment has been ${isHidden ? 'unhidden' : 'hidden'} successfully` });
     } catch (err) {
         res.status(500).send(err.toString());
     }
 });
+
 
 router.post("/comments/:commentId/upvote", auth.authentication, async (req, res) => {
     try {
@@ -350,11 +381,13 @@ router.post("/comments/:commentId/upvote", auth.authentication, async (req, res)
         const downvotesCount = comment.downVotes.length;
         const upvotesCount = comment.upVotes.length;
         let netVotes = upvotesCount - downvotesCount;
+        console.log(netVotes)
 
         const downvoteIndex = comment.downVotes.indexOf(userId);
         if (downvoteIndex !== -1) {
             comment.downVotes.splice(downvoteIndex, 1);
             netVotes = netVotes - 1;
+            console.log(netVotes)
         }
         
         if (comment.upVotes.includes(userId)) {
@@ -364,6 +397,7 @@ router.post("/comments/:commentId/upvote", auth.authentication, async (req, res)
                 await comment.save();
             }
             netVotes = netVotes - 1;
+            console.log(netVotes)
             return res.status(400).send({ 
                 votes: netVotes,
                 message: "You have removed your upvote this comment" 
@@ -374,6 +408,7 @@ router.post("/comments/:commentId/upvote", auth.authentication, async (req, res)
         await comment.save();
         
         netVotes = netVotes + 1;
+        console.log(netVotes)
 
         res.status(200).send({ 
             votes: netVotes,
@@ -400,13 +435,13 @@ router.post("/comments/:commentId/downvote", auth.authentication, async (req, re
         const downvotesCount = comment.downVotes.length;
         const upvotesCount = comment.upVotes.length;
         let netVotes = upvotesCount - downvotesCount;
-        //console.log(netVotes)
+        console.log(netVotes)
 
         const upvoteIndex = comment.upVotes.indexOf(userId);
         if (upvoteIndex !== -1) {
             comment.upVotes.splice(upvoteIndex, 1);
             netVotes = netVotes - 1;
-            //console.log(netVotes)
+            console.log(netVotes)
         }
         
         if (comment.downVotes.includes(userId)) {
@@ -416,7 +451,7 @@ router.post("/comments/:commentId/downvote", auth.authentication, async (req, re
                 await comment.save(); 
             }
             netVotes = netVotes + 1;
-            //console.log(netVotes)
+            console.log(netVotes)
             return res.status(400).send({ 
                 votes: netVotes,
                 message: "You have removed your downvote this comment" 
@@ -424,7 +459,7 @@ router.post("/comments/:commentId/downvote", auth.authentication, async (req, re
         }
 
         netVotes = netVotes - 1;
-        //console.log(netVotes)
+        console.log(netVotes)
 
         comment.downVotes.push(userId);
         await comment.save();
@@ -474,13 +509,42 @@ router.post("/comments/:commentId/save", auth.authentication, async (req, res) =
     }
 });
 
+router.post("/comments/:commentId/report", auth.authentication, async (req, res) => {
+    try {
+        const { commentId } = req.params;
+        const { reason, sureason } = req.body;
+        const userId = req.user._id;
 
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.status(404).send({ 
+                message: "Comment not found" 
+            });
+        }
 
+        const report = new Report({
+            userId: userId,
+            postId: comment.postId,
+            commentId: commentId,
+            reason: reason,
+            sureason: sureason
+        });
+
+        await report.save();
+
+        res.status(201).send({ 
+            message: "Comment reported successfully" 
+        });
+    } catch (error) {
+        console.error("Error reporting comment:", error);
+        res.status(500).send({ 
+            error: "An error occurred while reporting the comment" 
+        });
+    }
+});
 
 
 //shring a comment ??
-//reporting a cooment
-//upvote and downvote when requested again btetshal
 
 module.exports = router;
 
