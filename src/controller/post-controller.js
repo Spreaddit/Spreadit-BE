@@ -25,18 +25,26 @@ exports.getAllPosts = async (req, res) => {
 exports.getAllUserPosts = async (req, res) => {
     try {
         const userId = req.user._id;
-        console.log(userId);
+
         const posts = await Post.find({ userId });
 
         if (!posts || posts.length === 0) {
             return res.status(404).json({ error: 'User or posts not found' });
         }
-        for (let post of posts) {
+        const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
+
+        for (let post of visiblePosts) {
             post = await Post.findById(post._id);
             post.numberOfViews++;
+            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            post.votesUpCount = upVotesCount;
+            post.votesDownCount = downVotesCount;
             await post.save();
         }
-        res.status(200).json(posts);
+
+        res.status(200).json(visiblePosts);
+
     } catch (err) {
         console.error('Error fetching posts:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -258,7 +266,6 @@ exports.editPost = async (req, res) => {
         const { postId } = req.params;
         const userId = req.user._id;
         const { content, link, videos } = req.body;
-        console.log(req.body);
         let images = [];
         if (req.files && req.files.length > 0) {
             for (let i = 0; i < req.files.length; i++) {
@@ -267,7 +274,6 @@ exports.editPost = async (req, res) => {
                 images.push(url);
             }
         }
-        console.log(content);
         if (!postId || !userId) {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
         }
@@ -371,6 +377,211 @@ exports.unlockPostComments = async (req, res) => {
         return res.status(200).json({ message: 'Post comments unlocked successfully' });
     } catch (error) {
         console.error('Error unlocking post comments:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.upvotePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const userId = req.user._id;
+
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).send({
+                message: "post not found"
+            });
+        }
+        const downvotesCount = post.downVotes.length;
+
+        const downvoteIndex = post.downVotes.indexOf(userId);
+        const upvoteIndex = post.upVotes.indexOf(userId);
+        if (downvoteIndex !== -1) {
+            post.downVotes.splice(downvoteIndex, 1);
+            post.upVotes.push(userId);
+        }
+        else if (upvoteIndex !== -1) {
+            post.upVotes.splice(downvoteIndex, 1);
+        }
+        else {
+            post.upVotes.push(userId);
+        }
+
+
+        await post.save();
+        const upvotesCount = post.upVotes.length;
+        const newdownvotesCount = post.downVotes.length;
+        const netVotes = upvotesCount - newdownvotesCount;
+
+        res.status(200).send({
+            votes: netVotes,
+            message: "post has been upvoted successfully"
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+};
+
+exports.downvotePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const userId = req.user._id;
+
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).send({
+                message: "post not found"
+            });
+        }
+        const upvotesCount = post.upVotes.length;
+
+        const downvoteIndex = post.downVotes.indexOf(userId);
+        const upvoteIndex = post.upVotes.indexOf(userId);
+        if (downvoteIndex !== -1) {
+            post.downVotes.splice(downvoteIndex, 1);
+        }
+        else if (upvoteIndex !== -1) {
+            post.upVotes.splice(upvoteIndex, 1);
+            post.downVotes.push(userId);
+        }
+        else {
+            post.downVotes.push(userId);
+        }
+
+
+        await post.save();
+        const downvotesCount = post.downVotes.length;
+        const newupvotesCount = post.upVotes.length;
+        const netVotes = newupvotesCount - downvotesCount;
+
+        res.status(200).send({
+            votes: netVotes,
+            message: "post has been downvoted successfully"
+        });
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+};
+
+exports.getUpvotedPosts = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const posts = await Post.find({ upVotes: userId });
+
+        if (!posts || posts.length === 0) {
+            return res.status(404).json({ error: 'Posts not found' });
+        }
+
+        res.status(200).json(posts);
+    } catch (err) {
+        console.error('Error fetching upvoted posts:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.getDownvotedPosts = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const posts = await Post.find({ downVotes: userId });
+
+        if (!posts || posts.length === 0) {
+            return res.status(404).json({ error: 'Posts not found' });
+        }
+
+        res.status(200).json(posts);
+    } catch (err) {
+        console.error('Error fetching downvoted posts:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.deletePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const userId = req.user._id;
+        const post = await Post.findByIdAndDelete({ _id: postId, userId });
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        res.status(200).json({ message: 'Post deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting post:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.hidePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const userId = req.user._id;
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+        if (post.hiddenBy.includes(userId)) {
+            return res.status(400).json({ message: "Post is already hidden by the user" });
+        }
+        post.hiddenBy.push(userId);
+        await post.save();
+
+        const user = await User.findById(userId);
+        user.hiddenPosts.push(postId);
+        await user.save();
+
+        return res.status(200).json({ message: "Post hidden successfully" });
+    } catch (error) {
+        console.error('Error hiding post:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.unhidePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const userId = req.user._id;
+
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+        const index = post.hiddenBy.indexOf(userId);
+        if (index === -1) {
+            return res.status(400).json({ message: "Post is not hidden by the user" });
+        }
+        post.hiddenBy.splice(index, 1);
+        await post.save();
+
+        const user = await User.findById(userId);
+        const postIndex = user.hiddenPosts.indexOf(postId);
+        if (postIndex !== -1) {
+            user.hiddenPosts.splice(postIndex, 1);
+            await user.save();
+        }
+
+        return res.status(200).json({ message: "Post unhidden successfully" });
+    } catch (error) {
+        console.error('Error unhiding post:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+exports.getHiddenPosts = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const user = await User.findById(userId).populate('hiddenPosts');
+        if (!user || !user.hiddenPosts || user.hiddenPosts.length === 0) {
+            return res.status(404).json({ message: 'No hidden posts found' });
+        }
+        return res.status(200).json(user.hiddenPosts);
+    } catch (error) {
+        console.error('Error fetching hidden posts:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 };

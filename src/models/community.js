@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { boolean } = require("yargs");
 const Schema = mongoose.Schema;
-const User = mongoose.model("user");
+
 const CommunitySchema = new Schema({
   name: {
     type: String,
@@ -10,11 +10,29 @@ const CommunitySchema = new Schema({
     trim: true,
     maxlength: 30,
   },
-  rules: {
+  category: {
     type: String,
     trim: true,
-    maxlength: 200,
-    default: "",
+    maxlength: 30,
+  },
+  rules: {
+    type: [Schema.Types.ObjectId],
+    ref: "rule",
+    index: true,
+  },
+  dateCreated: {
+    type: Date,
+    default: Date.now,
+  },
+  communityBanner: {
+    type: String,
+    format: "url",
+    description: "Link to the banner of the community",
+  },
+  image: {
+    type: String,
+    format: "url",
+    description: "Link to the image of the community",
   },
   description: {
     type: String,

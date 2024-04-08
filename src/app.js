@@ -12,7 +12,8 @@ const postsRoutes = require("./routes/post");
 const uploadRoutes = require("./routes/upload-test");
 const settingsRoutes = require("./routes/settings");
 const mobileSettingsRoutes = require("./routes/mobile-settings");
-const commentRoutes = require("./routes/comment");
+const homepageRoutes = require("./routes/homepage");
+
 const listingRoutes = require("./routes/listing");
 
 const app = express();
@@ -33,7 +34,6 @@ app.use(
 );
 
 app.use(authRoutes);
-app.use("", commentRoutes);
 app.use("/auth", authRoutes);
 app.use("/settings", settingsRoutes);
 app.use("/mobile/settings", mobileSettingsRoutes);
@@ -41,12 +41,12 @@ app.use("/", createCommunityRoutes);
 app.use("/users", userActionRoutes);
 app.use("/posts", postsRoutes);
 app.use("/", uploadRoutes);
-app.use("/posts", listingRoutes);
+app.use("/", listingRoutes);
+app.use(homepageRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    
   })
   .then(() => {
     console.log("Database connected successfully");

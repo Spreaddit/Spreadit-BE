@@ -9,6 +9,9 @@ router.route('/')
     .get(auth.authentication, postController.getAllUserPosts)
     .post(auth.authentication, upload.array('images'), postController.createPost);
 
+router.route('/:postId')
+    .delete(auth.authentication, postController.deletePost);
+
 router.route('/community/:community')
     .get(auth.authentication, postController.getAllPostsInCommunity)
 
@@ -35,5 +38,26 @@ router.route('/:postId/lock')
 
 router.route('/:postId/unlock')
     .post(auth.authentication, postController.unlockPostComments);
+
+router.route('/:postId/upvote')
+    .post(auth.authentication, postController.upvotePost);
+
+router.route('/:postId/downvote')
+    .post(auth.authentication, postController.downvotePost);
+
+router.route('/downvote')
+    .get(auth.authentication, postController.getDownvotedPosts);
+
+router.route('/upvote')
+    .get(auth.authentication, postController.getUpvotedPosts);
+
+router.route('/:postId/hide')
+    .post(auth.authentication, postController.hidePost);
+
+router.route('/:postId/unhide')
+    .post(auth.authentication, postController.unhidePost);
+
+router.route('/hide')
+    .get(auth.authentication, postController.getHiddenPosts);
 
 module.exports = router;    
