@@ -19,8 +19,8 @@ exports.createNewCommunity = async (req, res) => {
         is18plus: is18plus,
         communityType: communityType,
         creator: user,
-        category: category,
-        members: [user]
+        members: [user],
+        moderators: [user]
     });
 
     try {

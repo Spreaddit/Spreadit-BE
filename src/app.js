@@ -12,9 +12,9 @@ const postsRoutes = require("./routes/post");
 const uploadRoutes = require("./routes/upload-test");
 const settingsRoutes = require("./routes/settings");
 const mobileSettingsRoutes = require("./routes/mobile-settings");
-const homepageRoutes = require("./routes/homepage");
-const listingRoutes = require("./routes/listing");
+const communityRoutes = require("./routes/community");
 
+const listingRoutes = require("./routes/listing");
 
 //seeding
 const UserRoleSeeder = require("../seeders/user-role.seeder");
@@ -44,8 +44,7 @@ app.use("/users", userActionRoutes);
 app.use("/posts", postsRoutes);
 app.use("/", uploadRoutes);
 app.use("/", listingRoutes);
-app.use(homepageRoutes);
-
+app.use(communityRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
@@ -59,11 +58,11 @@ mongoose
     const shouldRun = await userRoleSeeder.shouldRun();
 
     if (shouldRun) {
-      console.log('Running Seeder...');
+      console.log("Running Seeder...");
       await userRoleSeeder.run();
-      console.log('Seeder executed successfully');
+      console.log("Seeder executed successfully");
     } else {
-      console.log('Seeder already executed, skipping...');
+      console.log("Seeder already executed, skipping...");
     }
 
     // Start the server after seeding

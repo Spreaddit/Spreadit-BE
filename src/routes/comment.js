@@ -17,8 +17,7 @@ router.post("/post/comment/:postId", auth.authentication, upload.array('attachme
         //verify that the post id exists in the post collections
         const postId = req.params.postId;
         const userId = req.user._id;
-        console.log(userId);
-        const { content } = req.body;
+        const { content, fileType } = req.body;
 
         console.log(userId);
         if (!content) {
@@ -45,7 +44,8 @@ router.post("/post/comment/:postId", auth.authentication, upload.array('attachme
               const result = await uploadMedia(req.files[i]);
               //const url = `${config.baseUrl}/media/${result.Key}`;
               const url = result.secure_url;
-              newComment.attachments.push(url);
+              const attachmentObj = { type: fileType, link: url };
+              newComment.attachments.push(attachmentObj);
             }
         }
         //console.log(newComment);
@@ -149,7 +149,7 @@ router.get("/comments/user/:username", auth.authentication, async (req, res) => 
 
         const commentObjects = [];
         for (const comment of comments) {
-            const commentObject = await Comment.getCommentObject(comment,  req.user._id, false);
+            const commentObject = await Comment.getCommentObject(comment,  req.user._id);
             if (req.query.include_replies === "true") {
                 const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
                 commentObject.replies = commentWithReplies.replies;
@@ -186,14 +186,14 @@ router.get("/comments/saved/user", auth.authentication, async (req, res) => {
 
         const commentObjects = [];
         for (const comment of savedComments) {
-            const commentObject = await Comment.getCommentObject(comment,  req.user._id);
+            const commentObject = await Comment.getCommentObject(comment,  req.user._id, false);
             if (req.query.include_replies === "true") {
                 const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
                 commentObject.replies = commentWithReplies.replies;
             }
             commentObjects.push(commentObject);
         }
-        
+
         res.status(200).send({
             comments: commentObjects,
             message: "Saved Comments for the user have been retrieved successfully",
@@ -247,8 +247,7 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
         const parentCommentId = req.params.parentCommentId;
         //const postId = req.params.postId;
         const userId = req.user._id;
-        const { content } = req.body;
-
+        const { content, fileType } = req.body;
         if (!content) {
             return res.status(400).send({ 
                 message: "Reply content is required" 
@@ -275,7 +274,8 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
               const result = await uploadMedia(req.files[i]);
               //const url = `${config.baseUrl}/media/${result.Key}`;
               const url = result.secure_url;
-              newReply.attachments.push(url);
+              const attachmentObj = { type: fileType, link: url };
+              newReply.attachments.push(attachmentObj);
             }
         }
 
@@ -296,7 +296,7 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
 router.get("/comments/:commentId/replies", auth.authentication, async (req, res) => {
     try {
         const commentId = req.params.commentId;
-
+        const userId = req.user._id;
         const comment = await Comment.findById(commentId);
 
         if (!comment) {
@@ -305,7 +305,7 @@ router.get("/comments/:commentId/replies", auth.authentication, async (req, res)
             });
         }
 
-        const replies = await Comment.find({ parentCommentId: commentId });
+        const replies = await Comment.getCommentReplies(comment, userId);
 
         res.status(200).send({ 
             replies,
@@ -545,6 +545,7 @@ router.post("/comments/:commentId/report", auth.authentication, async (req, res)
 
 
 //shring a comment ??
+
 module.exports = router;
 
 
