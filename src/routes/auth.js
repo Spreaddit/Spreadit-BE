@@ -1,15 +1,16 @@
 const express = require("express");
 const User = require("../models/user.js");
-const axios = require('axios');
+const axios = require("axios");
 //const auth = require("../middleware/authentication");
-const { verifyGoogleToken } = require('../middleware/authentication');
+const { verifyGoogleToken } = require("../middleware/authentication");
 const config = require("../configuration");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
-const GoogleStrategy = require('passport-google-oauth2').Strategy;
-const sendEmail = require('../models/send-email.js');
-const jwt = require('jwt-decode');
+const GoogleStrategy = require("passport-google-oauth2").Strategy;
+const sendEmail = require("../models/send-email.js");
+const jwt = require("jwt-decode");
 const bcrypt = require("bcryptjs");
+const auth = require("../middleware/authentication");
 
 const router = express.Router();
 router.use(passport.initialize());
@@ -17,11 +18,11 @@ router.use(passport.initialize());
 //router.use(passport.session());
 router.use(cookieParser("spreaditsecret"));
 
-
 router.post("/signup", async (req, res) => {
   try {
     const user = new User(req.body);
-    const userAvatar = "https://drive.google.com/file/d/1130pQbYOHFVRl8Y381KoneRzpKoGUvzl/view?usp=sharing"
+    const userAvatar =
+      "https://drive.google.com/file/d/1130pQbYOHFVRl8Y381KoneRzpKoGUvzl/view?usp=sharing";
     user.avatar = userAvatar;
     if (!(await User.checkExistence(user.email, user.username))) {
       const savedUser = await user.save();
@@ -72,7 +73,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-
 router.post("/login", async (req, res) => {
   const user = await User.verifyCredentials(
     req.body.username,
@@ -108,20 +108,16 @@ router.post("/login", async (req, res) => {
         message: "User logged in successfully",
       });
     } else {
-      res
-        .status(401)
-        .send({ message: "The credentials are invalid." });
+      res.status(401).send({ message: "The credentials are invalid." });
     }
   } catch (err) {
     res.status(500).send({
-      message:
-        "The server crashed :)",
+      message: "The server crashed :)",
     });
   }
 });
 
-router.post('/google/oauth', verifyGoogleToken, async (req, res) => {
-
+router.post("/google/oauth", verifyGoogleToken, async (req, res) => {
   try {
     const userData = req.decoded;
     console.log(userData);
@@ -153,14 +149,13 @@ router.post('/google/oauth', verifyGoogleToken, async (req, res) => {
         token_expiration_date: authTokenInfo["token_expiration_date"],
         message: "User logged in successfully",
       });
-
     } else {
       const newUsername = await new User().generateRandomUsername();
       const newUser = new User({
         googleId: userData.id,
         connectedAccounts: [userData.email],
         name: userData.name,
-        username: newUsername
+        username: newUsername,
       });
 
       const savedUser = await newUser.save();
@@ -173,15 +168,11 @@ router.post('/google/oauth', verifyGoogleToken, async (req, res) => {
         message: "User signed up successfully",
       });
     }
-
   } catch (error) {
-    console.error('Error during token verification:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error during token verification:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-
-
-}
-);
+});
 
 router.post("/forgot-password", async (req, res) => {
   try {
@@ -229,7 +220,6 @@ router.post("/app/forgot-password", async (req, res) => {
   }
 });
 
-
 router.post("/reset-password-by-token", async (req, res) => {
   try {
     const newUser = new User(req.body);
@@ -242,47 +232,45 @@ router.post("/reset-password-by-token", async (req, res) => {
       await user.save();
       res.status(200).send({ message: "Password reset successfully" });
     } else {
-      return res.status(400).send({ message: "Invalid or expired reset token" });
+      return res
+        .status(400)
+        .send({ message: "Invalid or expired reset token" });
     }
-
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: "Internal server error" });
   }
 });
 
-router.get('/user-info', async (req, res) => {
+router.get("/reset-password/user-info", async (req, res) => {
   try {
     const { token } = req.body;
     if (!token) {
-      return res.status(401).json({ message: 'Token is required' });
+      return res.status(401).json({ message: "Token is required" });
     }
     const decodedToken = jwt.jwtDecode(token);
     const userUsername = decodedToken.username;
     const user = await User.getUserByEmailOrUsername(userUsername);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const { avatar, email, username } = user;
     res.status(200).json({ avatar, email, username });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-router.post("/reset-password", async (req, res) => {
+router.post("/reset-password", auth.authentication, async (req, res) => {
   try {
-
     const { token, newPassword, currentPassword } = req.body;
     if (!token) {
-      return res.status(401).json({ message: 'Token is required' });
+      return res.status(401).json({ message: "Token is required" });
     }
-
-    const decodedToken = jwt.jwtDecode(token);
-    const username = decodedToken.username;
-    const user = await User.getUserByEmailOrUsername(username);
+    const userId = req.user._id;
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
@@ -304,7 +292,7 @@ router.post("/verify-email/:emailToken", async (req, res) => {
   try {
     const { emailToken } = req.params;
     if (!emailToken) {
-      return res.status(401).json({ message: 'Token is required' });
+      return res.status(401).json({ message: "Token is required" });
     }
 
     const decodedToken = jwt.jwtDecode(emailToken);
@@ -329,15 +317,12 @@ router.post("/check-username", async (req, res) => {
     const exists = await User.getUserByEmailOrUsername(newUser.username);
 
     if (exists) {
-      res
-        .status(200).send({ available: false });
+      res.status(200).send({ available: false });
     } else {
-      res
-        .status(200).send({ available: true });
+      res.status(200).send({ available: true });
     }
   } catch (err) {
-    res
-      .status(500).send({ message: "Internal server error" });
+    res.status(500).send({ message: "Internal server error" });
   }
 });
 router.post("/forgot-username", async (req, res) => {
@@ -360,6 +345,87 @@ router.post("/forgot-username", async (req, res) => {
   }
 });
 
+router.get("/user/profile-info/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+    const user = await User.findOne({ username })
+      .select(
+        "username avatar banner about createdAt followers followings communities connectedAccounts"
+      )
+      .populate({
+        path: "followers followings",
+        select: "username avatar banner",
+      })
+      .populate({
+        path: "communities",
+        select: "name description image",
+      })
+      .exec();
 
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      username: user.username,
+      avatar: user.avatar,
+      banner: user.banner,
+      about: user.about,
+      createdAt: user.createdAt,
+      followers: user.followers,
+      followings: user.followings,
+      communities: user.communities,
+      socialLinks: user.socialLinks,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.put("/user/profile-info", auth.authentication, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { avatar, banner, about, socialLinks } = req.body;
+
+    const updatedFields = {};
+    if (avatar) updatedFields.avatar = avatar;
+    if (banner) updatedFields.banner = banner;
+    if (about) updatedFields.about = about;
+    if (socialLinks) updatedFields.socialLinks = socialLinks;
+    if (req.body.username) {
+      const exists = await User.getUserByEmailOrUsername(req.body.username);
+      if (exists) {
+        return res.status(400).json({ message: "Username not available" });
+      }
+      updatedFields.username = req.body.username;
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: updatedFields },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      username: updatedUser.username,
+      avatar: updatedUser.avatar,
+      banner: updatedUser.banner,
+      about: updatedUser.about,
+      createdAt: updatedUser.createdAt,
+      followers: updatedUser.followers,
+      followings: updatedUser.followings,
+      communities: updatedUser.communities,
+      socialLinks: updatedUser.socialLinks,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 module.exports = router;

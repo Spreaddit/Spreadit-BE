@@ -317,6 +317,11 @@ const UserSchema = new Schema(
         },
       },
     ],
+    socialLinks: [
+      {
+        type: String
+      },
+    ],
   },
   {
     timestamps: true,
@@ -427,6 +432,7 @@ UserSchema.statics.generateUserObject = async function (user) {
       cakeDay: user.cakeDay,
       subscribedCommunities: user.subscribedCommunities,
       favouriteCommunities: user.favouriteCommunities,
+      socialLinks: user.socialLinks
     };
 
     return userObj;
