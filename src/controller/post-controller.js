@@ -1,5 +1,6 @@
 const Post = require('../models/post');
 const User = require('../models/user');
+const Report = require('../models/report.js');
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -613,6 +614,84 @@ exports.markPostAsNotNsfw = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.reportPost = async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const { reason, sureason } = req.body;
+        const userId = req.user._id;
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).send({
+                message: "post not found"
+            });
+        }
+
+        if (!reason) {
+            return res.status(400).send({
+                message: "invalid report data must send reason"
+            });
+        }
+
+        const report = new Report({
+            userId: userId,
+            postId: postId,
+            reason: reason,
+            sureason: sureason
+        });
+
+        await report.save();
+
+        res.status(201).send({
+            message: "post reported successfully"
+        });
+    } catch (error) {
+        console.error("Error reporting post:", error);
+        res.status(500).send({
+            error: "An error occurred while reporting the post"
+        });
+    }
+}
+
+exports.voteInPoll = async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const { selectedOption } = req.body;
+        const userId = req.user._id;
+
+        if (!postId || !selectedOption) {
+            return res.status(400).json({ error: 'Post ID and selected option are required' });
+        }
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        if (post.type !== 'Poll') {
+            return res.status(400).json({ error: 'The specified post is not a poll' });
+        }
+
+        if (post.votedUsers.includes(userId)) {
+            return res.status(400).json({ error: 'You have already voted in this poll' });
+        }
+
+        const optionIndex = post.pollOptions.findIndex(option => option.option === selectedOption);
+        if (optionIndex === -1) {
+            return res.status(404).json({ error: 'Selected option not found in the poll' });
+        }
+
+        post.pollOptions[optionIndex].votes++;
+        post.votedUsers.push(userId);
+        await post.save();
+
+        return res.status(200).json({ message: 'Vote cast successfully' });
+    } catch (err) {
+        console.error('Error casting vote:', err);
+        return res.status(500).json({ error: 'Internal server error' });
     }
 };
 

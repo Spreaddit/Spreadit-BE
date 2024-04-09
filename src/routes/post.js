@@ -66,4 +66,10 @@ router.route('/:postId/nfsw')
 router.route('/:postId/unnfsw')
     .post(auth.authentication, postController.markPostAsNotNsfw);
 
+router.route('/:postId/report')
+    .post(auth.authentication, postController.reportPost);
+
+router.route('/:postId/poll/vote')
+    .post(auth.authentication, postController.voteInPoll);
+
 module.exports = router;    
