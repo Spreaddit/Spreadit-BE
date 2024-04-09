@@ -25,7 +25,7 @@ router.route('/:postId/unsave')
     .post(auth.authentication, postController.unsavePost);
 
 router.route('/:postId/edit')
-    .put(auth.authentication, postController.editPost);
+    .put(auth.authentication, upload.array('images'), postController.editPost);
 
 router.route('/:postId/spoiler')
     .post(auth.authentication, postController.spoilerPostContent);

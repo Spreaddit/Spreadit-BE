@@ -67,7 +67,6 @@ exports.createPost = async (req, res) => {
             return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
         }
         let attachments = [];
-        console.log(req.files);
         if (req.files) {
             for (let i = 0; i < req.files.length; i++) {
                 const result = await uploadMedia(req.files[i]);
@@ -269,19 +268,10 @@ exports.editPost = async (req, res) => {
     try {
         const { postId } = req.params;
         const userId = req.user._id;
-        const { content, link, videos } = req.body;
-        let images = [];
-        if (req.files && req.files.length > 0) {
-            for (let i = 0; i < req.files.length; i++) {
-                const result = await uploadMedia(req.files[i]); // Corrected accessing req.files array
-                const url = result.secure_url;
-                images.push(url);
-            }
-        }
+        const content = req.body.content;
         if (!postId || !userId) {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
         }
-
         const post = await Post.findById(postId);
         const type = post.type;
         const postContent = post.content;
@@ -297,11 +287,9 @@ exports.editPost = async (req, res) => {
         if (type === 'Post' && (!postContent || postContent.length === 0)) {
             return res.status(400).json({ error: 'only posts with content can be editited' });
         }
+        console.log(content);
         if (content)
-            post.content = post.content.concat(content);
-        post.link = link;
-        post.images = images;
-        post.videos = videos;
+            post.content.push(content);
 
         await post.save();
 
