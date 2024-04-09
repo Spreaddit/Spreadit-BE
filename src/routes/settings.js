@@ -4,37 +4,37 @@ const SettingsController = require('../controller/settings');
 const auth = require("../middleware/authentication");
 
 
-router.route('/account', auth)
-    .get(SettingsController.getAccountSettings)
-    .put(SettingsController.modifyAccountSettings)
-    .delete(SettingsController.deleteAccount);
+router.route('/account')
+    .get(auth.authentication, SettingsController.getAccountSettings)
+    .put(auth.authentication, SettingsController.modifyAccountSettings)
+    .delete(auth.authentication, SettingsController.deleteAccount);
 
-router.route('/chat-and-messaging', auth)
-    .get(SettingsController.getChatAndMessagingSetting)
-    .put(SettingsController.modifyChatAndMessagingSetting)
-    .post(SettingsController.makeAllAsRead);
+router.route('/chat-and-messaging')
+    .get(auth.authentication, SettingsController.getChatAndMessagingSetting)
+    .put(auth.authentication, SettingsController.modifyChatAndMessagingSetting)
+    .post(auth.authentication, SettingsController.makeAllAsRead);
 
-router.route('/email', auth)
-    .get(SettingsController.getEmailSetting)
-    .put(SettingsController.modifyEmailSetting);
+router.route('/email')
+    .get(auth.authentication, SettingsController.getEmailSetting)
+    .put(auth.authentication, SettingsController.modifyEmailSetting);
 
-router.route('/feed', auth)
-    .get(SettingsController.getFeedSetting)
-    .put(SettingsController.modifyFeedSetting);
+router.route('/feed')
+    .get(auth.authentication, SettingsController.getFeedSetting)
+    .put(auth.authentication, SettingsController.modifyFeedSetting);
 
-router.route('/layout', auth)
-    .put(SettingsController.checkPasswordMatch);
+router.route('/layout')
+    .put(auth.authentication, SettingsController.checkPasswordMatch);
 
-router.route('/notifications', auth)
-    .get(SettingsController.getNotificationSetting)
-    .put(SettingsController.modifyNotificationSetting);
+router.route('/notifications')
+    .get(auth.authentication, SettingsController.getNotificationSetting)
+    .put(auth.authentication, SettingsController.modifyNotificationSetting);
 
-router.route('/profile', auth)
-    .get(SettingsController.getProfileSetting)
-    .put(SettingsController.modifyProfileSettings);
+router.route('/profile')
+    .get(auth.authentication, SettingsController.getProfileSetting)
+    .put(auth.authentication, SettingsController.modifyProfileSettings);
 
-router.route('/safety-privacy', auth)
-    .get(SettingsController.getSafetyAndPrivacySettings)
-    .put(SettingsController.modifySafetyAndPrivacySettings);
+router.route('/safety-privacy')
+    .get(auth.authentication, SettingsController.getSafetyAndPrivacySettings)
+    .put(auth.authentication, SettingsController.modifySafetyAndPrivacySettings);
 
 module.exports = router;
