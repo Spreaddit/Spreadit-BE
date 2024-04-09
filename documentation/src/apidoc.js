@@ -526,6 +526,7 @@
 //#endregion Authentication
 
 //#region Comments
+
 /**
  * @api {post} /post/comment/:postId Add Comment to Post
  * @apiVersion 0.1.0
@@ -538,12 +539,14 @@
  * 
  * @apiParam {String} postId ID of the post to which the comment will be added.
  * @apiParam {String} content Content of the comment.
+ * @apiParam {String} fileType Type of file attached to the comment (optional).
  * @apiParam {File[]} [attachments] Array of media files attached to the comment (optional).
  * 
  * @apiParamExample {json} Request-Example:
  * {
  *    "content": "This is a comment on the post",
- *    "attachments": ["attachment1.jpg", "attachment2.mp4"]
+ *    "fileType": "image",
+ *    "attachments": ["attachment1.jpg", "attachment2.jpg"]
  * }
  * 
  * @apiSuccess {Object} comment Object representing the added comment.
@@ -581,6 +584,7 @@
  * @apiSuccess {Boolean} comment.is_saved Indicates if the comment is saved.
  * @apiSuccess {String} comment.post_title Title of the post to which the comment belongs.
  * @apiSuccess {String} comment.community_title Title of the community where the post belongs.
+ * 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
  *     {
@@ -607,7 +611,10 @@
  *           "likes_count": 10,
  *           "replies_count": 5,
  *           "is_reply": false,
- *           "media": ["https://example.com/attachment1.jpg", "https://example.com/attachment2.mp4"],
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.mp4" }
+ *           ], 
  *           "created_at": "2022-05-14T12:00:00.000Z",
  *           "is_hidden": false,
  *           "is_saved": false,
@@ -738,10 +745,10 @@
  *     HTTP/1.1 200 OK
  *     {
  *       "comments": [
- *           {
- *               "_id": "609d0f23c8b58f001d54ee1f",
- *               "content": "This is a comment on the post",
- *               "user": {
+ *            {
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
  *               "id": "609cfff1c8b58f001d54ee1e",
  *               "name": "Amira El-garf",
  *               "username": "amira123",
@@ -757,17 +764,20 @@
  *               "about": "Lorem ipsum dolor sit amet",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
- *                 },
- *               "likes_count": 5,
- *               "replies_count": 2,
- *               "is_reply": false,
- *               "media": ["https://example.com/attachment1.jpg", "https://example.com/attachment2.mp4"],
- *               "created_at": "2022-05-14T12:00:00.000Z",
- *               "is_hidden": false,
- *               "is_saved": true,
- *               "post_title": "Sample Post Title",
- *               "community_title": "Sample Community"
- *           }
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.mp4" }
+ *           ], 
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community"
+ *       }
  *       ],
  *       "message": "Comments have been retrieved successfully"
  *     }
@@ -823,9 +833,9 @@
  *     {
  *       "comments": [
  *           {
- *               "_id": "609d0f23c8b58f001d54ee1f",
- *               "content": "This is a comment on the post",
- *               "user": {
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
  *               "id": "609cfff1c8b58f001d54ee1e",
  *               "name": "Amira El-garf",
  *               "username": "amira123",
@@ -837,21 +847,24 @@
  *               "role": "User",
  *               "nsfw": false,
  *               "isVerified": true,
- *               "displayName": "Amiraelgarf",
+ *               "displayName": "Amiraelgarf123",
  *               "about": "Lorem ipsum dolor sit amet",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
- *                 },
- *               "likes_count": 5,
- *               "replies_count": 2,
- *               "is_reply": false,
- *               "media": ["https://example.com/attachment1.jpg", "https://example.com/attachment2.mp4"],
- *               "created_at": "2022-05-14T12:00:00.000Z",
- *               "is_hidden": false,
- *               "is_saved": true,
- *               "post_title": "Sample Post Title",
- *               "community_title": "Sample Community"
- *           }
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.mp4" }
+ *           ], 
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community"
+ *       },
  *       ],
  *       "message": "Comments for the user have been retrieved successfully"
  *     }
@@ -905,10 +918,10 @@
  *     HTTP/1.1 200 OK
  *     {
  *       "comments": [
- *           {
- *               "_id": "609d0f23c8b58f001d54ee1f",
- *               "content": "This is a comment on the post",
- *               "user": {
+ *           "comment": {
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
  *               "id": "609cfff1c8b58f001d54ee1e",
  *               "name": "Amira El-garf",
  *               "username": "amira123",
@@ -924,17 +937,20 @@
  *               "about": "Lorem ipsum dolor sit amet",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
- *                },
- *               "likes_count": 5,
- *               "replies_count": 2,
- *               "is_reply": false,
- *               "media": ["https://example.com/attachment1.jpg", "https://example.com/attachment2.mp4"],
- *               "created_at": "2022-05-14T12:00:00.000Z",
- *               "is_hidden": false,
- *               "is_saved": true,
- *               "post_title": "Sample Post Title",
- *               "community_title": "Sample Community"
- *           }
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.mp4" }
+ *           ], 
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community"
+ *       },
  *       ],
  *       "message": "Saved Comments for the user have been retrieved successfully"
  *     }
@@ -1022,14 +1038,17 @@
  * 
  * @apiParam {String} parentCommentId ID of the parent comment to which the reply will be added.
  * @apiParam {String} content Content of the reply.
+ * @apiParam {String} fileType Type of file attached to the reply (optional).
  * @apiParam {File[]} [attachments] Array of media files attached to the reply (optional).
  * 
  * @apiParamExample {json} Request-Example:
  * {
- *    "content": "This is a reply to the comment"
+ *    "content": "This is a reply to the comment",
+ *    "fileType": "image",
+ *    "attachments": ["attachment1.jpg", "attachment2.mp4"]
  * }
  * 
- * @apiSuccess {String} message Success message.
+ * @apiSuccess {String} message Success message indicating that the reply has been added successfully.
  * 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
@@ -1038,7 +1057,8 @@
  *     }
  * 
  * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (404) NotFound Parent comment not found.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Comment not found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  * 
  * @apiErrorExample {json} Error-Response:
@@ -1060,40 +1080,74 @@
  *     }
  */
 
+
 /**
- * @api {get} /comments/:commentId/replies Get Replies to Comment
+ * @api {get} /comments/:commentId/replies Get Replies for Comment
  * @apiVersion 0.1.0
- * @apiName GetRepliesToComment
+ * @apiName GetRepliesForComment
  * @apiGroup Comment
- * @apiDescription Retrieves replies to a specific comment.
+ * @apiDescription Retrieves all replies for a specific comment.
  * @apiSampleRequest off
  * 
  * @apiHeader {String} Authorization User's authentication token.
  * 
  * @apiParam {String} commentId ID of the comment for which replies will be retrieved.
  * 
- * @apiSuccess {Object[]} replies Array of reply objects.
- * @apiSuccess {String} replies._id ID of the reply.
+ * @apiSuccess {Object[]} replies Array of reply objects for the specified comment.
+ * @apiSuccess {String} replies.id ID of the reply.
  * @apiSuccess {String} replies.content Content of the reply.
- * @apiSuccess {String} replies.userId ID of the user who posted the reply.
- * @apiSuccess {String} replies.postId ID of the post to which the reply belongs.
- * @apiSuccess {String[]} replies.attachments Array of URLs of attached media files.
- * @apiSuccess {Date} replies.createdAt Date and time when the reply was created.
- * @apiSuccess {Date} replies.updatedAt Date and time when the reply was last updated.
+ * @apiSuccess {Object} replies.user Object representing the user who posted the reply.
+ * @apiSuccess {String} replies.user.id ID of the user who posted the reply.
+ * @apiSuccess {String} replies.user.username Username of the user who posted the reply.
+ * @apiSuccess {Number} replies.likes_count Number of likes received by the reply.
+ * @apiSuccess {Number} replies.replies_count Number of replies received by the reply.
+ * @apiSuccess {Boolean} replies.is_reply Indicates whether the reply is itself a reply to another comment.
+ * @apiSuccess {String[]} replies.media Array of URLs of media files attached to the reply.
+ * @apiSuccess {Date} replies.created_at Date and time when the reply was created.
+ * @apiSuccess {Boolean} replies.is_hidden Indicates whether the reply is hidden.
+ * @apiSuccess {Boolean} replies.is_saved Indicates whether the reply is saved by the authenticated user.
+ * @apiSuccess {String} replies.post_title Title of the post to which the comment belongs.
+ * @apiSuccess {String} replies.community_title Title of the community to which the comment belongs.
+ * @apiSuccess {String} message Success message indicating that replies have been retrieved successfully.
  * 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "replies": [
  *           {
- *               "_id": "609d0f23c8b58f001d54ee1f",
- *               "content": "This is a reply to the comment",
- *               "likes_count": 0,
- *               "replies_count": 0,
- *               "is_reply": true,
- *               "media": ["https://example.com/attachment1.jpg", "https://example.com/attachment2.mp4"],
- *               "createdAt": "2022-05-14T12:00:00.000Z",
- *           }
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
+ *               "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "isVerified": true,
+ *               "displayName": "Amiraelgarf123",
+ *               "about": "Lorem ipsum dolor sit amet",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.mp4" }
+ *           ], 
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community"
+ *           },
+ *           ...
  *       ],
  *       "message": "Replies for the comment have been retrieved successfully"
  *     }
@@ -1113,6 +1167,7 @@
  *       "message": "Internal server error"
  *     }
  */
+
 
 /**
  * @api {post} /comments/:commentId/hide Hide/Unhide Comment
