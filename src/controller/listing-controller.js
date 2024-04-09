@@ -301,3 +301,18 @@ exports.sortPostTopTime = async (req, res) => {
     return res.status(500).json({ error: "internal server error" });
   }
 };
+exports.recentPosts = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId).populate("recentPosts");
+
+    if (!user) {
+      return res.status(404).json({ error: "user not found" });
+    }
+    const Posts = user.recentPosts;
+    recentPosts = Posts.reverse();
+    res.status(200).json(recentPosts);
+  } catch (error) {
+    return res.status(500).json({ error: "internal server error" });
+  }
+};

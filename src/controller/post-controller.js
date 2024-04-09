@@ -1,6 +1,6 @@
-const Post = require('../models/post');
-const User = require('../models/user');
-const Report = require('../models/report.js');
+const Post = require("../models/post");
+const User = require("../models/user");
+const Report = require("../models/report.js");
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -562,7 +562,6 @@ exports.unhidePost = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 
 exports.getHiddenPosts = async (req, res) => {
     try {
