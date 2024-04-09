@@ -57,22 +57,24 @@ exports.getAllUserPosts = async (req, res) => {
 exports.createPost = async (req, res) => {
     try {
         const userId = req.user._id;
-
         const user = await User.findById(userId);
         if (!user) {
             return res.status(400).json({ error: 'User ID is invalid' });
         }
-        const { title, content, community, type, pollOptions, pollVotingLength, link, videos, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
+        const { title, content, community, type, pollOptions, pollVotingLength, fileType, link, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
         let pollExpiration, isPollEnabled;
         if (!title || !community) {
             return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
         }
-        let images = [];
-        if (req.files && req.files.length > 0) {
+        let attachments = [];
+        console.log(req.files);
+        if (req.files) {
             for (let i = 0; i < req.files.length; i++) {
-                const result = await uploadMedia(req.files[i]); // Corrected accessing req.files array
+                const result = await uploadMedia(req.files[i]);
+                //const url = `${config.baseUrl}/media/${result.Key}`;
                 const url = result.secure_url;
-                images.push(url);
+                const attachmentObj = { type: fileType, link: url };
+                attachments.push(attachmentObj);
             }
         }
         if (type === 'Poll') {
@@ -92,18 +94,18 @@ exports.createPost = async (req, res) => {
                 return res.status(400).json({ error: 'Regular posts cannot have poll options, pollVotingLength' });
             }
         } else if (type === 'Images & Video') {
-            if (!images) {
-                return res.status(400).json({ error: 'images are required for image/video posts' });
+            if (!attachments || attachments.length === 0 || !fileType) {
+                return res.status(400).json({ error: 'fileType and files are required for image & video posts' });
             }
             if (pollOptions || pollVotingLength || link || content) {
-                return res.status(400).json({ error: 'images posts cannot have poll options, pollVotingLength, link, or content' });
+                return res.status(400).json({ error: 'Image/video posts cannot have poll options, poll voting length, link, or content' });
             }
         } else if (type === 'Link') {
             if (!link) {
                 return res.status(400).json({ error: 'link are required for link posts' });
             }
-            if (images.length > 0 || videos || pollOptions || pollVotingLength || content) {
-                return res.status(400).json({ error: 'Link posts cannot have poll options, pollVotingLength, images, or content' });
+            if (attachments && attachments.length > 0 || pollOptions || pollVotingLength || content) {
+                return res.status(400).json({ error: 'Link posts cannot have attachments, poll options, poll voting length, or content' });
             }
         } else if (type === 'Poll') {
             if (!pollOptions || !pollVotingLength) {
@@ -132,8 +134,7 @@ exports.createPost = async (req, res) => {
             isPollEnabled,
             pollVotingLength,
             link,
-            images,
-            videos,
+            attachments,
             isSpoiler,
             isNsfw,
             sendPostReplyNotification

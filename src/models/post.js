@@ -88,13 +88,14 @@ const PostSchema = new Schema(
     link: {
       type: String
     },
-    images: [{
-      type: String,
-      required: false
-    }],
-    videos: [{
-      type: String,
-      required: false
+    attachments: [{
+      type: {
+        type: String,
+        enum: ['image', 'video'],
+      },
+      link: {
+        type: String,
+      }
     }],
     isSpoiler: {
       type: Boolean,
