@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const config = require("../configuration");
 require("./constants/userRole");
-const { UserRole } = require("../../seed-data/constants/userRole");
+const userRole = require("./../../seed-data/constants/userRole");
 
 const Schema = mongoose.Schema;
 
