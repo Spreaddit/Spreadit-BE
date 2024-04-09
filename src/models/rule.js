@@ -9,15 +9,18 @@ const RuleSchema = new Schema({
   },
   description: {
     type: String,
-    required: true,
     trim: true,
   },
   reportReason: {
     type: String,
     trim: true,
   },
+  communityName: {
+    type: String,
+    trim: true,
+  }
 });
 
-const Rule = mongoose.model("Rule", RuleSchema);
+const Rule = mongoose.model("rule", RuleSchema);
 
 module.exports = Rule;

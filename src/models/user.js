@@ -1,4 +1,4 @@
-const Post = require('../models/post');
+const Post = require("../models/post");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
@@ -257,20 +257,32 @@ const UserSchema = new Schema(
         return [this.username];
       },
     },
-    savedPosts: [{ 
-      type: Schema.Types.ObjectId, ref: "Posts", index: true 
-    }],
-    savedComments: [{
-       type: Schema.Types.ObjectId, ref: "comment", index: true 
-    }],
-    hiddenComments: [{
-      type: Schema.Types.ObjectId,
-      ref: 'comment'
-    }],
-    hiddenPosts: [{
-      type: Schema.Types.ObjectId,
-      ref: 'post'
-    }],
+    savedPosts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Posts",
+        index: true,
+      },
+    ],
+    savedComments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "comment",
+        index: true,
+      },
+    ],
+    hiddenComments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "comment",
+      },
+    ],
+    hiddenPosts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "post",
+      },
+    ],
     blockedUsers: [
       {
         type: String,
@@ -278,10 +290,17 @@ const UserSchema = new Schema(
     ],
     mutedCommunities: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "Community",
       },
     ],
     subscribedCommunities: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Community",
+      },
+    ],
+    favouriteCommunities: [
       {
         type: Schema.Types.ObjectId,
         ref: "Community",
@@ -304,7 +323,6 @@ const UserSchema = new Schema(
   }
 );
 
-
 UserSchema.pre("save", async function (next) {
   const user = this;
   if (user.isModified("password")) {
@@ -313,7 +331,6 @@ UserSchema.pre("save", async function (next) {
 
   next();
 });
-
 
 UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
   const user = await User.find({
@@ -327,7 +344,6 @@ UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
   }
 };
 
-
 UserSchema.methods.generateToken = async function () {
   user = this;
 
@@ -340,7 +356,6 @@ UserSchema.methods.generateToken = async function () {
   );
   return token;
 };
-
 
 UserSchema.methods.generateEmailToken = async function () {
   user = this;
@@ -386,9 +401,7 @@ UserSchema.statics.verifyCredentials = async function (
   }
 };
 
-UserSchema.statics.generateUserObject = async function (
-  user
-) {
+UserSchema.statics.generateUserObject = async function (user) {
   try {
     const userObj = {
       id: user._id,
@@ -413,8 +426,9 @@ UserSchema.statics.generateUserObject = async function (
       about: user.about,
       cakeDay: user.cakeDay,
       subscribedCommunities: user.subscribedCommunities,
+      favouriteCommunities: user.favouriteCommunities,
     };
-    
+
     return userObj;
   } catch (err) {
     return null;
