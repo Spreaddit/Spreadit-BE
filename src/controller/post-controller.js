@@ -23,6 +23,41 @@ exports.getAllPosts = async (req, res) => {
     }
 };
 
+exports.getPostById = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const postId = req.params.postId;
+        const post = await Post.findById(postId);
+
+        if (!post || post.length === 0) {
+            return res.status(404).json({ error: "post not found" });
+        }
+
+        const user = await User.findById(userId);
+        const isPostVisible = !post.hiddenBy.includes(userId);
+        if (isPostVisible) {
+            const savedPostIds = user ? user.savedPosts : [];
+
+            post.numberOfViews++;
+            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            post.votesUpCount = upVotesCount;
+            post.votesDownCount = downVotesCount;
+            post.isSaved = savedPostIds.includes(post._id.toString());
+            const addRecentPost = await User.findByIdAndUpdate(
+                userId,
+                { $addToSet: { recentPosts: postId } },
+                { new: true }
+            );
+            await post.save();
+            res.status(200).json(post);
+        }
+    } catch (err) {
+        console.error("Error fetching posts:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 exports.getAllUserPosts = async (req, res) => {
     try {
         const userId = req.user._id;
