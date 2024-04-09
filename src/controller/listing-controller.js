@@ -25,11 +25,22 @@ function calculatePostTime(post) {
 exports.sortPostNew = async (req, res) => {
   try {
     const userId = req.user._id;
-    const posts = await Post.find().sort({ date: -1 }).exec();
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    const totalPosts = await Post.countDocuments();
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const posts = await Post.find().sort({ date: -1 }).skip(skip).limit(limit);
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    res.status(200).json(posts);
+    res.status(200).json({
+      posts: posts,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
   }
