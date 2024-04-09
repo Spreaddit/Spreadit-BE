@@ -21,7 +21,8 @@ router.use(cookieParser("spreaditsecret"));
 router.post("/signup", async (req, res) => {
   try {
     const user = new User(req.body);
-
+    const userAvatar = "https://drive.google.com/file/d/1130pQbYOHFVRl8Y381KoneRzpKoGUvzl/view?usp=sharing"
+    user.avatar = userAvatar;
     if (!(await User.checkExistence(user.email, user.username))) {
       const savedUser = await user.save();
       if (!savedUser) {
