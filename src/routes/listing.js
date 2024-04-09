@@ -52,4 +52,7 @@ router
   .route("/home/top/:time")
   .get(auth.authentication, listingController.sortPostTopTime);
 
+router
+  .route("/home/recentposts")
+  .get(auth.authentication, listingController.recentPosts);
 module.exports = router;

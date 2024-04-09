@@ -283,6 +283,12 @@ const UserSchema = new Schema(
         ref: "post",
       },
     ],
+    recentPosts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "post",
+      },
+    ],
     blockedUsers: [
       {
         type: String,
@@ -319,7 +325,7 @@ const UserSchema = new Schema(
     ],
     socialLinks: [
       {
-        type: String
+        type: String,
       },
     ],
   },
@@ -432,7 +438,7 @@ UserSchema.statics.generateUserObject = async function (user) {
       cakeDay: user.cakeDay,
       subscribedCommunities: user.subscribedCommunities,
       favouriteCommunities: user.favouriteCommunities,
-      socialLinks: user.socialLinks
+      socialLinks: user.socialLinks,
     };
 
     return userObj;
