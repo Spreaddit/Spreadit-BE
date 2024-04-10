@@ -291,6 +291,12 @@ const UserSchema = new Schema(
         ref: "post",
       },
     ],
+    recentPosts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "post",
+      },
+    ],
     blockedUsers: [
       {
         type: String,

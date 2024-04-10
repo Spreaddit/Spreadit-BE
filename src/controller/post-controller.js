@@ -1,5 +1,6 @@
-const Post = require('../models/post');
-const User = require('../models/user');
+const Post = require("../models/post");
+const User = require("../models/user");
+const Report = require("../models/report.js");
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -19,6 +20,41 @@ exports.getAllPosts = async (req, res) => {
     } catch (error) {
         console.error('Error fetching posts:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.getPostById = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const postId = req.params.postId;
+        const post = await Post.findById(postId);
+
+        if (!post || post.length === 0) {
+            return res.status(404).json({ error: "post not found" });
+        }
+
+        const user = await User.findById(userId);
+        const isPostVisible = !post.hiddenBy.includes(userId);
+        if (isPostVisible) {
+            const savedPostIds = user ? user.savedPosts : [];
+
+            post.numberOfViews++;
+            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            post.votesUpCount = upVotesCount;
+            post.votesDownCount = downVotesCount;
+            post.isSaved = savedPostIds.includes(post._id.toString());
+            const addRecentPost = await User.findByIdAndUpdate(
+                userId,
+                { $addToSet: { recentPosts: postId } },
+                { new: true }
+            );
+            await post.save();
+            res.status(200).json(post);
+        }
+    } catch (err) {
+        console.error("Error fetching posts:", err);
+        res.status(500).json({ error: "Internal server error" });
     }
 };
 
@@ -56,22 +92,23 @@ exports.getAllUserPosts = async (req, res) => {
 exports.createPost = async (req, res) => {
     try {
         const userId = req.user._id;
-
         const user = await User.findById(userId);
         if (!user) {
             return res.status(400).json({ error: 'User ID is invalid' });
         }
-        const { title, content, community, type, pollOptions, pollVotingLength, link, videos, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
+        const { title, content, community, type, pollOptions, pollVotingLength, fileType, link, isSpoiler, isNsfw, sendPostReplyNotification } = req.body;
         let pollExpiration, isPollEnabled;
         if (!title || !community) {
             return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
         }
-        let images = [];
-        if (req.files && req.files.length > 0) {
+        let attachments = [];
+        if (req.files) {
             for (let i = 0; i < req.files.length; i++) {
-                const result = await uploadMedia(req.files[i]); // Corrected accessing req.files array
+                const result = await uploadMedia(req.files[i]);
+                //const url = `${config.baseUrl}/media/${result.Key}`;
                 const url = result.secure_url;
-                images.push(url);
+                const attachmentObj = { type: fileType, link: url };
+                attachments.push(attachmentObj);
             }
         }
         if (type === 'Poll') {
@@ -91,18 +128,18 @@ exports.createPost = async (req, res) => {
                 return res.status(400).json({ error: 'Regular posts cannot have poll options, pollVotingLength' });
             }
         } else if (type === 'Images & Video') {
-            if (!images) {
-                return res.status(400).json({ error: 'images are required for image/video posts' });
+            if (!attachments || attachments.length === 0 || !fileType) {
+                return res.status(400).json({ error: 'fileType and files are required for image & video posts' });
             }
             if (pollOptions || pollVotingLength || link || content) {
-                return res.status(400).json({ error: 'images posts cannot have poll options, pollVotingLength, link, or content' });
+                return res.status(400).json({ error: 'Image/video posts cannot have poll options, poll voting length, link, or content' });
             }
         } else if (type === 'Link') {
             if (!link) {
                 return res.status(400).json({ error: 'link are required for link posts' });
             }
-            if (images.length > 0 || videos || pollOptions || pollVotingLength || content) {
-                return res.status(400).json({ error: 'Link posts cannot have poll options, pollVotingLength, images, or content' });
+            if (attachments && attachments.length > 0 || pollOptions || pollVotingLength || content) {
+                return res.status(400).json({ error: 'Link posts cannot have attachments, poll options, poll voting length, or content' });
             }
         } else if (type === 'Poll') {
             if (!pollOptions || !pollVotingLength) {
@@ -131,8 +168,7 @@ exports.createPost = async (req, res) => {
             isPollEnabled,
             pollVotingLength,
             link,
-            images,
-            videos,
+            attachments,
             isSpoiler,
             isNsfw,
             sendPostReplyNotification
@@ -145,7 +181,10 @@ exports.createPost = async (req, res) => {
                 await newPost.save();
             });
         }
-        return res.status(201).json({ message: 'Post created successfully' });
+        return res.status(201).json({
+            message: 'Post created successfully',
+            postId: newPost._id
+        });
     } catch (err) {
         console.error('Error creating post:', err);
         return res.status(500).json({ error: 'Internal server error' });
@@ -267,19 +306,10 @@ exports.editPost = async (req, res) => {
     try {
         const { postId } = req.params;
         const userId = req.user._id;
-        const { content, link, videos } = req.body;
-        let images = [];
-        if (req.files && req.files.length > 0) {
-            for (let i = 0; i < req.files.length; i++) {
-                const result = await uploadMedia(req.files[i]); // Corrected accessing req.files array
-                const url = result.secure_url;
-                images.push(url);
-            }
-        }
+        const content = req.body.content;
         if (!postId || !userId) {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
         }
-
         const post = await Post.findById(postId);
         const type = post.type;
         const postContent = post.content;
@@ -295,11 +325,9 @@ exports.editPost = async (req, res) => {
         if (type === 'Post' && (!postContent || postContent.length === 0)) {
             return res.status(400).json({ error: 'only posts with content can be editited' });
         }
+        console.log(content);
         if (content)
-            post.content = post.content.concat(content);
-        post.link = link;
-        post.images = images;
-        post.videos = videos;
+            post.content.push(content);
 
         await post.save();
 
@@ -573,7 +601,6 @@ exports.unhidePost = async (req, res) => {
     }
 };
 
-
 exports.getHiddenPosts = async (req, res) => {
     try {
         const userId = req.user._id;
@@ -613,6 +640,84 @@ exports.markPostAsNotNsfw = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.reportPost = async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const { reason, sureason } = req.body;
+        const userId = req.user._id;
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).send({
+                message: "post not found"
+            });
+        }
+
+        if (!reason) {
+            return res.status(400).send({
+                message: "invalid report data must send reason"
+            });
+        }
+
+        const report = new Report({
+            userId: userId,
+            postId: postId,
+            reason: reason,
+            sureason: sureason
+        });
+
+        await report.save();
+
+        res.status(201).send({
+            message: "post reported successfully"
+        });
+    } catch (error) {
+        console.error("Error reporting post:", error);
+        res.status(500).send({
+            error: "An error occurred while reporting the post"
+        });
+    }
+}
+
+exports.voteInPoll = async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const { selectedOption } = req.body;
+        const userId = req.user._id;
+
+        if (!postId || !selectedOption) {
+            return res.status(400).json({ error: 'Post ID and selected option are required' });
+        }
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        if (post.type !== 'Poll') {
+            return res.status(400).json({ error: 'The specified post is not a poll' });
+        }
+
+        if (post.votedUsers.includes(userId)) {
+            return res.status(400).json({ error: 'You have already voted in this poll' });
+        }
+
+        const optionIndex = post.pollOptions.findIndex(option => option.option === selectedOption);
+        if (optionIndex === -1) {
+            return res.status(404).json({ error: 'Selected option not found in the poll' });
+        }
+
+        post.pollOptions[optionIndex].votes++;
+        post.votedUsers.push(userId);
+        await post.save();
+
+        return res.status(200).json({ message: 'Vote cast successfully' });
+    } catch (err) {
+        console.error('Error casting vote:', err);
+        return res.status(500).json({ error: 'Internal server error' });
     }
 };
 

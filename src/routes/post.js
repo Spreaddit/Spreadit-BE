@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const postController = require('../controller/post-controller');
+const postController = require("../controller/post-controller");
 const upload = require("../service/fileUpload");
 const auth = require("../middleware/authentication");
 
@@ -9,8 +9,7 @@ router.route('/')
     .get(auth.authentication, postController.getAllUserPosts)
     .post(auth.authentication, upload.array('images'), postController.createPost);
 
-router.route('/:postId')
-    .delete(auth.authentication, postController.deletePost);
+router.route("/:postId").delete(auth.authentication, postController.deletePost);
 
 router.route('/community/:community')
     .get(auth.authentication, postController.getAllPostsInCommunity)
@@ -18,14 +17,13 @@ router.route('/community/:community')
 router.route('/:postId/save')
     .post(auth.authentication, postController.savePost);
 
-router.route('/save')
-    .get(auth.authentication, postController.getSavedPosts);
+router.route("/save").get(auth.authentication, postController.getSavedPosts);
 
 router.route('/:postId/unsave')
     .post(auth.authentication, postController.unsavePost);
 
 router.route('/:postId/edit')
-    .put(auth.authentication, postController.editPost);
+    .put(auth.authentication, upload.array('images'), postController.editPost);
 
 router.route('/:postId/spoiler')
     .post(auth.authentication, postController.spoilerPostContent);
@@ -57,8 +55,7 @@ router.route('/:postId/hide')
 router.route('/:postId/unhide')
     .post(auth.authentication, postController.unhidePost);
 
-router.route('/hide')
-    .get(auth.authentication, postController.getHiddenPosts);
+router.route("/hide").get(auth.authentication, postController.getHiddenPosts);
 
 router.route('/:postId/nfsw')
     .post(auth.authentication, postController.markPostAsNsfw);
@@ -66,4 +63,13 @@ router.route('/:postId/nfsw')
 router.route('/:postId/unnfsw')
     .post(auth.authentication, postController.markPostAsNotNsfw);
 
-module.exports = router;    
+router.route('/:postId/report')
+    .post(auth.authentication, postController.reportPost);
+
+router.route('/:postId/poll/vote')
+    .post(auth.authentication, postController.voteInPoll);
+
+router.route("/:postId")
+    .get(auth.authentication, postController.getPostById);
+
+module.exports = router;

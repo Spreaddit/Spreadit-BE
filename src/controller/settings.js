@@ -10,12 +10,7 @@ function isValidEmail(email) {
 
 exports.getAccountSettings = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const accountSettings = await User.findOne({ _id: userId }).select('email gender country connectedAccounts');
         res.status(200).json(accountSettings);
     } catch (err) {
@@ -27,12 +22,7 @@ exports.getAccountSettings = async (req, res) => {
 
 exports.modifyAccountSettings = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
 
         const modifyAccountSettings = req.body;
         if (!isValidEmail(modifyAccountSettings.email)) {
@@ -52,12 +42,7 @@ exports.modifyAccountSettings = async (req, res) => {
 
 exports.deleteAccount = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
 
         await User.deleteOne({ _id: userId });
 
@@ -71,12 +56,7 @@ exports.deleteAccount = async (req, res) => {
 
 exports.getChatAndMessagingSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const chatAndMessagingSetting = await User.findOne({ _id: userId }).select('sendYouFriendRequests sendYouPrivateMessages approvedUsers');
         res.status(200).json(chatAndMessagingSetting);
     } catch (err) {
@@ -86,12 +66,7 @@ exports.getChatAndMessagingSetting = async (req, res) => {
 
 exports.modifyChatAndMessagingSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
 
         const modifyChatAndMessagingSetting = req.body;
         const chatAndMessagingSetting = await User.findOne({ _id: userId });
@@ -108,12 +83,7 @@ exports.modifyChatAndMessagingSetting = async (req, res) => {
 exports.makeAllAsRead = async (req, res) => {
 
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const updatedMessages = await Message.updateMany({ userId }, { isRead: 'true' });
 
         res.status(200).json(updatedMessages);
@@ -127,12 +97,7 @@ exports.makeAllAsRead = async (req, res) => {
 
 exports.getEmailSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const emailSetting = await User.findOne({ _id: userId }).select('newFollowerEmail chatRequestEmail unsubscribeAllEmails');
         res.status(200).json(emailSetting);
     } catch (err) {
@@ -142,12 +107,7 @@ exports.getEmailSetting = async (req, res) => {
 
 exports.modifyEmailSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const modifyEmailSetting = req.body;
         const emailSetting = await User.findOne({ _id: userId });
         Object.assign(emailSetting, modifyEmailSetting);
@@ -163,12 +123,7 @@ exports.modifyEmailSetting = async (req, res) => {
 
 exports.getFeedSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const feedSetting = await User.findOne({ _id: userId }).select('adultContent autoplayMedia communityThemes communityContentSort globalContentView openPostsInNewTab');
         res.status(200).json(feedSetting);
     } catch (err) {
@@ -178,12 +133,7 @@ exports.getFeedSetting = async (req, res) => {
 
 exports.modifyFeedSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const modifyFeedSetting = req.body;
         const feedSetting = await User.findOne({ _id: userId });
         Object.assign(feedSetting, modifyFeedSetting);
@@ -198,12 +148,7 @@ exports.modifyFeedSetting = async (req, res) => {
 
 exports.checkPasswordMatch = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const enteredPassword = req.body.enteredPassword;
         const user = await User.findOne({ _id: userId }).select('password');
         const passwordMatch = await bcrypt.compare(enteredPassword, user.password);
@@ -220,12 +165,7 @@ exports.checkPasswordMatch = async (req, res) => {
 
 exports.getProfileSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const profileSettings = await User.findOne({ _id: userId }).select('displayName about socialLinks profilePicture banner nsfw allowFollow contentVisibility activeInCommunityVisibility clearHistory');
         res.status(200).json(profileSettings);
     } catch (err) {
@@ -235,12 +175,7 @@ exports.getProfileSetting = async (req, res) => {
 
 exports.modifyProfileSettings = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
 
         const modifyProfileSettings = req.body;
         const profileSetting = await User.findOne({ _id: userId });
@@ -257,12 +192,7 @@ exports.modifyProfileSettings = async (req, res) => {
 
 exports.getSafetyAndPrivacySettings = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const safetyAndPrivacySettings = await User.findOne({ _id: userId }).select('blockedUsers mutedCommunities');
         res.status(200).json(safetyAndPrivacySettings);
     } catch (err) {
@@ -273,12 +203,7 @@ exports.getSafetyAndPrivacySettings = async (req, res) => {
 
 exports.modifySafetyAndPrivacySettings = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
 
         const modifySafetyAndPrivacySettings = req.body;
         const SafetyAndPrivacySettings = await User.findOne({ _id: userId });
@@ -296,12 +221,7 @@ exports.modifySafetyAndPrivacySettings = async (req, res) => {
 
 exports.getNotificationSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const notificationSetting = await User.findOne({ _id: userId }).select('mentions comments upvotesComments upvotesPosts replies newFollowers invitations posts');
         res.status(200).json(notificationSetting);
     } catch (err) {
@@ -311,12 +231,7 @@ exports.getNotificationSetting = async (req, res) => {
 
 exports.modifyNotificationSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
 
         const modifyNotificationSetting = req.body;
         const notificationSetting = await User.findOne({ _id: userId });

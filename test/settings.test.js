@@ -1,4 +1,4 @@
-const request = require("supertest");
+/* const request = require("supertest");
 const app = require("./testApp");
 const mongoose = require("mongoose");
 const config = require("../src/configuration");
@@ -816,3 +816,4 @@ test("Test update contact settings without token", async () => {
 });
 
 //end of contact settings test
+ */

@@ -7,14 +7,22 @@ const unfollowUserController = require("../controller/unfollow-user");
 const showFriendController = require("../controller/show-friend-information");
 const blockUserController = require("../controller/block-user");
 
-router.route("/block", auth).post(blockUserController.blockUser);
+router.route("/block").post(auth.authentication, blockUserController.blockUser);
 
-router.route("/friends/:username", auth).get(showFriendController.showFriend);
+router
+  .route("/friends/:username")
+  .get(auth.authentication, showFriendController.showFriend);
 
-router.route("/follow", auth).post(followUserController.followUser);
+router
+  .route("/follow")
+  .post(auth.authentication, followUserController.followUser);
 
-router.route("/report", auth).post(reportUserController.reportUser);
+router
+  .route("/report")
+  .post(auth.authentication, reportUserController.reportUser);
 
-router.route("/unfollow", auth).post(unfollowUserController.unfollowUser);
+router
+  .route("/unfollow")
+  .post(auth.authentication, unfollowUserController.unfollowUser);
 
 module.exports = router;
