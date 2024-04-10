@@ -97,7 +97,7 @@ router.post("/login", async (req, res) => {
         { _id: user._id },
         { $set: { tokens: user.tokens } }
       );
-      console.log(user);
+      //console.log(user);
 
       const userObj = await User.generateUserObject(user);
       //console.log(userObj);
