@@ -103,6 +103,14 @@ const UserSchema = new Schema(
       type: Boolean,
       default: 0,
     },
+    isVisible: {
+      type: Boolean,
+      default: 0,
+    },
+    isActive: {
+      type: Boolean,
+      default: 0,
+    },
     newFollowers: {
       type: Boolean,
       default: 1,
@@ -319,7 +327,9 @@ const UserSchema = new Schema(
     ],
     socialLinks: [
       {
-        type: String
+        platform: String,
+        url: String,
+        displayName: String,
       },
     ],
   },
@@ -427,12 +437,14 @@ UserSchema.statics.generateUserObject = async function (user) {
       nsfw: user.nsfw,
       activeInCommunityVisibility: user.activeInCommunityVisibility,
       isVerified: user.isVerified,
+      isVisible: user.isVisible,
+      isActive: user.isActive,
       displayName: user.displayName,
       about: user.about,
       cakeDay: user.cakeDay,
       subscribedCommunities: user.subscribedCommunities,
       favouriteCommunities: user.favouriteCommunities,
-      socialLinks: user.socialLinks
+      socialLinks: user.socialLinks,
     };
 
     return userObj;

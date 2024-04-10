@@ -1,5 +1,6 @@
 const express = require("express");
 const User = require("../models/user.js");
+const Community = require("../models/community.js");
 const axios = require("axios");
 //const auth = require("../middleware/authentication");
 const { verifyGoogleToken } = require("../middleware/authentication");
@@ -11,7 +12,6 @@ const sendEmail = require("../models/send-email.js");
 const jwt = require("jwt-decode");
 const bcrypt = require("bcryptjs");
 const auth = require("../middleware/authentication");
-
 const router = express.Router();
 router.use(passport.initialize());
 //const express = require('express');
@@ -344,21 +344,16 @@ router.post("/forgot-username", async (req, res) => {
     res.status(500).send({ message: "Internal server error" });
   }
 });
-
 router.get("/user/profile-info/:username", async (req, res) => {
   try {
     const { username } = req.params;
     const user = await User.findOne({ username })
       .select(
-        "username avatar banner about createdAt followers followings communities connectedAccounts"
+        "username name avatar banner about createdAt subscribedCommunities socialLinks"
       )
       .populate({
-        path: "followers followings",
-        select: "username avatar banner",
-      })
-      .populate({
-        path: "communities",
-        select: "name description image",
+        path: "subscribedCommunities",
+        select: "name image communityBanner",
       })
       .exec();
 
@@ -366,15 +361,26 @@ router.get("/user/profile-info/:username", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    const updatedCommunities = await Promise.all(
+      user.subscribedCommunities.map(async (communityId) => {
+        const membersCount = await Community.getMembersCount(communityId);
+        const community = await Community.findById(communityId).select(
+          "name image communityBanner"
+        );
+        return { ...community.toObject(), membersCount };
+      })
+    );
+
+    user.subscribedCommunities = updatedCommunities;
+
     res.status(200).json({
       username: user.username,
+      name: user.name,
       avatar: user.avatar,
       banner: user.banner,
       about: user.about,
       createdAt: user.createdAt,
-      followers: user.followers,
-      followings: user.followings,
-      communities: user.communities,
+      subscribedCommunities: user.subscribedCommunities,
       socialLinks: user.socialLinks,
     });
   } catch (error) {

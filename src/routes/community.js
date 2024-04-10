@@ -10,10 +10,9 @@ router.use(passport.initialize());
 router.use(cookieParser("spreaditsecret"));
 const auth = require("../middleware/authentication");
 
-
 router.post("/rule/add", auth.authentication, async (req, res) => {
   try {
-    const { title, description, reportReason, communityName} = req.body;
+    const { title, description, reportReason, communityName } = req.body;
 
     if (!title || !communityName) {
       return res.status(400).json({ message: "Invalid rule data" });
@@ -31,7 +30,7 @@ router.post("/rule/add", auth.authentication, async (req, res) => {
       title: title,
       description: description || "",
       reportReason: ruleReportReason,
-      communityName: communityName
+      communityName: communityName,
     });
 
     await existingRule.save();
@@ -60,7 +59,6 @@ router.post("/rule/remove", auth.authentication, async (req, res) => {
     if (!communityName || !title) {
       return res.status(400).json({ message: "Invalid request parameters" });
     }
-
 
     const userId = req.user._id;
     const user = await User.findById(userId);
@@ -95,14 +93,16 @@ router.post("/rule/remove", auth.authentication, async (req, res) => {
   }
 });
 
-router.post("/community/add-to-favourites", auth.authentication, async (req, res) => {
+router.post(
+  "/community/add-to-favourites",
+  auth.authentication,
+  async (req, res) => {
     try {
       const { communityName } = req.body;
 
       if (!communityName) {
         return res.status(400).json({ message: "Invalid parameters" });
       }
-
 
       const userId = req.user._id;
       const user = await User.findById(userId);
@@ -136,14 +136,16 @@ router.post("/community/add-to-favourites", auth.authentication, async (req, res
   }
 );
 
-router.post("/community/remove-favourite", auth.authentication, async (req, res) => {
+router.post(
+  "/community/remove-favourite",
+  auth.authentication,
+  async (req, res) => {
     try {
       const { communityName } = req.body;
 
       if (!communityName) {
         return res.status(400).json({ message: "Invalid parameters" });
       }
-
 
       const userId = req.user._id;
       const user = await User.findById(userId);
@@ -215,7 +217,6 @@ router.post("/community/mute", auth.authentication, async (req, res) => {
       return res.status(400).json({ message: "Invalid parameters" });
     }
 
-
     const userId = req.user._id;
     const user = await User.findById(userId);
 
@@ -246,7 +247,6 @@ router.post("/community/unmute", auth.authentication, async (req, res) => {
     if (!communityName) {
       return res.status(400).json({ message: "Invalid parameters" });
     }
-
 
     const userId = req.user._id;
     const user = await User.findById(userId);
@@ -284,7 +284,6 @@ router.get("/community/is-mute", auth.authentication, async (req, res) => {
       return res.status(400).json({ message: "Invalid parameters" });
     }
 
-
     const userId = req.user._id;
     const user = await User.findById(userId);
 
@@ -313,7 +312,6 @@ router.post("/community/subscribe", auth.authentication, async (req, res) => {
     if (!communityName) {
       return res.status(400).json({ message: "Invalid parameters" });
     }
-
 
     const userId = req.user._id;
     const user = await User.findById(userId);
@@ -388,14 +386,16 @@ router.post("/community/unsubscribe", auth.authentication, async (req, res) => {
   }
 });
 
-router.get("/community/is-subscribed", auth.authentication, async (req, res) => {
+router.get(
+  "/community/is-subscribed",
+  auth.authentication,
+  async (req, res) => {
     try {
       const { communityName } = req.query;
 
       if (!communityName) {
         return res.status(400).json({ message: "Invalid parameters" });
       }
-
 
       const userId = req.user._id;
       const user = await User.findById(userId);
@@ -419,88 +419,102 @@ router.get("/community/is-subscribed", auth.authentication, async (req, res) => 
   }
 );
 
-router.get("/community/top-communities", auth.authentication, async (req, res) => {
-  try {
-    const page = req.query.page || 1;
-    const limit = 250;
-    const skip = (page - 1) * limit;
+router.get(
+  "/community/top-communities",
+  auth.authentication,
+  async (req, res) => {
+    try {
+      const page = req.query.page || 1;
+      const limit = 250;
+      const skip = (page - 1) * limit;
 
-    const totalCommunities = await Community.countDocuments();
-    const totalPages = Math.ceil(totalCommunities / limit);
+      const totalCommunities = await Community.countDocuments();
+      const totalPages = Math.ceil(totalCommunities / limit);
 
-    const communities = await Community.find()
-      .sort({ members: -1 })
-      .skip(skip)
-      .limit(limit);
+      const communities = await Community.find()
+        .sort({ members: -1 })
+        .skip(skip)
+        .limit(limit);
 
-    if (communities.length == 0) {
-      return res.status(404).json({ message: "No communities found" });
+      if (communities.length == 0) {
+        return res.status(404).json({ message: "No communities found" });
+      }
+      res.status(200).json({
+        communities: communities,
+        totalPages: totalPages,
+        currentPage: page,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     }
-    res.status(200).json({
-      communities: communities,
-      totalPages: totalPages,
-      currentPage: page,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
-router.get("/community/random-category", auth.authentication, async (req, res) => {
-  try {
-    const communities = await Community.aggregate([{ $sample: { size: 25 } }]);
+router.get(
+  "/community/random-category",
+  auth.authentication,
+  async (req, res) => {
+    try {
+      const communities = await Community.aggregate([
+        { $sample: { size: 25 } },
+      ]);
 
-    if (communities.length == 0) {
-      return res.status(404).json({ message: "No random communities found" });
+      if (communities.length == 0) {
+        return res.status(404).json({ message: "No random communities found" });
+      }
+
+      res.status(200).json(communities);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: "Internal server error",
+      });
     }
-
-    res.status(200).json(communities);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Internal server error",
-    });
   }
-});
+);
 
-router.get("/community/get-specific-category", auth.authentication, async (req, res) => {
-  try {
-    const category = req.query.category;
-    const page = req.query.page || 1;
-    const limit = 25;
-    const skip = (page - 1) * limit;
+router.get(
+  "/community/get-specific-category",
+  auth.authentication,
+  async (req, res) => {
+    try {
+      const category = req.query.category;
+      const page = req.query.page || 1;
+      const limit = 25;
+      const skip = (page - 1) * limit;
 
-    if (!category) {
-      return res.status(400).json({ message: "invalid request parameters" });
+      if (!category) {
+        return res.status(400).json({ message: "invalid request parameters" });
+      }
+
+      const communities = await Community.find({ category: category })
+        .skip(skip)
+        .limit(limit);
+
+      const totalCommunities = await Community.countDocuments({
+        category: category,
+      });
+      const totalPages = Math.ceil(totalCommunities / limit);
+
+      if (communities.length == 0) {
+        return res
+          .status(404)
+          .json({ message: "No communities found for the specified category" });
+      }
+      res.status(200).json({
+        communities: communities,
+        totalPages: totalPages,
+        currentPage: page,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: "Internal server error",
+      });
     }
-
-    const communities = await Community.find({ category: category })
-      .skip(skip)
-      .limit(limit);
-
-    const totalCommunities = await Community.countDocuments({
-      category: category,
-    });
-    const totalPages = Math.ceil(totalCommunities / limit);
-
-    if (communities.length == 0) {
-      return res
-        .status(404)
-        .json({ message: "No communities found for the specified category" });
-    }
-    res.status(200).json({
-      communities: communities,
-      totalPages: totalPages,
-      currentPage: page,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Internal server error",
-    });
   }
-});
+);
 
 router.get("/community/get-info", auth.authentication, async (req, res) => {
   try {
@@ -520,6 +534,33 @@ router.get("/community/get-info", auth.authentication, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/community/create", auth.authentication, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    const { name, is18plus, communityType } = req.body;
+    const createdCommunity = new Community({
+      name: name,
+      is18plus: is18plus,
+      communityType: communityType,
+      creator: user,
+      members: [user],
+      moderators: [user],
+    });
+    await createdCommunity.save();
+    console.log("Community created successfully");
+
+    return res.status(200).send({ status: "success" });
+  } catch (err) {
+    if (err.name == "ValidationError") {
+      res.status(400).send(err.toString());
+    } else {
+      console.error("Error creating the community: ", err);
+      res.status(500).send(err.toString());
+    }
   }
 });
 

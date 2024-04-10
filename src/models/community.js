@@ -101,7 +101,18 @@ CommunitySchema.statics.isUserInCommunity = async function (
   const memberIds = members.map((member) => member._id.toString());
   return memberIds.includes(userId.toString());
 };
-
+CommunitySchema.statics.getMembersCount = async function (communityId) {
+  try {
+    const community = await this.findById(communityId).exec();
+    if (!community) {
+      return 0;
+    }
+    return community.members.length;
+  } catch (error) {
+    console.error("Error while getting members count:", error);
+    return 0;
+  }
+};
 const Community = mongoose.model("community", CommunitySchema);
 
 module.exports = Community;
