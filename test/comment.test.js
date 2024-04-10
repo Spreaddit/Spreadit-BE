@@ -1,5 +1,5 @@
 const Comment = require("../src/models/comment");
-const Post = require("../src/routes/post");
+const Post = require("../src/models/post");
 const request = require("supertest");
 const app = require("./testApp");
 const mongoose = require("mongoose");
@@ -43,6 +43,7 @@ const post ={
 const comment1 = {
     _id: id,
     userId:userOneId,
+    postId: id2,
     username: "maher",
     content: "I am the first comment"
 }
@@ -50,8 +51,8 @@ const comment1 = {
 const comment2 = {
     username: "elgarf",
     userId: userTwoId,
+    postId: id2,
     parentId: id,
-    isRetweeted: true,
     content: "I am the second comment"
 }
 
@@ -108,9 +109,11 @@ beforeEach(async () => {
     await new User(userOne).save();
     await new User(userTwo).save();
     await new User(userThree).save();
+    await new Post(post).save();
     await Comment.deleteMany({});
-    await new Tweets(comment1).save();
-    await new Tweets(comment2).save();
+    await new Comment(comment1).save();
+    await new Comment(comment2).save();
+    
 });
 
 
@@ -128,11 +131,16 @@ test("posting a comment", async()=>{
         .expect(200);
 
     const user = await getUser("Aelgarf");
+    if (!user) {
+        // Handle case where user is not found
+        // For example:
+        throw new Error("User not found");
+    }
     const token = login.body.token;
-    
+
     const response = await request(app)
     .post('/post/comment/' + id2)
-    .set("Authorization", "Bearer " + token)
+    .set("Authorization", "Bearer " + user.tokens[0].token)
     .send({
         content: "this is a new comment"
     })
