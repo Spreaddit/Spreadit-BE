@@ -282,8 +282,10 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
         await newReply.save();
 
         await Comment.findByIdAndUpdate(parentCommentId, { $inc: { repliesCount: 1 } });
+        const replyObj = await Comment.getCommentObject(newReply, userId);
 
         res.status(201).send({ 
+            reply: replyObj,
             message: "Reply has been added successfully" 
         });
     } catch (err) {
