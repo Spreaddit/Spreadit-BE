@@ -1,6 +1,7 @@
 const Post = require("../models/post");
 const User = require("../models/user");
 const Report = require("../models/report.js");
+const Community = require("../models/community.js");
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -195,21 +196,48 @@ exports.createPost = async (req, res) => {
 
 exports.getAllPostsInCommunity = async (req, res) => {
     try {
+        const username = req.user.username;
+
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        const userId = user._id;
         const community = req.params.community;
         if (!community) {
             return res.status(400).json({ error: 'Community name is required' });
         }
+        const communityExists = await Community.findOne({ name: community });
+
+        if (!communityExists) {
+            return res.status(404).json({ message: "Community not found" });
+        }
+
+
         const posts = await Post.find({ community });
 
         if (!posts || posts.length === 0) {
             return res.status(404).json({ error: 'Posts not found in the specified community' });
         }
-        for (let post of posts) {
-            post = await Post.findById(post._id);
+        const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
+        const savedPostIds = user.savedPosts || [];
+        for (let post of visiblePosts) {
             post.numberOfViews++;
+            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            post.votesUpCount = upVotesCount;
+            post.votesDownCount = downVotesCount;
+            post.isSaved = savedPostIds.includes(post._id.toString());
             await post.save();
         }
-        res.status(200).json(posts);
+        res.status(200).json(visiblePosts);
+        /*   for (let post of posts) {
+              post = await Post.findById(post._id);
+              post.numberOfViews++;
+              await post.save();
+          }
+          res.status(200).json(posts); */
     } catch (err) {
         console.error('Error fetching posts:', err);
         res.status(500).json({ error: 'Internal server error' });

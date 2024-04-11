@@ -17,6 +17,12 @@ const listingRoutes = require("./routes/listing");
 
 //seeding
 const UserRoleSeeder = require("../seeders/user-role.seeder");
+const PostSeeder = require("../seeders/post.seeder");
+const CommentSeeder = require("../seeders/comment.seeder");
+const CommunitySeeder = require("../seeders/community.seeder");
+const UserSeeder = require("../seeders/user.seeder");
+const RuleSeeder = require("../seeders/rule.seeder");
+
 const app = express();
 const port = 80;
 //const port = 443;
@@ -52,16 +58,24 @@ mongoose
     console.log("Database connected successfully");
 
     // Seed the database
-    const userRoleSeeder = new UserRoleSeeder();
-    const shouldRun = await userRoleSeeder.shouldRun();
-
-    if (shouldRun) {
-      console.log("Running Seeder...");
-      await userRoleSeeder.run();
-      console.log("Seeder executed successfully");
-    } else {
-      console.log("Seeder already executed, skipping...");
-    }
+    const seeders = [
+      new UserRoleSeeder(), 
+      new UserSeeder(),
+      new CommunitySeeder(),
+      new RuleSeeder(),
+      new PostSeeder(),
+      new CommentSeeder(),
+    ];
+    for (const seeder of seeders){
+      const shouldRun = await seeder.shouldRun();
+      if (shouldRun) {
+        console.log(`Running ${seeder.constructor.name} Seeder...`); // Use backticks instead of single quotes
+        await seeder.run();
+        console.log(`${seeder.constructor.name} Seeder executed successfully`); // Use backticks instead of single quotes
+      } else {
+        console.log(`${seeder.constructor.name} Seeder already executed, skipping...`); // Use backticks instead of single quotes
+      }
+    }    
 
     // Start the server after seeding
     app.listen(port, () => {
@@ -71,7 +85,3 @@ mongoose
   .catch((error) => {
     console.error("Error connecting to database:", error);
   });
-// // Create HTTPS server
-// https.createServer(options, app).listen(port, () => {
-//   console.log("Server started on port", port);
-// });
