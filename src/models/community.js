@@ -77,7 +77,7 @@ const CommunitySchema = new Schema({
   membersCount: {
     type: Number,
     default: 1,
-  }
+  },
 
   //todo add the community settings attributes
   //todo figure out mawdo3 el moderator how is it gonna be saved array or something else?
@@ -85,38 +85,6 @@ const CommunitySchema = new Schema({
   //todo helper function verfiying that the community
 });
 
-CommunitySchema.statics.checkExistence = async function (name) {
-  const community = await Community.findOne({ name });
-  if (community) {
-    return true;
-  } else {
-    return false;
-  }
-};
-CommunitySchema.statics.isUserInCommunity = async function (
-  userId,
-  communityName
-) {
-  const community = await this.findOne({ name: communityName }).exec();
-  if (!community) {
-    return false;
-  }
-  const members = await User.find({ _id: { $in: community.members } }).exec();
-  const memberIds = members.map((member) => member._id.toString());
-  return memberIds.includes(userId.toString());
-};
-CommunitySchema.statics.getMembersCount = async function (communityId) {
-  try {
-    const community = await this.findById(communityId).exec();
-    if (!community) {
-      return 0;
-    }
-    return community.members.length;
-  } catch (error) {
-    console.error("Error while getting members count:", error);
-    return 0;
-  }
-};
 const Community = mongoose.model("community", CommunitySchema);
 
 module.exports = Community;

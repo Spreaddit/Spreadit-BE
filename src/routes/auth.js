@@ -407,7 +407,7 @@ router.put("/user/profile-info", auth.authentication, async (req, res) => {
 
     if (username) {
       const exists = await User.getUserByEmailOrUsername(username);
-      if (exists) {
+      if (exists || username.length > 14) {
         return res.status(400).json({ message: "Username not available" });
       }
     }

@@ -36,11 +36,11 @@ router.post("/rule/add", auth.authentication, async (req, res) => {
     const userId = req.user._id;
     const user = await User.findById(userId);
     const community = await Community.findOne({ name: communityName });
-
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
     if (!community.moderators.includes(user._id)) {
-      return res
-        .status(402)
-        .json({ message: "You are not a moderator of this community" });
+      return res.status(402).json({ message: "You are not a moderator of this community" });
     }
     await existingRule.save();
     community.rules.push(existingRule._id);
@@ -93,84 +93,68 @@ router.post("/rule/remove", auth.authentication, async (req, res) => {
   }
 });
 
-router.post(
-  "/community/add-to-favourites",
-  auth.authentication,
-  async (req, res) => {
-    try {
-      const { communityName } = req.body;
+router.post("/community/add-to-favourites", auth.authentication, async (req, res) => {
+  try {
+    const { communityName } = req.body;
 
-      if (!communityName) {
-        return res.status(400).json({ message: "Invalid parameters" });
-      }
-
-      const userId = req.user._id;
-      const user = await User.findById(userId);
-
-      const community = await Community.findOne({ name: communityName });
-
-      if (!community) {
-        return res.status(404).json({ message: "Community not found" });
-      }
-
-      if (user.favouriteCommunities.includes(community._id)) {
-        return res
-          .status(402)
-          .json({ message: "Community is already in favorites" });
-      }
-
-      user.favouriteCommunities.push(community._id);
-      await user.save();
-
-      res
-        .status(200)
-        .json({ message: "Community added to favorites successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+    if (!communityName) {
+      return res.status(400).json({ message: "Invalid parameters" });
     }
-  }
-);
 
-router.post(
-  "/community/remove-favourite",
-  auth.authentication,
-  async (req, res) => {
-    try {
-      const { communityName } = req.body;
+    const userId = req.user._id;
+    const user = await User.findById(userId);
 
-      if (!communityName) {
-        return res.status(400).json({ message: "Invalid parameters" });
-      }
+    const community = await Community.findOne({ name: communityName });
 
-      const userId = req.user._id;
-      const user = await User.findById(userId);
-
-      const community = await Community.findOne({ name: communityName });
-
-      if (!community) {
-        return res.status(404).json({ message: "Community not found" });
-      }
-
-      const index = user.favouriteCommunities.indexOf(community._id);
-      if (index == -1) {
-        return res
-          .status(402)
-          .json({ message: "Community is not in favorites" });
-      }
-
-      user.favouriteCommunities.splice(index, 1);
-      await user.save();
-
-      res
-        .status(200)
-        .json({ message: "Community removed from favorites successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
     }
+
+    if (user.favouriteCommunities.includes(community._id)) {
+      return res.status(402).json({ message: "Community is already in favorites" });
+    }
+
+    user.favouriteCommunities.push(community._id);
+    await user.save();
+
+    res.status(200).json({ message: "Community added to favorites successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
-);
+});
+
+router.post("/community/remove-favourite", auth.authentication, async (req, res) => {
+  try {
+    const { communityName } = req.body;
+
+    if (!communityName) {
+      return res.status(400).json({ message: "Invalid parameters" });
+    }
+
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+
+    const community = await Community.findOne({ name: communityName });
+
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    const index = user.favouriteCommunities.indexOf(community._id);
+    if (index == -1) {
+      return res.status(402).json({ message: "Community is not in favorites" });
+    }
+
+    user.favouriteCommunities.splice(index, 1);
+    await user.save();
+
+    res.status(200).json({ message: "Community removed from favorites successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 router.get("/community/is-favourite", auth.authentication, async (req, res) => {
   try {
@@ -310,9 +294,7 @@ router.post("/community/subscribe", auth.authentication, async (req, res) => {
     await user.save();
     community.membersCount += 1;
     await community.save();
-    res
-      .status(200)
-      .json({ message: "Subscribed to the community successfully" });
+    res.status(200).json({ message: "Subscribed to the community successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -337,9 +319,7 @@ router.post("/community/unsubscribe", auth.authentication, async (req, res) => {
     }
 
     if (!user.subscribedCommunities.includes(community._id)) {
-      return res
-        .status(403)
-        .json({ message: "User isn't subscribed to community" });
+      return res.status(403).json({ message: "User isn't subscribed to community" });
     }
 
     const index = user.subscribedCommunities.indexOf(community._id);
@@ -348,75 +328,62 @@ router.post("/community/unsubscribe", auth.authentication, async (req, res) => {
     community.membersCount -= 1;
     await community.save();
 
-    res
-      .status(200)
-      .json({ message: "Unsubscribed from the community successfully" });
+    res.status(200).json({ message: "Unsubscribed from the community successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
-router.get(
-  "/community/is-subscribed",
-  auth.authentication,
-  async (req, res) => {
-    try {
-      const { communityName } = req.query;
+router.get("/community/is-subscribed", auth.authentication, async (req, res) => {
+  try {
+    const { communityName } = req.query;
 
-      if (!communityName) {
-        return res.status(400).json({ message: "Invalid parameters" });
-      }
-
-      const userId = req.user._id;
-      const user = await User.findById(userId);
-
-      const community = await Community.findOne({ name: communityName });
-
-      if (!community) {
-        return res.status(404).json({ message: "Community not found" });
-      }
-
-      const isSubscribed = user.subscribedCommunities.includes(community._id);
-      res.status(200).json({ isSubscribed });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+    if (!communityName) {
+      return res.status(400).json({ message: "Invalid parameters" });
     }
-  }
-);
 
-router.get(
-  "/community/top-communities",
-  auth.authentication,
-  async (req, res) => {
-    try {
-      const page = req.query.page || 1;
-      const limit = 250;
-      const skip = (page - 1) * limit;
+    const userId = req.user._id;
+    const user = await User.findById(userId);
 
-      const totalCommunities = await Community.countDocuments();
-      const totalPages = Math.ceil(totalCommunities / limit);
+    const community = await Community.findOne({ name: communityName });
 
-      const communities = await Community.find()
-        .sort({ members: -1 })
-        .skip(skip)
-        .limit(limit);
-
-      if (communities.length == 0) {
-        return res.status(404).json({ message: "No communities found" });
-      }
-      res.status(200).json({
-        communities: communities,
-        totalPages: totalPages,
-        currentPage: page,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
     }
+
+    const isSubscribed = user.subscribedCommunities.includes(community._id);
+    res.status(200).json({ isSubscribed });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
-);
+});
+
+router.get("/community/top-communities", auth.authentication, async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const limit = 250;
+    const skip = (page - 1) * limit;
+
+    const totalCommunities = await Community.countDocuments();
+    const totalPages = Math.ceil(totalCommunities / limit);
+
+    const communities = await Community.find().sort({ members: -1 }).skip(skip).limit(limit);
+
+    if (communities.length == 0) {
+      return res.status(404).json({ message: "No communities found" });
+    }
+    res.status(200).json({
+      communities: communities,
+      totalPages: totalPages,
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 router.get("/community/random-category", auth.authentication, async (res) => {
   try {
@@ -434,35 +401,29 @@ router.get("/community/random-category", auth.authentication, async (res) => {
     });
   }
 });
-router.get(
-  "/community/get-specific-category",
-  auth.authentication,
-  async (req, res) => {
-    try {
-      const category = req.query.category;
 
-      if (!category) {
-        return res.status(400).json({ message: "Invalid request parameters" });
-      }
+router.get("/community/get-specific-category", auth.authentication, async (req, res) => {
+  try {
+    const category = req.query.category;
 
-      const communities = await Community.aggregate([
-        { $match: { category } },
-        { $sample: { size: 25 } },
-      ]);
-
-      if (communities.length == 0) {
-        return res.status(404).json({
-          message: "No communities found for the specified category",
-        });
-      }
-
-      res.status(200).json({ communities });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+    if (!category) {
+      return res.status(400).json({ message: "Invalid request parameters" });
     }
+
+    const communities = await Community.aggregate([{ $match: { category } }, { $sample: { size: 25 } }]);
+
+    if (communities.length == 0) {
+      return res.status(404).json({
+        message: "No communities found for the specified category",
+      });
+    }
+
+    res.status(200).json({ communities });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
-);
+});
 
 router.get("/community/get-info", auth.authentication, async (req, res) => {
   try {
@@ -490,6 +451,10 @@ router.post("/community/create", auth.authentication, async (req, res) => {
     const userId = req.user._id;
     const user = await User.findById(userId);
     const { name, is18plus, communityType } = req.body;
+    if (!name || !is18plus || !communityType) {
+      return res.status(400).json({ message: "Invalid request parameters" });
+    }
+
     const createdCommunity = new Community({
       name: name,
       is18plus: is18plus,
@@ -498,17 +463,20 @@ router.post("/community/create", auth.authentication, async (req, res) => {
       members: [user],
       moderators: [user],
     });
-    await createdCommunity.save();
-    console.log("Community created successfully");
 
-    return res.status(200).send({ status: "success" });
-  } catch (err) {
-    if (err.name == "ValidationError") {
-      res.status(400).send(err.toString());
-    } else {
-      console.error("Error creating the community: ", err);
-      res.status(500).send(err.toString());
+    let existingCommunity = await Community.findOne({
+      name: name,
+    });
+    if (existingCommunity) {
+      return res.status(403).json({ message: "Community name is not available" });
     }
+    user.subscribedCommunities.push(community._id);
+    await user.save();
+    await createdCommunity.save();
+    return res.status(200).send({ message: "Community created successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
