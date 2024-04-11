@@ -21,8 +21,7 @@ router.use(cookieParser("spreaditsecret"));
 router.post("/signup", async (req, res) => {
   try {
     const user = new User(req.body);
-    const userAvatar =
-      "https://drive.google.com/file/d/1130pQbYOHFVRl8Y381KoneRzpKoGUvzl/view?usp=sharing";
+    const userAvatar = "https://drive.google.com/file/d/1130pQbYOHFVRl8Y381KoneRzpKoGUvzl/view?usp=sharing";
     user.avatar = userAvatar;
     if (!(await User.checkExistence(user.email, user.username))) {
       const savedUser = await user.save();
@@ -74,10 +73,7 @@ router.post("/signup", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const user = await User.verifyCredentials(
-    req.body.username,
-    req.body.password
-  );
+  const user = await User.verifyCredentials(req.body.username, req.body.password);
 
   try {
     if (user) {
@@ -88,15 +84,10 @@ router.post("/login", async (req, res) => {
           Date.now() + 30 * 24 * 60 * 60 * 1000 //one month from the current time
         );
       } else {
-        authTokenInfo["token_expiration_date"] = new Date(
-          new Date().setHours(new Date().getHours() + 24)
-        );
+        authTokenInfo["token_expiration_date"] = new Date(new Date().setHours(new Date().getHours() + 24));
       }
       user.tokens = user.tokens.concat(authTokenInfo);
-      await User.updateOne(
-        { _id: user._id },
-        { $set: { tokens: user.tokens } }
-      );
+      await User.updateOne({ _id: user._id }, { $set: { tokens: user.tokens } });
       //console.log(user);
 
       const userObj = await User.generateUserObject(user);
@@ -132,15 +123,10 @@ router.post("/google/oauth", verifyGoogleToken, async (req, res) => {
           Date.now() + 30 * 24 * 60 * 60 * 1000 //one month from the current time
         );
       } else {
-        authTokenInfo["token_expiration_date"] = new Date(
-          new Date().setHours(new Date().getHours() + 24)
-        );
+        authTokenInfo["token_expiration_date"] = new Date(new Date().setHours(new Date().getHours() + 24));
       }
       user.tokens = user.tokens.concat(authTokenInfo);
-      await User.updateOne(
-        { _id: user._id },
-        { $set: { tokens: user.tokens } }
-      );
+      await User.updateOne({ _id: user._id }, { $set: { tokens: user.tokens } });
 
       const userObj = await User.generateUserObject(user);
       res.status(200).send({
@@ -232,9 +218,7 @@ router.post("/reset-password-by-token", async (req, res) => {
       await user.save();
       res.status(200).send({ message: "Password reset successfully" });
     } else {
-      return res
-        .status(400)
-        .send({ message: "Invalid or expired reset token" });
+      return res.status(400).send({ message: "Invalid or expired reset token" });
     }
   } catch (err) {
     console.log(err);
@@ -349,9 +333,7 @@ router.get("/user/profile-info/:username", async (req, res) => {
   try {
     const { username } = req.params;
     const user = await User.findOne({ username })
-      .select(
-        "username name avatar banner about createdAt subscribedCommunities isVisible isActive socialLinks"
-      )
+      .select("username name avatar banner bio createdAt subscribedCommunities isVisible isActive socialLinks")
       .populate({
         path: "subscribedCommunities",
         select: "name image communityBanner membersCount",
@@ -367,7 +349,7 @@ router.get("/user/profile-info/:username", async (req, res) => {
       name: user.name,
       avatar: user.avatar,
       banner: user.banner,
-      about: user.about,
+      about: user.bio,
       createdAt: user.createdAt,
       subscribedCommunities: user.subscribedCommunities,
       isVisible: user.isVisible,
@@ -383,40 +365,28 @@ router.get("/user/profile-info/:username", async (req, res) => {
 router.put("/user/profile-info", auth.authentication, async (req, res) => {
   try {
     const userId = req.user._id;
-    const {
-      name,
-      avatar,
-      banner,
-      about,
-      socialLinks,
-      username,
-      isVisible,
-      isActive,
-    } = req.body;
-
+    const { name, avatar, banner, about, socialLinks, username, isVisible, isActive } = req.body;
+    const bio = about;
     const updatedFields = {
       name,
       avatar,
       banner,
-      about,
+      bio,
       socialLinks,
       username,
       isVisible,
       isActive,
     };
+    const user = await User.findById(userId);
 
     if (username) {
       const exists = await User.getUserByEmailOrUsername(username);
-      if (exists || username.length > 14) {
+      if (exists.username != user.username || username.length > 14) {
         return res.status(400).json({ message: "Username not available" });
       }
     }
 
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: userId },
-      { $set: updatedFields },
-      { new: true }
-    );
+    const updatedUser = await User.findOneAndUpdate({ _id: userId }, { $set: updatedFields }, { new: true });
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -427,7 +397,7 @@ router.put("/user/profile-info", auth.authentication, async (req, res) => {
       name: updatedUser.name,
       avatar: updatedUser.avatar,
       banner: updatedUser.banner,
-      about: updatedUser.about,
+      about: updatedUser.bio,
       createdAt: updatedUser.createdAt,
       subscribedCommunities: updatedUser.subscribedCommunities,
       isVisible: updatedUser.isVisible,
