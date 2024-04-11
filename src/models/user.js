@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const config = require("../configuration");
+const Community = require("../models/community.js");
 require("./constants/userRole");
 const userRole = require("./../../seed-data/constants/userRole");
 
@@ -304,13 +305,13 @@ const UserSchema = new Schema(
     mutedCommunities: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Community",
+        ref: Community,
       },
     ],
     subscribedCommunities: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Community",
+        ref: Community,
       },
     ],
     favouriteCommunities: [
@@ -398,10 +399,7 @@ UserSchema.statics.checkExistence = async function (email) {
   }
 };
 
-UserSchema.statics.verifyCredentials = async function (
-  usernameOremail,
-  password
-) {
+UserSchema.statics.verifyCredentials = async function (usernameOremail, password) {
   const userByEmail = await User.findOne({
     email: usernameOremail,
   }).populate("roleId");
@@ -501,9 +499,7 @@ UserSchema.methods.generateRandomString = function () {
   let randomString = "";
 
   for (let i = 0; i < length; i++) {
-    randomString += characters.charAt(
-      Math.floor(Math.random() * characters.length)
-    );
+    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
   }
 
   return randomString;

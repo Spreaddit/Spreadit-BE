@@ -10,6 +10,11 @@ router.use(passport.initialize());
 router.use(cookieParser("spreaditsecret"));
 const auth = require("../middleware/authentication");
 
+//TODO: Get rules
+//TODO: handling if user is moderator
+//TODO: handling restricted and private communities
+//TODO: return only certain parts of the community
+
 router.post("/rule/add", auth.authentication, async (req, res) => {
   try {
     const { title, description, reportReason, communityName } = req.body;
@@ -198,6 +203,10 @@ router.post("/community/mute", auth.authentication, async (req, res) => {
       return res.status(404).json({ message: "Community not found" });
     }
 
+    if (user.mutedCommunities.includes(community._id)) {
+      return res.status(402).json({ message: "Community is already muted" });
+    }
+
     user.mutedCommunities.push(community._id);
     await user.save();
 
@@ -282,8 +291,8 @@ router.post("/community/subscribe", auth.authentication, async (req, res) => {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    if (community.communityType == "Private") {
-      return res.status(403).json({ message: "Private community" });
+    if (community.communityType == "Private" || community.communityType == "Restriced") {
+      return res.status(403).json({ message: "Restriced or Private community" });
     }
 
     if (user.subscribedCommunities.includes(community._id)) {
@@ -369,7 +378,7 @@ router.get("/community/top-communities", auth.authentication, async (req, res) =
     const totalCommunities = await Community.countDocuments();
     const totalPages = Math.ceil(totalCommunities / limit);
 
-    const communities = await Community.find().sort({ members: -1 }).skip(skip).limit(limit);
+    const communities = await Community.find().sort({ membersCount: -1 }).skip(skip).limit(limit);
 
     if (communities.length == 0) {
       return res.status(404).json({ message: "No communities found" });
@@ -385,9 +394,19 @@ router.get("/community/top-communities", auth.authentication, async (req, res) =
   }
 });
 
-router.get("/community/random-category", auth.authentication, async (res) => {
+router.get("/community/random-category", auth.authentication, async (req, res) => {
   try {
-    const communities = await Community.aggregate([{ $sample: { size: 25 } }]);
+    let randomCommunity;
+    do {
+      randomCommunity = await Community.aggregate([{ $sample: { size: 1 } }]);
+    } while (!randomCommunity[0].category);
+
+    const randomCategory = randomCommunity[0].category;
+
+    const communities = await Community.aggregate([
+      { $match: { category: randomCategory } },
+      { $sample: { size: 25 } },
+    ]);
 
     if (communities.length == 0) {
       return res.status(404).json({ message: "No random communities found" });
@@ -396,9 +415,7 @@ router.get("/community/random-category", auth.authentication, async (res) => {
     res.status(200).json(communities);
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      message: "Internal server error",
-    });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -418,7 +435,7 @@ router.get("/community/get-specific-category", auth.authentication, async (req, 
       });
     }
 
-    res.status(200).json({ communities });
+    res.status(200).json(communities);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -464,13 +481,13 @@ router.post("/community/create", auth.authentication, async (req, res) => {
       moderators: [user],
     });
 
-    let existingCommunity = await Community.findOne({
+    const existingCommunity = await Community.findOne({
       name: name,
     });
     if (existingCommunity) {
       return res.status(403).json({ message: "Community name is not available" });
     }
-    user.subscribedCommunities.push(community._id);
+    user.subscribedCommunities.push(createdCommunity._id);
     await user.save();
     await createdCommunity.save();
     return res.status(200).send({ message: "Community created successfully" });
