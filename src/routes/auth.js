@@ -344,34 +344,23 @@ router.post("/forgot-username", async (req, res) => {
     res.status(500).send({ message: "Internal server error" });
   }
 });
+
 router.get("/user/profile-info/:username", async (req, res) => {
   try {
     const { username } = req.params;
     const user = await User.findOne({ username })
       .select(
-        "username name avatar banner about createdAt subscribedCommunities socialLinks"
+        "username name avatar banner about createdAt subscribedCommunities isVisible isActive socialLinks"
       )
       .populate({
         path: "subscribedCommunities",
-        select: "name image communityBanner",
+        select: "name image communityBanner membersCount",
       })
       .exec();
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    const updatedCommunities = await Promise.all(
-      user.subscribedCommunities.map(async (communityId) => {
-        const membersCount = await Community.getMembersCount(communityId);
-        const community = await Community.findById(communityId).select(
-          "name image communityBanner"
-        );
-        return { ...community.toObject(), membersCount };
-      })
-    );
-
-    user.subscribedCommunities = updatedCommunities;
 
     res.status(200).json({
       username: user.username,
@@ -381,6 +370,8 @@ router.get("/user/profile-info/:username", async (req, res) => {
       about: user.about,
       createdAt: user.createdAt,
       subscribedCommunities: user.subscribedCommunities,
+      isVisible: user.isVisible,
+      isActive: user.isActive,
       socialLinks: user.socialLinks,
     });
   } catch (error) {
@@ -392,19 +383,33 @@ router.get("/user/profile-info/:username", async (req, res) => {
 router.put("/user/profile-info", auth.authentication, async (req, res) => {
   try {
     const userId = req.user._id;
-    const { avatar, banner, about, socialLinks } = req.body;
+    const {
+      name,
+      avatar,
+      banner,
+      about,
+      socialLinks,
+      username,
+      isVisible,
+      isActive,
+    } = req.body;
 
-    const updatedFields = {};
-    if (avatar) updatedFields.avatar = avatar;
-    if (banner) updatedFields.banner = banner;
-    if (about) updatedFields.about = about;
-    if (socialLinks) updatedFields.socialLinks = socialLinks;
-    if (req.body.username) {
-      const exists = await User.getUserByEmailOrUsername(req.body.username);
+    const updatedFields = {
+      name,
+      avatar,
+      banner,
+      about,
+      socialLinks,
+      username,
+      isVisible,
+      isActive,
+    };
+
+    if (username) {
+      const exists = await User.getUserByEmailOrUsername(username);
       if (exists) {
         return res.status(400).json({ message: "Username not available" });
       }
-      updatedFields.username = req.body.username;
     }
 
     const updatedUser = await User.findOneAndUpdate(
@@ -419,13 +424,14 @@ router.put("/user/profile-info", auth.authentication, async (req, res) => {
 
     res.status(200).json({
       username: updatedUser.username,
+      name: updatedUser.name,
       avatar: updatedUser.avatar,
       banner: updatedUser.banner,
       about: updatedUser.about,
       createdAt: updatedUser.createdAt,
-      followers: updatedUser.followers,
-      followings: updatedUser.followings,
-      communities: updatedUser.communities,
+      subscribedCommunities: updatedUser.subscribedCommunities,
+      isVisible: updatedUser.isVisible,
+      isActive: updatedUser.isActive,
       socialLinks: updatedUser.socialLinks,
     });
   } catch (error) {

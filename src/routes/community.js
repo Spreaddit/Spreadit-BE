@@ -33,7 +33,6 @@ router.post("/rule/add", auth.authentication, async (req, res) => {
       communityName: communityName,
     });
 
-    await existingRule.save();
     const userId = req.user._id;
     const user = await User.findById(userId);
     const community = await Community.findOne({ name: communityName });
@@ -43,6 +42,7 @@ router.post("/rule/add", auth.authentication, async (req, res) => {
         .status(402)
         .json({ message: "You are not a moderator of this community" });
     }
+    await existingRule.save();
     community.rules.push(existingRule._id);
     await community.save();
     res.status(200).json({ message: "Rule added successfully" });
@@ -80,7 +80,7 @@ router.post("/rule/remove", auth.authentication, async (req, res) => {
 
     const index = community.rules.indexOf(rule._id);
     if (index == -1) {
-      return res.status(404).json({ message: "Rule not found in community" });
+      return res.status(404).json({ message: "Rule not found" });
     }
 
     community.rules.splice(index, 1);
@@ -106,10 +106,6 @@ router.post(
 
       const userId = req.user._id;
       const user = await User.findById(userId);
-
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
 
       const community = await Community.findOne({ name: communityName });
 
@@ -150,10 +146,6 @@ router.post(
       const userId = req.user._id;
       const user = await User.findById(userId);
 
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
       const community = await Community.findOne({ name: communityName });
 
       if (!community) {
@@ -191,10 +183,6 @@ router.get("/community/is-favourite", auth.authentication, async (req, res) => {
     const userId = req.user._id;
     const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
     const community = await Community.findOne({ name: communityName });
 
     if (!community) {
@@ -219,10 +207,6 @@ router.post("/community/mute", auth.authentication, async (req, res) => {
 
     const userId = req.user._id;
     const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
 
     const community = await Community.findOne({ name: communityName });
 
@@ -250,10 +234,6 @@ router.post("/community/unmute", auth.authentication, async (req, res) => {
 
     const userId = req.user._id;
     const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
 
     const community = await Community.findOne({ name: communityName });
 
@@ -287,10 +267,6 @@ router.get("/community/is-mute", auth.authentication, async (req, res) => {
     const userId = req.user._id;
     const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
     const community = await Community.findOne({ name: communityName });
 
     if (!community) {
@@ -316,17 +292,13 @@ router.post("/community/subscribe", auth.authentication, async (req, res) => {
     const userId = req.user._id;
     const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
     const community = await Community.findOne({ name: communityName });
 
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    if (community.communityType === "Private") {
+    if (community.communityType == "Private") {
       return res.status(403).json({ message: "Private community" });
     }
 
@@ -336,7 +308,8 @@ router.post("/community/subscribe", auth.authentication, async (req, res) => {
 
     user.subscribedCommunities.push(community._id);
     await user.save();
-
+    community.membersCount += 1;
+    await community.save();
     res
       .status(200)
       .json({ message: "Subscribed to the community successfully" });
@@ -357,10 +330,6 @@ router.post("/community/unsubscribe", auth.authentication, async (req, res) => {
     const userId = req.user._id;
     const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
     const community = await Community.findOne({ name: communityName });
 
     if (!community) {
@@ -370,12 +339,14 @@ router.post("/community/unsubscribe", auth.authentication, async (req, res) => {
     if (!user.subscribedCommunities.includes(community._id)) {
       return res
         .status(403)
-        .json({ message: "User isn't subscribe to community" });
+        .json({ message: "User isn't subscribed to community" });
     }
 
     const index = user.subscribedCommunities.indexOf(community._id);
     user.subscribedCommunities.splice(index, 1);
     await user.save();
+    community.membersCount -= 1;
+    await community.save();
 
     res
       .status(200)
@@ -399,10 +370,6 @@ router.get(
 
       const userId = req.user._id;
       const user = await User.findById(userId);
-
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
 
       const community = await Community.findOne({ name: communityName });
 
@@ -451,67 +418,48 @@ router.get(
   }
 );
 
-router.get(
-  "/community/random-category",
-  auth.authentication,
-  async (req, res) => {
-    try {
-      const communities = await Community.aggregate([
-        { $sample: { size: 25 } },
-      ]);
+router.get("/community/random-category", auth.authentication, async (res) => {
+  try {
+    const communities = await Community.aggregate([{ $sample: { size: 25 } }]);
 
-      if (communities.length == 0) {
-        return res.status(404).json({ message: "No random communities found" });
-      }
-
-      res.status(200).json(communities);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        message: "Internal server error",
-      });
+    if (communities.length == 0) {
+      return res.status(404).json({ message: "No random communities found" });
     }
-  }
-);
 
+    res.status(200).json(communities);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+});
 router.get(
   "/community/get-specific-category",
   auth.authentication,
   async (req, res) => {
     try {
       const category = req.query.category;
-      const page = req.query.page || 1;
-      const limit = 25;
-      const skip = (page - 1) * limit;
 
       if (!category) {
-        return res.status(400).json({ message: "invalid request parameters" });
+        return res.status(400).json({ message: "Invalid request parameters" });
       }
 
-      const communities = await Community.find({ category: category })
-        .skip(skip)
-        .limit(limit);
-
-      const totalCommunities = await Community.countDocuments({
-        category: category,
-      });
-      const totalPages = Math.ceil(totalCommunities / limit);
+      const communities = await Community.aggregate([
+        { $match: { category } },
+        { $sample: { size: 25 } },
+      ]);
 
       if (communities.length == 0) {
-        return res
-          .status(404)
-          .json({ message: "No communities found for the specified category" });
+        return res.status(404).json({
+          message: "No communities found for the specified category",
+        });
       }
-      res.status(200).json({
-        communities: communities,
-        totalPages: totalPages,
-        currentPage: page,
-      });
+
+      res.status(200).json({ communities });
     } catch (error) {
       console.error(error);
-      res.status(500).json({
-        message: "Internal server error",
-      });
+      res.status(500).json({ message: "Internal server error" });
     }
   }
 );

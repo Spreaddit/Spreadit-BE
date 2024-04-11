@@ -68,12 +68,16 @@ const CommunitySchema = new Schema({
     ref: "user",
     index: true,
   },
-  // Note: I din't make it required for the community to have at least one moderator as the creator is the first moderator of the community. Moderators are supposed to have less privileges than creator of the community
+  // Note: I didn't make it required for the community to have at least one moderator as the creator is the first moderator of the community. Moderators are supposed to have less privileges than creator of the community
   moderators: {
     type: [Schema.Types.ObjectId],
     ref: "user",
     index: true,
   },
+  membersCount: {
+    type: Number,
+    default: 1,
+  }
 
   //todo add the community settings attributes
   //todo figure out mawdo3 el moderator how is it gonna be saved array or something else?
