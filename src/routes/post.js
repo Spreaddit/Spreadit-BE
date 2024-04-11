@@ -6,8 +6,10 @@ const auth = require("../middleware/authentication");
 
 
 router.route('/')
-    .get(auth.authentication, postController.getAllUserPosts)
     .post(auth.authentication, upload.array('images'), postController.createPost);
+
+router.route('/:username')
+    .get(auth.authentication, postController.getAllUserPosts)
 
 router.route("/:postId").delete(auth.authentication, postController.deletePost);
 
