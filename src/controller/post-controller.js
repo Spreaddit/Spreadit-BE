@@ -60,18 +60,21 @@ exports.getPostById = async (req, res) => {
 
 exports.getAllUserPosts = async (req, res) => {
     try {
-        const userId = req.user._id;
+        const username = req.params.username;
 
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        const userId = user._id;
         const posts = await Post.find({ userId });
-
         if (!posts || posts.length === 0) {
-            return res.status(404).json({ error: 'User or posts not found' });
+            return res.status(404).json({ error: 'User has no posts' });
         }
         const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
-        const user = await User.findById(userId);
-        const savedPostIds = user ? user.savedPosts : [];
+        const savedPostIds = user.savedPosts || [];
         for (let post of visiblePosts) {
-            post = await Post.findById(post._id);
             post.numberOfViews++;
             const upVotesCount = post.upVotes ? post.upVotes.length : 0;
             const downVotesCount = post.downVotes ? post.downVotes.length : 0;
@@ -80,14 +83,13 @@ exports.getAllUserPosts = async (req, res) => {
             post.isSaved = savedPostIds.includes(post._id.toString());
             await post.save();
         }
-
         res.status(200).json(visiblePosts);
-
     } catch (err) {
         console.error('Error fetching posts:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 exports.createPost = async (req, res) => {
     try {
