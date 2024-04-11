@@ -42,15 +42,15 @@ const CommunitySchema = new Schema({
   },
   is18plus: {
     type: Boolean,
-    default: "false",
+    default: false,
   },
   allowNfsw: {
     type: Boolean,
-    default: "true",
+    default: true,
   },
   allowSpoile: {
     type: Boolean,
-    default: "true",
+    default: true,
   },
   communityType: {
     type: String,
