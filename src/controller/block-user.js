@@ -14,12 +14,8 @@ exports.blockUser = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
     const toBlockID = user._id;
-    const token = req.body.token;
-    if (!token) {
-      return res.status(400).json({ error: "please login first" });
-    }
-    const decodedToken = jwt.decode(token);
-    const blockerID = decodedToken._id;
+
+    const blockerID = req.user._id;
     if (!blockerID) {
       console.error("please login first:");
       return res.status(404).json({ error: "user not found" });

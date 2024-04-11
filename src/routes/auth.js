@@ -97,7 +97,7 @@ router.post("/login", async (req, res) => {
         { _id: user._id },
         { $set: { tokens: user.tokens } }
       );
-      console.log(user);
+      //console.log(user);
 
       const userObj = await User.generateUserObject(user);
       //console.log(userObj);
@@ -120,10 +120,10 @@ router.post("/login", async (req, res) => {
 router.post("/google/oauth", verifyGoogleToken, async (req, res) => {
   try {
     const userData = req.decoded;
-    console.log(userData);
+    //console.log(userData);
 
     let user = await User.findOne({ googleId: userData.id });
-    console.log(user);
+    //console.log(user);
     if (user) {
       const token = await user.generateToken();
       const authTokenInfo = { token: token };

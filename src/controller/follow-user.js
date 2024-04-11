@@ -14,14 +14,7 @@ exports.followUser = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
     const toFollowID = user._id;
-
-    const token = req.body.token;
-    if (!token) {
-      return res.status(400).json({ error: "please login first" });
-    }
-    const decodedToken = jwt.decode(token);
-
-    const followerID = decodedToken._id;
+    const followerID = req.user._id;
     if (!toFollowID || !followerID) {
       console.error("this user not found:");
       return res.status(404).json({ error: "User not found" });
@@ -49,6 +42,36 @@ exports.followUser = async (req, res) => {
       description: "User followed successfully",
     };
     res.status(200).json(response);
+  } catch (err) {
+    console.error("Internal server error", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.isFollowed = async (req, res) => {
+  //const followerID = req.user;
+  try {
+    const username = req.params.username;
+
+    const user = await FollowUser.getUserByEmailOrUsername(username);
+    if (!user) {
+      console.error("User not found");
+      return res.status(404).json({ error: "User not found" });
+    }
+    const toFollowID = user._id;
+    const followerID = req.user._id;
+
+    if (!toFollowID || !followerID) {
+      console.error("this user not found:");
+      return res.status(404).json({ error: "User not found" });
+    }
+    const followerUser = await FollowUser.findByIdAndUpdate(
+      followerID, // User being followed
+      { $addToSet: { followings: toFollowID } }, // Add follower's ID to the followers array, using $addToSet to ensure uniqueness
+      { new: true } // To return the updated document after the update operation
+    );
+    const isFollowed = user.followers.includes(followerID);
+    res.status(200).json({ isFollowed: isFollowed });
   } catch (err) {
     console.error("Internal server error", err);
     res.status(500).json({ error: "Internal server error" });

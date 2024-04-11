@@ -25,4 +25,8 @@ router
   .route("/unfollow")
   .post(auth.authentication, unfollowUserController.unfollowUser);
 
+router
+  .route("/isfollowed/:username")
+  .get(auth.authentication, followUserController.isFollowed);
+
 module.exports = router;

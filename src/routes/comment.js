@@ -19,7 +19,7 @@ router.post("/post/comment/:postId", auth.authentication, upload.array('attachme
         const userId = req.user._id;
         const { content, fileType } = req.body;
 
-        console.log(userId);
+        //console.log(userId);
         if (!content) {
             return res.status(400).send({ 
                 message: "Comment content is required" 
@@ -51,7 +51,7 @@ router.post("/post/comment/:postId", auth.authentication, upload.array('attachme
         //console.log(newComment);
         await newComment.save();
         await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
-        console.log(userId);
+        //console.log(userId);
         const commentObj = await Comment.getCommentObject(newComment, userId);
         //console.log(commentObj);
         res.status(201).send({ 
@@ -102,7 +102,7 @@ router.get("/posts/comment/:postId", auth.authentication, async (req, res) => {
         const comments = await Comment.find({postId}).populate({
         path: "userId",
         });
-        console.log("Comments:", comments);
+        //console.log("Comments:", comments);
   
       if (!comments || comments.length === 0) {
         return res.status(404).send({ 
@@ -139,7 +139,7 @@ router.get("/comments/user/:username", auth.authentication, async (req, res) => 
             path: "userId",
         });
 
-        console.log("Comments:", comments);
+        //console.log("Comments:", comments);
 
         if (!comments || comments.length === 0) {
             return res.status(404).send({ 
@@ -282,8 +282,10 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
         await newReply.save();
 
         await Comment.findByIdAndUpdate(parentCommentId, { $inc: { repliesCount: 1 } });
+        const replyObj = await Comment.getCommentObject(newReply, userId);
 
         res.status(201).send({ 
+            reply: replyObj,
             message: "Reply has been added successfully" 
         });
     } catch (err) {
@@ -381,13 +383,13 @@ router.post("/comments/:commentId/upvote", auth.authentication, async (req, res)
         const downvotesCount = comment.downVotes.length;
         const upvotesCount = comment.upVotes.length;
         let netVotes = upvotesCount - downvotesCount;
-        console.log(netVotes)
+        //console.log(netVotes)
 
         const downvoteIndex = comment.downVotes.indexOf(userId);
         if (downvoteIndex !== -1) {
             comment.downVotes.splice(downvoteIndex, 1);
             netVotes = netVotes - 1;
-            console.log(netVotes)
+            //console.log(netVotes)
         }
         
         if (comment.upVotes.includes(userId)) {
@@ -397,7 +399,7 @@ router.post("/comments/:commentId/upvote", auth.authentication, async (req, res)
                 await comment.save();
             }
             netVotes = netVotes - 1;
-            console.log(netVotes)
+            //console.log(netVotes)
             return res.status(400).send({ 
                 votes: netVotes,
                 message: "You have removed your upvote this comment" 
@@ -408,7 +410,7 @@ router.post("/comments/:commentId/upvote", auth.authentication, async (req, res)
         await comment.save();
         
         netVotes = netVotes + 1;
-        console.log(netVotes)
+        //console.log(netVotes)
 
         res.status(200).send({ 
             votes: netVotes,
@@ -435,13 +437,13 @@ router.post("/comments/:commentId/downvote", auth.authentication, async (req, re
         const downvotesCount = comment.downVotes.length;
         const upvotesCount = comment.upVotes.length;
         let netVotes = upvotesCount - downvotesCount;
-        console.log(netVotes)
+        //console.log(netVotes)
 
         const upvoteIndex = comment.upVotes.indexOf(userId);
         if (upvoteIndex !== -1) {
             comment.upVotes.splice(upvoteIndex, 1);
             netVotes = netVotes - 1;
-            console.log(netVotes)
+            //console.log(netVotes)
         }
         
         if (comment.downVotes.includes(userId)) {
@@ -451,7 +453,7 @@ router.post("/comments/:commentId/downvote", auth.authentication, async (req, re
                 await comment.save(); 
             }
             netVotes = netVotes + 1;
-            console.log(netVotes)
+            //console.log(netVotes)
             return res.status(400).send({ 
                 votes: netVotes,
                 message: "You have removed your downvote this comment" 
@@ -459,7 +461,7 @@ router.post("/comments/:commentId/downvote", auth.authentication, async (req, re
         }
 
         netVotes = netVotes - 1;
-        console.log(netVotes)
+        //console.log(netVotes)
 
         comment.downVotes.push(userId);
         await comment.save();

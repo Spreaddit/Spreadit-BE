@@ -613,7 +613,7 @@
  *           "is_reply": false,
  *           "media": [
  *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
- *               { "type": "image", "link": "https://example.com/attachment2.mp4" }
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
  *           ], 
  *           "created_at": "2022-05-14T12:00:00.000Z",
  *           "is_hidden": false,
@@ -682,7 +682,7 @@
  *           "content": "This is a comment on the post",
  *           "userId": "609cfff1c8b58f001d54ee1e",
  *           "postId": "609cfeefc8b58f001d54ee1d",
- *           "attachments": ["https://example.com/attachment1.jpg", "https://example.com/attachment2.mp4"],
+ *           "attachments": ["https://example.com/attachment1.jpg", "https://example.com/attachment2.jpg"],
  *           "createdAt": "2022-05-14T12:00:00.000Z",
  *           "updatedAt": "2022-05-14T12:00:00.000Z"
  *       },
@@ -770,7 +770,7 @@
  *           "is_reply": false,
  *           "media": [
  *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
- *               { "type": "image", "link": "https://example.com/attachment2.mp4" }
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
  *           ], 
  *           "created_at": "2022-05-14T12:00:00.000Z",
  *           "is_hidden": false,
@@ -857,7 +857,7 @@
  *           "is_reply": false,
  *           "media": [
  *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
- *               { "type": "image", "link": "https://example.com/attachment2.mp4" }
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
  *           ], 
  *           "created_at": "2022-05-14T12:00:00.000Z",
  *           "is_hidden": false,
@@ -943,7 +943,7 @@
  *           "is_reply": false,
  *           "media": [
  *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
- *               { "type": "image", "link": "https://example.com/attachment2.mp4" }
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
  *           ], 
  *           "created_at": "2022-05-14T12:00:00.000Z",
  *           "is_hidden": false,
@@ -1031,34 +1031,97 @@
  * @apiVersion 0.1.0
  * @apiName AddReplyToComment
  * @apiGroup Comment
- * @apiDescription Adds a reply to a comment.
+ * @apiDescription Adds a reply to a parent comment.
  * @apiSampleRequest off
  * 
  * @apiHeader {String} Authorization User's authentication token.
  * 
  * @apiParam {String} parentCommentId ID of the parent comment to which the reply will be added.
  * @apiParam {String} content Content of the reply.
- * @apiParam {String} fileType Type of file attached to the reply (optional).
+ * @apiParam {String} [fileType] Type of the attached file (optional).
  * @apiParam {File[]} [attachments] Array of media files attached to the reply (optional).
  * 
  * @apiParamExample {json} Request-Example:
  * {
- *    "content": "This is a reply to the comment",
+ *    "content": "This is a reply to the parent comment",
  *    "fileType": "image",
- *    "attachments": ["attachment1.jpg", "attachment2.mp4"]
+ *    "attachments": ["attachment1.jpg", "attachment2.jpg"]
  * }
  * 
+ * @apiSuccess {Object} reply Object representing the added reply.
+ * @apiSuccess {String} reply.id ID of the reply.
+ * @apiSuccess {String} reply.content Content of the reply.
+ * @apiSuccess {String} reply.user.id ID of the user who posted the reply.
+ * @apiSuccess {String} reply.user.name Name of the user who posted the reply.
+ * @apiSuccess {String} reply.user.username Username of the user who posted the reply.
+ * @apiSuccess {String} reply.user.email Email of the user who posted the reply.
+ * @apiSuccess {String} reply.user.googleId Google ID of the user who posted the reply.
+ * @apiSuccess {String} reply.user.birth_date Birth date of the user who posted the reply.
+ * @apiSuccess {String} reply.user.phone Phone number of the user who posted the reply.
+ * @apiSuccess {String} reply.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} reply.user.background_picture_url URL of the user's background picture.
+ * @apiSuccess {String} reply.user.location Location of the user who posted the reply.
+ * @apiSuccess {String} reply.user.bio Bio of the user who posted the reply.
+ * @apiSuccess {Number} reply.user.followers_count Number of followers of the user who posted the reply.
+ * @apiSuccess {Number} reply.user.following_count Number of users followed by the user who posted the reply.
+ * @apiSuccess {Date} reply.user.created_at Date when the user who posted the reply was created.
+ * @apiSuccess {String} reply.user.role Role of the user who posted the reply.
+ * @apiSuccess {Boolean} reply.user.nsfw Flag indicating if the user who posted the reply has NSFW content.
+ * @apiSuccess {Boolean} reply.user.activeInCommunityVisibility Flag indicating if the user who posted the reply is active in community visibility.
+ * @apiSuccess {Boolean} reply.user.isVerified Flag indicating if the user who posted the reply is verified.
+ * @apiSuccess {String} reply.user.displayName Display name of the user who posted the reply.
+ * @apiSuccess {String} reply.user.about About information of the user who posted the reply.
+ * @apiSuccess {String} reply.user.cakeDay Cake day of the user who posted the reply.
+ * @apiSuccess {String[]} reply.user.subscribedCommunities List of communities subscribed by the user who posted the reply.
+ * @apiSuccess {Number} reply.likes_count Number of likes received by the reply.
+ * @apiSuccess {Number} reply.replies_count Number of replies received by the reply.
+ * @apiSuccess {Boolean} reply.is_reply Indicates whether the reply is itself a reply to another comment.
+ * @apiSuccess {String[]} reply.media Array of URLs of media files attached to the reply.
+ * @apiSuccess {Date} reply.created_at Date and time when the reply was created.
+ * @apiSuccess {Boolean} reply.is_hidden Indicates whether the reply is hidden.
+ * @apiSuccess {Boolean} reply.is_saved Indicates whether the reply is saved by the authenticated user.
+ * @apiSuccess {String} reply.post_title Title of the post to which the comment belongs.
+ * @apiSuccess {String} reply.community_title Title of the community to which the comment belongs.
  * @apiSuccess {String} message Success message indicating that the reply has been added successfully.
  * 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
  *     {
+ *       "reply": {
+ *           "id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a reply to the parent comment",
+ *           "user": {
+ *               "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "isVerified": true,
+ *               "displayName": "Amiraelgarf123",
+ *               "about": "Lorem ipsum dolor sit amet",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *           },
+ *           "likes_count": 0,
+ *           "replies_count": 0,
+ *           "is_reply": true,
+ *           "media": ["https://example.com/attachment1.jpg"],
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Example Post",
+ *           "community_title": "Example Community"
+ *       },
  *       "message": "Reply has been added successfully"
  *     }
  * 
  * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404) NotFound Comment not found.
+ * @apiError (404) NotFound Parent comment not found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  * 
  * @apiErrorExample {json} Error-Response:
@@ -1070,7 +1133,7 @@
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 404 Not Found
  *     {
- *       "message": "Comment not found"
+ *       "message": "Parent comment not found"
  *     }
  * 
  * @apiErrorExample {json} Error-Response:
@@ -1079,7 +1142,6 @@
  *       "message": "Internal server error"
  *     }
  */
-
 
 /**
  * @api {get} /comments/:commentId/replies Get Replies for Comment
@@ -1139,7 +1201,7 @@
  *           "is_reply": false,
  *           "media": [
  *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
- *               { "type": "image", "link": "https://example.com/attachment2.mp4" }
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
  *           ], 
  *           "created_at": "2022-05-14T12:00:00.000Z",
  *           "is_hidden": false,
