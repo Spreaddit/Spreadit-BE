@@ -2,7 +2,6 @@ const express = require("express");
 const User = require("../models/user.js");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
-const jwt = require("jwt-decode");
 const router = express.Router();
 const Community = require("../models/community.js");
 const Rule = require("../models/rule.js");
@@ -14,7 +13,7 @@ const auth = require("../middleware/authentication");
 //TODO: handling if user is moderator
 //TODO: handling restricted and private communities
 //TODO: return only certain parts of the community
-
+//TODO: delete community
 router.post("/rule/add", auth.authentication, async (req, res) => {
   try {
     const { title, description, reportReason, communityName } = req.body;
