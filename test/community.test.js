@@ -397,17 +397,360 @@ describe("Removing a rule", () => {
 });
 
 describe("Adding community to favorites", () => {
-  test("It should add community to favorites", async () => {});
+  test("It should add community to favorites", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+
+    const decodedToken = jwt.jwtDecode(token);
+    const user = await User.findById(decodedToken._id);
+    const createdCommunity = new Community({
+      name: "farouqfans",
+      is18plus: "true",
+      communityType: "Public",
+      creator: user,
+      moderators: [user],
+    });
+    await createdCommunity.save();
+
+    const response = await request(app)
+      .post("/community/add-to-favourites")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      })
+      .expect(200);
+
+    expect(response.body.message).toBe("Community added to favorites successfully");
+  });
+
+  test("It should return 'Invalid parameters' for status 400", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+
+    const response = await request(app)
+      .post("/community/add-to-favourites")
+      .set("Authorization", `Bearer ${token}`)
+      .send({})
+      .expect(400);
+
+    expect(response.body.message).toBe("Invalid parameters");
+  });
+
+  test("It should return 'Community not found' for status 404", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+
+    const response = await request(app)
+      .post("/community/add-to-favourites")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "hello",
+      })
+      .expect(404);
+
+    expect(response.body.message).toBe("Community not found");
+  });
+
+  test("It should return 'Community is already in favorites' for status 402", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+
+    const decodedToken = jwt.jwtDecode(token);
+    const user = await User.findById(decodedToken._id);
+    const createdCommunity = new Community({
+      name: "farouqfans",
+      is18plus: "true",
+      communityType: "Public",
+      creator: user,
+      moderators: [user],
+    });
+    await createdCommunity.save();
+
+    await request(app).post("/community/add-to-favourites").set("Authorization", `Bearer ${token}`).send({
+      communityName: "farouqfans",
+    });
+
+    const response = await request(app)
+      .post("/community/add-to-favourites")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      })
+      .expect(402);
+
+    expect(response.body.message).toBe("Community is already in favorites");
+  });
 });
 
 describe("Removing community from favorites", () => {
-  test("It should remove community from favorites", async () => {});
-});
+  test("It should remove community from favorites", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
 
+    const decodedToken = jwt.jwtDecode(token);
+    const user = await User.findById(decodedToken._id);
+    const createdCommunity = new Community({
+      name: "farouqfans",
+      is18plus: "true",
+      communityType: "Public",
+      creator: user,
+      moderators: [user],
+    });
+    await createdCommunity.save();
+
+    await request(app).post("/community/add-to-favourites").set("Authorization", `Bearer ${token}`).send({
+      communityName: "farouqfans",
+    });
+    const response = await request(app)
+      .post("/community/remove-favourite")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      })
+      .expect(200);
+    expect(response.body.message).toBe("Community removed from favorites successfully");
+  });
+
+  test("It should return 'Invalid parameters' for status 400", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+
+    const response = await request(app)
+      .post("/community/remove-favourite")
+      .set("Authorization", `Bearer ${token}`)
+      .send({})
+      .expect(400);
+
+    expect(response.body.message).toBe("Invalid parameters");
+  });
+
+  test("It should return 'Community not found' for status 404", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+
+    const response = await request(app)
+      .post("/community/remove-favourite")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "hello",
+      })
+      .expect(404);
+
+    expect(response.body.message).toBe("Community not found");
+  });
+
+  test("It should return 'Community is not in favorites' for status 402", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+
+    const decodedToken = jwt.jwtDecode(token);
+    const user = await User.findById(decodedToken._id);
+    const createdCommunity = new Community({
+      name: "farouqfans",
+      is18plus: "true",
+      communityType: "Public",
+      creator: user,
+      moderators: [user],
+    });
+    await createdCommunity.save();
+
+    const response = await request(app)
+      .post("/community/remove-favourite")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      })
+      .expect(402);
+
+    expect(response.body.message).toBe("Community is not in favorites");
+  });
+});
+/*
 describe("Checking if community is favorite", () => {
-  test("It should check if community is favorite", async () => {});
-});
+  test("It should return true if community is favourite", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
 
+    const decodedToken = jwt.jwtDecode(token);
+    const user = await User.findById(decodedToken._id);
+    const createdCommunity = new Community({
+      name: "farouqfans",
+      is18plus: "true",
+      communityType: "Public",
+      creator: user,
+      moderators: [user],
+    });
+    await createdCommunity.save();
+    await request(app).post("/community/add-to-favourites").set("Authorization", `Bearer ${token}`).send({
+      communityName: createdCommunity.name,
+    });
+    const response = await request(app)
+      .get("/community/is-favourite")
+      .set("Authorization", `Bearer ${token}`)
+      .query({ communityName: "" });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("Invalid parameters");
+  });
+
+  test("It should return false if community is not favorite", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+
+    const decodedToken = jwt.jwtDecode(token);
+    const user = await User.findById(decodedToken._id);
+    const createdCommunity = new Community({
+      name: "farouqfans",
+      is18plus: "true",
+      communityType: "Public",
+      creator: user,
+      moderators: [user],
+    });
+    await createdCommunity.save();
+
+    const response = await request(app)
+      .get("/community/is-favourite")
+      .set("Authorization", `Bearer ${token}`)
+      .query({ communityName: "farouqfans" })
+      .expect(200);
+
+    expect(response.body.isFavourite).toBe(false);
+  });
+
+  test("It should return 'Invalid parameters' for status 400", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+
+    const response = await request(app)
+      .get("/community/is-favourite")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(400);
+
+    expect(response.body.message).toBe("Invalid parameters");
+  });
+
+  test("It should return 'Community not found' for status 404", async () => {
+    await request(app).post("/signup").send({
+      email: "farouqdiaa@gmail.com",
+      username: "farouquser",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "farouquser",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+
+    const response = await request(app)
+      .get("/community/is-favourite")
+      .set("Authorization", `Bearer ${token}`)
+      .query({ communityName: "hello" })
+      .expect(404);
+
+    expect(response.body.message).toBe("Community not found");
+  });
+});
+*/
 describe("Muting community", () => {
   test("It should mute community", async () => {});
 });
@@ -415,10 +758,11 @@ describe("Muting community", () => {
 describe("Unmuting community", () => {
   test("It should unmute community", async () => {});
 });
-
+/*
 describe("Checking if community is muted", () => {
   test("It should check if community is muted", async () => {});
 });
+*/
 
 describe("Subscribing to community", () => {
   test("It should subscribe to community", async () => {});
@@ -427,11 +771,11 @@ describe("Subscribing to community", () => {
 describe("Unsubscribing from community", () => {
   test("It should unsubscribe from community", async () => {});
 });
-
+/*
 describe("Checking if user is subscribed to community", () => {
   test("It should check if user is subscribed to community", async () => {});
 });
-
+*/
 describe("Getting top communities", () => {
   test("It should get top communities", async () => {});
 });
