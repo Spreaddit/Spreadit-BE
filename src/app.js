@@ -69,9 +69,10 @@ mongoose
     for (const seeder of seeders){
       const shouldRun = await seeder.shouldRun();
       if (shouldRun) {
-        console.log(`Running ${seeder.constructor.name} Seeder...`); // Use backticks instead of single quotes
+        console.log(`Running ${seeder.constructor.name} Seeder...`);
         await seeder.run();
-        console.log(`${seeder.constructor.name} Seeder executed successfully`); // Use backticks instead of single quotes
+        console.log(`${seeder.constructor.name} Seeder executed successfully`);
+
       } else {
         console.log(`${seeder.constructor.name} Seeder already executed, skipping...`); // Use backticks instead of single quotes
       }
