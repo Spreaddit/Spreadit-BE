@@ -8,18 +8,21 @@ const auth = require("../middleware/authentication");
 router.route('/')
     .post(auth.authentication, upload.array('images'), postController.createPost);
 
-router.route('/:username')
-    .get(auth.authentication, postController.getAllUserPosts)
 
-router.route("/:postId").delete(auth.authentication, postController.deletePost);
+
+router.route("/:postId")
+    .delete(auth.authentication, postController.deletePost);
 
 router.route('/community/:community')
     .get(auth.authentication, postController.getAllPostsInCommunity)
 
+router.route("/save")
+    .get(auth.authentication, postController.getSavedPosts);
+
+
+
 router.route('/:postId/save')
     .post(auth.authentication, postController.savePost);
-
-router.route("/save").get(auth.authentication, postController.getSavedPosts);
 
 router.route('/:postId/unsave')
     .post(auth.authentication, postController.unsavePost);
@@ -73,5 +76,8 @@ router.route('/:postId/poll/vote')
 
 router.route("/:postId")
     .get(auth.authentication, postController.getPostById);
+
+router.route('/:username')
+    .get(auth.authentication, postController.getAllUserPosts)
 
 module.exports = router;
