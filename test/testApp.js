@@ -6,6 +6,7 @@ const userActionRoutes = require("../src/routes/user-action");
 const postRoutes = require("../src/routes/post");
 const commentRoutes = require("../src/routes/comment");
 const communityRoutes = require("../src/routes/community");
+const listingRoutes = require("../src/routes/listing");
 
 app.use(express.json());
 //app.use(userRoutes);
@@ -15,6 +16,7 @@ app.use(commentRoutes);
 //app.use(settingsRoutes);
 app.use(postRoutes);
 app.use(communityRoutes);
+app.use(listingRoutes);
 //app.use(accountSetting);
 //app.use(settingsRoutes);
 module.exports = app;

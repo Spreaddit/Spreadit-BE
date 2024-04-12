@@ -65,11 +65,6 @@ exports.isFollowed = async (req, res) => {
       console.error("this user not found:");
       return res.status(404).json({ error: "User not found" });
     }
-    const followerUser = await FollowUser.findByIdAndUpdate(
-      followerID, // User being followed
-      { $addToSet: { followings: toFollowID } }, // Add follower's ID to the followers array, using $addToSet to ensure uniqueness
-      { new: true } // To return the updated document after the update operation
-    );
     const isFollowed = user.followers.includes(followerID);
     res.status(200).json({ isFollowed: isFollowed });
   } catch (err) {
