@@ -133,13 +133,13 @@ router.get("/posts/comment/:postId", auth.authentication, async (req, res) => {
 router.get("/comments/user/:username", auth.authentication, async (req, res) => {
     try {
         const username = req.params.username;
-        const user = User.getUserByEmailOrUsername(username);
+        const user = await User.getUserByEmailOrUsername(username);
         const userId= user._id;
         const comments = await Comment.find({ userId }).populate({
             path: "userId",
         });
 
-        //console.log("Comments:", comments);
+        console.log("Comments:", comments);
 
         if (!comments || comments.length === 0) {
             return res.status(404).send({ 

@@ -77,7 +77,7 @@ router.route('/:postId/poll/vote')
 router.route("/:postId")
     .get(auth.authentication, postController.getPostById);
 
-router.route('/:username')
+router.route('/username/:username')
     .get(auth.authentication, postController.getAllUserPosts)
 
 module.exports = router;
