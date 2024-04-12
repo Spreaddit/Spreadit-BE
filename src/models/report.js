@@ -24,7 +24,7 @@ const ReportSchema = new Schema(
         maxLength: 200,
 
     },
-    sureason: {
+    subreason: {
         type: String,
         trim: true,
         maxLength: 200,
@@ -35,6 +35,6 @@ const ReportSchema = new Schema(
   }
 );
 
-const Like = mongoose.model("report", ReportSchema);
+const Report = mongoose.model("report", ReportSchema);
 
-module.exports = Like;
+module.exports = Report;
