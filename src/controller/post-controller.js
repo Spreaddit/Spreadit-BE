@@ -2,6 +2,8 @@ const Post = require("../models/post");
 const User = require("../models/user");
 const Report = require("../models/report.js");
 const Community = require("../models/community.js");
+const mongoose = require('mongoose');
+
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -252,11 +254,18 @@ exports.savePost = async (req, res) => {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
         }
 
-        const post = await Post.findById(postId);
+        let post;
+        try {
+            post = await Post.findById(postId);
+        } catch (err) {
+            if (err instanceof mongoose.CastError) {
+                return res.status(404).json({ error: 'Post not found' });
+            }
+            throw err;
+        }
         if (!post) {
             return res.status(404).json({ error: 'Post not found' });
         }
-
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
@@ -278,7 +287,6 @@ exports.savePost = async (req, res) => {
 exports.getSavedPosts = async (req, res) => {
     try {
         const userId = req.user._id;
-
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
@@ -292,7 +300,17 @@ exports.getSavedPosts = async (req, res) => {
             return res.status(404).json({ error: 'Saved posts not found' });
         }
 
-        res.status(200).json(savedPosts);
+        const visiblePosts = savedPosts.filter(post => !post.hiddenBy.includes(userId));
+        for (let post of visiblePosts) {
+            post.numberOfViews++;
+            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            post.votesUpCount = upVotesCount;
+            post.votesDownCount = downVotesCount;
+            post.isSaved = savedPostIds.includes(post._id.toString());
+            await post.save();
+        }
+        res.status(200).json(visiblePosts);
     } catch (err) {
         console.error('Error fetching saved posts:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -306,8 +324,15 @@ exports.unsavePost = async (req, res) => {
         if (!postId || !userId) {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
         }
-
-        const post = await Post.findById(postId);
+        let post;
+        try {
+            post = await Post.findById(postId);
+        } catch (err) {
+            if (err instanceof mongoose.CastError) {
+                return res.status(404).json({ error: 'Post not found' });
+            }
+            throw err;
+        }
         if (!post) {
             return res.status(404).json({ error: 'Post not found' });
         }
@@ -355,7 +380,6 @@ exports.editPost = async (req, res) => {
         if (type === 'Post' && (!postContent || postContent.length === 0)) {
             return res.status(400).json({ error: 'only posts with content can be editited' });
         }
-        console.log(content);
         if (content)
             post.content.push(content);
 
@@ -533,8 +557,22 @@ exports.getUpvotedPosts = async (req, res) => {
         if (!posts || posts.length === 0) {
             return res.status(404).json({ error: 'Posts not found' });
         }
-
-        res.status(200).json(posts);
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
+        const savedPostIds = user.savedPosts || [];
+        for (let post of visiblePosts) {
+            post.numberOfViews++;
+            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            post.votesUpCount = upVotesCount;
+            post.votesDownCount = downVotesCount;
+            post.isSaved = savedPostIds.includes(post._id.toString());
+            await post.save();
+        }
+        res.status(200).json(visiblePosts);
     } catch (err) {
         console.error('Error fetching upvoted posts:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -550,8 +588,22 @@ exports.getDownvotedPosts = async (req, res) => {
         if (!posts || posts.length === 0) {
             return res.status(404).json({ error: 'Posts not found' });
         }
-
-        res.status(200).json(posts);
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
+        const savedPostIds = user.savedPosts || [];
+        for (let post of visiblePosts) {
+            post.numberOfViews++;
+            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            post.votesUpCount = upVotesCount;
+            post.votesDownCount = downVotesCount;
+            post.isSaved = savedPostIds.includes(post._id.toString());
+            await post.save();
+        }
+        res.status(200).json(visiblePosts);
     } catch (err) {
         console.error('Error fetching downvoted posts:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -638,12 +690,26 @@ exports.getHiddenPosts = async (req, res) => {
         if (!user || !user.hiddenPosts || user.hiddenPosts.length === 0) {
             return res.status(404).json({ message: 'No hidden posts found' });
         }
-        return res.status(200).json(user.hiddenPosts);
+
+        const hiddenPosts = user.hiddenPosts;
+        const savedPostIds = user.savedPosts || [];
+        for (let post of hiddenPosts) {
+            post.numberOfViews++;
+            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            post.votesUpCount = upVotesCount;
+            post.votesDownCount = downVotesCount;
+            post.isSaved = savedPostIds.includes(post._id.toString());
+            await post.save();
+        }
+        res.status(200).json(hiddenPosts);
     } catch (error) {
         console.error('Error fetching hidden posts:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+
 
 exports.markPostAsNsfw = async (req, res) => {
     try {
