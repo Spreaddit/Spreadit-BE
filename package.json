@@ -31,7 +31,8 @@
     "passport-google-oauth2": "^0.2.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
-    "test": "^3.3.0"
+    "test": "^3.3.0",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "jest": "^29.7.0",

@@ -74,10 +74,11 @@ router.route('/:postId/report')
 router.route('/:postId/poll/vote')
     .post(auth.authentication, postController.voteInPoll);
 
-router.route("/:postId")
-    .get(auth.authentication, postController.getPostById);
 
 router.route('/:username')
     .get(auth.authentication, postController.getAllUserPosts)
+
+router.route("/:postId/one")
+    .get(auth.authentication, postController.getPostById);
 
 module.exports = router;
