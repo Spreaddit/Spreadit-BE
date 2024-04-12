@@ -395,3 +395,59 @@ describe("Removing a rule", () => {
     expect(response.body.message).toBe("Rule not found");
   });
 });
+
+describe("Adding community to favorites", () => {
+  test("It should add community to favorites", async () => {});
+});
+
+describe("Removing community from favorites", () => {
+  test("It should remove community from favorites", async () => {});
+});
+
+describe("Checking if community is favorite", () => {
+  test("It should check if community is favorite", async () => {});
+});
+
+describe("Muting community", () => {
+  test("It should mute community", async () => {});
+});
+
+describe("Unmuting community", () => {
+  test("It should unmute community", async () => {});
+});
+
+describe("Checking if community is muted", () => {
+  test("It should check if community is muted", async () => {});
+});
+
+describe("Subscribing to community", () => {
+  test("It should subscribe to community", async () => {});
+});
+
+describe("Unsubscribing from community", () => {
+  test("It should unsubscribe from community", async () => {});
+});
+
+describe("Checking if user is subscribed to community", () => {
+  test("It should check if user is subscribed to community", async () => {});
+});
+
+describe("Getting top communities", () => {
+  test("It should get top communities", async () => {});
+});
+
+describe("Getting random category", () => {
+  test("It should get random category", async () => {});
+});
+
+describe("Getting specific category", () => {
+  test("It should get specific category", async () => {});
+});
+
+describe("Getting community info", () => {
+  test("It should get community info", async () => {});
+});
+
+describe("Creating a community", () => {
+  test("It should create a community", async () => {});
+});
