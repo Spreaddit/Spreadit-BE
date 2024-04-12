@@ -21,6 +21,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await User.deleteMany({});
+  await Post.deleteMany({});
 }, 10000);
 
 afterAll(() => {
@@ -204,7 +205,7 @@ describe("sort post by number of comments", () => {
   });
 });
 
-describe("sort post by best", () => {
+describe("sort post by ", () => {
   test("It should sort by best", async () => {
     await request(app).post("/signup").send({
       email: "mahmoudaly@gmail.com",
@@ -235,6 +236,37 @@ describe("sort post by best", () => {
       .set("Authorization", `Bearer ${token}`)
       .expect(200);
   });
+
+  // test("It should sort by hot", async () => {
+  //   await request(app).post("/signup").send({
+  //     email: "mahmoudaly@gmail.com",
+  //     username: "mahmoud12",
+  //     password: "12345678",
+  //   });
+  //   const logIn = await request(app).post("/login").send({
+  //     username: "mahmoud12",
+  //     password: "12345678",
+  //   });
+  //   const token = logIn.body.access_token;
+  //   await User.findOneAndUpdate(
+  //     { username: "mahmoud12" },
+  //     { isVerified: true }
+  //   );
+  //   const newpost = new Post({
+  //     userId: "jjhgd666",
+  //     username: "mahmoud",
+  //     title: "Test ",
+  //     content: "",
+  //     community: "mahmoud556",
+  //     type: "Post",
+  //     date: "2024-04-03T14:16:22.534+00:00",
+  //   });
+  //   await newpost.save();
+  //   await request(app)
+  //     .get("/home/api/top")
+  //     .set("Authorization", `Bearer ${token}`)
+  //     .expect(200);
+  // });
 });
 
 describe("sort post by  hot in supspreadit", () => {
@@ -303,7 +335,7 @@ describe("sort post by new in community", () => {
   });
 });
 
-describe("sort post by new in community", () => {
+describe("return unauthorized user ", () => {
   test("It should sort by best", async () => {
     await request(app).post("/signup").send({
       email: "mahmoudaly@gmail.com",
@@ -333,6 +365,70 @@ describe("sort post by new in community", () => {
   });
 });
 
+describe("sort post by new in community best if no posts found", () => {
+  test("It should return 404 if no posts found", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/subspreadit/mahmoud556/new")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
+
+  test("It should return 404 if no posts found in hot in community", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/subspreadit/mahmoud556/hot")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
+
+  test("It should return 404 if no posts found in top in community", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/subspreadit/mahmoud556/top")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
+});
 // describe("get posts sorted by date in community", () => {
 //   test("It should return 404 if no posts found", async () => {
 //     await request(app).get("/subspreadit/amira/new").expect(404);
