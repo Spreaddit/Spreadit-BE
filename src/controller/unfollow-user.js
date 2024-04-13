@@ -17,6 +17,11 @@ exports.unfollowUser = async (req, res) => {
     const toUnfollowID = user._id;
 
     const unfollowerID = req.user._id;
+
+    if (toUnfollowID.equals(unfollowerID)) {
+      console.log("user cannot unfollow himself");
+      return res.status(400).json({ error: "user cannot unfollow himself" });
+    }
     if (!toUnfollowID || !unfollowerID) {
       console.error("this user not found:");
       return res.status(404).json({ error: "User not found" });
