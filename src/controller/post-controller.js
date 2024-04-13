@@ -72,6 +72,7 @@ exports.getPostById = async (req, res) => {
         const postInfo = {
             _id: post._id,
             userId: userId,
+            username: user.username,
             userProfilePic: user.userProfilePic,
             hasUpvoted: hasUpvoted,
             hasDownvoted: hasDownvoted,
@@ -149,6 +150,7 @@ exports.getAllUserPosts = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
@@ -349,6 +351,7 @@ exports.getAllPostsInCommunity = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
@@ -467,6 +470,7 @@ exports.getSavedPosts = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
@@ -777,6 +781,7 @@ exports.getUpvotedPosts = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
@@ -855,6 +860,7 @@ exports.getDownvotedPosts = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
@@ -1020,6 +1026,7 @@ exports.getHiddenPosts = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
