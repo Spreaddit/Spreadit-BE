@@ -22,7 +22,7 @@ exports.modifyAccountSettings = async (req, res) => {
     try {
         const userId = req.user._id;
         const modifyAccountSettings = req.body;
-        if (!isValidEmail(modifyAccountSettings.email)) {
+        if (modifyAccountSettings.email && !isValidEmail(modifyAccountSettings.email)) {
             return res.status(403).json({ error: 'Invalid email format' });
         }
         const accountSetting = await User.findOne({ _id: userId });
