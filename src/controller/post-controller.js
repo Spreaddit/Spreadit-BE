@@ -205,7 +205,7 @@ exports.createPost = async (req, res) => {
         let attachments = [];
         if (req.files) {
             for (let i = 0; i < req.files.length; i++) {
-                const result = await uploadMedia(req.files[i]);
+                const result = await uploadMedia(req.files[i], fileType);
                 //const url = `${config.baseUrl}/media/${result.Key}`;
                 const url = result.secure_url;
                 const attachmentObj = { type: fileType, link: url };
