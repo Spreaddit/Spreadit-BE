@@ -320,7 +320,7 @@ router.get("/comments/:commentId/replies", auth.authentication, async (req, res)
             });
         }
 
-        const replies = await Comment.getCommentReplies(comment, userId);
+        const replies = await Comment.getCommentRepliesss(comment, userId);
 
         res.status(200).send({
             replies,

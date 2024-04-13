@@ -28,11 +28,13 @@ const CommunitySchema = new Schema({
     type: String,
     format: "url",
     description: "Link to the banner of the community",
+    default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713046574/uploads/WhatsApp_Image_2024-04-13_at_5.22.35_PM_f0yaln.jpg",
   },
   image: {
     type: String,
     format: "url",
     description: "Link to the image of the community",
+    default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
   },
   description: {
     type: String,

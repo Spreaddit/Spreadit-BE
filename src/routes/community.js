@@ -301,7 +301,7 @@ router.post("/community/subscribe", auth.authentication, async (req, res) => {
     user.subscribedCommunities.push(community._id);
     await user.save();
     community.membersCount += 1;
-    communtiy.members.push(user._id);
+    community.members.push(user._id);
     await community.save();
     res.status(200).json({ message: "Subscribed to the community successfully" });
   } catch (error) {
