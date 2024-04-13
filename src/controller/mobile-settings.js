@@ -8,12 +8,7 @@ function isValidEmail(email) {
 
 exports.getAccountSettings = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const accountSettings = await User.findOne({ _id: userId }).select('email gender country connectedAccounts');
         res.status(200).json(accountSettings);
     } catch (err) {
@@ -25,13 +20,7 @@ exports.getAccountSettings = async (req, res) => {
 
 exports.modifyAccountSettings = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
-
+        const userId = req.user._id;
         const modifyAccountSettings = req.body;
         if (!isValidEmail(modifyAccountSettings.email)) {
             return res.status(403).json({ error: 'Invalid email format' });
@@ -50,12 +39,7 @@ exports.modifyAccountSettings = async (req, res) => {
 
 exports.deleteAccount = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
 
         await User.deleteOne({ _id: userId });
 
@@ -69,12 +53,7 @@ exports.deleteAccount = async (req, res) => {
 
 exports.getBlockingSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const blockingSetting = await User.findOne({ _id: userId }).select('blockedAccounts allowFollow');
         res.status(200).json(blockingSetting);
     } catch (err) {
@@ -84,12 +63,7 @@ exports.getBlockingSetting = async (req, res) => {
 
 exports.modifyBlockingSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
 
         const modifyBlockingSetting = req.body;
         const blockingSetting = await User.findOne({ _id: userId });
@@ -107,12 +81,7 @@ exports.modifyBlockingSetting = async (req, res) => {
 
 exports.getContactSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
+        const userId = req.user._id;
         const contactSetting = await User.findOne({ _id: userId }).select('inboxMessages chatMessages chatRequests mentions commentsOnYourPost commentsYouFollow upvotes repliesToComments newFollowers cakeDay modNotifications');
         res.status(200).json(contactSetting);
     } catch (err) {
@@ -122,13 +91,7 @@ exports.getContactSetting = async (req, res) => {
 
 exports.modifyContactSetting = async (req, res) => {
     try {
-        const token = req.body.token;
-        if (!token) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-        const decodeToken = jwt.decode(token);
-        const userId = decodeToken._id;
-
+        const userId = req.user._id;
         const modifyContactSetting = req.body;
         const contactSetting = await User.findOne({ _id: userId });
         Object.assign(contactSetting, modifyContactSetting);

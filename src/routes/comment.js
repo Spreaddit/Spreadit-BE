@@ -81,7 +81,12 @@ router.delete("/posts/comment/delete/:commentId", auth.authentication, async (re
       }
       
   
-      await Comment.deleteMany({ parentId: req.body.id });
+      await Comment.deleteMany({ parentCommentId: req.params.commentId });
+      const post = await Post.findOneAndUpdate(
+        { _id: comment.postId },
+        { $inc: { commentsCount: -1 } }, 
+        { new: true }
+        );
   
       const commentObj = await Comment.getCommentObject(comment, userId);
   
@@ -99,9 +104,17 @@ router.delete("/posts/comment/delete/:commentId", auth.authentication, async (re
 router.get("/posts/comment/:postId", auth.authentication, async (req, res) => {
     try {
         const postId = req.params.postId;
-        const comments = await Comment.find({postId}).populate({
-        path: "userId",
-        });
+        let comments;
+        if (postId){
+            comments = await Comment.find({postId}).populate({
+                path: "userId",
+            });
+        } else {
+            comments = await Comment.find().populate({
+                path: "userId",
+            });
+        }
+        
         //console.log("Comments:", comments);
   
       if (!comments || comments.length === 0) {
@@ -111,10 +124,13 @@ router.get("/posts/comment/:postId", auth.authentication, async (req, res) => {
       }
 
       const commentObjects =[];
+      console.log(req.query.include_replies)
       for(const comment of comments){
-        const commentObject = await Comment.getCommentObject(comment, req.user._id);
+        ///console.log(req.user._id);
+        const commentObject = await Comment.getCommentObject(comment, req.user._id, true);
             if (req.query.include_replies === "true") {
-                const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user._id);
+                //console.log(req.user._id);
+                const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user._id, true);
                 commentObject.replies = commentWithReplies.replies;
             }
         commentObjects.push(commentObject);
@@ -133,7 +149,7 @@ router.get("/posts/comment/:postId", auth.authentication, async (req, res) => {
 router.get("/comments/user/:username", auth.authentication, async (req, res) => {
     try {
         const username = req.params.username;
-        const user = User.getUserByEmailOrUsername(username);
+        const user = await User.getUserByEmailOrUsername(username);
         const userId= user._id;
         const comments = await Comment.find({ userId }).populate({
             path: "userId",
@@ -149,11 +165,8 @@ router.get("/comments/user/:username", auth.authentication, async (req, res) => 
 
         const commentObjects = [];
         for (const comment of comments) {
-            const commentObject = await Comment.getCommentObject(comment,  req.user._id);
-            if (req.query.include_replies === "true") {
-                const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
-                commentObject.replies = commentWithReplies.replies;
-            }
+            const commentObject = await Comment.getCommentObject(comment, req.user._id);
+            console.log(commentObject);
             commentObjects.push(commentObject);
         }
 
@@ -186,7 +199,7 @@ router.get("/comments/saved/user", auth.authentication, async (req, res) => {
 
         const commentObjects = [];
         for (const comment of savedComments) {
-            const commentObject = await Comment.getCommentObject(comment,  req.user._id, false);
+            const commentObject = await Comment.getCommentObject(comment,  req.user._id, true);
             if (req.query.include_replies === "true") {
                 const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
                 commentObject.replies = commentWithReplies.replies;
@@ -265,7 +278,6 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
         const newReply = new Comment({
             content,
             userId,
-            postId: existingComment.postId,
             parentCommentId,
         });
 

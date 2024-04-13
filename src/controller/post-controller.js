@@ -1,4 +1,5 @@
 const Post = require("../models/post");
+const Comment = require("../models/comment.js");
 const User = require("../models/user");
 const Report = require("../models/report.js");
 const Community = require("../models/community.js");
@@ -66,7 +67,6 @@ exports.getAllUserPosts = async (req, res) => {
         const username = req.params.username;
 
         const user = await User.findOne({ username });
-
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -151,11 +151,17 @@ exports.createPost = async (req, res) => {
                 return res.status(400).json({ error: ' poll options, and pollVotingLength are required for poll posts' });
             }
         }
-
-
-        if (!user.communities.includes(community)) {
+        const communityObject = await Community.findOne({ name: community });
+        if (!communityObject) {
             return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
         }
+        const communityObjectID = communityObject._id;
+        if (!user.subscribedCommunities.some(id => id.equals(communityObjectID)) && user.username != community) {
+            return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
+        }
+        /*         if (!user.communities.includes(community)) {
+                    return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
+                } */
         if (type != 'Post' && type != 'Images & Video' && type != 'Link' && type != 'Poll') {
             return res.status(400).json({ error: 'Invalid post data. Please provide real post type' });
         }
@@ -618,13 +624,33 @@ exports.deletePost = async (req, res) => {
         if (!post) {
             return res.status(404).json({ error: 'Post not found' });
         }
-
+        await deleteComments(postId);
         res.status(200).json({ message: 'Post deleted successfully' });
     } catch (err) {
         console.error('Error deleting post:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+async function deleteComments(postId) {
+    const comments = await Comment.find({ postId });
+    await Comment.deleteMany({ postId });
+    for (const comment of comments) {
+        await deleteReplies(comment._id);
+    }
+}
+
+async function deleteReplies(commentId) {
+    const replies = await Comment.find({ parentCommentId: commentId });
+    if (replies.length === 0) {
+        return;
+    }
+    await Comment.deleteMany({ parentCommentId: commentId });
+    for (const reply of replies) {
+        await deleteReplies(reply._id);
+    }
+}
+
 
 exports.hidePost = async (req, res) => {
     try {

@@ -21,7 +21,7 @@ router.use(cookieParser("spreaditsecret"));
 router.post("/signup", async (req, res) => {
   try {
     const user = new User(req.body);
-    const userAvatar = "https://drive.google.com/file/d/1130pQbYOHFVRl8Y381KoneRzpKoGUvzl/view?usp=sharing";
+    const userAvatar = "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png";
     user.avatar = userAvatar;
     if (!(await User.checkExistence(user.email, user.username))) {
       const savedUser = await user.save();
@@ -142,7 +142,10 @@ router.post("/google/oauth", verifyGoogleToken, async (req, res) => {
         connectedAccounts: [userData.email],
         name: userData.name,
         username: newUsername,
+        isVerified: true,
       });
+      const userAvatar = "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png";
+      newUser.avatar = userAvatar;
 
       const savedUser = await newUser.save();
       const token = await savedUser.generateToken();

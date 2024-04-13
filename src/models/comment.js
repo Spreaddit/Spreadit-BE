@@ -19,7 +19,7 @@ const CommentSchema = new Schema(
         },
         postId: {
             type: Schema.Types.ObjectId,
-            required: true,
+            required: false,
             ref: "post",
         },
         parentCommentId: {
@@ -91,26 +91,49 @@ CommentSchema.statics.getCommentObject = async function (
     const repliesCount = await Comment.countDocuments({
         parentCommentId: comment._id,
     });
-    console.log(userid);
+    //console.log(userid);
     let userObject = {};
     
     if (withUserInfo) {
       const User = mongoose.model("user");
       if(userid === comment.userId ){
       const user = await User.findOne({ _id: comment.userId });
-      console.log(user);
+      //console.log(user);
       userObject = await User.generateUserObject(user, userid);
+      //console.log(userObject);
       }
       else{
-        userObject = await User.generateUserObject(comment.userId, userid);
+        const user = await User.findOne({ _id: comment.userId });
+        userObject = await User.generateUserObject(user, userid);
+
       }
     }
     const Post = mongoose.model("post");
     const isHidden = comment.hiddenBy.includes(userid);
     const isSaved = comment.savedBy.includes(userid);
-    const post = await Post.findOne({ _id: comment.postId });
-    const postTitle = post.title;
-    const subredditTitle = post.community;
+    const isUpvoted = comment.upVotes.includes(userid);
+    const isDownVoted = comment.downVotes.includes(userid);
+    let postTitle; 
+    let subredditTitle;
+    if(comment.parentCommentId === null){
+        const post = await Post.findOne({ _id: comment.postId });
+        if (post) {
+            postTitle = post.title;
+            subredditTitle = post.community;
+        }
+    }
+    else {
+        let parentComment = comment;
+        while (parentComment.parentCommentId !== null) {
+            parentComment = await Comment.findById(parentComment.parentCommentId);
+        }
+        const post = await Post.findOne({ _id: parentComment.postId });
+        if (post) {
+            postTitle = post.title;
+            subredditTitle = post.community;
+        }     
+    }
+
 
     const commentInfo = {
       id: comment._id,
@@ -125,23 +148,33 @@ CommentSchema.statics.getCommentObject = async function (
       is_saved: isSaved,
       post_title: postTitle,
       community_title: subredditTitle,
+      is_upvoted: isUpvoted,
+      is_downvoted: isDownVoted,
+      replies: [],
     };
+    
     return commentInfo;
 };
 
 
 CommentSchema.statics.getCommentReplies = async function (comment, userId) {
-    const replyComment = await Comment.find({
+    const replyComments = await Comment.find({
         parentCommentId: comment.id,
     });
-    comment.replies = [];
-    for (let i = 0; i < replyComment.length; i++) {
-      const commentReply = replyComment[i];
-      const commentObject = await Comment.getCommentObject(commentReply, userId);
-      comment.replies.push(commentObject);
+    //console.log(replyComments);
+    //comment.replies = [];
+
+    for (let i = 0; i < replyComments.length; i++) {
+        const reply = replyComments[i];
+        const replyObject = await Comment.getCommentObject(reply, userId, true);
+        const nestedReplies = await Comment.getCommentReplies(replyObject, userId);
+        replyObject.replies = nestedReplies.replies;
+        comment.replies.push(replyObject);
     }
+    //console.log(comment);
     return comment;
 };
+
 
 
 const Comment = mongoose.model("comment", CommentSchema);

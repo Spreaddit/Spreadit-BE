@@ -12,7 +12,7 @@ const uploadRoutes = require("./routes/upload-test");
 const settingsRoutes = require("./routes/settings");
 const mobileSettingsRoutes = require("./routes/mobile-settings");
 const communityRoutes = require("./routes/community");
-
+const commentRoutes = require("./routes/comment");
 const listingRoutes = require("./routes/listing");
 
 //seeding
@@ -49,6 +49,7 @@ app.use("/posts", postsRoutes);
 app.use("/", uploadRoutes);
 app.use("/", listingRoutes);
 app.use(communityRoutes);
+app.use(commentRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
