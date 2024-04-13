@@ -62,10 +62,10 @@ router.route('/:postId/unhide')
 
 router.route("/hide").get(auth.authentication, postController.getHiddenPosts);
 
-router.route('/:postId/nfsw')
+router.route('/:postId/nsfw')
     .post(auth.authentication, postController.markPostAsNsfw);
 
-router.route('/:postId/unnfsw')
+router.route('/:postId/unnsfw')
     .post(auth.authentication, postController.markPostAsNotNsfw);
 
 router.route('/:postId/report')
@@ -78,7 +78,7 @@ router.route('/:postId/poll/vote')
 router.route('/username/:username')
     .get(auth.authentication, postController.getAllUserPosts)
 
-router.route("/:postId/one")
+router.route("/:postId")
     .get(auth.authentication, postController.getPostById);
 
 module.exports = router;

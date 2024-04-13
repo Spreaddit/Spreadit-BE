@@ -259,6 +259,21 @@ const UserSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    commentsOnYourPost: {
+      type: Boolean,
+      default: true,
+    },
+    commentsYouFollow: {
+      type: Boolean,
+      default: true,
+    },
+    upvotes: {
+      type: Boolean,
+      default: true,
+    },
+    selectedPollOption: {
+      type: String,
+    },
     communities: {
       type: [String],
       default: function () {
@@ -448,6 +463,11 @@ UserSchema.statics.generateUserObject = async function (user) {
       subscribedCommunities: user.subscribedCommunities,
       favouriteCommunities: user.favouriteCommunities,
       socialLinks: user.socialLinks,
+      //commentsOnYourPost commentsYouFollow upvotes selectedPollOption
+      commentsOnYourPost: user.commentsOnYourPost,
+      commentsYouFollow: user.commentsYouFollow,
+      upvotes: user.upvotes,
+      selectedPollOption: user.selectedPollOption,
     };
 
     return userObj;
