@@ -273,6 +273,7 @@ const UserSchema = new Schema(
     },
     selectedPollOption: {
       type: String,
+      default: "",
     },
     communities: {
       type: [String],
@@ -463,7 +464,6 @@ UserSchema.statics.generateUserObject = async function (user) {
       subscribedCommunities: user.subscribedCommunities,
       favouriteCommunities: user.favouriteCommunities,
       socialLinks: user.socialLinks,
-      //commentsOnYourPost commentsYouFollow upvotes selectedPollOption
       commentsOnYourPost: user.commentsOnYourPost,
       commentsYouFollow: user.commentsYouFollow,
       upvotes: user.upvotes,

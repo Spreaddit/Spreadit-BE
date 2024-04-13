@@ -52,10 +52,10 @@ exports.getPostById = async (req, res) => {
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
@@ -74,7 +74,7 @@ exports.getPostById = async (req, res) => {
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
+                selectedPollOption: userSelectedOption,
                 upVotes: post.upVotes,
                 downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
@@ -131,10 +131,10 @@ exports.getAllUserPosts = async (req, res) => {
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
@@ -154,7 +154,7 @@ exports.getAllUserPosts = async (req, res) => {
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
+                selectedPollOption: userSelectedOption,
                 upVotes: post.upVotes,
                 downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
@@ -333,10 +333,11 @@ exports.getAllPostsInCommunity = async (req, res) => {
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    console.log(req.user.selectedPollOption);
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
@@ -356,7 +357,7 @@ exports.getAllPostsInCommunity = async (req, res) => {
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
+                selectedPollOption: userSelectedOption,
                 upVotes: post.upVotes,
                 downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
@@ -453,10 +454,10 @@ exports.getSavedPosts = async (req, res) => {
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
@@ -476,7 +477,7 @@ exports.getSavedPosts = async (req, res) => {
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
+                selectedPollOption: userSelectedOption,
                 upVotes: post.upVotes,
                 downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
@@ -764,15 +765,16 @@ exports.getUpvotedPosts = async (req, res) => {
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
                 }
             }
+
 
 
             //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
@@ -788,7 +790,7 @@ exports.getUpvotedPosts = async (req, res) => {
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
+                selectedPollOption: userSelectedOption,
                 upVotes: post.upVotes,
                 downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
@@ -845,15 +847,16 @@ exports.getDownvotedPosts = async (req, res) => {
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
                 }
             }
+
 
             //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
             //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
@@ -868,7 +871,7 @@ exports.getDownvotedPosts = async (req, res) => {
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
+                selectedPollOption: userSelectedOption,
                 upVotes: post.upVotes,
                 downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
@@ -1013,16 +1016,15 @@ exports.getHiddenPosts = async (req, res) => {
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
                 }
             }
-
 
             //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
             //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
@@ -1037,7 +1039,7 @@ exports.getHiddenPosts = async (req, res) => {
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
+                selectedPollOption: userSelectedOption,
                 upVotes: post.upVotes,
                 downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
@@ -1176,6 +1178,7 @@ exports.voteInPoll = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
         user.selectedPollOption = selectedOption;
+        await user.save();
         await post.save();
 
         return res.status(200).json({ message: 'Vote cast successfully' });
