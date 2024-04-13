@@ -300,11 +300,11 @@
  */
 
 /**
- * @api {get} /user-info Get User Information
+ * @api {get} /reset-password/user-info Get User Information to reset password
  * @apiVersion 0.1.0
- * @apiName GetUserInfo
+ * @apiName GetUserInfoToResetPassword
  * @apiGroup User
- * @apiDescription Retrieves basic information about the logged-in user.
+ * @apiDescription Retrieves basic information about the logged-in user so that he resets his password
  * @apiSampleRequest off
  * 
  * @apiHeader {String} token User authentication token.
