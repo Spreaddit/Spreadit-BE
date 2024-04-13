@@ -505,20 +505,35 @@ router.post("/comments/:commentId/save", auth.authentication, async (req, res) =
                 message: "User not found" 
             });
         }
-        if (user.savedComments.includes(commentId)) {
+        const isSaved = user.savedComments.includes(commentId);
+        
+        if (isSaved) {
             const index = user.savedComments.indexOf(commentId);
             user.savedComments.splice(index, 1);
-            await user.save();
-            return res.status(200).send({ 
-                message: "Comment has been unsaved successfully" 
-            });
+        } else {
+            user.savedComments.push(commentId);
         }
 
-        user.savedComments.push(commentId);
+        if (isSaved) {
+            const index = comment.savedBy.indexOf(userId);
+            comment.savedBy.splice(index, 1);
+        } else {
+            comment.savedBy.push(userId);
+        }
+
         await user.save();
-        res.status(200).send({ 
-            message: "Comment has been saved successfully" 
-        });
+        await comment.save();
+
+        // Send a response indicating success
+        if (isSaved) {
+            res.status(200).send({ 
+                message: "Comment has been unsaved successfully" 
+            });
+        } else {
+            res.status(200).send({ 
+                message: "Comment has been saved successfully" 
+            });
+        }
     } catch (err) {
         res.status(500).send(err.toString());
     }
