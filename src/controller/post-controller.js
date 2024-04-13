@@ -33,81 +33,81 @@ exports.getPostById = async (req, res) => {
         const postId = req.params.postId;
         const post = await Post.findById(postId);
 
-        if (!post || post.length === 0) {
-            return res.status(404).json({ error: "post not found" });
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
         }
 
         const user = await User.findById(userId);
-        const isPostVisible = !post.hiddenBy.includes(userId);
-        if (isPostVisible) {
-            const savedPostIds = user ? user.savedPosts : [];
+        const savedPostIds = user ? user.savedPosts : [];
 
-            post.numberOfViews++;
-            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            post.votesUpCount = upVotesCount;
-            post.votesDownCount = downVotesCount;
-            post.isSaved = savedPostIds.includes(post._id.toString());
-            const hasUpvoted = post.upVotes.includes(userId);
-            const hasDownvoted = post.downVotes.includes(userId);
+        post.numberOfViews++;
+        const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+        const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+        post.votesUpCount = upVotesCount;
+        post.votesDownCount = downVotesCount;
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-            let hasVotedOnPoll = false;
-            let userSelectedOption = null;
-            if (post.pollOptions.length > 0) {
-                if (req.user.selectedPollOption) {
-                    userSelectedOption = req.user.selectedPollOption;
-                    if (userSelectedOption) {
-                        hasVotedOnPoll = true;
-                    }
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0) {
+            if (req.user.selectedPollOption) {
+                userSelectedOption = req.user.selectedPollOption;
+                if (userSelectedOption) {
+                    hasVotedOnPoll = true;
                 }
             }
-            const addRecentPost = await User.findByIdAndUpdate(
-                userId,
-                { $addToSet: { recentPosts: postId } },
-                { new: true }
-            );
-            await post.save();
-            const postInfo = {
-                _id: post._id,
-                userId: userId,
-                userProfilePic: user.userProfilePic,
-                hasUpvoted: hasUpvoted,
-                hasDownvoted: hasDownvoted,
-                hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: userSelectedOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
-                votesUpCount: post.upVotes ? post.upVotes.length : 0,
-                votesDownCount: post.downVotes ? post.downVotes.length : 0,
-                sharesCount: post.sharesCount,
-                commentsCount: post.commentsCount,
-                title: post.title,
-                content: post.content,
-                community: post.community,
-                type: post.type,
-                pollExpiration: post.pollExpiration,
-                isPollEnabled: post.isPollEnabled,
-                pollVotingLength: post.pollVotingLength,
-                isSpoiler: post.isSpoiler,
-                isNsfw: post.isNsfw,
-                sendPostReplyNotification: post.sendPostReplyNotification,
-                isCommentsLocked: post.isCommentsLocked,
-                isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
-                comments: post.comments,
-                date: post.date,
-                pollOptions: post.pollOptions,
-                attachments: post.attachments,
-            };
-
-            res.status(200).json(postInfo);
-
         }
+
+        const isHidden = post.hiddenBy.includes(userId);
+
+        const addRecentPost = await User.findByIdAndUpdate(
+            userId,
+            { $addToSet: { recentPosts: postId } },
+            { new: true }
+        );
+
+        await post.save();
+
+        const postInfo = {
+            _id: post._id,
+            userId: userId,
+            username: user.username,
+            userProfilePic: user.userProfilePic,
+            hasUpvoted: hasUpvoted,
+            hasDownvoted: hasDownvoted,
+            hasVotedOnPoll: hasVotedOnPoll,
+            selectedPollOption: userSelectedOption,
+            isHidden: isHidden,
+            votesUpCount: post.upVotes ? post.upVotes.length : 0,
+            votesDownCount: post.downVotes ? post.downVotes.length : 0,
+            sharesCount: post.sharesCount,
+            commentsCount: post.commentsCount,
+            title: post.title,
+            content: post.content,
+            community: post.community,
+            type: post.type,
+            pollExpiration: post.pollExpiration,
+            isPollEnabled: post.isPollEnabled,
+            pollVotingLength: post.pollVotingLength,
+            isSpoiler: post.isSpoiler,
+            isNsfw: post.isNsfw,
+            sendPostReplyNotification: post.sendPostReplyNotification,
+            isCommentsLocked: post.isCommentsLocked,
+            isSaved: savedPostIds.includes(post._id.toString()),
+            comments: post.comments,
+            date: post.date,
+            pollOptions: post.pollOptions,
+            attachments: post.attachments,
+        };
+
+        res.status(200).json(postInfo);
     } catch (err) {
-        console.error("Error fetching posts:", err);
+        console.error("Error fetching post:", err);
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
 
 exports.getAllUserPosts = async (req, res) => {
     try {
@@ -150,13 +150,12 @@ exports.getAllUserPosts = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -173,7 +172,6 @@ exports.getAllUserPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
@@ -353,13 +351,13 @@ exports.getAllPostsInCommunity = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
+
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -376,7 +374,6 @@ exports.getAllPostsInCommunity = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
@@ -473,13 +470,12 @@ exports.getSavedPosts = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -496,7 +492,6 @@ exports.getSavedPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
@@ -786,13 +781,12 @@ exports.getUpvotedPosts = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -809,7 +803,6 @@ exports.getUpvotedPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
@@ -867,13 +860,12 @@ exports.getDownvotedPosts = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -890,7 +882,6 @@ exports.getDownvotedPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
@@ -1035,13 +1026,12 @@ exports.getHiddenPosts = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
+                username: user.username,
                 userProfilePic: user.userProfilePic,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -1058,7 +1048,6 @@ exports.getHiddenPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
