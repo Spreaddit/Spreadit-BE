@@ -237,7 +237,7 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
     const time = req.params.time;
     let sortTime = 24;
     if (time === "now") sortTime = 1;
-    else if (time === "today") sortTime = 24;
+    else if (time === "day") sortTime = 24;
     else if (time === "week") sortTime = 24 * 7;
     else if (time === "month") sortTime = 24 * 30;
     else if (time === "year") sortTime = 365 * 24;
@@ -279,7 +279,7 @@ exports.sortPostTopTime = async (req, res) => {
     const time = req.params.time;
     let sortTime = 24;
     if (time === "now") sortTime = 1;
-    else if (time === "today") sortTime = 24;
+    else if (time === "day") sortTime = 24;
     else if (time === "week") sortTime = 24 * 7;
     else if (time === "month") sortTime = 24 * 30;
     else if (time === "year") sortTime = 365 * 24;
