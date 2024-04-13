@@ -633,8 +633,8 @@ exports.deletePost = async (req, res) => {
 };
 
 async function deleteComments(postId) {
-    await Comment.deleteMany({ postId });
     const comments = await Comment.find({ postId });
+    await Comment.deleteMany({ postId });
     for (const comment of comments) {
         await deleteReplies(comment._id);
     }
