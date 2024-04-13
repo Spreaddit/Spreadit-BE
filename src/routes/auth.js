@@ -142,6 +142,7 @@ router.post("/google/oauth", verifyGoogleToken, async (req, res) => {
         connectedAccounts: [userData.email],
         name: userData.name,
         username: newUsername,
+        isVerified: true,
       });
       const userAvatar = "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png";
       newUser.avatar = userAvatar;

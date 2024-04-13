@@ -150,7 +150,7 @@ router.get("/comments/user/:username", auth.authentication, async (req, res) => 
             path: "userId",
         });
 
-        console.log("Comments:", comments);
+        //console.log("Comments:", comments);
 
         if (!comments || comments.length === 0) {
             return res.status(404).send({ 
@@ -160,11 +160,8 @@ router.get("/comments/user/:username", auth.authentication, async (req, res) => 
 
         const commentObjects = [];
         for (const comment of comments) {
-            const commentObject = await Comment.getCommentObject(comment,  req.user._id);
-            if (req.query.include_replies === "true") {
-                const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
-                commentObject.replies = commentWithReplies.replies;
-            }
+            const commentObject = await Comment.getCommentObject(comment, req.user._id);
+            console.log(commentObject);
             commentObjects.push(commentObject);
         }
 
@@ -197,7 +194,7 @@ router.get("/comments/saved/user", auth.authentication, async (req, res) => {
 
         const commentObjects = [];
         for (const comment of savedComments) {
-            const commentObject = await Comment.getCommentObject(comment,  req.user._id, false);
+            const commentObject = await Comment.getCommentObject(comment,  req.user._id, true);
             if (req.query.include_replies === "true") {
                 const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user.username);
                 commentObject.replies = commentWithReplies.replies;
