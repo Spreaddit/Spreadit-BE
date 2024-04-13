@@ -41,6 +41,7 @@ router.post("/post/comment/:postId", auth.authentication, upload.array('attachme
 
         if (req.files) {
             for (let i = 0; i < req.files.length; i++) {
+                //console.log(req.files);
               const result = await uploadMedia(req.files[i]);
               //const url = `${config.baseUrl}/media/${result.Key}`;
               const url = result.secure_url;
