@@ -115,16 +115,23 @@ CommentSchema.statics.getCommentObject = async function (
     let subredditTitle;
     if(comment.parentCommentId === null){
         const post = await Post.findOne({ _id: comment.postId });
-        postTitle = post.title;
-        subredditTitle = post.community;
+        if (post) {
+            postTitle = post.title;
+            subredditTitle = post.community;
+        }
     }
     else {
-        const commentParent = await Comment.findById(comment.parentCommentId);
-        const post = await Post.findOne({ _id: commentParent.postId });
-        postTitle = post.title;
-        subredditTitle = post.community;     
+        let parentComment = comment;
+        while (parentComment.parentCommentId !== null) {
+            parentComment = await Comment.findById(parentComment.parentCommentId);
+        }
+        const post = await Post.findOne({ _id: parentComment.postId });
+        if (post) {
+            postTitle = post.title;
+            subredditTitle = post.community;
+        }     
     }
-    
+
 
     const commentInfo = {
       id: comment._id,
@@ -152,10 +159,13 @@ CommentSchema.statics.getCommentReplies = async function (comment, userId) {
     });
     //console.log(replyComments);
     //comment.replies = [];
+
     for (let i = 0; i < replyComments.length; i++) {
         const reply = replyComments[i];
-        const commentObject = await Comment.getCommentObject(reply, replyComments[i].userId, true);
-        comment.replies.push(commentObject);
+        const replyObject = await Comment.getCommentObject(reply, userId, true);
+        const nestedReplies = await Comment.getCommentReplies(replyObject, userId);
+        replyObject.replies = nestedReplies.replies;
+        comment.replies.push(replyObject);
     }
     //console.log(comment);
     return comment;
