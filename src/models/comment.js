@@ -19,7 +19,7 @@ const CommentSchema = new Schema(
         },
         postId: {
             type: Schema.Types.ObjectId,
-            required: true,
+            required: false,
             ref: "post",
         },
         parentCommentId: {
@@ -84,14 +84,15 @@ const CommentSchema = new Schema(
 CommentSchema.statics.getCommentObject = async function (
     comment,
     userid,
-    withUserInfo = true
+    withUserInfo = true,
+    includeReplies = false
   ) {
     //console.log(comment.username);
     const likesCount = comment.upVotes.length - comment.downVotes.length;
     const repliesCount = await Comment.countDocuments({
         parentCommentId: comment._id,
     });
-    console.log(userid);
+    //console.log(userid);
     let userObject = {};
     
     if (withUserInfo) {
@@ -108,9 +109,20 @@ CommentSchema.statics.getCommentObject = async function (
     const Post = mongoose.model("post");
     const isHidden = comment.hiddenBy.includes(userid);
     const isSaved = comment.savedBy.includes(userid);
-    const post = await Post.findOne({ _id: comment.postId });
-    const postTitle = post.title;
-    const subredditTitle = post.community;
+    let postTitle; 
+    let subredditTitle;
+    if(comment.parentCommentId === null){
+        const post = await Post.findOne({ _id: comment.postId });
+        postTitle = post.title;
+        subredditTitle = post.community;
+    }
+    else {
+        const commentParent = await Comment.findById(comment.parentCommentId);
+        const post = await Post.findOne({ _id: commentParent.postId });
+        postTitle = post.title;
+        subredditTitle = post.community;     
+    }
+    
 
     const commentInfo = {
       id: comment._id,
@@ -126,11 +138,13 @@ CommentSchema.statics.getCommentObject = async function (
       post_title: postTitle,
       community_title: subredditTitle,
     };
+
     return commentInfo;
 };
 
 
 CommentSchema.statics.getCommentReplies = async function (comment, userId) {
+   console.log("getreplies object");
     const replyComment = await Comment.find({
         parentCommentId: comment.id,
     });
@@ -140,6 +154,7 @@ CommentSchema.statics.getCommentReplies = async function (comment, userId) {
       const commentObject = await Comment.getCommentObject(commentReply, userId);
       comment.replies.push(commentObject);
     }
+    console.log(comment);
     return comment;
 };
 
