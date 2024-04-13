@@ -1419,5 +1419,1045 @@
 
 //#endregion Comments
 
+//#region Rules
 
+/**
+ * @api {post} /rule/add Add Rule to Community
+ * @apiVersion 0.1.0
+ * @apiName AddRuleToCommunity
+ * @apiGroup Rules
+ * @apiDescription Adds a rule to a community.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} title Title of the rule.
+ * @apiParam {String} description Description of the rule (optional).
+ * @apiParam {String} reportReason Reason for reporting the rule (optional).
+ * @apiParam {String} communityName Name of the community to which the rule will be added.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "title": "No hate speech",
+ *    "description": "This community does not tolerate hate speech.",
+ *    "communityName": "Sample Community"
+ * }
+ * 
+ * @apiSuccess {String} message Success message indicating that the rule has been added successfully.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Rule added successfully"
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden User is not a moderator.
+ * @apiError (403) UsedTitle Title already used.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid rule data"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "You are not a moderator of this community"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
 
+/**
+ * @api {post} /rule/remove Remove Rule from Community
+ * @apiVersion 0.1.0
+ * @apiName RemoveRuleFromCommunity
+ * @apiGroup Rules
+ * @apiDescription Removes a rule from a community.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} communityName Name of the community from which the rule will be removed.
+ * @apiParam {String} title Title of the rule to be removed.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community",
+ *    "title": "No hate speech"
+ * }
+ * 
+ * @apiSuccess {String} message Success message indicating that the rule has been removed successfully.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Rule removed successfully"
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (402) Forbidden User is not a moderator of the community.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+//#endregion Rules
+
+//#region Community
+
+/**
+ * @api {post} /community/add-to-favourites Add Community to Favorites
+ * @apiVersion 0.1.0
+ * @apiName AddCommunityToFavorites
+ * @apiGroup Community
+ * @apiDescription Adds a community to user's favorites.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} communityName Name of the community to be added to favorites.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community"
+ * }
+ * 
+ * @apiSuccess {String} message Success message indicating that the community has been added to favorites successfully.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Community added to favorites successfully"
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Community is already in favorites.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Community is already in favorites"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/remove-favourite Remove Community from Favorites
+ * @apiVersion 0.1.0
+ * @apiName RemoveCommunityFromFavorites
+ * @apiGroup Community
+ * @apiDescription Removes a community from user's favorites.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} communityName Name of the community to be removed from favorites.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community"
+ * }
+ * 
+ * @apiSuccess {String} message Success message indicating that the community has been removed from favorites successfully.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Community removed from favorites successfully"
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (402) Forbidden Community is not in favorites.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Community is not in favorites"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/is-favourite Check if Community is in Favorites
+ * @apiVersion 0.1.0
+ * @apiName IsCommunityInFavorites
+ * @apiGroup Community
+ * @apiDescription Checks if a community is in user's favorites.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} communityName Name of the community to be checked.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community"
+ * }
+ * 
+ * @apiSuccess {Boolean} isFavourite Indicates whether the community is in user's favorites.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "isFavourite": true
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/mute Mute Community
+ * @apiVersion 0.1.0
+ * @apiName MuteCommunity
+ * @apiGroup Community
+ * @apiDescription Mutes notifications from a community.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} communityName Name of the community to be muted.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community"
+ * }
+ * 
+ * @apiSuccess {String} message Success message indicating that the community has been muted successfully.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Community muted successfully"
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (402) Forbidden Community is already muted.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Community is already muted"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/unmute Unmute Community
+ * @apiVersion 0.1.0
+ * @apiName UnmuteCommunity
+ * @apiGroup Community
+ * @apiDescription Unmutes notifications from a community.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} communityName Name of the community to be unmuted.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community"
+ * }
+ * 
+ * @apiSuccess {String} message Success message indicating that the community has been unmuted successfully.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Community unmuted successfully"
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (402) Forbidden Community is not muted.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Community is not muted"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/is-mute Check if Community is Muted
+ * @apiVersion 0.1.0
+ * @apiName IsCommunityMuted
+ * @apiGroup Community
+ * @apiDescription Checks if notifications from a community are muted.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} communityName Name of the community to be checked.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community"
+ * }
+ * 
+ * @apiSuccess {Boolean} isMuted Indicates whether notifications from the community are muted.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "isMuted": true
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/subscribe Subscribe to Community
+ * @apiVersion 0.1.0
+ * @apiName SubscribeToCommunity
+ * @apiGroup Community
+ * @apiDescription Subscribes user to a community.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} communityName Name of the community to be subscribed to.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community"
+ * }
+ * 
+ * @apiSuccess {String} message Success message indicating that the user has subscribed to the community successfully.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Subscribed to the community successfully"
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (403) Forbidden Restricted or Private community.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "Restricted or Private community"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/unsubscribe Unsubscribe from Community
+ * @apiVersion 0.1.0
+ * @apiName UnsubscribeFromCommunity
+ * @apiGroup Community
+ * @apiDescription Unsubscribes user from a community.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} communityName Name of the community to be unsubscribed from.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community"
+ * }
+ * 
+ * @apiSuccess {String} message Success message indicating that the user has unsubscribed from the community successfully.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Unsubscribed from the community successfully"
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (403) Forbidden User isn't subscribed to community.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "User isn't subscribed to community"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/is-subscribed Check if User is Subscribed to Community
+ * @apiVersion 0.1.0
+ * @apiName IsUserSubscribedToCommunity
+ * @apiGroup Community
+ * @apiDescription Checks if a user is subscribed to a community.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} communityName Name of the community to be checked.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community"
+ * }
+ * 
+ * @apiSuccess {Boolean} isSubscribed Indicates whether the user is subscribed to the community.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "isSubscribed": true
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+/**
+ * @api {get} /community/top-communities Get Top Communities
+ * @apiVersion 0.1.0
+ * @apiName GetTopCommunities
+ * @apiGroup Community
+ * @apiDescription Retrieves a list of top public communities based on member count.
+ * @apiSampleRequest off
+ * 
+ * @apiParam {Number} [page=1] Page number for pagination.
+ * 
+ * @apiSuccess {Object[]} communities List of top public communities.
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "communities": [
+ *         {
+ *           "name": "Sample Community",
+ *           "category": "Sample Category",
+ *           "communityType": "Public",
+ *           "description": "Sample description",
+ *           "image": "community_image.jpg",
+ *           "membersCount": 1000,
+ *           "rules": [
+ *             {
+ *               "title": "Rule 1",
+ *               "description": "Description of rule 1",
+ *               "reportReason": "Reason for reporting rule 1"
+ *             },
+ *             {
+ *               "title": "Rule 2",
+ *               "description": "Description of rule 2",
+ *               "reportReason": "Reason for reporting rule 2"
+ *             }
+ *           ],
+ *           "dateCreated": "2024-01-01T00:00:00.000Z",
+ *           "communityBanner": "community_banner.jpg"
+ *         }
+ *       ],
+ *       "totalPages": 10,
+ *       "currentPage": 1
+ *     }
+ * 
+ * @apiError (404) NotFound No public communities found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "No Public communities found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/random-category Get Random Category Communities
+ * @apiVersion 0.1.0
+ * @apiName GetRandomCategoryCommunities
+ * @apiGroup Community
+ * @apiDescription Retrieves a list of communities from a random category.
+ * @apiSampleRequest off
+ * 
+ * @apiSuccess {Object[]} communities List of communities from the random category.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "name": "Sample Community",
+ *         "category": "Sample Category",
+ *         "communityType": "Public",
+ *         "description": "Sample description",
+ *         "image": "community_image.jpg",
+ *         "membersCount": 1000,
+ *         "rules": [
+ *           {
+ *             "title": "Rule 1",
+ *             "description": "Description of rule 1",
+ *             "reportReason": "Reason for reporting rule 1"
+ *           },
+ *           {
+ *             "title": "Rule 2",
+ *             "description": "Description of rule 2",
+ *             "reportReason": "Reason for reporting rule 2"
+ *           }
+ *         ],
+ *         "dateCreated": "2024-01-01T00:00:00.000Z",
+ *         "communityBanner": "community_banner.jpg"
+ *       }
+ *     ]
+ * 
+ * @apiError (404) NotFound No random communities found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "No random communities found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/get-specific-category Get Communities by Specific Category
+ * @apiVersion 0.1.0
+ * @apiName GetCommunitiesBySpecificCategory
+ * @apiGroup Community
+ * @apiDescription Retrieves a list of communities by a specific category.
+ * @apiSampleRequest off
+ * 
+ * @apiParam {String} category Category name to filter communities.
+ * 
+ * @apiSuccess {Object[]} communities List of communities belonging to the specified category.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "name": "Sample Community",
+ *         "category": "Sample Category",
+ *         "communityType": "Public",
+ *         "description": "Sample description",
+ *         "image": "community_image.jpg",
+ *         "membersCount": 1000,
+ *         "rules": [
+ *           {
+ *             "title": "Rule 1",
+ *             "description": "Description of rule 1",
+ *             "reportReason": "Reason for reporting rule 1"
+ *           },
+ *           {
+ *             "title": "Rule 2",
+ *             "description": "Description of rule 2",
+ *             "reportReason": "Reason for reporting rule 2"
+ *           }
+ *         ],
+ *         "dateCreated": "2024-01-01T00:00:00.000Z",
+ *         "communityBanner": "community_banner.jpg"
+ *       }
+ *     ]
+ * 
+ * @apiError (404) NotFound No communities found for the specified category.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "No communities found for the specified category"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/get-info Get Community Information
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityInformation
+ * @apiGroup Community
+ * @apiDescription Retrieves information about a specific community.
+ * @apiSampleRequest off
+ * 
+ * @apiParam {String} communityName Name of the community to retrieve information.
+ * 
+ * @apiSuccess {Object} community Information about the specified community.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "name": "Sample Community",
+ *       "category": "Sample Category",
+ *       "communityType": "Public",
+ *       "description": "Sample description",
+ *       "image": "community_image.jpg",
+ *       "membersCount": 1000,
+ *       "rules": [
+ *         {
+ *           "title": "Rule 1",
+ *           "description": "Description of rule 1",
+ *           "reportReason": "Reason for reporting rule 1"
+ *         },
+ *         {
+ *           "title": "Rule 2",
+ *           "description": "Description of rule 2",
+ *           "reportReason": "Reason for reporting rule 2"
+ *         }
+ *       ],
+ *       "dateCreated": "2024-01-01T00:00:00.000Z",
+ *       "communityBanner": "community_banner.jpg"
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/create Create Community
+ * @apiVersion 0.1.0
+ * @apiName CreateCommunity
+ * @apiGroup Community
+ * @apiDescription Creates a new community.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} name Name of the community.
+ * @apiParam {Boolean} is18plus Whether the community is for users 18 years or older.
+ * @apiParam {String="Public","Private","Restricted"} communityType Type of the community.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "name": "Sample Community",
+ *    "is18plus": true,
+ *    "communityType": "Public"
+ * }
+ * 
+ * @apiSuccess {String} message Success message indicating that the community has been created successfully.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Community created successfully"
+ *     }
+ * 
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden Community name is not available.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "Community name is not available"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+//#endregion Community
+
+//#region User Info
+/**
+ * @api {get} /user/profile-info/:username Get User Profile Information
+ * @apiVersion 0.1.0
+ * @apiName GetUserProfileInformation
+ * @apiGroup User
+ * @apiDescription Retrieves information about a user's profile.
+ * @apiSampleRequest off
+ * 
+ * @apiParam {String} username Username of the user.
+ * 
+ * @apiSuccess {String} username Username of the user.
+ * @apiSuccess {String} name Name of the user.
+ * @apiSuccess {String} avatar URL of the user's avatar.
+ * @apiSuccess {String} banner URL of the user's banner image.
+ * @apiSuccess {String} about About section of the user's profile.
+ * @apiSuccess {Date} createdAt Date when the user account was created.
+ * @apiSuccess {Object[]} subscribedCommunities List of communities the user is subscribed to.
+ * @apiSuccess {Boolean} isVisible Indicates if the user's profile is visible to others.
+ * @apiSuccess {Boolean} isActive Indicates if the user's account is active.
+ * @apiSuccess {Object} socialLinks Links to the user's social media profiles.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "username": "sample_user",
+ *       "name": "Sample User",
+ *       "avatar": "avatar_image.jpg",
+ *       "banner": "banner_image.jpg",
+ *       "about": "Sample about section",
+ *       "createdAt": "2024-01-01T00:00:00.000Z",
+ *       "subscribedCommunities": [
+ *         {
+ *           "name": "Sample Community",
+ *           "image": "community_image.jpg",
+ *           "communityBanner": "community_banner.jpg",
+ *           "membersCount": 1000
+ *         }
+ *       ],
+ *       "isVisible": true,
+ *       "isActive": true,
+ *       "socialLinks": {
+ *         "facebook": "https://www.facebook.com/sample_user",
+ *         "twitter": "https://www.twitter.com/sample_user"
+ *       }
+ *     }
+ * 
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /user/profile-info Update User Profile Information
+ * @apiVersion 0.1.0
+ * @apiName UpdateUserProfileInformation
+ * @apiGroup User
+ * @apiDescription Updates information about a user's profile.
+ * @apiSampleRequest off
+ * 
+ * @apiHeader {String} Authorization User's authentication token.
+ * 
+ * @apiParam {String} [name] Name of the user.
+ * @apiParam {String} [avatar] URL of the user's avatar.
+ * @apiParam {String} [banner] URL of the user's banner image.
+ * @apiParam {String} [about] About section of the user's profile.
+ * @apiParam {Object} [socialLinks] Links to the user's social media profiles.
+ * @apiParam {String} [username] Username of the user.
+ * @apiParam {Boolean} [isVisible] Indicates if the user's profile is visible to others.
+ * @apiParam {Boolean} [isActive] Indicates if the user's account is active.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "name": "Updated Name",
+ *    "about": "Updated about section",
+ *    "socialLinks": {
+ *        "facebook": "https://www.facebook.com/updated_user",
+ *        "twitter": "https://www.twitter.com/updated_user"
+ *    },
+ *    "isVisible": true,
+ *    "isActive": true
+ * }
+ * 
+ * @apiSuccess {String} username Username of the user.
+ * @apiSuccess {String} name Name of the user.
+ * @apiSuccess {String} avatar URL of the user's avatar.
+ * @apiSuccess {String} banner URL of the user's banner image.
+ * @apiSuccess {String} about About section of the user's profile.
+ * @apiSuccess {Date} createdAt Date when the user account was created.
+ * @apiSuccess {Object[]} subscribedCommunities List of communities the user is subscribed to.
+ * @apiSuccess {Boolean} isVisible Indicates if the user's profile is visible to others.
+ * @apiSuccess {Boolean} isActive Indicates if the user's account is active.
+ * @apiSuccess {Object} socialLinks Links to the user's social media profiles.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "username": "sample_user",
+ *       "name": "Updated Name",
+ *       "avatar": "updated_avatar_image.jpg",
+ *       "banner": "updated_banner_image.jpg",
+ *       "about": "Updated about section",
+ *       "createdAt": "2024-01-01T00:00:00.000Z",
+ *       "subscribedCommunities": [
+ *         {
+ *           "name": "Sample Community",
+ *           "image": "community_image.jpg",
+ *           "communityBanner": "community_banner.jpg",
+ *           "membersCount": 1000
+ *         }
+ *       ],
+ *       "isVisible": true,
+ *       "isActive": true,
+ *       "socialLinks": {
+ *         "facebook": "https://www.facebook.com/updated_user",
+ *         "twitter": "https://www.twitter.com/updated_user"
+ *       }
+ *     }
+ * 
+ * @apiError (400) Forbidden Username not available or exceeds character limit.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Username not available"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+//#endregion User Info
