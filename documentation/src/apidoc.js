@@ -535,7 +535,7 @@
  * @apiDescription Add a comment to a specific post.
  * @apiSampleRequest off
  * 
- * @apiHeader {String} Authorization User's JWT token.
+ * @apiHeader {String} Authorization User's authentication token.
  * 
  * @apiParam {String} postId ID of the post to which the comment will be added.
  * @apiParam {String} content Content of the comment.
