@@ -15,8 +15,11 @@ exports.reportUser = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
     const toReportID = user._id;
-
     const reporterID = req.user._id;
+    if (toReportID.equals(reporterID)) {
+      console.log("user cannot report himself");
+      return res.status(400).json({ error: "user cannot report himself" });
+    }
     const reason = req.body.reason;
     if (!toReportID || !reporterID) {
       return res.status(404).json({ error: "User not found" });

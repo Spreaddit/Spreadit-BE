@@ -16,6 +16,11 @@ exports.blockUser = async (req, res) => {
     const toBlockID = user._id;
 
     const blockerID = req.user._id;
+
+    if (toBlockID.equals(blockerID)) {
+      console.log("user cannot block himself");
+      return res.status(400).json({ error: "user cannot block himself" });
+    }
     if (!blockerID) {
       console.error("please login first:");
       return res.status(404).json({ error: "user not found" });
