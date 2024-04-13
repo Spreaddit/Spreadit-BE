@@ -84,8 +84,7 @@ const CommentSchema = new Schema(
 CommentSchema.statics.getCommentObject = async function (
     comment,
     userid,
-    withUserInfo = true,
-    includeReplies = false
+    withUserInfo = true
   ) {
     //console.log(comment.username);
     const likesCount = comment.upVotes.length - comment.downVotes.length;
@@ -137,6 +136,7 @@ CommentSchema.statics.getCommentObject = async function (
       is_saved: isSaved,
       post_title: postTitle,
       community_title: subredditTitle,
+      replies: [],
     };
 
     return commentInfo;
@@ -144,19 +144,20 @@ CommentSchema.statics.getCommentObject = async function (
 
 
 CommentSchema.statics.getCommentReplies = async function (comment, userId) {
-   console.log("getreplies object");
-    const replyComment = await Comment.find({
+    const replyComments = await Comment.find({
         parentCommentId: comment.id,
     });
-    comment.replies = [];
-    for (let i = 0; i < replyComment.length; i++) {
-      const commentReply = replyComment[i];
-      const commentObject = await Comment.getCommentObject(commentReply, userId);
-      comment.replies.push(commentObject);
+    console.log(replyComments);
+    //comment.replies = [];
+    for (let i = 0; i < replyComments.length; i++) {
+        const reply = replyComments[i];
+        const commentObject = await Comment.getCommentObject(reply, replyComments[i].userId, true);
+        comment.replies.push(commentObject);
     }
-    console.log(comment);
+    //console.log(comment);
     return comment;
 };
+
 
 
 const Comment = mongoose.model("comment", CommentSchema);

@@ -121,9 +121,11 @@ router.get("/posts/comment/:postId", auth.authentication, async (req, res) => {
       const commentObjects =[];
       console.log(req.query.include_replies)
       for(const comment of comments){
-        const commentObject = await Comment.getCommentObject(comment, req.user._id);
+        ///console.log(req.user._id);
+        const commentObject = await Comment.getCommentObject(comment, req.user._id, true);
             if (req.query.include_replies === "true") {
-                const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user._id);
+                //console.log(req.user._id);
+                const commentWithReplies = await Comment.getCommentReplies(commentObject, req.user._id, true);
                 commentObject.replies = commentWithReplies.replies;
             }
         commentObjects.push(commentObject);
