@@ -273,7 +273,6 @@ router.post("/comment/:parentCommentId/reply", auth.authentication, upload.array
         const newReply = new Comment({
             content,
             userId,
-            postId: existingComment.postId,
             parentCommentId,
         });
 
