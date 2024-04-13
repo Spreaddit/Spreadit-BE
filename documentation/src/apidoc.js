@@ -81,17 +81,17 @@
  * @apiName GoogleOAuth
  * @apiGroup Authentication
  * @apiDescription Authenticate with Google OAuth to sign in or sign up a user.
- * This endpoint verifies the Google OAuth token provided in the request and
- * either signs in an existing user or creates a new user if no user with the
+ * This endpoint verifies the Google OAuth token provided in the request and 
+ * either signs in an existing user or creates a new user if no user with the 
  * Google ID exists.
  * @apiSampleRequest off
- * @apiHeader {String} Authorization Google OAuth token in the format "Bearer <token>"
- *
+ * 
+ * @apiParam {String} googleToken Google OAuth token.
  * @apiParam {Boolean} [remember_me=false] Optional. Set to true to remember the logged-in user.
  *
  * @apiParamExample {json} Request-Example:
  * {
- *    "Authorization": "Bearer <Google_OAuth_Token>",
+ *    "googleToken": "<Google_OAuth_Token>",
  *    "remember_me": true
  * }
  *
@@ -531,15 +531,15 @@
  * @api {post} /post/comment/:postId Add Comment to Post
  * @apiVersion 0.1.0
  * @apiName AddCommentToPost
- * @apiGroup Post
- * @apiDescription Adds a comment to a post.
+ * @apiGroup Comments
+ * @apiDescription Add a comment to a specific post.
  * @apiSampleRequest off
- *
- * @apiHeader {String} Authorization User's authentication token.
- *
+ * 
+ * @apiHeader {String} Authorization User's JWT token.
+ * 
  * @apiParam {String} postId ID of the post to which the comment will be added.
  * @apiParam {String} content Content of the comment.
- * @apiParam {String} fileType Type of file attached to the comment (optional).
+ * @apiParam {String} [fileType] Type of file being attached (e.g., image, video).
  * @apiParam {File[]} [attachments] Array of media files attached to the comment (optional).
  *
  * @apiParamExample {json} Request-Example:
@@ -584,7 +584,10 @@
  * @apiSuccess {Boolean} comment.is_saved Indicates if the comment is saved.
  * @apiSuccess {String} comment.post_title Title of the post to which the comment belongs.
  * @apiSuccess {String} comment.community_title Title of the community where the post belongs.
- *
+ * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
+ * 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
  *     {
@@ -619,7 +622,10 @@
  *           "is_hidden": false,
  *           "is_saved": false,
  *           "post_title": "Sample Post Title",
- *           "community_title": "Sample Community"
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "replies": []
  *       },
  *       "message": "Comment has been added successfully"
  *     }
@@ -673,7 +679,11 @@
  * @apiSuccess {String[]} comment.attachments Array of URLs of attached media files of the deleted comment.
  * @apiSuccess {Date} comment.createdAt Date and time when the deleted comment was created.
  * @apiSuccess {Date} comment.updatedAt Date and time when the deleted comment was last updated.
- *
+ * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
+
+ * 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -684,7 +694,10 @@
  *           "postId": "609cfeefc8b58f001d54ee1d",
  *           "attachments": ["https://example.com/attachment1.jpg", "https://example.com/attachment2.jpg"],
  *           "createdAt": "2022-05-14T12:00:00.000Z",
- *           "updatedAt": "2022-05-14T12:00:00.000Z"
+ *           "updatedAt": "2022-05-14T12:00:00.000Z",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "replies": []
  *       },
  *       "message": "Comment deleted successfully"
  *     }
@@ -740,7 +753,10 @@
  * @apiSuccess {Boolean} comments.is_saved Indicates if the comment is saved.
  * @apiSuccess {String} comments.post_title Title of the post to which the comment belongs.
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
- *
+ * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
+ * 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -776,7 +792,10 @@
  *           "is_hidden": false,
  *           "is_saved": false,
  *           "post_title": "Sample Post Title",
- *           "community_title": "Sample Community"
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "replies": []
  *       }
  *       ],
  *       "message": "Comments have been retrieved successfully"
@@ -827,7 +846,10 @@
  * @apiSuccess {Boolean} comments.is_saved Indicates if the comment is saved.
  * @apiSuccess {String} comments.post_title Title of the post to which the comment belongs.
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
- *
+ * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty
+ * 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -863,7 +885,10 @@
  *           "is_hidden": false,
  *           "is_saved": false,
  *           "post_title": "Sample Post Title",
- *           "community_title": "Sample Community"
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "replies": []
  *       },
  *       ],
  *       "message": "Comments for the user have been retrieved successfully"
@@ -913,7 +938,10 @@
  * @apiSuccess {Boolean} comments.is_saved Indicates if the comment is saved.
  * @apiSuccess {String} comments.post_title Title of the post to which the comment belongs.
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
- *
+ * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
+ * 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -949,7 +977,10 @@
  *           "is_hidden": false,
  *           "is_saved": false,
  *           "post_title": "Sample Post Title",
- *           "community_title": "Sample Community"
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "replies": []
  *       },
  *       ],
  *       "message": "Saved Comments for the user have been retrieved successfully"
@@ -1083,7 +1114,10 @@
  * @apiSuccess {String} reply.post_title Title of the post to which the comment belongs.
  * @apiSuccess {String} reply.community_title Title of the community to which the comment belongs.
  * @apiSuccess {String} message Success message indicating that the reply has been added successfully.
- *
+ * @apiSuccess {Boolean} reply.is_upvoted if the reply is upvoted by the user
+ * @apiSuccess {Boolean} reply.is_downvoted if the reply is upvoted by the user
+ * @apiSuccess {replyObject[]} reply.replies if the reply has a reply by default empty array
+ * 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
  *     {
@@ -1115,7 +1149,10 @@
  *           "is_hidden": false,
  *           "is_saved": false,
  *           "post_title": "Example Post",
- *           "community_title": "Example Community"
+ *           "community_title": "Example Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "replies": []
  *       },
  *       "message": "Reply has been added successfully"
  *     }
@@ -1171,7 +1208,10 @@
  * @apiSuccess {String} replies.post_title Title of the post to which the comment belongs.
  * @apiSuccess {String} replies.community_title Title of the community to which the comment belongs.
  * @apiSuccess {String} message Success message indicating that replies have been retrieved successfully.
- *
+ * @apiSuccess {Boolean} replies.is_upvoted if the reply is upvoted by the user
+ * @apiSuccess {Boolean} replies.is_downvoted if the reply is upvoted by the user
+ * @apiSuccess {repliesObject[]} replies.replies if the reply has a reply by default empty array
+ * 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -1207,7 +1247,10 @@
  *           "is_hidden": false,
  *           "is_saved": false,
  *           "post_title": "Sample Post Title",
- *           "community_title": "Sample Community"
+ *           "community_title": "Sample Community", 
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "replies": []
  *           },
  *           ...
  *       ],
