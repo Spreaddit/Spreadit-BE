@@ -81,7 +81,12 @@ router.delete("/posts/comment/delete/:commentId", auth.authentication, async (re
       }
       
   
-      await Comment.deleteMany({ parentId: req.body.id });
+      await Comment.deleteMany({ parentCommentId: req.params.commentId });
+      const post = await Post.findOneAndUpdate(
+        { _id: comment.postId },
+        { $inc: { commentsCount: -1 } }, 
+        { new: true }
+        );
   
       const commentObj = await Comment.getCommentObject(comment, userId);
   

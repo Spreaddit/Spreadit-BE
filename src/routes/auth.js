@@ -229,15 +229,11 @@ router.post("/reset-password-by-token", async (req, res) => {
   }
 });
 
-router.get("/reset-password/user-info", async (req, res) => {
+router.get("/reset-password/user-info",auth.authentication ,async (req, res) => {
   try {
-    const { token } = req.body;
-    if (!token) {
-      return res.status(401).json({ message: "Token is required" });
-    }
-    const decodedToken = jwt.jwtDecode(token);
-    const userUsername = decodedToken.username;
-    const user = await User.getUserByEmailOrUsername(userUsername);
+    
+    const user = await User.findById(req.user._id);
+    
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
