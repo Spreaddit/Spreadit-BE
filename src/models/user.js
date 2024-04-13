@@ -1,22 +1,15 @@
-/**
- * Module dependencies.
- */
+const Post = require("../models/post");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const crypto = require('crypto');
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const config = require("../configuration");
+const Community = require("../models/community.js");
 require("./constants/userRole");
+const userRole = require("./../../seed-data/constants/userRole");
 
 const Schema = mongoose.Schema;
-const userRole = require("../../seed-data/constants/userRole");
 
-
-/**
- * User Schema definition.
- * @type {mongoose.Schema<object>}
- * @param {mongoose.Document & { roleId: userRole.UserRole }} user - User object
- */
 const UserSchema = new Schema(
   {
     name: {
@@ -35,7 +28,7 @@ const UserSchema = new Schema(
     },
     email: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       unique: true,
     },
@@ -43,7 +36,6 @@ const UserSchema = new Schema(
       type: String,
       required: false,
       trim: true,
-      unique: true,
     },
     password: {
       type: String,
@@ -105,9 +97,17 @@ const UserSchema = new Schema(
     },
     resetTokenExpiration: {
       type: Date,
-      default: Date.now
+      default: Date.now,
     },
     isVerified: {
+      type: Boolean,
+      default: 0,
+    },
+    isVisible: {
+      type: Boolean,
+      default: 0,
+    },
+    isActive: {
       type: Boolean,
       default: 0,
     },
@@ -259,12 +259,60 @@ const UserSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    communities: [
+    commentsOnYourPost: {
+      type: Boolean,
+      default: true,
+    },
+    commentsYouFollow: {
+      type: Boolean,
+      default: true,
+    },
+    upvotes: {
+      type: Boolean,
+      default: true,
+    },
+    selectedPollOption: {
+      type: String,
+      default: "",
+    },
+    communities: {
+      type: [String],
+      default: function () {
+        return [this.username];
+      },
+    },
+    savedPosts: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "Posts",
+        index: true,
       },
     ],
-    savedPosts: [{ type: Schema.Types.ObjectId, ref: "Posts", index: true }],
+    savedComments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "comment",
+        index: true,
+      },
+    ],
+    hiddenComments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "comment",
+      },
+    ],
+    hiddenPosts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "post",
+      },
+    ],
+    recentPosts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "post",
+      },
+    ],
     blockedUsers: [
       {
         type: String,
@@ -272,7 +320,20 @@ const UserSchema = new Schema(
     ],
     mutedCommunities: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: Community,
+      },
+    ],
+    subscribedCommunities: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: Community,
+      },
+    ],
+    favouriteCommunities: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Community",
       },
     ],
     tokens: [
@@ -286,16 +347,18 @@ const UserSchema = new Schema(
         },
       },
     ],
+    socialLinks: [
+      {
+        platform: String,
+        url: String,
+        displayName: String,
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
-
-/**
- * Middleware: Hashes user's password before saving.
- * @param {Function} next
- */
 
 UserSchema.pre("save", async function (next) {
   const user = this;
@@ -305,12 +368,6 @@ UserSchema.pre("save", async function (next) {
 
   next();
 });
-
-/**
- * Static method: Retrieves a user by email or username.
- * @param {string} usernameOremail - Username or email of the user.
- * @returns {Promise<MongooseDocument|null>} User object if found, otherwise null.
- */
 
 UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
   const user = await User.find({
@@ -323,10 +380,6 @@ UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
     return null;
   }
 };
-/**
- * Instance method: Generates a token for the user.
- * @returns {Promise<string>} Generated token.
- */
 
 UserSchema.methods.generateToken = async function () {
   user = this;
@@ -341,11 +394,6 @@ UserSchema.methods.generateToken = async function () {
   return token;
 };
 
-/**
- * Instance method: Generates a token based on user's email.
- * @returns {Promise<string>} Generated token.
- */
-
 UserSchema.methods.generateEmailToken = async function () {
   user = this;
 
@@ -358,11 +406,6 @@ UserSchema.methods.generateEmailToken = async function () {
   return token;
 };
 
-/**
- * Static method: Checks if a user with given email exists.
- * @param {string} email - Email to check.
- * @returns {Promise<boolean>} True if user exists, otherwise false.
- */
 UserSchema.statics.checkExistence = async function (email) {
   const user = await User.findOne({ email });
   if (user) {
@@ -372,17 +415,7 @@ UserSchema.statics.checkExistence = async function (email) {
   }
 };
 
-/**
- * Static method: Verifies user's credentials.
- * @param {string} usernameOremail - Username or email of the user.
- * @param {string} password - User's password.
- * @returns {Promise<User|null>} User object if credentials are valid, otherwise null.
- */
-UserSchema.statics.verifyCredentials = async function (
-  usernameOremail,
-  password
-) {
-
+UserSchema.statics.verifyCredentials = async function (usernameOremail, password) {
   const userByEmail = await User.findOne({
     email: usernameOremail,
   }).populate("roleId");
@@ -401,16 +434,8 @@ UserSchema.statics.verifyCredentials = async function (
     return null;
   }
 };
-/**
- * Static method: Generates a user object for response.
- * @param {import('mongoose').Document & { roleId: import('../../seed-data/constants/userRole').UserRole }} user - User object.
- * @param {string|null} authorizedUserName - Authorized user's username.
- * @returns {Promise<Object>} User object for response.
- */
-UserSchema.statics.generateUserObject = async function (
-  user,
-  authorizedUserName = null
-) {
+
+UserSchema.statics.generateUserObject = async function (user) {
   try {
     const userObj = {
       id: user._id,
@@ -430,66 +455,26 @@ UserSchema.statics.generateUserObject = async function (
       role: user.roleId.name,
       nsfw: user.nsfw,
       activeInCommunityVisibility: user.activeInCommunityVisibility,
-      clearHistory: user.clearHistory,
-      contentVisibility: user.cosntentVisibility,
-      allowFollow: user.allowFollow,
-      blockedUsers: user.blockedUsers,
-      mutedCommunities: user.mutedCommunities,
-      communities: user.communities,
       isVerified: user.isVerified,
-      newFollowers: user.newFollowers,
-      chatRequestEmail: user.chatRequestEmail,
-      unsubscribeAllEmails: user.unsubscribeAllEmails,
-      communityContentSort: user.communityContentSort,
-      globalContentView: user.globalContentView,
-      communityThemes: user.communityThemes,
-      autoplayMedia: user.autoplayMedia,
-      adultContent: user.adultContent,
-      openPostsInNewTab: user.openPostsInNewTab,
-      mentions: user.mentions,
-      commentsOnYourPost: user.commentsOnYourPost,
-      commentsYouFollow: user.commentsYouFollow,
-      upvotesComments: user.upvotesComments,
-      upvotesPosts: user.upvotesPosts,
-      newFollowerEmail: user.newFollowerEmail,
-      replies: user.replies,
-      invitations: user.invitations,
-      posts: user.posts,
+      isVisible: user.isVisible,
+      isActive: user.isActive,
       displayName: user.displayName,
       about: user.about,
-      approvedUsers: user.approvedUsers,
-      sendYouFriendRequests: user.sendYouFriendRequests,
-      sendYouPrivateMessages: user.sendYouPrivateMessages,
-      markAllChatsAsRead: user.markAllChatsAsRead,
-      inboxMessages: user.inboxMessages,
-      chatMessages: user.chatMessages,
-      chatRequests: user.chatRequests,
-      repliesToComments: user.repliesToComments,
       cakeDay: user.cakeDay,
-      modNotifications: user.modNotifications,
-      savedPosts: user.savedPosts,
+      subscribedCommunities: user.subscribedCommunities,
+      favouriteCommunities: user.favouriteCommunities,
+      socialLinks: user.socialLinks,
+      commentsOnYourPost: user.commentsOnYourPost,
+      commentsYouFollow: user.commentsYouFollow,
+      upvotes: user.upvotes,
+      selectedPollOption: user.selectedPollOption,
     };
-    if (authorizedUserName != null) {
-      const authorizedUser = await User.findOne({
-        username: authorizedUserName,
-      });
-      if (authorizedUser && authorizedUser.followings.includes(user._id)) {
-        userObj.is_followed = true;
-      } else {
-        userObj.is_followed = false;
-      }
-    }
+
     return userObj;
   } catch (err) {
     return null;
   }
 };
-
-/**
- * Static method: Retrieves a user by reset token.
- * @param {string} token - Reset token.
- * @returns {Promise<User|null>} User object if found, otherwise null.
- */
 
 UserSchema.statics.getUserByResetToken = async function (token) {
   const user = await this.findOne({ resetToken: token });
@@ -501,14 +486,10 @@ UserSchema.statics.getUserByResetToken = async function (token) {
   }
 };
 
-/**
- * Instance method: Generates a reset token for the user.
- * @returns {Promise<string>} Generated reset token.
- */
 UserSchema.methods.generateResetToken = async function () {
   try {
     user = this;
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetToken = crypto.randomBytes(32).toString("hex");
     const resetTokenExpiration = new Date();
     resetTokenExpiration.setHours(resetTokenExpiration.getHours() + 1);
 
@@ -517,13 +498,10 @@ UserSchema.methods.generateResetToken = async function () {
     await user.save();
     return resetToken;
   } catch (error) {
-    throw new Error('Failed to generate reset token');
+    throw new Error("Failed to generate reset token");
   }
 };
-/**
- * Instance method: Generates a random username.
- * @returns {Promise<string>} Generated random username.
- */
+
 UserSchema.methods.generateRandomUsername = async function () {
   const randomUsername = this.generateRandomString();
 
@@ -533,27 +511,20 @@ UserSchema.methods.generateRandomUsername = async function () {
   }
 
   return randomUsername;
-}
-/**
- * Instance method: Generates a random string.
- * @returns {string} Generated random string.
- */
+};
+
 UserSchema.methods.generateRandomString = function () {
   const length = 8; // Length of the random string
-  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; // Characters to choose from
-  let randomString = '';
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789"; // Characters to choose from
+  let randomString = "";
 
   for (let i = 0; i < length; i++) {
     randomString += characters.charAt(Math.floor(Math.random() * characters.length));
   }
 
   return randomString;
-}
+};
 
-/**
- * User Model.
- * @type {mongoose.Model<any>}
- */
 const User = mongoose.model("user", UserSchema);
 
 module.exports = User;

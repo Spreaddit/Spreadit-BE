@@ -3,6 +3,7 @@ const router = express.Router();
 const cloudinary = require("../service/cloudinary");
 const upload = require("../service/fileUpload");
 const { uploadMedia } = require("../service/cloudinary.js");
+const { createPost } = require("../controller/post-controller.js");
 const auth = require("../middleware/authentication.js");
 const Post = require('../models/post');
 const User = require('../models/user');
@@ -38,7 +39,6 @@ router.post('/test', auth.authentication, upload.array('images'), async (req, re
             isNsfw: req.body.isNsfw,
             sendPostReplyNotification: req.body.sendPostReplyNotification
         });
-
         if (!newPost.title || !newPost.community) {
             return res.status(400).json({ error: 'Invalid post data. Please provide title and community' });
         }
@@ -68,7 +68,6 @@ router.post('/test', auth.authentication, upload.array('images'), async (req, re
         console.error('Error creating post:', err);
         return res.status(500).json({ error: 'Internal server error' });
     }
-
 });
 
 

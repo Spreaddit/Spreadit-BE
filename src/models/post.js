@@ -2,8 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const commentSchema = require('../models/comment')
 
-require("./user");
-
 const PostSchema = new Schema(
   {
 
@@ -17,7 +15,14 @@ const PostSchema = new Schema(
     },
     userProfilePic: {
       type: String,
-      required: true
+    },
+    upVotes: {
+      type: [],
+      default: null
+    },
+    downVotes: {
+      type: [],
+      default: null
     },
     votesUpCount: {
       type: Number,
@@ -47,18 +52,17 @@ const PostSchema = new Schema(
       type: String,
       required: true
     },
-    content: {
+    content: [{
       type: String,
-      required: true
-    },
+    }],
     community: {
       type: String,
       required: true
     },
     type: {
       type: String,
-      enum: ['post'],
-      default: 'post'
+      enum: ['Post', 'Images & Video', 'Link', 'Poll'],
+      default: 'Post'
     },
     pollOptions: [{
       option: { type: String, required: true },
@@ -72,16 +76,26 @@ const PostSchema = new Schema(
       type: Boolean,
       default: false
     },
+    pollVotingLength: {
+      type: String,
+      enum: ['1 Day', '2 Days', '3 Days', '4 Days', '5 Days', '6 Days', '7 Days'],
+      default: '3 Days'
+    },
+    votedUsers: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }],
     link: {
       type: String
     },
-    images: [{
-      type: String,
-      required: false
-    }],
-    videos: [{
-      type: String,
-      required: false
+    attachments: [{
+      type: {
+        type: String,
+        enum: ['image', 'video'],
+      },
+      link: {
+        type: String,
+      }
     }],
     isSpoiler: {
       type: Boolean,
@@ -95,7 +109,22 @@ const PostSchema = new Schema(
       type: Boolean,
       default: true
     },
-    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }]
+    isCommentsLocked: {
+      type: Boolean,
+      default: false
+    },
+    isSaved: {
+      type: Boolean,
+      default: false
+    },
+    hiddenBy: [{
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    }],
+    comments: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Comment'
+    }]
   },
   {
     timestamps: true,
