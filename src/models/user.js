@@ -259,6 +259,9 @@ const UserSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    selectedPollOption: {
+      type: String,
+    },
     communities: {
       type: [String],
       default: function () {

@@ -77,16 +77,66 @@ exports.getAllUserPosts = async (req, res) => {
         }
         const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
         const savedPostIds = user.savedPosts || [];
+        const postInfoArray = [];
         for (let post of visiblePosts) {
             post.numberOfViews++;
-            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            post.votesUpCount = upVotesCount;
-            post.votesDownCount = downVotesCount;
-            post.isSaved = savedPostIds.includes(post._id.toString());
+            const hasUpvoted = post.upVotes.includes(userId);
+            const hasDownvoted = post.downVotes.includes(userId);
+
+            let hasVotedOnPoll = false;
+            let selectedPollOption = null;
+            if (post.pollOptions.length > 0) {
+                if (req.user.selectedBoolOption) {
+                    const userSelectedOption = req.user.selectedBoolOption;
+                    if (userSelectedOption) {
+                        hasVotedOnPoll = true;
+                    }
+                }
+            }
+
+
+            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            // post.votesUpCount = upVotesCount;
+            //post.votesDownCount = downVotesCount;
+            //post.isSaved = savedPostIds.includes(post._id.toString());
             await post.save();
+            const postInfo = {
+                _id: post._id,
+                userId: userId,
+                userProfilePic: user.userProfilePic,
+                hasUpvoted: hasUpvoted,
+                hasDownvoted: hasDownvoted,
+                hasVotedOnPoll: hasVotedOnPoll,
+                selectedPollOption: selectedPollOption,
+                upVotes: post.upVotes,
+                downVotes: post.downVotes,
+                votesUpCount: post.upVotes ? post.upVotes.length : 0,
+                votesDownCount: post.downVotes ? post.downVotes.length : 0,
+                sharesCount: post.sharesCount,
+                commentsCount: post.commentsCount,
+                title: post.title,
+                content: post.content,
+                community: post.community,
+                type: post.type,
+                pollExpiration: post.pollExpiration,
+                isPollEnabled: post.isPollEnabled,
+                pollVotingLength: post.pollVotingLength,
+                isSpoiler: post.isSpoiler,
+                isNsfw: post.isNsfw,
+                sendPostReplyNotification: post.sendPostReplyNotification,
+                isCommentsLocked: post.isCommentsLocked,
+                isSaved: savedPostIds.includes(post._id.toString()),
+                hiddenBy: post.hiddenBy,
+                comments: post.comments,
+                date: post.date,
+                pollOptions: post.pollOptions,
+                attachments: post.attachments,
+            };
+
+            postInfoArray.push(postInfo);
         }
-        res.status(200).json(visiblePosts);
+        res.status(200).json(postInfoArray);
     } catch (err) {
         console.error('Error fetching posts:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -230,22 +280,66 @@ exports.getAllPostsInCommunity = async (req, res) => {
         }
         const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
         const savedPostIds = user.savedPosts || [];
+        const postInfoArray = [];
         for (let post of visiblePosts) {
             post.numberOfViews++;
-            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            post.votesUpCount = upVotesCount;
-            post.votesDownCount = downVotesCount;
-            post.isSaved = savedPostIds.includes(post._id.toString());
+            const hasUpvoted = post.upVotes.includes(userId);
+            const hasDownvoted = post.downVotes.includes(userId);
+
+            let hasVotedOnPoll = false;
+            let selectedPollOption = null;
+            if (post.pollOptions.length > 0) {
+                if (req.user.selectedBoolOption) {
+                    const userSelectedOption = req.user.selectedBoolOption;
+                    if (userSelectedOption) {
+                        hasVotedOnPoll = true;
+                    }
+                }
+            }
+
+
+            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            // post.votesUpCount = upVotesCount;
+            //post.votesDownCount = downVotesCount;
+            //post.isSaved = savedPostIds.includes(post._id.toString());
             await post.save();
+            const postInfo = {
+                _id: post._id,
+                userId: userId,
+                userProfilePic: user.userProfilePic,
+                hasUpvoted: hasUpvoted,
+                hasDownvoted: hasDownvoted,
+                hasVotedOnPoll: hasVotedOnPoll,
+                selectedPollOption: selectedPollOption,
+                upVotes: post.upVotes,
+                downVotes: post.downVotes,
+                votesUpCount: post.upVotes ? post.upVotes.length : 0,
+                votesDownCount: post.downVotes ? post.downVotes.length : 0,
+                sharesCount: post.sharesCount,
+                commentsCount: post.commentsCount,
+                title: post.title,
+                content: post.content,
+                community: post.community,
+                type: post.type,
+                pollExpiration: post.pollExpiration,
+                isPollEnabled: post.isPollEnabled,
+                pollVotingLength: post.pollVotingLength,
+                isSpoiler: post.isSpoiler,
+                isNsfw: post.isNsfw,
+                sendPostReplyNotification: post.sendPostReplyNotification,
+                isCommentsLocked: post.isCommentsLocked,
+                isSaved: savedPostIds.includes(post._id.toString()),
+                hiddenBy: post.hiddenBy,
+                comments: post.comments,
+                date: post.date,
+                pollOptions: post.pollOptions,
+                attachments: post.attachments,
+            };
+
+            postInfoArray.push(postInfo);
         }
-        res.status(200).json(visiblePosts);
-        /*   for (let post of posts) {
-              post = await Post.findById(post._id);
-              post.numberOfViews++;
-              await post.save();
-          }
-          res.status(200).json(posts); */
+        res.status(200).json(postInfoArray);
     } catch (err) {
         console.error('Error fetching posts:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -307,16 +401,66 @@ exports.getSavedPosts = async (req, res) => {
         }
 
         const visiblePosts = savedPosts.filter(post => !post.hiddenBy.includes(userId));
+        const postInfoArray = [];
         for (let post of visiblePosts) {
             post.numberOfViews++;
-            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            post.votesUpCount = upVotesCount;
-            post.votesDownCount = downVotesCount;
-            post.isSaved = savedPostIds.includes(post._id.toString());
+            const hasUpvoted = post.upVotes.includes(userId);
+            const hasDownvoted = post.downVotes.includes(userId);
+
+            let hasVotedOnPoll = false;
+            let selectedPollOption = null;
+            if (post.pollOptions.length > 0) {
+                if (req.user.selectedBoolOption) {
+                    const userSelectedOption = req.user.selectedBoolOption;
+                    if (userSelectedOption) {
+                        hasVotedOnPoll = true;
+                    }
+                }
+            }
+
+
+            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            // post.votesUpCount = upVotesCount;
+            //post.votesDownCount = downVotesCount;
+            //post.isSaved = savedPostIds.includes(post._id.toString());
             await post.save();
+            const postInfo = {
+                _id: post._id,
+                userId: userId,
+                userProfilePic: user.userProfilePic,
+                hasUpvoted: hasUpvoted,
+                hasDownvoted: hasDownvoted,
+                hasVotedOnPoll: hasVotedOnPoll,
+                selectedPollOption: selectedPollOption,
+                upVotes: post.upVotes,
+                downVotes: post.downVotes,
+                votesUpCount: post.upVotes ? post.upVotes.length : 0,
+                votesDownCount: post.downVotes ? post.downVotes.length : 0,
+                sharesCount: post.sharesCount,
+                commentsCount: post.commentsCount,
+                title: post.title,
+                content: post.content,
+                community: post.community,
+                type: post.type,
+                pollExpiration: post.pollExpiration,
+                isPollEnabled: post.isPollEnabled,
+                pollVotingLength: post.pollVotingLength,
+                isSpoiler: post.isSpoiler,
+                isNsfw: post.isNsfw,
+                sendPostReplyNotification: post.sendPostReplyNotification,
+                isCommentsLocked: post.isCommentsLocked,
+                isSaved: savedPostIds.includes(post._id.toString()),
+                hiddenBy: post.hiddenBy,
+                comments: post.comments,
+                date: post.date,
+                pollOptions: post.pollOptions,
+                attachments: post.attachments,
+            };
+
+            postInfoArray.push(postInfo);
         }
-        res.status(200).json(visiblePosts);
+        res.status(200).json(postInfoArray);
     } catch (err) {
         console.error('Error fetching saved posts:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -569,16 +713,66 @@ exports.getUpvotedPosts = async (req, res) => {
         }
         const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
         const savedPostIds = user.savedPosts || [];
+        const postInfoArray = [];
         for (let post of visiblePosts) {
             post.numberOfViews++;
-            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            post.votesUpCount = upVotesCount;
-            post.votesDownCount = downVotesCount;
-            post.isSaved = savedPostIds.includes(post._id.toString());
+            const hasUpvoted = post.upVotes.includes(userId);
+            const hasDownvoted = post.downVotes.includes(userId);
+
+            let hasVotedOnPoll = false;
+            let selectedPollOption = null;
+            if (post.pollOptions.length > 0) {
+                if (req.user.selectedBoolOption) {
+                    const userSelectedOption = req.user.selectedBoolOption;
+                    if (userSelectedOption) {
+                        hasVotedOnPoll = true;
+                    }
+                }
+            }
+
+
+            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            // post.votesUpCount = upVotesCount;
+            //post.votesDownCount = downVotesCount;
+            //post.isSaved = savedPostIds.includes(post._id.toString());
             await post.save();
+            const postInfo = {
+                _id: post._id,
+                userId: userId,
+                userProfilePic: user.userProfilePic,
+                hasUpvoted: hasUpvoted,
+                hasDownvoted: hasDownvoted,
+                hasVotedOnPoll: hasVotedOnPoll,
+                selectedPollOption: selectedPollOption,
+                upVotes: post.upVotes,
+                downVotes: post.downVotes,
+                votesUpCount: post.upVotes ? post.upVotes.length : 0,
+                votesDownCount: post.downVotes ? post.downVotes.length : 0,
+                sharesCount: post.sharesCount,
+                commentsCount: post.commentsCount,
+                title: post.title,
+                content: post.content,
+                community: post.community,
+                type: post.type,
+                pollExpiration: post.pollExpiration,
+                isPollEnabled: post.isPollEnabled,
+                pollVotingLength: post.pollVotingLength,
+                isSpoiler: post.isSpoiler,
+                isNsfw: post.isNsfw,
+                sendPostReplyNotification: post.sendPostReplyNotification,
+                isCommentsLocked: post.isCommentsLocked,
+                isSaved: savedPostIds.includes(post._id.toString()),
+                hiddenBy: post.hiddenBy,
+                comments: post.comments,
+                date: post.date,
+                pollOptions: post.pollOptions,
+                attachments: post.attachments,
+            };
+
+            postInfoArray.push(postInfo);
         }
-        res.status(200).json(visiblePosts);
+        res.status(200).json(postInfoArray);
     } catch (err) {
         console.error('Error fetching upvoted posts:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -600,16 +794,66 @@ exports.getDownvotedPosts = async (req, res) => {
         }
         const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
         const savedPostIds = user.savedPosts || [];
+        const postInfoArray = [];
         for (let post of visiblePosts) {
             post.numberOfViews++;
-            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            post.votesUpCount = upVotesCount;
-            post.votesDownCount = downVotesCount;
-            post.isSaved = savedPostIds.includes(post._id.toString());
+            const hasUpvoted = post.upVotes.includes(userId);
+            const hasDownvoted = post.downVotes.includes(userId);
+
+            let hasVotedOnPoll = false;
+            let selectedPollOption = null;
+            if (post.pollOptions.length > 0) {
+                if (req.user.selectedBoolOption) {
+                    const userSelectedOption = req.user.selectedBoolOption;
+                    if (userSelectedOption) {
+                        hasVotedOnPoll = true;
+                    }
+                }
+            }
+
+
+            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            // post.votesUpCount = upVotesCount;
+            //post.votesDownCount = downVotesCount;
+            //post.isSaved = savedPostIds.includes(post._id.toString());
             await post.save();
+            const postInfo = {
+                _id: post._id,
+                userId: userId,
+                userProfilePic: user.userProfilePic,
+                hasUpvoted: hasUpvoted,
+                hasDownvoted: hasDownvoted,
+                hasVotedOnPoll: hasVotedOnPoll,
+                selectedPollOption: selectedPollOption,
+                upVotes: post.upVotes,
+                downVotes: post.downVotes,
+                votesUpCount: post.upVotes ? post.upVotes.length : 0,
+                votesDownCount: post.downVotes ? post.downVotes.length : 0,
+                sharesCount: post.sharesCount,
+                commentsCount: post.commentsCount,
+                title: post.title,
+                content: post.content,
+                community: post.community,
+                type: post.type,
+                pollExpiration: post.pollExpiration,
+                isPollEnabled: post.isPollEnabled,
+                pollVotingLength: post.pollVotingLength,
+                isSpoiler: post.isSpoiler,
+                isNsfw: post.isNsfw,
+                sendPostReplyNotification: post.sendPostReplyNotification,
+                isCommentsLocked: post.isCommentsLocked,
+                isSaved: savedPostIds.includes(post._id.toString()),
+                hiddenBy: post.hiddenBy,
+                comments: post.comments,
+                date: post.date,
+                pollOptions: post.pollOptions,
+                attachments: post.attachments,
+            };
+
+            postInfoArray.push(postInfo);
         }
-        res.status(200).json(visiblePosts);
+        res.status(200).json(postInfoArray);
     } catch (err) {
         console.error('Error fetching downvoted posts:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -719,16 +963,66 @@ exports.getHiddenPosts = async (req, res) => {
 
         const hiddenPosts = user.hiddenPosts;
         const savedPostIds = user.savedPosts || [];
-        for (let post of hiddenPosts) {
+        const postInfoArray = [];
+        for (let post of visiblePosts) {
             post.numberOfViews++;
-            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            post.votesUpCount = upVotesCount;
-            post.votesDownCount = downVotesCount;
-            post.isSaved = savedPostIds.includes(post._id.toString());
+            const hasUpvoted = post.upVotes.includes(userId);
+            const hasDownvoted = post.downVotes.includes(userId);
+
+            let hasVotedOnPoll = false;
+            let selectedPollOption = null;
+            if (post.pollOptions.length > 0) {
+                if (req.user.selectedBoolOption) {
+                    const userSelectedOption = req.user.selectedBoolOption;
+                    if (userSelectedOption) {
+                        hasVotedOnPoll = true;
+                    }
+                }
+            }
+
+
+            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+            // post.votesUpCount = upVotesCount;
+            //post.votesDownCount = downVotesCount;
+            //post.isSaved = savedPostIds.includes(post._id.toString());
             await post.save();
+            const postInfo = {
+                _id: post._id,
+                userId: userId,
+                userProfilePic: user.userProfilePic,
+                hasUpvoted: hasUpvoted,
+                hasDownvoted: hasDownvoted,
+                hasVotedOnPoll: hasVotedOnPoll,
+                selectedPollOption: selectedPollOption,
+                upVotes: post.upVotes,
+                downVotes: post.downVotes,
+                votesUpCount: post.upVotes ? post.upVotes.length : 0,
+                votesDownCount: post.downVotes ? post.downVotes.length : 0,
+                sharesCount: post.sharesCount,
+                commentsCount: post.commentsCount,
+                title: post.title,
+                content: post.content,
+                community: post.community,
+                type: post.type,
+                pollExpiration: post.pollExpiration,
+                isPollEnabled: post.isPollEnabled,
+                pollVotingLength: post.pollVotingLength,
+                isSpoiler: post.isSpoiler,
+                isNsfw: post.isNsfw,
+                sendPostReplyNotification: post.sendPostReplyNotification,
+                isCommentsLocked: post.isCommentsLocked,
+                isSaved: savedPostIds.includes(post._id.toString()),
+                hiddenBy: post.hiddenBy,
+                comments: post.comments,
+                date: post.date,
+                pollOptions: post.pollOptions,
+                attachments: post.attachments,
+            };
+
+            postInfoArray.push(postInfo);
         }
-        res.status(200).json(hiddenPosts);
+        res.status(200).json(postInfoArray);
     } catch (error) {
         console.error('Error fetching hidden posts:', error);
         return res.status(500).json({ error: 'Internal server error' });
@@ -808,8 +1102,8 @@ exports.voteInPoll = async (req, res) => {
     try {
         const postId = req.params.postId;
         const { selectedOption } = req.body;
-        const userId = req.user._id;
 
+        const userId = req.user._id;
         if (!postId || !selectedOption) {
             return res.status(400).json({ error: 'Post ID and selected option are required' });
         }
@@ -834,6 +1128,11 @@ exports.voteInPoll = async (req, res) => {
 
         post.pollOptions[optionIndex].votes++;
         post.votedUsers.push(userId);
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        user.selectedPollOption = selectedOption;
         await post.save();
 
         return res.status(200).json({ message: 'Vote cast successfully' });
