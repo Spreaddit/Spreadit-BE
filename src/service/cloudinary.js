@@ -14,17 +14,20 @@ cloudinary.config({
 });
 
 
-const uploadMedia = function (file) {
+const uploadMedia = function (file, fileType) {
   return new Promise((resolve, reject) => {
+    const resourceType = fileType === "image" ? "image" : "video"; // Determine resource type based on fileType
     cloudinary.uploader.upload(
       file.path,
       {
         folder: "uploads", // Optional folder in Cloudinary where the file will be uploaded
         public_id: file.filename, // Optional public ID for the file
+        resource_type: resourceType // Specify the resource type (image or video)
       },
       (error, result) => {
         if (error) {
           console.error('An error occurred:', error);
+          reject(error);
         } else {
           console.log(result);
           resolve(result);

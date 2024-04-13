@@ -48,13 +48,60 @@ exports.getPostById = async (req, res) => {
             post.votesUpCount = upVotesCount;
             post.votesDownCount = downVotesCount;
             post.isSaved = savedPostIds.includes(post._id.toString());
+            const hasUpvoted = post.upVotes.includes(userId);
+            const hasDownvoted = post.downVotes.includes(userId);
+
+            let hasVotedOnPoll = false;
+            let selectedPollOption = null;
+            if (post.pollOptions.length > 0) {
+                if (req.user.selectedPollOption) {
+                    const userSelectedOption = req.user.selectedPollOption;
+                    if (userSelectedOption) {
+                        hasVotedOnPoll = true;
+                    }
+                }
+            }
             const addRecentPost = await User.findByIdAndUpdate(
                 userId,
                 { $addToSet: { recentPosts: postId } },
                 { new: true }
             );
             await post.save();
-            res.status(200).json(post);
+            const postInfo = {
+                _id: post._id,
+                userId: userId,
+                userProfilePic: user.userProfilePic,
+                hasUpvoted: hasUpvoted,
+                hasDownvoted: hasDownvoted,
+                hasVotedOnPoll: hasVotedOnPoll,
+                selectedPollOption: selectedPollOption,
+                upVotes: post.upVotes,
+                downVotes: post.downVotes,
+                votesUpCount: post.upVotes ? post.upVotes.length : 0,
+                votesDownCount: post.downVotes ? post.downVotes.length : 0,
+                sharesCount: post.sharesCount,
+                commentsCount: post.commentsCount,
+                title: post.title,
+                content: post.content,
+                community: post.community,
+                type: post.type,
+                pollExpiration: post.pollExpiration,
+                isPollEnabled: post.isPollEnabled,
+                pollVotingLength: post.pollVotingLength,
+                isSpoiler: post.isSpoiler,
+                isNsfw: post.isNsfw,
+                sendPostReplyNotification: post.sendPostReplyNotification,
+                isCommentsLocked: post.isCommentsLocked,
+                isSaved: savedPostIds.includes(post._id.toString()),
+                hiddenBy: post.hiddenBy,
+                comments: post.comments,
+                date: post.date,
+                pollOptions: post.pollOptions,
+                attachments: post.attachments,
+            };
+
+            res.status(200).json(postInfo);
+
         }
     } catch (err) {
         console.error("Error fetching posts:", err);
@@ -86,14 +133,13 @@ exports.getAllUserPosts = async (req, res) => {
             let hasVotedOnPoll = false;
             let selectedPollOption = null;
             if (post.pollOptions.length > 0) {
-                if (req.user.selectedBoolOption) {
-                    const userSelectedOption = req.user.selectedBoolOption;
+                if (req.user.selectedPollOption) {
+                    const userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
                 }
             }
-
 
             //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
             //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
@@ -159,7 +205,7 @@ exports.createPost = async (req, res) => {
         let attachments = [];
         if (req.files) {
             for (let i = 0; i < req.files.length; i++) {
-                const result = await uploadMedia(req.files[i]);
+                const result = await uploadMedia(req.files[i], fileType);
                 //const url = `${config.baseUrl}/media/${result.Key}`;
                 const url = result.secure_url;
                 const attachmentObj = { type: fileType, link: url };
@@ -289,14 +335,13 @@ exports.getAllPostsInCommunity = async (req, res) => {
             let hasVotedOnPoll = false;
             let selectedPollOption = null;
             if (post.pollOptions.length > 0) {
-                if (req.user.selectedBoolOption) {
-                    const userSelectedOption = req.user.selectedBoolOption;
+                if (req.user.selectedPollOption) {
+                    const userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
                 }
             }
-
 
             //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
             //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
@@ -410,14 +455,13 @@ exports.getSavedPosts = async (req, res) => {
             let hasVotedOnPoll = false;
             let selectedPollOption = null;
             if (post.pollOptions.length > 0) {
-                if (req.user.selectedBoolOption) {
-                    const userSelectedOption = req.user.selectedBoolOption;
+                if (req.user.selectedPollOption) {
+                    const userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
                 }
             }
-
 
             //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
             //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
@@ -722,8 +766,8 @@ exports.getUpvotedPosts = async (req, res) => {
             let hasVotedOnPoll = false;
             let selectedPollOption = null;
             if (post.pollOptions.length > 0) {
-                if (req.user.selectedBoolOption) {
-                    const userSelectedOption = req.user.selectedBoolOption;
+                if (req.user.selectedPollOption) {
+                    const userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
@@ -803,14 +847,13 @@ exports.getDownvotedPosts = async (req, res) => {
             let hasVotedOnPoll = false;
             let selectedPollOption = null;
             if (post.pollOptions.length > 0) {
-                if (req.user.selectedBoolOption) {
-                    const userSelectedOption = req.user.selectedBoolOption;
+                if (req.user.selectedPollOption) {
+                    const userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
                 }
             }
-
 
             //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
             //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
@@ -972,8 +1015,8 @@ exports.getHiddenPosts = async (req, res) => {
             let hasVotedOnPoll = false;
             let selectedPollOption = null;
             if (post.pollOptions.length > 0) {
-                if (req.user.selectedBoolOption) {
-                    const userSelectedOption = req.user.selectedBoolOption;
+                if (req.user.selectedPollOption) {
+                    const userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
