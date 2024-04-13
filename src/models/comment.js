@@ -111,6 +111,8 @@ CommentSchema.statics.getCommentObject = async function (
     const Post = mongoose.model("post");
     const isHidden = comment.hiddenBy.includes(userid);
     const isSaved = comment.savedBy.includes(userid);
+    // const isUpvoted = ;
+    // const isDownVoted =;
     let postTitle; 
     let subredditTitle;
     if(comment.parentCommentId === null){
