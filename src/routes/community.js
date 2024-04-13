@@ -12,8 +12,8 @@ const auth = require("../middleware/authentication");
 //TODO: Get rules
 //TODO: handling if user is moderator
 //TODO: handling restricted and private communities
-//TODO: return only certain parts of the community
 //TODO: delete community
+//TODO: Handling user community
 router.post("/rule/add", auth.authentication, async (req, res) => {
   try {
     const { title, description, reportReason, communityName } = req.body;
@@ -301,6 +301,7 @@ router.post("/community/subscribe", auth.authentication, async (req, res) => {
     user.subscribedCommunities.push(community._id);
     await user.save();
     community.membersCount += 1;
+    communtiy.members.push(user._id);
     await community.save();
     res.status(200).json({ message: "Subscribed to the community successfully" });
   } catch (error) {
@@ -334,6 +335,7 @@ router.post("/community/unsubscribe", auth.authentication, async (req, res) => {
     user.subscribedCommunities.splice(index, 1);
     await user.save();
     community.membersCount -= 1;
+    community.members.splice(community.members.indexOf(user._id), 1);
     await community.save();
 
     res.status(200).json({ message: "Unsubscribed from the community successfully" });
@@ -368,7 +370,7 @@ router.get("/community/is-subscribed", auth.authentication, async (req, res) => 
   }
 });
 
-router.get("/community/top-communities", auth.authentication, async (req, res) => {
+router.get("/community/top-communities", async (req, res) => {
   try {
     const page = req.query.page || 1;
     const limit = 250;
@@ -377,10 +379,15 @@ router.get("/community/top-communities", auth.authentication, async (req, res) =
     const totalCommunities = await Community.countDocuments();
     const totalPages = Math.ceil(totalCommunities / limit);
 
-    const communities = await Community.find().sort({ membersCount: -1 }).skip(skip).limit(limit);
+    const communities = await Community.find({ communityType: "Public" })
+      .sort({ membersCount: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select("name category communityType description image memberscount rules dateCreated communityBanner")
+      .populate("rules", "title description reportReason");
 
     if (communities.length == 0) {
-      return res.status(404).json({ message: "No communities found" });
+      return res.status(404).json({ message: "No Public communities found" });
     }
     res.status(200).json({
       communities: communities,
@@ -393,21 +400,46 @@ router.get("/community/top-communities", auth.authentication, async (req, res) =
   }
 });
 
-router.get("/community/random-category", auth.authentication, async (req, res) => {
+router.get("/community/random-category", async (req, res) => {
   try {
-    let randomCommunity;
+    let randomCommunity,
+      attempts = 0;
     do {
       randomCommunity = await Community.aggregate([{ $sample: { size: 1 } }]);
-    } while (!randomCommunity[0].category);
+      attempts++;
+    } while (!randomCommunity[0].category /*&& attempts != Community.countDocuments()*/);
+    let communities;
+    if (randomCommunity[0].category) {
+      const randomCategory = randomCommunity[0].category;
 
-    const randomCategory = randomCommunity[0].category;
-
-    const communities = await Community.aggregate([
-      { $match: { category: randomCategory } },
-      { $sample: { size: 25 } },
-    ]);
-
-    if (communities.length == 0) {
+      communities = await Community.aggregate([
+        { $match: { category: randomCategory } },
+        { $sample: { size: 25 } },
+        {
+          $lookup: {
+            from: "rules",
+            localField: "rules",
+            foreignField: "_id",
+            as: "populatedRules",
+          },
+        },
+        { $unwind: "$populatedRules" },
+        {
+          $group: {
+            _id: "$_id",
+            name: { $first: "$name" },
+            category: { $first: "$category" },
+            communityType: { $first: "$communityType" },
+            description: { $first: "$description" },
+            image: { $first: "$image" },
+            membersCount: { $first: "$membersCount" },
+            rules: { $push: "$populatedRules" },
+            dateCreated: { $first: "$dateCreated" },
+            communityBanner: { $first: "$communityBanner" },
+          },
+        },
+      ]);
+    } else {
       return res.status(404).json({ message: "No random communities found" });
     }
 
@@ -418,7 +450,7 @@ router.get("/community/random-category", auth.authentication, async (req, res) =
   }
 });
 
-router.get("/community/get-specific-category", auth.authentication, async (req, res) => {
+router.get("/community/get-specific-category", async (req, res) => {
   try {
     const category = req.query.category;
 
@@ -426,7 +458,33 @@ router.get("/community/get-specific-category", auth.authentication, async (req, 
       return res.status(400).json({ message: "Invalid request parameters" });
     }
 
-    const communities = await Community.aggregate([{ $match: { category } }, { $sample: { size: 25 } }]);
+    const communities = await Community.aggregate([
+      { $match: { category } },
+      { $sample: { size: 25 } },
+      {
+        $lookup: {
+          from: "rules",
+          localField: "rules",
+          foreignField: "_id",
+          as: "populatedRules",
+        },
+      },
+      { $unwind: "$populatedRules" },
+      {
+        $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
+          category: { $first: "$category" },
+          communityType: { $first: "$communityType" },
+          description: { $first: "$description" },
+          image: { $first: "$image" },
+          membersCount: { $first: "$membersCount" },
+          rules: { $push: "$populatedRules" },
+          dateCreated: { $first: "$dateCreated" },
+          communityBanner: { $first: "$communityBanner" },
+        },
+      },
+    ]);
 
     if (communities.length == 0) {
       return res.status(404).json({
@@ -441,7 +499,7 @@ router.get("/community/get-specific-category", auth.authentication, async (req, 
   }
 });
 
-router.get("/community/get-info", auth.authentication, async (req, res) => {
+router.get("/community/get-info", async (req, res) => {
   try {
     const communityName = req.query.communityName;
 
@@ -449,7 +507,9 @@ router.get("/community/get-info", auth.authentication, async (req, res) => {
       return res.status(400).json({ message: "Invalid request parameters" });
     }
 
-    const community = await Community.findOne({ name: communityName });
+    const community = await Community.findOne({ name: communityName })
+      .select("name category communityType description image membersCount rules dateCreated communityBanner")
+      .populate("rules", "title description reportReason");
 
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
