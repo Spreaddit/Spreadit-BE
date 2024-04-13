@@ -2350,7 +2350,7 @@
 
 //#endregion Community
 
-//#region User Info
+//#region User
 /**
  * @api {get} /user/profile-info/:username Get User Profile Information
  * @apiVersion 0.1.0
@@ -2588,4 +2588,4 @@
  *     curl -X POST -H "Authorization: Bearer <token>" -d "username=exampleUser&reason=Spam" http://api.example.com/report
  */
 
-//#endregion User Info
+//#endregion User
