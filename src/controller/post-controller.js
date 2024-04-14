@@ -29,85 +29,83 @@ exports.getAllPosts = async (req, res) => {
 
 exports.getPostById = async (req, res) => {
     try {
-        const userId = req.user._id;
         const postId = req.params.postId;
         const post = await Post.findById(postId);
 
-        if (!post || post.length === 0) {
-            return res.status(404).json({ error: "post not found" });
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
         }
 
-        const user = await User.findById(userId);
-        const isPostVisible = !post.hiddenBy.includes(userId);
-        if (isPostVisible) {
-            const savedPostIds = user ? user.savedPosts : [];
+        const user = await User.findById(post.userId); // Fetch user who made the post
+        const savedPostIds = user ? user.savedPosts : [];
 
-            post.numberOfViews++;
-            const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            post.votesUpCount = upVotesCount;
-            post.votesDownCount = downVotesCount;
-            post.isSaved = savedPostIds.includes(post._id.toString());
-            const hasUpvoted = post.upVotes.includes(userId);
-            const hasDownvoted = post.downVotes.includes(userId);
+        post.numberOfViews++;
+        const upVotesCount = post.upVotes ? post.upVotes.length : 0;
+        const downVotesCount = post.downVotes ? post.downVotes.length : 0;
+        post.votesUpCount = upVotesCount;
+        post.votesDownCount = downVotesCount;
+        const hasUpvoted = post.upVotes.includes(req.user._id);
+        const hasDownvoted = post.downVotes.includes(req.user._id);
 
-            let hasVotedOnPoll = false;
-            let selectedPollOption = null;
-            if (post.pollOptions.length > 0) {
-                if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
-                    if (userSelectedOption) {
-                        hasVotedOnPoll = true;
-                    }
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0) {
+            if (req.user.selectedPollOption) {
+                userSelectedOption = req.user.selectedPollOption;
+                if (userSelectedOption) {
+                    hasVotedOnPoll = true;
                 }
             }
-            const addRecentPost = await User.findByIdAndUpdate(
-                userId,
-                { $addToSet: { recentPosts: postId } },
-                { new: true }
-            );
-            await post.save();
-            const postInfo = {
-                _id: post._id,
-                userId: userId,
-                userProfilePic: user.userProfilePic,
-                hasUpvoted: hasUpvoted,
-                hasDownvoted: hasDownvoted,
-                hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
-                votesUpCount: post.upVotes ? post.upVotes.length : 0,
-                votesDownCount: post.downVotes ? post.downVotes.length : 0,
-                sharesCount: post.sharesCount,
-                commentsCount: post.commentsCount,
-                title: post.title,
-                content: post.content,
-                community: post.community,
-                type: post.type,
-                pollExpiration: post.pollExpiration,
-                isPollEnabled: post.isPollEnabled,
-                pollVotingLength: post.pollVotingLength,
-                isSpoiler: post.isSpoiler,
-                isNsfw: post.isNsfw,
-                sendPostReplyNotification: post.sendPostReplyNotification,
-                isCommentsLocked: post.isCommentsLocked,
-                isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
-                comments: post.comments,
-                date: post.date,
-                pollOptions: post.pollOptions,
-                attachments: post.attachments,
-            };
-
-            res.status(200).json(postInfo);
-
         }
+
+        const isHidden = post.hiddenBy.includes(req.user._id);
+
+        const addRecentPost = await User.findByIdAndUpdate(
+            req.user._id,
+            { $addToSet: { recentPosts: postId } },
+            { new: true }
+        );
+
+        await post.save();
+
+        const postInfo = {
+            _id: post._id,
+            userId: post.userId,
+            username: user.username,
+            userProfilePic: user.avatar,
+            hasUpvoted: hasUpvoted,
+            hasDownvoted: hasDownvoted,
+            hasVotedOnPoll: hasVotedOnPoll,
+            selectedPollOption: userSelectedOption,
+            isHidden: isHidden,
+            votesUpCount: upVotesCount,
+            votesDownCount: downVotesCount,
+            sharesCount: post.sharesCount,
+            commentsCount: post.commentsCount,
+            title: post.title,
+            content: post.content,
+            community: post.community,
+            type: post.type,
+            pollExpiration: post.pollExpiration,
+            isPollEnabled: post.isPollEnabled,
+            pollVotingLength: post.pollVotingLength,
+            isSpoiler: post.isSpoiler,
+            isNsfw: post.isNsfw,
+            sendPostReplyNotification: post.sendPostReplyNotification,
+            isCommentsLocked: post.isCommentsLocked,
+            isSaved: savedPostIds.includes(post._id.toString()),
+            comments: post.comments,
+            date: post.date,
+            pollOptions: post.pollOptions,
+            attachments: post.attachments,
+        };
+        res.status(200).json(postInfo);
     } catch (err) {
-        console.error("Error fetching posts:", err);
+        console.error("Error fetching post:", err);
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
 
 exports.getAllUserPosts = async (req, res) => {
     try {
@@ -127,36 +125,30 @@ exports.getAllUserPosts = async (req, res) => {
         const postInfoArray = [];
         for (let post of visiblePosts) {
             post.numberOfViews++;
+            const postUser = await User.findById(post.userId);
             const hasUpvoted = post.upVotes.includes(userId);
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
                 }
             }
 
-            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            // post.votesUpCount = upVotesCount;
-            //post.votesDownCount = downVotesCount;
-            //post.isSaved = savedPostIds.includes(post._id.toString());
-            await post.save();
             const postInfo = {
                 _id: post._id,
                 userId: userId,
-                userProfilePic: user.userProfilePic,
+                username: postUser.username,
+                userProfilePic: postUser.avatar,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
+                selectedPollOption: userSelectedOption,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -173,7 +165,6 @@ exports.getAllUserPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
@@ -205,7 +196,7 @@ exports.createPost = async (req, res) => {
         let attachments = [];
         if (req.files) {
             for (let i = 0; i < req.files.length; i++) {
-                const result = await uploadMedia(req.files[i]);
+                const result = await uploadMedia(req.files[i], fileType);
                 //const url = `${config.baseUrl}/media/${result.Key}`;
                 const url = result.secure_url;
                 const attachmentObj = { type: fileType, link: url };
@@ -329,14 +320,16 @@ exports.getAllPostsInCommunity = async (req, res) => {
         const postInfoArray = [];
         for (let post of visiblePosts) {
             post.numberOfViews++;
+            const postUser = await User.findById(post.userId);
             const hasUpvoted = post.upVotes.includes(userId);
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    console.log(req.user.selectedPollOption);
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
@@ -352,13 +345,13 @@ exports.getAllPostsInCommunity = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
-                userProfilePic: user.userProfilePic,
+                username: postUser.username,
+                userProfilePic: postUser.avatar,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
+                selectedPollOption: userSelectedOption,
+
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -375,7 +368,6 @@ exports.getAllPostsInCommunity = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
@@ -453,10 +445,10 @@ exports.getSavedPosts = async (req, res) => {
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
@@ -472,13 +464,12 @@ exports.getSavedPosts = async (req, res) => {
             const postInfo = {
                 _id: post._id,
                 userId: userId,
-                userProfilePic: user.userProfilePic,
+                username: user.username,
+                userProfilePic: user.avatar,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
+                selectedPollOption: userSelectedOption,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -495,7 +486,6 @@ exports.getSavedPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
@@ -756,41 +746,33 @@ exports.getUpvotedPosts = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
         const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
-        const savedPostIds = user.savedPosts || [];
         const postInfoArray = [];
         for (let post of visiblePosts) {
             post.numberOfViews++;
+            const postUser = await User.findById(post.userId);
             const hasUpvoted = post.upVotes.includes(userId);
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
                 }
             }
 
-
-            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            // post.votesUpCount = upVotesCount;
-            //post.votesDownCount = downVotesCount;
-            //post.isSaved = savedPostIds.includes(post._id.toString());
-            await post.save();
             const postInfo = {
                 _id: post._id,
                 userId: userId,
-                userProfilePic: user.userProfilePic,
+                username: postUser.username,
+                userProfilePic: postUser.avatar,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
+                selectedPollOption: userSelectedOption,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -806,8 +788,7 @@ exports.getUpvotedPosts = async (req, res) => {
                 isNsfw: post.isNsfw,
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
-                isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
+                isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
@@ -823,6 +804,7 @@ exports.getUpvotedPosts = async (req, res) => {
     }
 };
 
+
 exports.getDownvotedPosts = async (req, res) => {
     try {
         const userId = req.user._id;
@@ -837,40 +819,33 @@ exports.getDownvotedPosts = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
         const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
-        const savedPostIds = user.savedPosts || [];
         const postInfoArray = [];
         for (let post of visiblePosts) {
             post.numberOfViews++;
+            const postUser = await User.findById(post.userId);
             const hasUpvoted = post.upVotes.includes(userId);
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
                 }
             }
 
-            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            // post.votesUpCount = upVotesCount;
-            //post.votesDownCount = downVotesCount;
-            //post.isSaved = savedPostIds.includes(post._id.toString());
-            await post.save();
             const postInfo = {
                 _id: post._id,
                 userId: userId,
-                userProfilePic: user.userProfilePic,
+                username: postUser.username,
+                userProfilePic: postUser.avatar,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
+                selectedPollOption: userSelectedOption,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -886,8 +861,7 @@ exports.getDownvotedPosts = async (req, res) => {
                 isNsfw: post.isNsfw,
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
-                isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
+                isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
@@ -1005,41 +979,33 @@ exports.getHiddenPosts = async (req, res) => {
         }
 
         const hiddenPosts = user.hiddenPosts;
-        const savedPostIds = user.savedPosts || [];
         const postInfoArray = [];
-        for (let post of visiblePosts) {
+        for (let post of hiddenPosts) {
             post.numberOfViews++;
+            const postUser = await User.findById(post.userId);
             const hasUpvoted = post.upVotes.includes(userId);
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
-            let selectedPollOption = null;
+            let userSelectedOption = null;
             if (post.pollOptions.length > 0) {
                 if (req.user.selectedPollOption) {
-                    const userSelectedOption = req.user.selectedPollOption;
+                    userSelectedOption = req.user.selectedPollOption;
                     if (userSelectedOption) {
                         hasVotedOnPoll = true;
                     }
                 }
             }
 
-
-            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            // post.votesUpCount = upVotesCount;
-            //post.votesDownCount = downVotesCount;
-            //post.isSaved = savedPostIds.includes(post._id.toString());
-            await post.save();
             const postInfo = {
                 _id: post._id,
                 userId: userId,
-                userProfilePic: user.userProfilePic,
+                username: postUser.username,
+                userProfilePic: postUser.avatar,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
-                selectedPollOption: selectedPollOption,
-                upVotes: post.upVotes,
-                downVotes: post.downVotes,
+                selectedPollOption: userSelectedOption,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -1055,8 +1021,7 @@ exports.getHiddenPosts = async (req, res) => {
                 isNsfw: post.isNsfw,
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
-                isSaved: savedPostIds.includes(post._id.toString()),
-                hiddenBy: post.hiddenBy,
+                isSaved: user.savedPosts.includes(post._id.toString()),
                 comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
@@ -1176,6 +1141,7 @@ exports.voteInPoll = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
         user.selectedPollOption = selectedOption;
+        await user.save();
         await post.save();
 
         return res.status(200).json({ message: 'Vote cast successfully' });

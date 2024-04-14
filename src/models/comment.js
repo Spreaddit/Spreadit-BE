@@ -175,6 +175,26 @@ CommentSchema.statics.getCommentReplies = async function (comment, userId) {
     return comment;
 };
 
+CommentSchema.statics.getCommentRepliesss = async function (comment, userId) {
+    const replyComments = await Comment.find({
+        parentCommentId: comment.id,
+    });
+
+    // Initialize replies as an empty array
+    comment.replies = [];
+
+    for (let i = 0; i < replyComments.length; i++) {
+        const reply = replyComments[i];
+        const replyObject = await Comment.getCommentObject(reply, userId, true);
+        const nestedReplies = await Comment.getCommentReplies(replyObject, userId);
+        replyObject.replies = nestedReplies.replies;
+        comment.replies.push(replyObject);
+    }
+
+    return comment.replies; // Return the array of replies
+};
+
+
 
 
 const Comment = mongoose.model("comment", CommentSchema);
