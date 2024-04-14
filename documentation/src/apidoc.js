@@ -81,11 +81,11 @@
  * @apiName GoogleOAuth
  * @apiGroup Authentication
  * @apiDescription Authenticate with Google OAuth to sign in or sign up a user.
- * This endpoint verifies the Google OAuth token provided in the request and 
- * either signs in an existing user or creates a new user if no user with the 
+ * This endpoint verifies the Google OAuth token provided in the request and
+ * either signs in an existing user or creates a new user if no user with the
  * Google ID exists.
  * @apiSampleRequest off
- * 
+ *
  * @apiParam {String} googleToken Google OAuth token.
  * @apiParam {Boolean} [remember_me=false] Optional. Set to true to remember the logged-in user.
  *
@@ -534,9 +534,9 @@
  * @apiGroup Comments
  * @apiDescription Add a comment to a specific post.
  * @apiSampleRequest off
- * 
+ *
  * @apiHeader {String} Authorization User's authentication token.
- * 
+ *
  * @apiParam {String} postId ID of the post to which the comment will be added.
  * @apiParam {String} content Content of the comment.
  * @apiParam {String} [fileType] Type of file being attached (e.g., image, video).
@@ -587,7 +587,7 @@
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
  *     {
@@ -756,7 +756,7 @@
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -849,7 +849,7 @@
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -941,7 +941,7 @@
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -1117,7 +1117,7 @@
  * @apiSuccess {Boolean} reply.is_upvoted if the reply is upvoted by the user
  * @apiSuccess {Boolean} reply.is_downvoted if the reply is upvoted by the user
  * @apiSuccess {replyObject[]} reply.replies if the reply has a reply by default empty array
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
  *     {
@@ -1211,7 +1211,7 @@
  * @apiSuccess {Boolean} replies.is_upvoted if the reply is upvoted by the user
  * @apiSuccess {Boolean} replies.is_downvoted if the reply is upvoted by the user
  * @apiSuccess {repliesObject[]} replies.replies if the reply has a reply by default empty array
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -1247,7 +1247,7 @@
  *           "is_hidden": false,
  *           "is_saved": false,
  *           "post_title": "Sample Post Title",
- *           "community_title": "Sample Community", 
+ *           "community_title": "Sample Community",
  *           "is_upvoted": true,
  *           "is_downvoted": false,
  *           "replies": []
@@ -2539,9 +2539,6 @@
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404 Not Found) {String} error User not found.
  * @apiError (500 Internal Server Error) {String} error Internal server error.
- *
- * @apiExample {curl} Example usage:
- *     curl -X POST -H "Authorization: Bearer <token>" -d "username=exampleUser" http://api.example.com/block
  */
 
 /**
@@ -2561,9 +2558,6 @@
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404 Not Found) {String} error User not found.
  * @apiError (500 Internal Server Error) {String} error Internal server error.
- *
- * @apiExample {curl} Example usage:
- *     curl -X POST -H "Authorization: Bearer <token>" -d "username=exampleUser" http://api.example.com/unfollow
  */
 
 /**
@@ -2584,8 +2578,6 @@
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404 Not Found) {String} error User not found.
  * @apiError (500 Internal Server Error) {String} error Internal server error.
- * @apiExample {curl} Example usage:
- *     curl -X POST -H "Authorization: Bearer <token>" -d "username=exampleUser&reason=Spam" http://api.example.com/report
  */
 
 //#endregion User
