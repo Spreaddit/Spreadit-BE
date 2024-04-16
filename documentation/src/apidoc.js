@@ -683,7 +683,7 @@
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
 
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -4487,3 +4487,1152 @@
  */
 
 //#endregion listing
+
+
+//#region Post
+
+/**
+ * @api {post} /post Create Post
+ * @apiVersion 0.1.0
+ * @apiName CreatePost
+ * @apiGroup Post
+ * @apiDescription Creates a new post.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} title Title of the post.
+ * @apiParam {String} content Content of the post.
+ * @apiParam {String} community Name of the community where the post is created.
+ * @apiParam {String} type Type of the post. Possible values are: "Post", "Images & Video", "Link", "Poll".
+ * @apiParam {String} [pollOptions] Options for a poll post.
+ * @apiParam {String} [pollVotingLength] Length of time for voting on a poll post.
+ * @apiParam {String} [fileType] Type of files attached to the post (if applicable).
+ * @apiParam {String} [link] Link attached to the post (if applicable).
+ * @apiParam {Boolean} [isSpoiler] Indicates if the post contains spoilers.
+ * @apiParam {Boolean} [isNsfw] Indicates if the post is not safe for work.
+ * @apiParam {Boolean} [sendPostReplyNotification] Indicates if notifications should be sent for replies to this post.
+ * @apiParam {File[]} [images] Array of images attached to the post (if applicable).
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "title": "Sample Title",
+ *    "content": "Sample Content",
+ *    "community": "Sample Community",
+ *    "type": "Post"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been created successfully.
+ * @apiSuccess {String} postId ID of the created post.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "message": "Post created successfully",
+ *       "postId": "1234567890"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User or community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid post data. Please provide title and community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/community/:community Get All Posts in Community
+ * @apiVersion 0.1.0
+ * @apiName GetAllPostsInCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts in a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} community Name of the community.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "community": "Sample Community"
+ * }
+ *
+ * @apiSuccess {Object[]} posts Array of post objects in the specified community.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *           "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": false,
+ *           "comments": [],
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found or no posts in the specified community.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Posts not found in the specified community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/save Save Post
+ * @apiVersion 0.1.0
+ * @apiName SavePost
+ * @apiGroup Post
+ * @apiDescription Saves a post for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be saved.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "postId": "1234567890"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been saved successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post saved successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Post or user not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Post ID is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/unsave Unsave Post
+ * @apiVersion 0.1.0
+ * @apiName UnsavePost
+ * @apiGroup Post
+ * @apiDescription Unsave a previously saved post for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be unsaved.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "postId": "1234567890"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been unsaved successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post unsaved successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Post or user not found, or post not saved by the user.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Post ID is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/save Get Saved Posts
+ * @apiVersion 0.1.0
+ * @apiName GetSavedPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts saved by the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts Array of post objects saved by the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *           "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "comments": [],
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found or no saved posts found for the user.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No saved posts found for the user"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {delete} /posts/:postId Delete Post
+ * @apiVersion 0.1.0
+ * @apiName DeletePost
+ * @apiGroup Post
+ * @apiDescription Deletes a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be deleted.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been deleted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post deleted successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /posts/:postId/edit Edit Post
+ * @apiVersion 0.1.0
+ * @apiName EditPost
+ * @apiGroup Post
+ * @apiDescription Edits a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be edited.
+ * @apiParam {String} [content] New content of the post.
+ * @apiParam {File[]} [images] New array of images attached to the post (if applicable).
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been edited successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post edited successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (403) Forbidden User is not authorized to edit this post.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/spoiler Spoiler Post Content
+ * @apiVersion 0.1.0
+ * @apiName SpoilerPostContent
+ * @apiGroup Post
+ * @apiDescription Spoilers the content of a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be spoilered.
+ *
+ * @apiSuccess {String} message Success message indicating that the post content has been spoilered successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post content blurred successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/unspoiler Unspoiler Post Content
+ * @apiVersion 0.1.0
+ * @apiName UnspoilerPostContent
+ * @apiGroup Post
+ * @apiDescription Removes the spoiler from the content of a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be unspoilered.
+ *
+ * @apiSuccess {String} message Success message indicating that the post content has been unspoilered successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post content unblurred successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/lock Lock Post Comments
+ * @apiVersion 0.1.0
+ * @apiName LockPostComments
+ * @apiGroup Post
+ * @apiDescription Locks the comments on a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to lock comments.
+ *
+ * @apiSuccess {String} message Success message indicating that the comments on the post have been locked successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post comments locked successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/unlock Unlock Post Comments
+ * @apiVersion 0.1.0
+ * @apiName UnlockPostComments
+ * @apiGroup Post
+ * @apiDescription Unlocks the comments on a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to unlock comments.
+ *
+ * @apiSuccess {String} message Success message indicating that the comments on the post have been unlocked successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post comments unlocked successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/upvote Upvote Post
+ * @apiVersion 0.1.0
+ * @apiName UpvotePost
+ * @apiGroup Post
+ * @apiDescription Upvotes a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to upvote.
+ *
+ * @apiSuccess {Number} votes Net votes of the post after upvoting.
+ * @apiSuccess {String} message Success message indicating that the post has been upvoted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "votes": 5,
+ *       "message": "Post has been upvoted successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/downvote Downvote Post
+ * @apiVersion 0.1.0
+ * @apiName DownvotePost
+ * @apiGroup Post
+ * @apiDescription Downvotes a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to downvote.
+ *
+ * @apiSuccess {Number} votes Net votes of the post after downvoting.
+ * @apiSuccess {String} message Success message indicating that the post has been downvoted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "votes": -3,
+ *       "message": "Post has been downvoted successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/upvote Get Upvoted Posts
+ * @apiVersion 0.1.0
+ * @apiName GetUpvotedPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts upvoted by the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts Array of post objects upvoted by the user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *           "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": true,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": false,
+ *           "comments": [],
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (404) NotFound Posts not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Posts not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/downvote Get Downvoted Posts
+ * @apiVersion 0.1.0
+ * @apiName GetDownvotedPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts downvoted by the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts Array of post objects downvoted by the user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *           "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": true,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": false,
+ *           "comments": [],
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (404) NotFound Posts not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Posts not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/hide Hide Post
+ * @apiVersion 0.1.0
+ * @apiName HidePost
+ * @apiGroup Post
+ * @apiDescription Hides a post for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to hide.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been hidden successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post hidden successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Post is already hidden by the user.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Post is already hidden by the user"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/unhide Unhide Post
+ * @apiVersion 0.1.0
+ * @apiName UnhidePost
+ * @apiGroup Post
+ * @apiDescription Unhides a previously hidden post for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to unhide.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been unhidden successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post unhidden successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Post is not hidden by the user.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Post is not hidden by the user"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/hide Get Hidden Posts
+ * @apiVersion 0.1.0
+ * @apiName GetHiddenPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts hidden by the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} hiddenPosts Array of post objects hidden by the user.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *           "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": false,
+ *           "comments": [],
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (404) NotFound No hidden posts found for the user.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "No hidden posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/nsfw Mark Post as NSFW
+ * @apiVersion 0.1.0
+ * @apiName MarkPostAsNsfw
+ * @apiGroup Post
+ * @apiDescription Marks a post as Not Safe For Work (NSFW).
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be marked as NSFW.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been marked as NSFW.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post updated successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/unnsfw Mark Post as Not NSFW
+ * @apiVersion 0.1.0
+ * @apiName MarkPostAsNotNsfw
+ * @apiGroup Post
+ * @apiDescription Marks a post as Not Not Safe For Work (NSFW).
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be marked as not NSFW.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been marked as not NSFW.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post updated successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/report Report Post
+ * @apiVersion 0.1.0
+ * @apiName ReportPost
+ * @apiGroup Post
+ * @apiDescription Reports a post for moderation.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be reported.
+ * @apiParam {String} reason Reason for reporting the post.
+ * @apiParam {String} [sureason] Supplementary reason for reporting the post.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been reported successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "message": "post reported successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid report data. Must include a reason for reporting the post.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "invalid report data must send reason"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "An error occurred while reporting the post"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/poll/vote Vote in Poll
+ * @apiVersion 0.1.0
+ * @apiName VoteInPoll
+ * @apiGroup Post
+ * @apiDescription Casts a user's vote in a poll associated with a post.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post containing the poll.
+ * @apiParam {String} selectedOption The option selected by the user.
+ *
+ * @apiSuccess {String} message Success message indicating that the vote has been cast successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Vote cast successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Post ID and selected option are required.
+ * @apiError (404) NotFound Post not found or selected option not found in the poll.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Post ID and selected option are required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/:postId Get Post by ID
+ * @apiVersion 0.1.0
+ * @apiName GetPostById
+ * @apiGroup Post
+ * @apiDescription Retrieves a post by its ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to retrieve.
+ *
+ * @apiSuccess {Object} postInfo Information about the post.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "_id": "postId",
+ *       "userId": "userId",
+ *       "username": "username",
+ *       "userProfilePic": "userAvatar",
+ *       "hasUpvoted": true,
+ *       "hasDownvoted": false,
+ *       "hasVotedOnPoll": true,
+ *       "selectedPollOption": "pollOption",
+ *       "isHidden": false,
+ *       "votesUpCount": 5,
+ *       "votesDownCount": 2,
+ *       "sharesCount": 3,
+ *       "commentsCount": 10,
+ *       "title": "Post Title",
+ *       "content": "Post Content",
+ *       "community": "Community",
+ *       "type": "Post",
+ *       "pollExpiration": "2024-12-31T00:00:00.000Z",
+ *       "isPollEnabled": true,
+ *       "pollVotingLength": 7,
+ *       "isSpoiler": false,
+ *       "isNsfw": false,
+ *       "sendPostReplyNotification": true,
+ *       "isCommentsLocked": false,
+ *       "isSaved": true,
+ *       "comments": [],
+ *       "date": "2024-04-18T12:00:00.000Z",
+ *       "pollOptions": ["Option 1", "Option 2"],
+ *       "attachments": []
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/username/:username Get All User Posts
+ * @apiVersion 0.1.0
+ * @apiName GetAllUserPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts created by a user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the user whose posts are to be retrieved.
+ *
+ * @apiSuccess {Object[]} postInfoArray Array of post information.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "postId",
+ *         "userId": "userId",
+ *         "username": "username",
+ *         "userProfilePic": "userAvatar",
+ *         "hasUpvoted": true,
+ *         "hasDownvoted": false,
+ *         "hasVotedOnPoll": true,
+ *         "selectedPollOption": "pollOption",
+ *         "votesUpCount": 5,
+ *         "votesDownCount": 2,
+ *         "sharesCount": 3,
+ *         "commentsCount": 10,
+ *         "title": "Post Title",
+ *         "content": "Post Content",
+ *         "community": "Community",
+ *         "type": "Post",
+ *         "pollExpiration": "2024-12-31T00:00:00.000Z",
+ *         "isPollEnabled": true,
+ *         "pollVotingLength": 7,
+ *         "isSpoiler": false,
+ *         "isNsfw": false,
+ *         "sendPostReplyNotification": true,
+ *         "isCommentsLocked": false,
+ *         "isSaved": true,
+ *         "comments": [],
+ *         "date": "2024-04-18T12:00:00.000Z",
+ *         "pollOptions": ["Option 1", "Option 2"],
+ *         "attachments": []
+ *       },
+ *       {
+ *         // Next post...
+ *       }
+ *     ]
+ *
+ * @apiError (404) NotFound User not found or user has no posts.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+//#endregion Post
