@@ -2503,83 +2503,6 @@
  *     }
  */
 
-/**
- * @api {post} /follow Follow User
- * @apiVersion 1.0.0
- * @apiName FollowUser
- * @apiGroup User
- * @apiDescription Follows a user by their username.
- *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
- * @apiParam {String} username Username of the user to follow.
- *
- * @apiSuccess {String} description Success message indicating that the user was followed successfully.
- *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot follow himself.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
- */
-
-/**
- * @api {post} /block Block User
- * @apiVersion 1.0.0
- * @apiName BlockUser
- * @apiGroup User
- * @apiDescription Blocks a user by their username.
- *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
- * @apiParam {String} username Username of the user to block.
- *
- * @apiSuccess {String} description Success message indicating that the user was blocked successfully.
- *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot block himself.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
- */
-
-/**
- * @api {post} /unfollow Unfollow User
- * @apiVersion 1.0.0
- * @apiName UnfollowUser
- * @apiGroup User
- * @apiDescription Unfollows a user by their username.
- *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
- * @apiParam {String} username Username of the user to unfollow.
- *
- * @apiSuccess {String} description Success message indicating that the user was unfollowed successfully.
- *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot unfollow himself.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
- */
-
-/**
- * @api {post} /report Report User
- * @apiVersion 1.0.0
- * @apiName ReportUser
- * @apiGroup User
- * @apiDescription Reports a user by their username.
- *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
- * @apiParam {String} username Username of the user to report.
- * @apiParam {String} reason Reason for reporting the user.
- *
- * @apiSuccess {String} description Success message indicating that the user was reported successfully.
- *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot report himself.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
- */
-
 //#endregion User
 
 //#region Useraction
@@ -2634,7 +2557,7 @@
  */
 
 /**
- * @api {post} /block Block User
+ * @api {post} /users/block Block User
  * @apiVersion 0.1.0
  * @apiName BlockUser
  * @apiGroup User
@@ -2683,7 +2606,7 @@
  */
 
 /**
- * @api {post} /unfollow Unfollow User
+ * @api {post} /users/unfollow Unfollow User
  * @apiVersion 0.1.0
  * @apiName UnfollowUser
  * @apiGroup User
@@ -2738,7 +2661,7 @@
  */
 
 /**
- * @api {post} /report Report User
+ * @api {post} /users/report Report User
  * @apiVersion 0.1.0
  * @apiName ReportUser
  * @apiGroup User
@@ -2789,7 +2712,7 @@
  */
 
 /**
- * @api {get} /follow/isfollowed/:username Check if User is Followed
+ * @api {get} /users/follow/isfollowed/:username Check if User is Followed
  * @apiVersion 0.1.0
  * @apiName IsUserFollowed
  * @apiGroup User
@@ -4487,7 +4410,6 @@
  */
 
 //#endregion listing
-
 
 //#region Post
 
