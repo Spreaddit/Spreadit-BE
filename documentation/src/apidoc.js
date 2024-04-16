@@ -2581,3 +2581,1909 @@
  */
 
 //#endregion User
+
+//#region Useraction
+
+/**
+ * @api {post} /users/follow Follow User
+ * @apiVersion 0.1.0
+ * @apiName FollowUser
+ * @apiGroup User
+ * @apiDescription Follows a user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the user to follow.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "username": "example_user"
+ * }
+ *
+ * @apiSuccess {String} description Success message indicating that the user has been followed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "description": "User followed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /block Block User
+ * @apiVersion 0.1.0
+ * @apiName BlockUser
+ * @apiGroup User
+ * @apiDescription Blocks a user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the user to block.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "username": "example_user"
+ * }
+ *
+ * @apiSuccess {String} description Success message indicating that the user has been blocked successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "description": "User blocked successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /unfollow Unfollow User
+ * @apiVersion 0.1.0
+ * @apiName UnfollowUser
+ * @apiGroup User
+ * @apiDescription Unfollows a user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the user to unfollow.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "username": "example_user"
+ * }
+ *
+ * @apiSuccess {String} description Success message indicating that the user has been unfollowed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "description": "User unfollowed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /report Report User
+ * @apiVersion 0.1.0
+ * @apiName ReportUser
+ * @apiGroup User
+ * @apiDescription Reports a user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the user to report.
+ * @apiParam {String} reason Reason for reporting the user.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "username": "example_user",
+ *    "reason": "This user is posting inappropriate content."
+ * }
+ *
+ * @apiSuccess {String} description Success message indicating that the user has been reported successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "description": "User reported successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /follow/isfollowed/:username Check if User is Followed
+ * @apiVersion 0.1.0
+ * @apiName IsUserFollowed
+ * @apiGroup User
+ * @apiDescription Checks if the user is followed by the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiParam {String} username Username of the user to check.
+ *
+ * @apiSuccess {Boolean} isFollowed Indicates whether the user is followed by the authenticated user.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "isFollowed": true
+ *     }
+ *
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+//#endregion Useraction
+
+//#region listing
+
+/**
+ * @api {get} /home/new Sort Posts by Newest
+ * @apiVersion 0.1.0
+ * @apiName SortPostsNewest
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by newest.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by newest.
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "posts": [
+ *            {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/top Sort Posts by Top today
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopTime
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top within a specified time period.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String="now","day","week","month","year"} time Time period to sort posts (now, day, week, month, year).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top within the specified time period.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       // Post objects
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/top/alltime Sort Posts by Top (All Time)
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopAllTime
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top of all time.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top of all time.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/top Sort Posts by Top within Community today
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top within a specified community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top within the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/top/alltime Sort Posts by Top (All Time) within Community
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopAllTimeCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top of all time within a specified community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top of all time within the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/new Sort Posts by Newest within Community
+ * @apiVersion 0.1.0
+ * @apiName SortPostsNewestCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by newest within a specified community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by newest within the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/views Sort Posts by Views
+ * @apiVersion 0.1.0
+ * @apiName SortPostsViews
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by number of views.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by number of views.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/comments Sort Posts by Comments
+ * @apiVersion 0.1.0
+ * @apiName SortPostsComments
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by number of comments.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by number of comments.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/best Sort Posts by Best
+ * @apiVersion 0.1.0
+ * @apiName SortPostsBest
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by best based on votes ratio.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by best.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/hot Sort Posts by Hot
+ * @apiVersion 0.1.0
+ * @apiName SortPostsHot
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by hotness score.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by hotness score.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/hot Sort Posts by Hot within Community
+ * @apiVersion 0.1.0
+ * @apiName SortPostsHotCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by hotness score within a specified community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by hotness score within the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/random Sort Posts Randomly within Community
+ * @apiVersion 0.1.0
+ * @apiName SortPostsRandomCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves random posts within a specified community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ *
+ * @apiSuccess {Object[]} posts List of randomly sorted posts within the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/top/:time Sort Posts by Top within Community and Time Period
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopTimeCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top within a specified community and time period.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ * @apiParam {String="now","day","week","month","year"} time Time period to sort posts (now, day, week, month, year).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top within the specified community and time period.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/top/:time Sort Posts by Top within Time Period
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopTime
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top within a specified time period.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String="now","day","week","month","year"} time Time period to sort posts (now, day, week, month, year).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top within the specified time period.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/recentposts Get Recent Posts of User
+ * @apiVersion 0.1.0
+ * @apiName GetRecentPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves the recent posts of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} recentPosts List of recent posts of the authenticated user.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+//#endregion listing
