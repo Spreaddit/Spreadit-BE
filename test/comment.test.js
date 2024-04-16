@@ -5,7 +5,7 @@ const app = require("./testApp");
 const mongoose = require("mongoose");
 const config = require("../src/configuration");
 const User = require("../src/models/user");
-
+const Report = require("../src/models/report");
 const connectionUrl = config.testConnectionString;
 
 
@@ -55,8 +55,6 @@ const comment2 = {
     parentId: id,
     content: "I am the second comment"
 }
-
-
 
 const userOne = {
     _id: userOneId,
@@ -109,6 +107,7 @@ beforeEach(async () => {
     await new User(userOne).save();
     await new User(userTwo).save();
     await new User(userThree).save();
+    await Post.deleteMany({});
     await new Post(post).save();
     await Comment.deleteMany({});
     await new Comment(comment1).save();
@@ -132,8 +131,6 @@ test("posting a comment", async()=>{
 
     const user = await getUser("Aelgarf");
     if (!user) {
-        // Handle case where user is not found
-        // For example:
         throw new Error("User not found");
     }
     const token = login.body.token;
@@ -144,7 +141,686 @@ test("posting a comment", async()=>{
     .send({
         content: "this is a new comment"
     })
-    .expect(200);
+    .expect(201);
 })
 
+test("missing content field", async () => {
+    const signup = await request(app).post("/signup").send({
+        email: "amiraelgarf99@gmail.com",
+        username: "Aelgarf",
+        password: "myPassw@ord123"
+    }).expect(200);
+
+    await User.findOneAndUpdate({ username: "Aelgarf" }, { isVerified: true });
+
+    const login = await request(app)
+        .post("/login")
+        .send({ username: "Aelgarf", password: "myPassw@ord123" })
+        .expect(200);
+
+    const user = await getUser("Aelgarf");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const token = login.body.token;
+
+    const response = await request(app)
+        .post('/post/comment/' + id2)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({})
+        .expect(400); 
+});
+
+test("non-existent post ID", async () => {
+    const signup = await request(app).post("/signup").send({
+        email: "amiraelgarf99@gmail.com",
+        username: "Aelgarf",
+        password: "myPassw@ord123"
+    }).expect(200);
+
+    await User.findOneAndUpdate({ username: "Aelgarf" }, { isVerified: true });
+
+    const login = await request(app)
+        .post("/login")
+        .send({ username: "Aelgarf", password: "myPassw@ord123" })
+        .expect(200);
+
+    const user = await getUser("Aelgarf");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const token = login.body.token;
+    const nonExistentId = '661ebb4eb77c3f20e6998bf0';
+
+    const response = await request(app)
+        .post('/post/comment/' + nonExistentId)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({
+            content: "this is a new comment"
+        })
+        .expect(404); 
+});
+
+
+test("deleting user's own comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.username, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+
+    const comment = await Comment.create({
+        userId: userOne._id,
+        postId: id2,
+        content: "This is a test comment"
+    });
+
+    const response = await request(app)
+        .delete("/posts/comment/delete/" + comment._id)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+    expect(response.body.message).toBe("comment deleted successfully");
+});
+
+test("deleting comment not owned by the user", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userTwo.email, password: userTwo.password })
+    .expect(200);
+
+    const user = await getUser(userTwo.username);
+
+    const comment = await Comment.create({
+        userId: userOne._id,
+        postId: id2,
+        content: "This is a test comment"
+    });
+
+    const response = await request(app)
+        .delete(`/posts/comment/delete/${comment._id}`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(403);
+
+    expect(response.body.message).toBe("You are not authorized to delete this comment");
+});
+
+test("retrieve comments for a post", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userTwo.email, password: userTwo.password })
+    .expect(200);
+
+    const user = await getUser(userTwo.username);
+
+    // Retrieve comments for the post
+    const response = await request(app)
+        .get(`/posts/comment/${id2}`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+    // Check response
+    expect(response.body.comments.length).toBe(2); // Assuming there are two comments for this post
+});
+
+test("no comments found for a post", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userTwo.email, password: userTwo.password })
+    .expect(200);
+
+    const user = await getUser(userTwo.username);
+
+    // Retrieve comments for a non-existent post
+    const response = await request(app)
+        .get(`/posts/comment/${new mongoose.Types.ObjectId()}`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(404);
+
+    // Check response
+    expect(response.body.message).toBe("No comments found for the given post Id");
+});
+
+
+test("retrieve comments for a user", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+
+    const response = await request(app)
+        .get(`/comments/user/${userOne.username}`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+
+    expect(response.body.comments.length).toBe(1); // Assuming userOne has one comment
+});
+
+test("no comments found for a user", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userTwo.email, password: userTwo.password })
+    .expect(200);
+
+    const user = await getUser(userTwo.username);
+
+    const response = await request(app)
+        .get("/comments/user/nonExistentUser")
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(500);
+});
+
+
+test("edit user's own comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment"
+    });
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/edit`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({ content: "Updated comment content" })
+        .expect(200);
+
+    expect(response.body.message).toBe("Comment has been updated successfully");
+});
+
+test("edit comment not owned by the user", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userTwo.email, password: userTwo.password })
+    .expect(200);
+
+    const user = await getUser(userTwo.username);
+
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment"
+    });
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/edit`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({ content: "Updated comment content" })
+        .expect(403);
+
+    expect(response.body.message).toBe("You are not authorized to edit this comment");
+});
+
+test("missing updated content", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment"
+    });
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/edit`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({})
+        .expect(400);
+
+    expect(response.body.message).toBe("Updated content is required");
+});
+
+
+
+
+test("reply to existing comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+
+    const parentComment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a parent comment"
+    });
+
+    const response = await request(app)
+        .post(`/comment/${parentComment._id}/reply`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({ content: "This is a reply to the parent comment" })
+        .expect(201);
+
+
+    expect(response.body.message).toBe("Reply has been added successfully");
+});
+
+test("reply to non-existent comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+
+    const nonExistentId = '661ebb4eb77c3f20e6998bf0';
+    const response = await request(app)
+        .post(`/comment/${nonExistentId}/reply`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({ content: "This is a reply to a non-existent comment" })
+        .expect(404);
+
+    expect(response.body.message).toBe("Comment not found");
+});
+
+test("missing reply content", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+
+    const parentComment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a parent comment"
+    });
+
+    const response = await request(app)
+        .post(`/comment/${parentComment._id}/reply`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({})
+        .expect(400);
+
+    expect(response.body.message).toBe("Reply content is required");
+});
+
+
+
+test("get replies for existing comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const parentComment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a parent comment"
+    });
+
+    const reply = await Comment.create({
+        userId: userTwoId,
+        parentCommentId: parentComment._id,
+        content: "This is a reply to the parent comment"
+    });
+
+    const response = await request(app)
+        .get(`/comments/${parentComment._id}/replies`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+    expect(response.body.message).toBe("Replies for the comment have been retrieved successfully");
+    expect(response.body.replies.length).toBe(1);
+    expect(response.body.replies[0].content).toBe("This is a reply to the parent comment");
+});
+
+
+
+test("hide comment", async () => {
+    
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment"
+    });
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/hide`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+    expect(response.body.message).toBe("Comment has been hidden successfully");
+
+    const updatedComment = await Comment.findById(comment._id);
+    expect(updatedComment.hiddenBy.includes(userOneId)).toBeTruthy();
+});
+
+test("unhide comment", async () => {
+
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment",
+        hiddenBy: [userOneId]
+    });
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/hide`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+    expect(response.body.message).toBe("Comment has been unhidden successfully");
+
+    const updatedComment = await Comment.findById(comment._id);
+    expect(updatedComment.hiddenBy.includes(userOneId)).toBeFalsy();
+});
+
+test("hide non-existent comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const nonExistentId = '661ebb4eb77c3f20e6998bf0';
+    const response = await request(app)
+        .post(`/comments/${nonExistentId}/hide`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(404);
+
+    expect(response.body.message).toBe("Comment not found");
+});
+
+
+test("upvote comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment"
+    });
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/upvote`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+    expect(response.body.message).toBe("Comment has been upvoted successfully");
+
+    const updatedComment = await Comment.findById(comment._id);
+    expect(updatedComment.upVotes.includes(userOneId)).toBeTruthy();
+});
+
+test("remove upvote from comment", async () => {
+
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment",
+        upVotes: [userOneId]
+    });
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/upvote`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(400);
+
+    expect(response.body.message).toBe("You have removed your upvote this comment");
+
+    const updatedComment = await Comment.findById(comment._id);
+    expect(updatedComment.upVotes.includes(userOneId)).toBeFalsy();
+});
+
+test("upvote non-existent comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    const nonExistentId = '661ebb4eb77c3f20e6998bf0';
+    const response = await request(app)
+        .post(`/comments/${nonExistentId}/upvote`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(404);
+
+    expect(response.body.message).toBe("Comment not found");
+});
+
+
+test("downvote comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment"
+    });
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/downvote`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+    expect(response.body.message).toBe("Comment has been downvoted successfully");
+
+    const updatedComment = await Comment.findById(comment._id);
+    expect(updatedComment.downVotes.includes(userOneId)).toBeTruthy();
+});
+
+test("remove downvote from comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment",
+        downVotes: [userOneId]
+    });
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/downvote`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(400);
+
+    expect(response.body.message).toBe("You have removed your downvote this comment");
+
+    const updatedComment = await Comment.findById(comment._id);
+    expect(updatedComment.downVotes.includes(userOneId)).toBeFalsy();
+});
+
+test("downvote non-existent comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const nonExistentId = '661ebb4eb77c3f20e6998bf0';
+    const response = await request(app)
+        .post(`/comments/${nonExistentId}/downvote`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(404);
+
+    expect(response.body.message).toBe("Comment not found");
+});
+
+test("save comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment"
+    });
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/save`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+    expect(response.body.message).toBe("Comment has been saved successfully");
+
+    const updatedUser = await User.findById(userOneId);
+    expect(updatedUser.savedComments.includes(comment._id)).toBeTruthy();
+
+    const updatedComment = await Comment.findById(comment._id);
+    expect(updatedComment.savedBy.includes(userOneId)).toBeTruthy();
+});
+
+test("unsave comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment"
+    });
+    const user1 = await User.findById(userOneId);
+    user1.savedComments.push(comment._id);
+    await user1.save();
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/save`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+    expect(response.body.message).toBe("Comment has been unsaved successfully");
+
+    const updatedUser = await User.findById(userOneId);
+    expect(updatedUser.savedComments.includes(comment._id)).toBeFalsy();
+
+    const updatedComment = await Comment.findById(comment._id);
+    expect(updatedComment.savedBy.includes(userOneId)).toBeFalsy();
+});
+
+test("save non-existent comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const nonExistentId = '661ebb4eb77c3f20e6998bf0';
+    const response = await request(app)
+        .post(`/comments/${nonExistentId}/save`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(404);
+
+    expect(response.body.message).toBe("Comment not found");
+});
   
+test("report comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+    const comment = await Comment.create({
+        userId: userOneId,
+        postId: id2,
+        content: "This is a test comment"
+    });
+
+
+    const response = await request(app)
+        .post(`/comments/${comment._id}/report`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({
+            reason: "Offensive content",
+            subreason: "This comment contains offensive language"
+        })
+        .expect(201);
+
+    expect(response.body.message).toBe("Comment reported successfully");
+
+
+    const reportedComment = await Report.findOne({ commentId: comment._id });
+    expect(reportedComment).toBeTruthy();
+    expect(reportedComment.reason).toBe("Offensive content");
+});
+
+test("report non-existent comment", async () => {
+    const login = await request(app)
+    .post("/login")
+    .send({ username: userOne.email, password: userOne.password })
+    .expect(200);
+
+    const user = await getUser(userOne.username);
+    
+
+    const nonExistentId = '661ebb4eb77c3f20e6998bf0';
+    const response = await request(app)
+        .post(`/comments/${nonExistentId}/report`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({
+            reason: "Spam",
+            sureason: "This comment is spammy"
+        })
+        .expect(404);
+
+
+    expect(response.body.message).toBe("Comment not found");
+});
