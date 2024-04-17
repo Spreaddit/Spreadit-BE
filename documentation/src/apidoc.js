@@ -5558,3 +5558,1020 @@
  */
 
 //#endregion Post
+
+//#region Settings
+
+/**
+ * @api {get} /settings/account Get Account Settings
+ * @apiVersion 0.1.0
+ * @apiName GetAccountSettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the account settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} accountSettings Account settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "email": "user@example.com",
+ *       "gender": "male",
+ *       "country": "USA",
+ *       "connectedAccounts": ["twitter", "facebook"]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/account Modify Account Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyAccountSettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the account settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} [email] User's email address.
+ * @apiParam {String} [gender] User's gender.
+ * @apiParam {String} [country] User's country.
+ * @apiParam {String[]} [connectedAccounts] Array of connected social media accounts.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "email": "newemail@example.com",
+ *    "gender": "female",
+ *    "country": "Canada",
+ *    "connectedAccounts": ["instagram", "linkedin"]
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the account settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Account settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (403) Forbidden Invalid email format.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "Invalid email format"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {delete} /settings/account Delete Account
+ * @apiVersion 0.1.0
+ * @apiName DeleteAccount
+ * @apiGroup Settings
+ * @apiDescription Deletes the account of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Success message indicating that the account has been deleted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Account deleted successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/chat-and-messaging Get Chat and Messaging Settings
+ * @apiVersion 0.1.0
+ * @apiName GetChatAndMessagingSetting
+ * @apiGroup Settings
+ * @apiDescription Retrieves the chat and messaging settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} chatAndMessagingSetting Chat and messaging settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "sendYouFriendRequests": true,
+ *       "sendYouPrivateMessages": true,
+ *       "approvedUsers": ["user1", "user2"]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/chat-and-messaging Modify Chat and Messaging Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyChatAndMessagingSetting
+ * @apiGroup Settings
+ * @apiDescription Modifies the chat and messaging settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Boolean} [sendYouFriendRequests] Indicates whether to allow others to send friend requests.
+ * @apiParam {Boolean} [sendYouPrivateMessages] Indicates whether to allow others to send private messages.
+ * @apiParam {String[]} [approvedUsers] Array of approved users who can send messages.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "sendYouFriendRequests": false,
+ *    "sendYouPrivateMessages": true,
+ *    "approvedUsers": ["user3", "user4"]
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the chat and messaging settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Chat and messaging settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid request body"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /settings/chat-and-messaging/make-all-as-read Make All Messages as Read
+ * @apiVersion 0.1.0
+ * @apiName MakeAllMessagesAsRead
+ * @apiGroup Settings
+ * @apiDescription Marks all unread messages as read for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Success message indicating that all messages have been marked as read successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "All messages marked as read successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/email Get Email Settings
+ * @apiVersion 0.1.0
+ * @apiName GetEmailSetting
+ * @apiGroup Settings
+ * @apiDescription Retrieves the email notification settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} emailSetting Email notification settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "newFollowerEmail": true,
+ *       "chatRequestEmail": true,
+ *       "unsubscribeAllEmails": false
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/email Modify Email Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyEmailSetting
+ * @apiGroup Settings
+ * @apiDescription Modifies the email notification settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Boolean} [newFollowerEmail] Indicates whether to receive email notifications for new followers.
+ * @apiParam {Boolean} [chatRequestEmail] Indicates whether to receive email notifications for chat requests.
+ * @apiParam {Boolean} [unsubscribeAllEmails] Indicates whether to unsubscribe from all email notifications.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "newFollowerEmail": false,
+ *    "chatRequestEmail": true,
+ *    "unsubscribeAllEmails": false
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the email settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Email settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid request body"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/feed Get Feed Settings
+ * @apiVersion 0.1.0
+ * @apiName GetFeedSetting
+ * @apiGroup Settings
+ * @apiDescription Retrieves the feed settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} feedSetting Feed settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "adultContent": false,
+ *       "autoplayMedia": true,
+ *       "communityThemes": true,
+ *       "communityContentSort": "hot",
+ *       "globalContentView": true,
+ *       "openPostsInNewTab": false
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/feed Modify Feed Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyFeedSetting
+ * @apiGroup Settings
+ * @apiDescription Modifies the feed settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Boolean} [adultContent] Indicates whether to show adult content in the feed.
+ * @apiParam {Boolean} [autoplayMedia] Indicates whether to autoplay media in the feed.
+ * @apiParam {Boolean} [communityThemes] Indicates whether to use community themes in the feed.
+ * @apiParam {String="hot","new","top"} [communityContentSort] Sort order of community content in the feed.
+ * @apiParam {Boolean} [globalContentView] Indicates whether to enable global content view in the feed.
+ * @apiParam {Boolean} [openPostsInNewTab] Indicates whether to open posts in a new tab.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "adultContent": false,
+ *    "autoplayMedia": true,
+ *    "communityThemes": true,
+ *    "communityContentSort": "new",
+ *    "globalContentView": false,
+ *    "openPostsInNewTab": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the feed settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Feed settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid request body"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/layout Check Password Match
+ * @apiVersion 0.1.0
+ * @apiName CheckPasswordMatch
+ * @apiGroup Settings
+ * @apiDescription Checks if the entered password matches the user's current password.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} enteredPassword Entered password to be checked.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "enteredPassword": "currentPassword123"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the entered password matches.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Password matches"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/notifications Get Notification Settings
+ * @apiVersion 0.1.0
+ * @apiName GetNotificationSettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the notification settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} notificationSetting Object containing the notification settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "mentions": true,
+ *       "comments": true,
+ *       "upvotesComments": true,
+ *       "upvotesPosts": true,
+ *       "replies": true,
+ *       "newFollowers": true,
+ *       "invitations": true,
+ *       "posts": true
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/notifications Modify Notification Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyNotificationSettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the notification settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Object} modifyNotificationSetting Object containing the modified notification settings.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "mentions": true,
+ *    "comments": true,
+ *    "upvotesComments": false,
+ *    "upvotesPosts": true,
+ *    "replies": false,
+ *    "newFollowers": true,
+ *    "invitations": true,
+ *    "posts": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the notification settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/profile Get Profile Settings
+ * @apiVersion 0.1.0
+ * @apiName GetProfileSettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the profile settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} profileSettings Object containing the profile settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "displayName": "John Doe",
+ *       "about": "Lorem ipsum dolor sit amet...",
+ *       "socialLinks": {
+ *          "twitter": "https://twitter.com/johndoe",
+ *          "facebook": "https://facebook.com/johndoe"
+ *       },
+ *       "profilePicture": "http://example.com/profile.jpg",
+ *       "banner": "http://example.com/banner.jpg",
+ *       "nsfw": false,
+ *       "allowFollow": true,
+ *       "contentVisibility": "Public",
+ *       "activeInCommunityVisibility": "Public",
+ *       "clearHistory": false
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/profile Modify Profile Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyProfileSettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the profile settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Object} modifyProfileSettings Object containing the modified profile settings.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "displayName": "John Doe",
+ *    "about": "Updated about section...",
+ *    "socialLinks": {
+ *        "twitter": "https://twitter.com/johndoe",
+ *        "facebook": "https://facebook.com/johndoe"
+ *    },
+ *    "profilePicture": "http://example.com/profile_updated.jpg",
+ *    "banner": "http://example.com/banner_updated.jpg",
+ *    "nsfw": true,
+ *    "allowFollow": false,
+ *    "contentVisibility": "Private",
+ *    "activeInCommunityVisibility": "Private",
+ *    "clearHistory": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the profile settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/safety-privacy Get Safety and Privacy Settings
+ * @apiVersion 0.1.0
+ * @apiName GetSafetyAndPrivacySettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the safety and privacy settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} safetyAndPrivacySettings Object containing the safety and privacy settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "blockedUsers": ["user1", "user2"],
+ *       "mutedCommunities": ["community1", "community2"]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/safety-privacy Modify Safety and Privacy Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifySafetyAndPrivacySettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the safety and privacy settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Object} modifySafetyAndPrivacySettings Object containing the modified safety and privacy settings.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "blockedUsers": ["user3", "user4"],
+ *    "mutedCommunities": ["community3", "community4"]
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the safety and privacy settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+//#endregion Settings
+
+
+//#region Mobile Settings
+
+/**
+ * @api {get} /mobile/settings/account Get Account Settings (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName GetAccountSettingsMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Retrieves the account settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} accountSettings Object containing the account settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "email": "user@example.com",
+ *       "gender": "male",
+ *       "country": "US",
+ *       "connectedAccounts": ["Google", "Facebook"]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /mobile/settings/account Modify Account Settings (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName ModifyAccountSettingsMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Modifies the account settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} [email] User's email address.
+ * @apiParam {String} [gender] User's gender.
+ * @apiParam {String} [country] User's country.
+ * @apiParam {String[]} [connectedAccounts] Array of connected accounts.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "email": "newemail@example.com",
+ *    "gender": "female",
+ *    "country": "UK",
+ *    "connectedAccounts": ["Google"]
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the account settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid email format"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {delete} /mobile/settings/account Delete Account (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName DeleteAccountMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Deletes the account of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Success message indicating that the account has been deleted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Account deleted successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /mobile/settings/blocking-permissions Get Blocking and Permissions Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName GetBlockingSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Retrieves the blocking and permissions settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} blockingSetting Object containing the blocking and permissions settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "blockedAccounts": ["user1", "user2"],
+ *       "allowFollow": true
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /mobile/settings/blocking-permissions Modify Blocking and Permissions Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName ModifyBlockingSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Modifies the blocking and permissions settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String[]} [blockedAccounts] Array of blocked account usernames.
+ * @apiParam {Boolean} [allowFollow] Indicates whether to allow followers.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "blockedAccounts": ["user3", "user4"],
+ *    "allowFollow": false
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the blocking and permissions settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /mobile/settings/contact Get Contact Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName GetContactSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Retrieves the contact settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} contactSetting Object containing the contact settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "inboxMessages": true,
+ *       "chatMessages": true,
+ *       "chatRequests": true,
+ *       "mentions": true,
+ *       "commentsOnYourPost": true,
+ *       "commentsYouFollow": true,
+ *       "upvotes": true,
+ *       "repliesToComments": true,
+ *       "newFollowers": true,
+ *       "cakeDay": true,
+ *       "modNotifications": true
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /mobile/settings/contact Modify Contact Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName ModifyContactSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Modifies the contact settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Boolean} [inboxMessages] Indicates whether to receive inbox messages.
+ * @apiParam {Boolean} [chatMessages] Indicates whether to receive chat messages.
+ * @apiParam {Boolean} [chatRequests] Indicates whether to receive chat requests.
+ * @apiParam {Boolean} [mentions] Indicates whether to receive mentions.
+ * @apiParam {Boolean} [commentsOnYourPost] Indicates whether to receive comments on your posts.
+ * @apiParam {Boolean} [commentsYouFollow] Indicates whether to receive comments you follow.
+ * @apiParam {Boolean} [upvotes] Indicates whether to receive upvotes.
+ * @apiParam {Boolean} [repliesToComments] Indicates whether to receive replies to comments.
+ * @apiParam {Boolean} [newFollowers] Indicates whether to receive notifications for new followers.
+ * @apiParam {Boolean} [cakeDay] Indicates whether to receive notifications for cake day.
+ * @apiParam {Boolean} [modNotifications] Indicates whether to receive mod notifications.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "inboxMessages": false,
+ *    "chatMessages": true,
+ *    "chatRequests": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the contact settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+
+//#endregion Mobile Settings 
