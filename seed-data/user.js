@@ -11,6 +11,7 @@ const users = [
         birth_date: "2002-01-01",
         roleId: userRole.defaultRole._id,
         isnsfw: true,
+        isVerified: true,
         followers: ["624a52d75ff69df002d25035"],
         followings: ["624a52d75ff69df002d25035"],
     },
@@ -24,6 +25,7 @@ const users = [
         birth_date: "2003-4-10",
         roleId: userRole.moderatorRole._id,
         isnsfw: true,
+        isVerified: true,
     },
     {
         _id: "624a52d75ff69df002d25035",
@@ -35,6 +37,7 @@ const users = [
         birth_date: "2003-5-10",
         roleId: userRole.defaultRole._id,
         isnsfw: false,
+        isVerified: true,
         followers: ["624a4a94c66738f13854b474"],
         followings: ["624a4a94c66738f13854b474"],
     },
