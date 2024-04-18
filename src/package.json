@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +20,7 @@
     "node-schedule": "^2.1.1",
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
+    "web-push": "^3.6.7",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

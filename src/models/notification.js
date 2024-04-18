@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const webPush = require("web-push");
-const NotificationSub = require("./notificationsSub");
+const NotificationSub = require("./notificationSub");
 
 require("./user");
 require("./post");

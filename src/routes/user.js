@@ -6,11 +6,11 @@ const Comment = require("./../models/comment");
 const auth = require("../middleware/authentication");
 const Notification = require("./../models/notification");
 const NotificationType = require("./../../seed-data/constants/notificationType");
-const NotificationSubscription = require("../models/notificationsSub");
+const NotificationSubscription = require("../models/notificationSub");
 const webPush = require("web-push");
 const upload = require("../service/fileUpload");
 const { uploadMedia } = require("../service/cloudinary");
-const config = require("./../config");
+const config = require("./../configuration");
 require("./../models/constants/notificationType");
 
 
