@@ -3,11 +3,21 @@ const router = express.Router();
 const User = require("./../models/user");
 const Post = require("./../models/post");
 const Comment = require("./../models/comment");
+const auth = require("../middleware/authentication");
+const Notification = require("./../models/notification");
+const NotificationType = require("./../../seed-data/constants/notificationType");
+const NotificationSubscription = require("../models/notificationsSub");
+const webPush = require("web-push");
+const upload = require("../service/fileUpload");
+const { uploadMedia } = require("../service/cloudinary");
+const config = require("./../config");
+require("./../models/constants/notificationType");
+
 
 
 //when the user changes his username it should be updated in the posts as well 
 
-router.get("/vapid-key", auth, async (req, res) => {
+router.get("/vapid-key", auth.authentication, async (req, res) => {
     try {
       const vapidKeys = webPush.generateVAPIDKeys();
       if (vapidKeys) {
