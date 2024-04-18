@@ -17,7 +17,7 @@ const NotificationSchema = new Schema(
     postId: {
       type: Schema.Types.ObjectId,
       index: true,
-      ref: "tweet",
+      ref: "post",
       default: null,
     },
     content: {
@@ -70,7 +70,7 @@ NotificationSchema.statics.getNotificationObject = async function (
     content: notification.content,
     notification_type: notification.notificationTypeId.name,
     related_user: user,
-    tweet: tweet,
+    post: post,
     is_read: notification.isRead,
     created_at: notification.createdAt,
   };
