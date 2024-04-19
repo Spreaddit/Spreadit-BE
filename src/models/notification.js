@@ -5,10 +5,11 @@ const NotificationSub = require("./notificationSub");
 
 require("./user");
 require("./post");
+require("./comment");
 
 const NotificationSchema = new Schema(
   {
-    userId: {
+    userId: { //the who will recieve the notification
       type: Schema.Types.ObjectId,
       required: true,
       index: true,
@@ -18,6 +19,12 @@ const NotificationSchema = new Schema(
       type: Schema.Types.ObjectId,
       index: true,
       ref: "post",
+      default: null,
+    },
+    commentId: {
+      type: Schema.Types.ObjectId,
+      index: true,
+      ref: "comment",
       default: null,
     },
     content: {
@@ -31,7 +38,7 @@ const NotificationSchema = new Schema(
       index: true,
       ref: "notificationType",
     },
-    relatedUserId: {
+    relatedUserId: { //the one who will send the notification
       type: Schema.Types.ObjectId,
       index: true,
       ref: "user",
@@ -51,7 +58,8 @@ NotificationSchema.statics.getNotificationObject = async function (
   notification
 ) {
   let post = null,
-    user = null;
+    user = null,
+    comment = null;
 
   if (notification.postId != null) {
     const Post = mongoose.model("post");
@@ -65,12 +73,22 @@ NotificationSchema.statics.getNotificationObject = async function (
     );
   }
 
+  if (notification.commentId != null) {
+    const Comment = mongoose.model("comment");
+    comment = await Comment.getCommentObject(
+      notification.commentId,
+      notification.userId._id,
+      false
+    );
+  }
+
   const notificationObject = {
     _id: notification._id,
     content: notification.content,
     notification_type: notification.notificationTypeId.name,
     related_user: user,
     post: post,
+    comment: comment,
     is_read: notification.isRead,
     created_at: notification.createdAt,
   };
