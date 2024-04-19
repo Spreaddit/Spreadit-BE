@@ -34,3 +34,32 @@ router.get("/vapid-key", auth.authentication, async (req, res) => {
       res.status(500).send(error.toString());
     }
 });
+
+router.post("/add-subscription", auth.authentication, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const subscription = req.body.subscription;
+    const publicKey = req.body.publicKey;
+    const privateKey = req.body.privateKey;
+
+    const userSub = new NotificationSubscription({
+      userId: userId,
+      subscription: subscription,
+      publicKey: publicKey,
+      privateKey: privateKey,
+    });
+    console.log(userSub);
+    const saved = await userSub.save();
+    if (saved) {
+      return res
+        .status(200)
+        .send({ message: "Subscription added successfully" });
+    } else {
+      return res
+        .status(500)
+        .send({ message: "Subscription could not be added" });
+    }
+  } catch (error) {
+    res.status(500).send(error.toString());
+  }
+});

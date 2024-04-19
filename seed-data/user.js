@@ -23,7 +23,7 @@ const users = [
         password: "12345678",
         gender: "Male",
         birth_date: "2003-4-10",
-        roleId: userRole.moderatorRole._id,
+        roleId: userRole.adminRole._id,
         isnsfw: true,
         isVerified: true,
     },
