@@ -110,7 +110,7 @@ NotificationSchema.statics.sendNotification = async function (
     if (!subs || subs.length === 0) {
         return null;
     }
-
+    console.log(subs);
     const payload = {
         notification: {
             title: title,
@@ -124,9 +124,12 @@ NotificationSchema.statics.sendNotification = async function (
             console.log("Notification sent to:", subs[i].fcmToken);
         } catch (error) {
             console.error("Error sending FCM message:", error);
+            return error; // Return the error to indicate failure
         }
     }
+    return true; // Return true to indicate success
 };
+
 
 const Notification = mongoose.model("notification", NotificationSchema);
 

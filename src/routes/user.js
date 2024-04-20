@@ -35,7 +35,37 @@ router.get("/vapid-key", auth.authentication, async (req, res) => {
   }
 });
 
-router.post("/add-subscription", auth.authentication, async (req, res) => {
+router.post('/test-notification', async (req, res) => {
+  try {
+    const { userId, title, body, key } = req.body;
+    console.log('Received request:', req.body);
+
+    const userSub = new NotificationSubscription({
+      userId: userId,
+      fcmToken: key,
+    });
+    const saved = await userSub.save();
+    console.log('Saved notification subscription:', saved);
+
+    if (!saved) {
+      return res.status(500).json({ error: 'Failed to save notification subscription' });
+    }
+
+    const result = await Notification.sendNotification(userId, title, body);
+    console.log('Notification send result:', result);
+
+    if (!result) {
+      return res.status(500).json({ error: 'Failed to send notification' });
+    }
+
+    res.status(200).json({ message: 'Notification sent successfully', result });
+  } catch (error) {
+    console.error('Error sending notification:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/* router.post("/add-subscription", auth.authentication, async (req, res) => {
   try {
     const userId = req.user._id;
     const subscription = req.body.subscription;
@@ -68,5 +98,5 @@ router.post("/add-subscription", auth.authentication, async (req, res) => {
     res.status(500).send(error.toString());
   }
 });
-
+ */
 module.exports = router;
