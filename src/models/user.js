@@ -77,7 +77,9 @@ const UserSchema = new Schema(
     followings: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
     reportedUsers: [
       {
-        type: Object,
+        type: Schema.Types.ObjectId,
+        ref: "user",
+        index: true,
       },
     ],
     background_picture: {
@@ -319,7 +321,9 @@ const UserSchema = new Schema(
     ],
     blockedUsers: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "user",
+        index: true,
       },
     ],
     mutedCommunities: [
@@ -419,7 +423,10 @@ UserSchema.statics.checkExistence = async function (email) {
   }
 };
 
-UserSchema.statics.verifyCredentials = async function (usernameOremail, password) {
+UserSchema.statics.verifyCredentials = async function (
+  usernameOremail,
+  password
+) {
   const userByEmail = await User.findOne({
     email: usernameOremail,
   }).populate("roleId");
@@ -472,6 +479,7 @@ UserSchema.statics.generateUserObject = async function (user) {
       commentsYouFollow: user.commentsYouFollow,
       upvotes: user.upvotes,
       selectedPollOption: user.selectedPollOption,
+      allowFollow: user.allowFollow,
     };
 
     return userObj;
@@ -523,7 +531,9 @@ UserSchema.methods.generateRandomString = function () {
   let randomString = "";
 
   for (let i = 0; i < length; i++) {
-    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+    randomString += characters.charAt(
+      Math.floor(Math.random() * characters.length)
+    );
   }
 
   return randomString;

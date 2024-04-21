@@ -36,8 +36,58 @@ exports.sortPostNew = async (req, res) => {
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of posts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
     res.status(200).json({
-      posts: posts,
+      posts: postInfoArray,
       totalPages: totalPages,
       currentPage: page,
     });
@@ -49,7 +99,8 @@ exports.sortPostNew = async (req, res) => {
 exports.sortPostTop = async (req, res) => {
   try {
     const userId = req.user._id;
-    const posts = await Post.find().exec();
+    const posts = await Post.find();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
@@ -58,7 +109,57 @@ exports.sortPostTop = async (req, res) => {
         b.votesUpCount - b.votesDownCount - (a.votesUpCount - a.votesDownCount)
       );
     });
-    res.status(200).json(posts);
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of posts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -82,7 +183,57 @@ exports.sortPostTopCommunity = async (req, res) => {
         b.votesUpCount - b.votesDownCount - (a.votesUpCount - a.votesDownCount)
       );
     });
-    res.status(200).json(posts);
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of posts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -99,7 +250,57 @@ exports.sortPostNewCommunity = async (req, res) => {
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    res.status(200).json(posts);
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of posts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
   }
@@ -113,7 +314,57 @@ exports.sortPostViews = async (req, res) => {
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    res.status(200).json(posts);
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of posts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
   }
@@ -126,7 +377,57 @@ exports.sortPostComment = async (req, res) => {
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    res.status(200).json(posts);
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of posts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
   }
@@ -151,7 +452,57 @@ exports.sortPostBest = async (req, res) => {
 
       return ratioB - ratioA;
     });
-    res.status(200).json(posts);
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of posts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -172,7 +523,57 @@ exports.sortPostHot = async (req, res) => {
     const sortedPosts = postsWithScores.sort((a, b) => {
       return b.hotnessScore - a.hotnessScore;
     });
-    res.status(200).json(sortedPosts);
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of sortedPosts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -197,7 +598,57 @@ exports.sortPostHotCommunity = async (req, res) => {
     const sortedPosts = postsWithScores.sort((a, b) => {
       return b.hotnessScore - a.hotnessScore;
     });
-    res.status(200).json(sortedPosts);
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of sortedPosts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -223,7 +674,57 @@ exports.sortPostRandomCommunity = async (req, res) => {
     // Execute the aggregation pipeline
     const randomPosts = await Post.aggregate(pipeline);
 
-    res.status(200).json(randomPosts);
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of randomPosts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -266,7 +767,57 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
         b.votesUpCount - b.votesDownCount - (a.votesUpCount - a.votesDownCount)
       );
     });
-    res.status(200).json(sortedPosts);
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of sortedPosts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -306,7 +857,57 @@ exports.sortPostTopTime = async (req, res) => {
         b.votesUpCount - b.votesDownCount - (a.votesUpCount - a.votesDownCount)
       );
     });
-    res.status(200).json(sortedPosts);
+    const user = await User.findById(userId);
+    const postInfoArray = [];
+    for (let post of sortedPosts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -322,7 +923,55 @@ exports.recentPosts = async (req, res) => {
     }
     const Posts = user.recentPosts;
     recentPosts = Posts.reverse();
-    res.status(200).json(recentPosts);
+    for (let post of sortedPosts) {
+      const postUser = await User.findById(post.userId);
+      const hasUpvoted = post.upVotes.includes(userId);
+      const hasDownvoted = post.downVotes.includes(userId);
+
+      let hasVotedOnPoll = false;
+      let userSelectedOption = null;
+      if (post.pollOptions.length > 0) {
+        if (req.user.selectedPollOption) {
+          userSelectedOption = req.user.selectedPollOption;
+          if (userSelectedOption) {
+            hasVotedOnPoll = true;
+          }
+        }
+      }
+      const postInfo = {
+        _id: post._id,
+        userId: userId,
+        username: postUser.username,
+        userProfilePic: postUser.avatar,
+        hasUpvoted: hasUpvoted,
+        hasDownvoted: hasDownvoted,
+        hasVotedOnPoll: hasVotedOnPoll,
+        selectedPollOption: userSelectedOption,
+        votesUpCount: post.upVotes ? post.upVotes.length : 0,
+        votesDownCount: post.downVotes ? post.downVotes.length : 0,
+        sharesCount: post.sharesCount,
+        commentsCount: post.commentsCount,
+        title: post.title,
+        content: post.content,
+        community: post.community,
+        type: post.type,
+        pollExpiration: post.pollExpiration,
+        isPollEnabled: post.isPollEnabled,
+        pollVotingLength: post.pollVotingLength,
+        isSpoiler: post.isSpoiler,
+        isNsfw: post.isNsfw,
+        sendPostReplyNotification: post.sendPostReplyNotification,
+        isCommentsLocked: post.isCommentsLocked,
+        isSaved: user.savedPosts.includes(post._id.toString()),
+        comments: post.comments,
+        date: post.date,
+        pollOptions: post.pollOptions,
+        attachments: post.attachments,
+      };
+
+      postInfoArray.push(postInfo);
+    }
+    res.status(200).json(postInfoArray);
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
   }
