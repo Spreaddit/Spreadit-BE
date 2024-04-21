@@ -6,7 +6,7 @@ const auth = require("../middleware/authentication");
 
 
 router.route('/')
-    .post(auth.authentication, upload.array('images'), postController.createPost);
+    .post(auth.authentication, upload.array('attachments'), postController.createPost);
 
 
 
@@ -28,7 +28,7 @@ router.route('/:postId/unsave')
     .post(auth.authentication, postController.unsavePost);
 
 router.route('/:postId/edit')
-    .put(auth.authentication, upload.array('images'), postController.editPost);
+    .put(auth.authentication, postController.editPost);
 
 router.route('/:postId/spoiler')
     .post(auth.authentication, postController.spoilerPostContent);

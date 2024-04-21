@@ -21,16 +21,40 @@ exports.getAccountSettings = async (req, res) => {
 exports.modifyAccountSettings = async (req, res) => {
     try {
         const userId = req.user._id;
-        const modifyAccountSettings = req.body;
-        if (modifyAccountSettings.email && !isValidEmail(modifyAccountSettings.email)) {
+
+        const { email, gender, country, connectedAccounts } = req.body;
+
+        if (email && !isValidEmail(email)) {
             return res.status(403).json({ error: 'Invalid email format' });
         }
-        const accountSetting = await User.findOne({ _id: userId });
-        Object.assign(accountSetting, modifyAccountSettings);
 
-        await accountSetting.save();
+        if (connectedAccounts && !Array.isArray(connectedAccounts)) {
+            return res.status(403).json({ error: 'connectedAccounts must be an array' });
+        }
+        if (connectedAccounts) {
+            for (const acc of connectedAccounts) {
+                if (!isValidEmail(acc)) {
+                    return res.status(403).json({ error: `${acc} is not a valid email format` });
+                }
+            }
+        }
+        const updatedFields = {};
+        if (email) {
+            updatedFields.email = email;
+        }
+        if (gender) {
+            updatedFields.gender = gender;
+        }
+        if (country) {
+            updatedFields.country = country;
+        }
+        if (connectedAccounts) {
+            updatedFields.connectedAccounts = connectedAccounts;
+        }
+
+        await User.findOneAndUpdate({ _id: userId }, { $set: updatedFields });
+
         res.status(200).json({ message: "Successful update" });
-
     } catch (err) {
         console.error('Error modifying account settings', err);
         res.status(500).json({ error: 'Internal server error' });

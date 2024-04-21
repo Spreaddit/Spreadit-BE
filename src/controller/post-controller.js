@@ -1070,7 +1070,7 @@ exports.markPostAsNotNsfw = async (req, res) => {
 exports.reportPost = async (req, res) => {
     try {
         const postId = req.params.postId;
-        const { reason, sureason } = req.body;
+        const { reason, subreason } = req.body;
         const userId = req.user._id;
 
         const post = await Post.findById(postId);
@@ -1090,7 +1090,7 @@ exports.reportPost = async (req, res) => {
             userId: userId,
             postId: postId,
             reason: reason,
-            sureason: sureason
+            subreason: subreason
         });
 
         await report.save();
