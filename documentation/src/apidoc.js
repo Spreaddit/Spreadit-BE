@@ -4429,12 +4429,12 @@
  * @apiParam {String} type Type of the post. Possible values are: "Post", "Images & Video", "Link", "Poll".
  * @apiParam {String} [pollOptions] Options for a poll post.
  * @apiParam {String} [pollVotingLength] Length of time for voting on a poll post.
- * @apiParam {String} [fileType] Type of files attached to the post (if applicable).
  * @apiParam {String} [link] Link attached to the post (if applicable).
  * @apiParam {Boolean} [isSpoiler] Indicates if the post contains spoilers.
  * @apiParam {Boolean} [isNsfw] Indicates if the post is not safe for work.
  * @apiParam {Boolean} [sendPostReplyNotification] Indicates if notifications should be sent for replies to this post.
- * @apiParam {File[]} [images] Array of images attached to the post (if applicable).
+ * @apiParam {File[]} [attachments] Array of images attached to the post (if applicable).
+ * @apiParam {String} [fileType] (must sent it with attachments)Type of files attached to the post (if you send image in attachment send this fileType=image and if you send video in attachments make fileType=video )(if applicable).
  *
  * @apiParamExample {json} Request-Example:
  * {
@@ -4742,7 +4742,6 @@
  *
  * @apiParam {String} postId ID of the post to be edited.
  * @apiParam {String} [content] New content of the post.
- * @apiParam {File[]} [images] New array of images attached to the post (if applicable).
  *
  * @apiSuccess {String} message Success message indicating that the post has been edited successfully.
  *
@@ -5348,7 +5347,7 @@
  *
  * @apiParam {String} postId ID of the post to be reported.
  * @apiParam {String} reason Reason for reporting the post.
- * @apiParam {String} [sureason] Supplementary reason for reporting the post.
+ * @apiParam {String} [subreason] Supplementary reason for reporting the post.
  *
  * @apiSuccess {String} message Success message indicating that the post has been reported successfully.
  *
@@ -5578,7 +5577,7 @@
  *       "email": "user@example.com",
  *       "gender": "male",
  *       "country": "USA",
- *       "connectedAccounts": ["twitter", "facebook"]
+ *       "connectedAccounts": ["test@gmail.com","test2@gmail.com"]
  *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -5610,14 +5609,14 @@
  * @apiParam {String} [email] User's email address.
  * @apiParam {String} [gender] User's gender.
  * @apiParam {String} [country] User's country.
- * @apiParam {String[]} [connectedAccounts] Array of connected social media accounts.
+ * @apiParam {String[]} [connectedAccounts] Array of emails of connected social media accounts.
  *
  * @apiParamExample {json} Request-Example:
  * {
  *    "email": "newemail@example.com",
  *    "gender": "female",
  *    "country": "Canada",
- *    "connectedAccounts": ["instagram", "linkedin"]
+ *    "connectedAccounts": ["test@gmail.com", "test2@gmail.com"]
  * }
  *
  * @apiSuccess {String} message Success message indicating that the account settings have been modified successfully.
@@ -6117,7 +6116,7 @@
  *          "twitter": "https://twitter.com/johndoe",
  *          "facebook": "https://facebook.com/johndoe"
  *       },
- *       "profilePicture": "http://example.com/profile.jpg",
+ *       "avatar": "http://example.com/profile.jpg",
  *       "banner": "http://example.com/banner.jpg",
  *       "nsfw": false,
  *       "allowFollow": true,
@@ -6162,7 +6161,7 @@
  *        "twitter": "https://twitter.com/johndoe",
  *        "facebook": "https://facebook.com/johndoe"
  *    },
- *    "profilePicture": "http://example.com/profile_updated.jpg",
+ *    "avatar": "http://example.com/profile_updated.jpg",
  *    "banner": "http://example.com/banner_updated.jpg",
  *    "nsfw": true,
  *    "allowFollow": false,
@@ -6244,8 +6243,8 @@
  *
  * @apiParamExample {json} Request-Example:
  * {
- *    "blockedUsers": ["user3", "user4"],
- *    "mutedCommunities": ["community3", "community4"]
+ *    "blockedUsername": "farouq12",
+ *    "mutedCommunityname ": "Programming"
  * }
  *
  * @apiSuccess {String} message Success message indicating that the safety and privacy settings have been successfully updated.
@@ -6278,7 +6277,7 @@
 //#region Mobile Settings
 
 /**
- * @api {get} /mobile/settings/account Get Account Settings (Mobile)
+ * @api {get} /mobile/settings/general/account Get Account Settings (Mobile)
  * @apiVersion 0.1.0
  * @apiName GetAccountSettingsMobile
  * @apiGroup Mobile Settings
@@ -6295,7 +6294,7 @@
  *       "email": "user@example.com",
  *       "gender": "male",
  *       "country": "US",
- *       "connectedAccounts": ["Google", "Facebook"]
+ *       "connectedAccounts": ["test@gmail.com", "test2@gmail.com"]
  *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -6315,7 +6314,7 @@
  */
 
 /**
- * @api {put} /mobile/settings/account Modify Account Settings (Mobile)
+ * @api {put} /mobile/settings/general/account Modify Account Settings (Mobile)
  * @apiVersion 0.1.0
  * @apiName ModifyAccountSettingsMobile
  * @apiGroup Mobile Settings
@@ -6327,14 +6326,14 @@
  * @apiParam {String} [email] User's email address.
  * @apiParam {String} [gender] User's gender.
  * @apiParam {String} [country] User's country.
- * @apiParam {String[]} [connectedAccounts] Array of connected accounts.
+ * @apiParam {String[]} [connectedAccounts] Array of emails of connected accounts.
  *
  * @apiParamExample {json} Request-Example:
  * {
  *    "email": "newemail@example.com",
  *    "gender": "female",
  *    "country": "UK",
- *    "connectedAccounts": ["Google"]
+ *    "connectedAccounts": ["test@gmail.com", "test2@gmail.com"]
  * }
  *
  * @apiSuccess {String} message Success message indicating that the account settings have been successfully updated.
@@ -6363,7 +6362,7 @@
  */
 
 /**
- * @api {delete} /mobile/settings/account Delete Account (Mobile)
+ * @api {delete} /mobile/settings/general/account Delete Account (Mobile)
  * @apiVersion 0.1.0
  * @apiName DeleteAccountMobile
  * @apiGroup Mobile Settings

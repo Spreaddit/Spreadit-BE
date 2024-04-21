@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const SettingsController = require('../controller/settings');
+const upload = require("../service/fileUpload");
 const auth = require("../middleware/authentication");
 
 
@@ -31,7 +32,7 @@ router.route('/notifications')
 
 router.route('/profile')
     .get(auth.authentication, SettingsController.getProfileSetting)
-    .put(auth.authentication, SettingsController.modifyProfileSettings);
+    .put(auth.authentication, upload.single('avatar'), SettingsController.modifyProfileSettings);
 
 router.route('/safety-privacy')
     .get(auth.authentication, SettingsController.getSafetyAndPrivacySettings)
