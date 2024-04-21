@@ -40,55 +40,53 @@ exports.sortPostNew = async (req, res) => {
     const visiblePosts = posts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json({
       posts: postInfoArray,
       totalPages: totalPages,
@@ -118,55 +116,53 @@ exports.sortPostTop = async (req, res) => {
     const visiblePosts = posts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
@@ -197,55 +193,53 @@ exports.sortPostTopCommunity = async (req, res) => {
     const visiblePosts = posts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
@@ -267,55 +261,53 @@ exports.sortPostNewCommunity = async (req, res) => {
     const visiblePosts = posts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
@@ -334,55 +326,53 @@ exports.sortPostViews = async (req, res) => {
     const visiblePosts = posts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
@@ -400,55 +390,53 @@ exports.sortPostComment = async (req, res) => {
     const visiblePosts = posts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
@@ -478,55 +466,53 @@ exports.sortPostBest = async (req, res) => {
     const visiblePosts = posts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
@@ -552,55 +538,53 @@ exports.sortPostHot = async (req, res) => {
     const visiblePosts = sortedPosts.filter(
       (post) => !post.hiddenBy.includes({ userId })
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
@@ -630,55 +614,53 @@ exports.sortPostHotCommunity = async (req, res) => {
     const visiblePosts = sortedPosts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
@@ -709,54 +691,53 @@ exports.sortPostRandomCommunity = async (req, res) => {
     const visiblePosts = randomPosts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
-      postInfoArray.push(postInfo);
-    }
+
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
@@ -806,55 +787,53 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
     const visiblePosts = sortedPosts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
@@ -901,55 +880,53 @@ exports.sortPostTopTime = async (req, res) => {
     const visiblePosts = sortedPosts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     console.log(error);
@@ -969,55 +946,53 @@ exports.recentPosts = async (req, res) => {
     const visiblePosts = recentPosts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
-    const postInfoArray = [];
-    for (let post of visiblePosts) {
-      const postUser = await User.findById(post.userId);
-      const hasUpvoted = post.upVotes.includes(userId);
-      const hasDownvoted = post.downVotes.includes(userId);
+    const postInfoArray = await Promise.all(
+      visiblePosts.map(async (post) => {
+        post.numberOfViews++;
+        const postUser = await User.findById(post.userId);
+        const hasUpvoted = post.upVotes.includes(userId);
+        const hasDownvoted = post.downVotes.includes(userId);
 
-      let hasVotedOnPoll = false;
-      let userSelectedOption = null;
-      if (post.pollOptions.length > 0) {
-        if (req.user.selectedPollOption) {
+        let hasVotedOnPoll = false;
+        let userSelectedOption = null;
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
           userSelectedOption = req.user.selectedPollOption;
-          if (userSelectedOption) {
-            hasVotedOnPoll = true;
-          }
+          hasVotedOnPoll = userSelectedOption !== null;
         }
-      }
-      const postInfo = {
-        _id: post._id,
-        userId: userId,
-        username: postUser.username,
-        userProfilePic: postUser.avatar,
-        hasUpvoted: hasUpvoted,
-        hasDownvoted: hasDownvoted,
-        hasVotedOnPoll: hasVotedOnPoll,
-        selectedPollOption: userSelectedOption,
-        votesUpCount: post.upVotes ? post.upVotes.length : 0,
-        votesDownCount: post.downVotes ? post.downVotes.length : 0,
-        sharesCount: post.sharesCount,
-        commentsCount: post.commentsCount,
-        title: post.title,
-        content: post.content,
-        community: post.community,
-        type: post.type,
-        pollExpiration: post.pollExpiration,
-        isPollEnabled: post.isPollEnabled,
-        pollVotingLength: post.pollVotingLength,
-        isSpoiler: post.isSpoiler,
-        isNsfw: post.isNsfw,
-        sendPostReplyNotification: post.sendPostReplyNotification,
-        isCommentsLocked: post.isCommentsLocked,
-        isSaved: user.savedPosts.includes(post._id.toString()),
-        comments: post.comments,
-        date: post.date,
-        pollOptions: post.pollOptions,
-        attachments: post.attachments,
-      };
 
-      postInfoArray.push(postInfo);
-    }
+        return {
+          _id: post._id,
+          userId: userId,
+          username: postUser.username,
+          userProfilePic: postUser.avatar,
+          hasUpvoted: hasUpvoted,
+          hasDownvoted: hasDownvoted,
+          hasVotedOnPoll: hasVotedOnPoll,
+          selectedPollOption: userSelectedOption,
+          numberOfViews: post.numberOfViews,
+          votesUpCount: post.upVotes ? post.upVotes.length : 0,
+          votesDownCount: post.downVotes ? post.downVotes.length : 0,
+          sharesCount: post.sharesCount,
+          commentsCount: post.commentsCount,
+          title: post.title,
+          content: post.content,
+          community: post.community,
+          type: post.type,
+          pollExpiration: post.pollExpiration,
+          isPollEnabled: post.isPollEnabled,
+          pollVotingLength: post.pollVotingLength,
+          isSpoiler: post.isSpoiler,
+          isNsfw: post.isNsfw,
+          sendPostReplyNotification: post.sendPostReplyNotification,
+          isCommentsLocked: post.isCommentsLocked,
+          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
+          comments: post.comments,
+          date: post.date,
+          pollOptions: post.pollOptions,
+          attachments: post.attachments,
+        };
+      })
+    );
     res.status(200).json(postInfoArray);
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
