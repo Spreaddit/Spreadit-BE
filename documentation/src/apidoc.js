@@ -6440,12 +6440,12 @@
  *
  * @apiHeader {String} Authorization User's authentication token.
  *
- * @apiParam {String[]} [blockedUser] username of the user ypu want to add to blocklist.
+ * @apiParam {String} [blockedUser] username of the user you want to add to blocklist.
  * @apiParam {Boolean} [allowFollow] Indicates whether to allow followers.
  *
  * @apiParamExample {json} Request-Example:
  * {
- *    "blockedAccounts": ["user3", "user4"],
+ *    "blockedUser": "farouq12",
  *    "allowFollow": false
  * }
  *
