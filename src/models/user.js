@@ -277,6 +277,10 @@ const UserSchema = new Schema(
       type: String,
       default: "",
     },
+    isBanned: {
+      type: Boolean,
+      default: false,
+    },
     communities: {
       type: [String],
       default: function () {

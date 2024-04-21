@@ -52,7 +52,7 @@ const chatandmessagingController = require('../controller/settings');
 router.route('/chat-and-messaging', auth)
     .get(chatandmessagingController.getChatAndMessagingSetting)
     .put(chatandmessagingController.modifyChatAndMessagingSetting)
-    .post(chatandmessagingController.makeAllAsRead);
+    .post(chatandmessagingController.makeAllAsRead); //needs to be handled by mahmoud
 
 const contactSettingsController = require('../controller/mobile-settings');
 router.route('/contact', auth)
