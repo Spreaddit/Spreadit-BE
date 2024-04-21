@@ -542,7 +542,7 @@ router.post("/comments/:commentId/save", auth.authentication, async (req, res) =
 router.post("/comments/:commentId/report", auth.authentication, async (req, res) => {
     try {
         const { commentId } = req.params;
-        const { reason, sureason } = req.body;
+        const { reason, subreason } = req.body;
         const userId = req.user._id;
 
         const comment = await Comment.findById(commentId);
@@ -557,7 +557,7 @@ router.post("/comments/:commentId/report", auth.authentication, async (req, res)
             postId: comment.postId,
             commentId: commentId,
             reason: reason,
-            sureason: sureason
+            subreason: subreason
         });
 
         await report.save();
