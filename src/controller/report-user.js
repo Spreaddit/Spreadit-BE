@@ -24,7 +24,9 @@ exports.reportUser = async (req, res) => {
     if (!toReportID || !reporterID) {
       return res.status(404).json({ error: "User not found" });
     }
-
+    if (!reason) {
+      return res.status(400).json({ error: "please enter the reason" });
+    }
     const reporterUser = await ReportUser.findByIdAndUpdate(
       reporterID,
       { $addToSet: { reportedUsers: { id: toReportID, reason: reason } } },

@@ -5,8 +5,8 @@ const jwt = require("jsonwebtoken");
 
 function calculateHotnessScore(post) {
   const ageInHours = post.date.getTime() / (1000 * 3600);
-  const upvotes = post.votesUpCount;
-  const downvotes = post.votesDownCount;
+  const upvotes = post.upVotes.length;
+  const downvotes = post.downVotes.length;
 
   const upvoteWeight = 1;
   const downvoteWeight = -1;
@@ -37,8 +37,11 @@ exports.sortPostNew = async (req, res) => {
       return res.status(404).json({ error: "no posts found" });
     }
     const user = await User.findById(userId);
+    const visiblePosts = posts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
     const postInfoArray = [];
-    for (let post of posts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -106,12 +109,17 @@ exports.sortPostTop = async (req, res) => {
     }
     posts.sort((a, b) => {
       return (
-        b.votesUpCount - b.votesDownCount - (a.votesUpCount - a.votesDownCount)
+        b.upVotes.length -
+        b.downVotes.length -
+        (a.upVotes.length - a.downVotes.length)
       );
     });
     const user = await User.findById(userId);
+    const visiblePosts = posts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
     const postInfoArray = [];
-    for (let post of posts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -180,12 +188,17 @@ exports.sortPostTopCommunity = async (req, res) => {
     }
     posts.sort((a, b) => {
       return (
-        b.votesUpCount - b.votesDownCount - (a.votesUpCount - a.votesDownCount)
+        b.upVotes.length -
+        b.downVotes.length -
+        (a.upVotes.length - a.downVotes.length)
       );
     });
     const user = await User.findById(userId);
+    const visiblePosts = posts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
     const postInfoArray = [];
-    for (let post of posts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -251,8 +264,11 @@ exports.sortPostNewCommunity = async (req, res) => {
       return res.status(404).json({ error: "no posts found" });
     }
     const user = await User.findById(userId);
+    const visiblePosts = posts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
     const postInfoArray = [];
-    for (let post of posts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -315,8 +331,11 @@ exports.sortPostViews = async (req, res) => {
       return res.status(404).json({ error: "no posts found" });
     }
     const user = await User.findById(userId);
+    const visiblePosts = posts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
     const postInfoArray = [];
-    for (let post of posts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -378,8 +397,11 @@ exports.sortPostComment = async (req, res) => {
       return res.status(404).json({ error: "no posts found" });
     }
     const user = await User.findById(userId);
+    const visiblePosts = posts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
     const postInfoArray = [];
-    for (let post of posts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -442,19 +464,22 @@ exports.sortPostBest = async (req, res) => {
     }
     posts.sort((a, b) => {
       const ratioA =
-        a.votesDownCount !== 0
-          ? a.votesUpCount / a.votesDownCount
-          : a.votesUpCount;
+        a.downVotes.length !== 0
+          ? a.upVotes.length / a.downVotes.length
+          : a.upVotes.length;
       const ratioB =
-        b.votesDownCount !== 0
-          ? b.votesUpCount / b.votesDownCount
-          : b.votesUpCount;
+        b.downVotes.length !== 0
+          ? b.upVotes.length / b.downVotes.length
+          : b.upVotes.length;
 
       return ratioB - ratioA;
     });
     const user = await User.findById(userId);
+    const visiblePosts = posts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
     const postInfoArray = [];
-    for (let post of posts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -524,8 +549,11 @@ exports.sortPostHot = async (req, res) => {
       return b.hotnessScore - a.hotnessScore;
     });
     const user = await User.findById(userId);
+    const visiblePosts = sortedPosts.filter(
+      (post) => !post.hiddenBy.includes({ userId })
+    );
     const postInfoArray = [];
-    for (let post of sortedPosts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -599,8 +627,11 @@ exports.sortPostHotCommunity = async (req, res) => {
       return b.hotnessScore - a.hotnessScore;
     });
     const user = await User.findById(userId);
+    const visiblePosts = sortedPosts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
     const postInfoArray = [];
-    for (let post of sortedPosts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -675,8 +706,11 @@ exports.sortPostRandomCommunity = async (req, res) => {
     const randomPosts = await Post.aggregate(pipeline);
 
     const user = await User.findById(userId);
+    const visiblePosts = randomPosts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
     const postInfoArray = [];
-    for (let post of randomPosts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -721,7 +755,6 @@ exports.sortPostRandomCommunity = async (req, res) => {
         pollOptions: post.pollOptions,
         attachments: post.attachments,
       };
-
       postInfoArray.push(postInfo);
     }
     res.status(200).json(postInfoArray);
@@ -764,12 +797,17 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
     }
     const sortedPosts = postsToSort.sort((a, b) => {
       return (
-        b.votesUpCount - b.votesDownCount - (a.votesUpCount - a.votesDownCount)
+        b.upVotes.length -
+        b.downVotes.length -
+        (a.upVotes.length - a.downVotes.length)
       );
     });
     const user = await User.findById(userId);
+    const visiblePosts = sortedPosts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
     const postInfoArray = [];
-    for (let post of sortedPosts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -854,12 +892,17 @@ exports.sortPostTopTime = async (req, res) => {
     }
     const sortedPosts = postsToSort.sort((a, b) => {
       return (
-        b.votesUpCount - b.votesDownCount - (a.votesUpCount - a.votesDownCount)
+        b.upVotes.length -
+        b.downVotes.length -
+        (a.upVotes.length - a.downVotes.length)
       );
     });
     const user = await User.findById(userId);
+    const visiblePosts = sortedPosts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
     const postInfoArray = [];
-    for (let post of sortedPosts) {
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
@@ -923,7 +966,11 @@ exports.recentPosts = async (req, res) => {
     }
     const Posts = user.recentPosts;
     recentPosts = Posts.reverse();
-    for (let post of sortedPosts) {
+    const visiblePosts = recentPosts.filter(
+      (post) => !post.hiddenBy.includes(userId)
+    );
+    const postInfoArray = [];
+    for (let post of visiblePosts) {
       const postUser = await User.findById(post.userId);
       const hasUpvoted = post.upVotes.includes(userId);
       const hasDownvoted = post.downVotes.includes(userId);
