@@ -468,6 +468,7 @@ UserSchema.statics.generateUserObject = async function (user) {
       commentsYouFollow: user.commentsYouFollow,
       upvotes: user.upvotes,
       selectedPollOption: user.selectedPollOption,
+      allowFollow: user.allowFollow,
     };
 
     return userObj;

@@ -6209,8 +6209,8 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "blockedUsers": ["user1", "user2"],
- *       "mutedCommunities": ["community1", "community2"]
+ *       "blockedUsers": ["6622dd82f5dae2fd48618252", "6622dd82f5dae2fd48618257"],
+ *       "mutedCommunities": ["6622dd82f5dae2fd48618267", "6622dd82f5dae2fd48618272"]
  *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -6410,7 +6410,7 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "blockedAccounts": ["user1", "user2"],
+ *       "blockedUsers": ["6622dd82f5dae2fd48618252", "6622dd82f5dae2fd48618256"],
  *       "allowFollow": true
  *     }
  *
@@ -6440,7 +6440,7 @@
  *
  * @apiHeader {String} Authorization User's authentication token.
  *
- * @apiParam {String[]} [blockedAccounts] Array of blocked account usernames.
+ * @apiParam {String[]} [blockedUser] username of the user ypu want to add to blocklist.
  * @apiParam {Boolean} [allowFollow] Indicates whether to allow followers.
  *
  * @apiParamExample {json} Request-Example:
