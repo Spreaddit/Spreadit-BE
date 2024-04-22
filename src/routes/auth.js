@@ -12,7 +12,6 @@ const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const sendEmail = require("../models/send-email.js");
 const jwt = require("jwt-decode");
 const bcrypt = require("bcryptjs");
-//const auth = require("../middleware/authentication");
 const router = express.Router();
 router.use(passport.initialize());
 //const express = require('express');
@@ -175,15 +174,15 @@ router.post("/google/connected-accounts", auth.verifyGoogleToken, auth.authentic
 
     //let user = await User.findOne({ googleId: userData.id });
     //console.log(user);
-    if(user){
+    if (user) {
 
       user.googleId = userData.id;
       user.connectedAccounts = [userData.email];
       user.isVerified = true;
-  
+
       const savedUser = await user.save();
       const userObj = await User.generateUserObject(savedUser);
-  
+
       res.status(200).send({
         user: userObj,
         message: "Connected Accounts has been added successfully",
@@ -193,7 +192,7 @@ router.post("/google/connected-accounts", auth.verifyGoogleToken, auth.authentic
     else {
       res.status(400).send({
         message: "Invalid User data",
-      }); 
+      });
     }
   } catch (error) {
     console.error("Error during token verification:", error);
@@ -214,7 +213,7 @@ router.post("/add-password", auth.authentication, async (req, res) => {
       user.password = req.body.password;
       await user.save();
       res.status(200).send({ message: "Password added successfully" });
-    } 
+    }
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: "Internal server error" });
@@ -289,11 +288,11 @@ router.post("/reset-password-by-token", async (req, res) => {
   }
 });
 
-router.get("/reset-password/user-info",auth.authentication ,async (req, res) => {
+router.get("/reset-password/user-info", auth.authentication, async (req, res) => {
   try {
-    
+
     const user = await User.findById(req.user._id);
-    
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

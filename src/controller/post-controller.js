@@ -30,6 +30,9 @@ exports.getAllPosts = async (req, res) => {
 exports.getPostById = async (req, res) => {
     try {
         const postId = req.params.postId;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const post = await Post.findById(postId);
 
         if (!post) {
@@ -42,25 +45,17 @@ exports.getPostById = async (req, res) => {
         post.numberOfViews++;
         const upVotesCount = post.upVotes ? post.upVotes.length : 0;
         const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-        post.votesUpCount = upVotesCount;
-        post.votesDownCount = downVotesCount;
-        const hasUpvoted = post.upVotes.includes(req.user._id);
-        const hasDownvoted = post.downVotes.includes(req.user._id);
 
         let hasVotedOnPoll = false;
         let userSelectedOption = null;
-        if (post.pollOptions.length > 0) {
-            if (req.user.selectedPollOption) {
-                userSelectedOption = req.user.selectedPollOption;
-                if (userSelectedOption) {
-                    hasVotedOnPoll = true;
-                }
-            }
+        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
+            userSelectedOption = req.user.selectedPollOption;
+            hasVotedOnPoll = userSelectedOption !== null;
         }
 
         const isHidden = post.hiddenBy.includes(req.user._id);
 
-        const addRecentPost = await User.findByIdAndUpdate(
+        await User.findByIdAndUpdate(
             req.user._id,
             { $addToSet: { recentPosts: postId } },
             { new: true }
@@ -73,11 +68,12 @@ exports.getPostById = async (req, res) => {
             userId: post.userId,
             username: user.username,
             userProfilePic: user.avatar,
-            hasUpvoted: hasUpvoted,
-            hasDownvoted: hasDownvoted,
+            hasUpvoted: post.upVotes.includes(req.user._id),
+            hasDownvoted: post.downVotes.includes(req.user._id),
             hasVotedOnPoll: hasVotedOnPoll,
             selectedPollOption: userSelectedOption,
             isHidden: isHidden,
+            numberOfViews: post.numberOfViews,
             votesUpCount: upVotesCount,
             votesDownCount: downVotesCount,
             sharesCount: post.sharesCount,
@@ -94,7 +90,6 @@ exports.getPostById = async (req, res) => {
             sendPostReplyNotification: post.sendPostReplyNotification,
             isCommentsLocked: post.isCommentsLocked,
             isSaved: savedPostIds.includes(post._id.toString()),
-            comments: post.comments,
             date: post.date,
             pollOptions: post.pollOptions,
             attachments: post.attachments,
@@ -116,31 +111,29 @@ exports.getAllUserPosts = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
         const userId = user._id;
+
         const posts = await Post.find({ userId });
         if (!posts || posts.length === 0) {
             return res.status(404).json({ error: 'User has no posts' });
         }
-        const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
+
         const savedPostIds = user.savedPosts || [];
-        const postInfoArray = [];
-        for (let post of visiblePosts) {
-            post.numberOfViews++;
+
+        const postInfoArray = await Promise.all(posts.map(async (post) => {
             const postUser = await User.findById(post.userId);
             const hasUpvoted = post.upVotes.includes(userId);
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
             let userSelectedOption = null;
-            if (post.pollOptions.length > 0) {
-                if (req.user.selectedPollOption) {
-                    userSelectedOption = req.user.selectedPollOption;
-                    if (userSelectedOption) {
-                        hasVotedOnPoll = true;
-                    }
-                }
+            if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
+                userSelectedOption = req.user.selectedPollOption;
+                hasVotedOnPoll = userSelectedOption !== null;
             }
 
-            const postInfo = {
+            post.numberOfViews++;
+
+            return {
                 _id: post._id,
                 userId: userId,
                 username: postUser.username,
@@ -149,6 +142,7 @@ exports.getAllUserPosts = async (req, res) => {
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
+                numberOfViews: post.numberOfViews,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -165,20 +159,19 @@ exports.getAllUserPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
                 attachments: post.attachments,
             };
+        }));
 
-            postInfoArray.push(postInfo);
-        }
         res.status(200).json(postInfoArray);
     } catch (err) {
         console.error('Error fetching posts:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 
 exports.createPost = async (req, res) => {
@@ -294,31 +287,30 @@ exports.getAllPostsInCommunity = async (req, res) => {
         const username = req.user.username;
 
         const user = await User.findOne({ username });
-
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
         const userId = user._id;
+
         const community = req.params.community;
         if (!community) {
             return res.status(400).json({ error: 'Community name is required' });
         }
-        const communityExists = await Community.findOne({ name: community });
 
+        const communityExists = await Community.findOne({ name: community });
         if (!communityExists) {
             return res.status(404).json({ message: "Community not found" });
         }
-
 
         const posts = await Post.find({ community });
 
         if (!posts || posts.length === 0) {
             return res.status(404).json({ error: 'Posts not found in the specified community' });
         }
-        const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
+
         const savedPostIds = user.savedPosts || [];
-        const postInfoArray = [];
-        for (let post of visiblePosts) {
+
+        const postInfoArray = await Promise.all(posts.map(async (post) => {
             post.numberOfViews++;
             const postUser = await User.findById(post.userId);
             const hasUpvoted = post.upVotes.includes(userId);
@@ -326,23 +318,13 @@ exports.getAllPostsInCommunity = async (req, res) => {
 
             let hasVotedOnPoll = false;
             let userSelectedOption = null;
-            if (post.pollOptions.length > 0) {
-                if (req.user.selectedPollOption) {
-                    console.log(req.user.selectedPollOption);
-                    userSelectedOption = req.user.selectedPollOption;
-                    if (userSelectedOption) {
-                        hasVotedOnPoll = true;
-                    }
-                }
+            if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
+                console.log(req.user.selectedPollOption);
+                userSelectedOption = req.user.selectedPollOption;
+                hasVotedOnPoll = userSelectedOption !== null;
             }
 
-            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            // post.votesUpCount = upVotesCount;
-            //post.votesDownCount = downVotesCount;
-            //post.isSaved = savedPostIds.includes(post._id.toString());
-            await post.save();
-            const postInfo = {
+            return {
                 _id: post._id,
                 userId: userId,
                 username: postUser.username,
@@ -351,9 +333,9 @@ exports.getAllPostsInCommunity = async (req, res) => {
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
-
-                votesUpCount: post.upVotes ? post.upVotes.length : 0,
-                votesDownCount: post.downVotes ? post.downVotes.length : 0,
+                numberOfViews: post.numberOfViews,
+                votesUpCount: post.upVotes.length,
+                votesDownCount: post.downVotes.length,
                 sharesCount: post.sharesCount,
                 commentsCount: post.commentsCount,
                 title: post.title,
@@ -368,14 +350,12 @@ exports.getAllPostsInCommunity = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
                 attachments: post.attachments,
             };
+        }));
 
-            postInfoArray.push(postInfo);
-        }
         res.status(200).json(postInfoArray);
     } catch (err) {
         console.error('Error fetching posts:', err);
@@ -386,6 +366,9 @@ exports.getAllPostsInCommunity = async (req, res) => {
 exports.savePost = async (req, res) => {
     try {
         const { postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const userId = req.user._id;
         if (!postId || !userId) {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
@@ -437,39 +420,29 @@ exports.getSavedPosts = async (req, res) => {
             return res.status(404).json({ error: 'Saved posts not found' });
         }
 
-        const visiblePosts = savedPosts.filter(post => !post.hiddenBy.includes(userId));
-        const postInfoArray = [];
-        for (let post of visiblePosts) {
+        const postInfoArray = await Promise.all(savedPosts.map(async (post) => {
             post.numberOfViews++;
+            const postUser = await User.findById(post.userId);
             const hasUpvoted = post.upVotes.includes(userId);
             const hasDownvoted = post.downVotes.includes(userId);
 
             let hasVotedOnPoll = false;
             let userSelectedOption = null;
-            if (post.pollOptions.length > 0) {
-                if (req.user.selectedPollOption) {
-                    userSelectedOption = req.user.selectedPollOption;
-                    if (userSelectedOption) {
-                        hasVotedOnPoll = true;
-                    }
-                }
+            if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
+                userSelectedOption = req.user.selectedPollOption;
+                hasVotedOnPoll = userSelectedOption !== null;
             }
 
-            //const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-            //const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-            // post.votesUpCount = upVotesCount;
-            //post.votesDownCount = downVotesCount;
-            //post.isSaved = savedPostIds.includes(post._id.toString());
-            await post.save();
-            const postInfo = {
+            return {
                 _id: post._id,
                 userId: userId,
-                username: user.username,
-                userProfilePic: user.avatar,
+                username: postUser.username,
+                userProfilePic: postUser.avatar,
                 hasUpvoted: hasUpvoted,
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
+                numberOfViews: post.numberOfViews,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -486,14 +459,12 @@ exports.getSavedPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: savedPostIds.includes(post._id.toString()),
-                comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
                 attachments: post.attachments,
             };
+        }));
 
-            postInfoArray.push(postInfo);
-        }
         res.status(200).json(postInfoArray);
     } catch (err) {
         console.error('Error fetching saved posts:', err);
@@ -504,6 +475,9 @@ exports.getSavedPosts = async (req, res) => {
 exports.unsavePost = async (req, res) => {
     try {
         const { postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const userId = req.user._id;
         if (!postId || !userId) {
             return res.status(400).json({ error: 'Post ID and User ID are required' });
@@ -544,6 +518,9 @@ exports.unsavePost = async (req, res) => {
 exports.editPost = async (req, res) => {
     try {
         const { postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const userId = req.user._id;
         const content = req.body.content;
         if (!postId || !userId) {
@@ -579,7 +556,9 @@ exports.editPost = async (req, res) => {
 exports.spoilerPostContent = async (req, res) => {
     try {
         const { postId } = req.params;
-
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const post = await Post.findById(postId);
 
         if (!post) {
@@ -597,6 +576,9 @@ exports.spoilerPostContent = async (req, res) => {
 exports.unspoilerPostContent = async (req, res) => {
     try {
         const { postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const post = await Post.findById(postId);
 
         if (!post) {
@@ -616,6 +598,9 @@ exports.unspoilerPostContent = async (req, res) => {
 exports.lockPostComments = async (req, res) => {
     try {
         const { postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const post = await Post.findById(postId);
 
         if (!post) {
@@ -634,6 +619,9 @@ exports.unlockPostComments = async (req, res) => {
     try {
 
         const { postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const post = await Post.findById(postId);
 
         if (!post) {
@@ -652,6 +640,9 @@ exports.unlockPostComments = async (req, res) => {
 exports.upvotePost = async (req, res) => {
     try {
         const { postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const userId = req.user._id;
 
         const post = await Post.findById(postId);
@@ -694,6 +685,9 @@ exports.upvotePost = async (req, res) => {
 exports.downvotePost = async (req, res) => {
     try {
         const { postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const userId = req.user._id;
 
         const post = await Post.findById(postId);
@@ -741,13 +735,14 @@ exports.getUpvotedPosts = async (req, res) => {
         if (!posts || posts.length === 0) {
             return res.status(404).json({ error: 'Posts not found' });
         }
+
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
+
         const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
-        const postInfoArray = [];
-        for (let post of visiblePosts) {
+        const postInfoArray = await Promise.all(visiblePosts.map(async (post) => {
             post.numberOfViews++;
             const postUser = await User.findById(post.userId);
             const hasUpvoted = post.upVotes.includes(userId);
@@ -755,16 +750,12 @@ exports.getUpvotedPosts = async (req, res) => {
 
             let hasVotedOnPoll = false;
             let userSelectedOption = null;
-            if (post.pollOptions.length > 0) {
-                if (req.user.selectedPollOption) {
-                    userSelectedOption = req.user.selectedPollOption;
-                    if (userSelectedOption) {
-                        hasVotedOnPoll = true;
-                    }
-                }
+            if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
+                userSelectedOption = req.user.selectedPollOption;
+                hasVotedOnPoll = userSelectedOption !== null;
             }
 
-            const postInfo = {
+            return {
                 _id: post._id,
                 userId: userId,
                 username: postUser.username,
@@ -773,6 +764,7 @@ exports.getUpvotedPosts = async (req, res) => {
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
+                numberOfViews: post.numberOfViews,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -789,14 +781,12 @@ exports.getUpvotedPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-                comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
                 attachments: post.attachments,
             };
+        }));
 
-            postInfoArray.push(postInfo);
-        }
         res.status(200).json(postInfoArray);
     } catch (err) {
         console.error('Error fetching upvoted posts:', err);
@@ -805,22 +795,23 @@ exports.getUpvotedPosts = async (req, res) => {
 };
 
 
+
 exports.getDownvotedPosts = async (req, res) => {
     try {
         const userId = req.user._id;
-
         const posts = await Post.find({ downVotes: userId });
 
         if (!posts || posts.length === 0) {
             return res.status(404).json({ error: 'Posts not found' });
         }
+
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
+
         const visiblePosts = posts.filter(post => !post.hiddenBy.includes(userId));
-        const postInfoArray = [];
-        for (let post of visiblePosts) {
+        const postInfoArray = await Promise.all(visiblePosts.map(async (post) => {
             post.numberOfViews++;
             const postUser = await User.findById(post.userId);
             const hasUpvoted = post.upVotes.includes(userId);
@@ -828,16 +819,12 @@ exports.getDownvotedPosts = async (req, res) => {
 
             let hasVotedOnPoll = false;
             let userSelectedOption = null;
-            if (post.pollOptions.length > 0) {
-                if (req.user.selectedPollOption) {
-                    userSelectedOption = req.user.selectedPollOption;
-                    if (userSelectedOption) {
-                        hasVotedOnPoll = true;
-                    }
-                }
+            if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
+                userSelectedOption = req.user.selectedPollOption;
+                hasVotedOnPoll = userSelectedOption !== null;
             }
 
-            const postInfo = {
+            return {
                 _id: post._id,
                 userId: userId,
                 username: postUser.username,
@@ -846,6 +833,7 @@ exports.getDownvotedPosts = async (req, res) => {
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
+                numberOfViews: post.numberOfViews,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -862,14 +850,12 @@ exports.getDownvotedPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-                comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
                 attachments: post.attachments,
             };
+        }));
 
-            postInfoArray.push(postInfo);
-        }
         res.status(200).json(postInfoArray);
     } catch (err) {
         console.error('Error fetching downvoted posts:', err);
@@ -880,6 +866,9 @@ exports.getDownvotedPosts = async (req, res) => {
 exports.deletePost = async (req, res) => {
     try {
         const { postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const userId = req.user._id;
         const post = await Post.findByIdAndDelete({ _id: postId, userId });
         if (!post) {
@@ -916,6 +905,10 @@ async function deleteReplies(commentId) {
 exports.hidePost = async (req, res) => {
     try {
         const { postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
         const userId = req.user._id;
 
         const post = await Post.findById(postId);
@@ -942,6 +935,9 @@ exports.hidePost = async (req, res) => {
 exports.unhidePost = async (req, res) => {
     try {
         const { postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const userId = req.user._id;
 
         const post = await Post.findById(postId);
@@ -979,8 +975,7 @@ exports.getHiddenPosts = async (req, res) => {
         }
 
         const hiddenPosts = user.hiddenPosts;
-        const postInfoArray = [];
-        for (let post of hiddenPosts) {
+        const postInfoArray = await Promise.all(hiddenPosts.map(async (post) => {
             post.numberOfViews++;
             const postUser = await User.findById(post.userId);
             const hasUpvoted = post.upVotes.includes(userId);
@@ -988,16 +983,12 @@ exports.getHiddenPosts = async (req, res) => {
 
             let hasVotedOnPoll = false;
             let userSelectedOption = null;
-            if (post.pollOptions.length > 0) {
-                if (req.user.selectedPollOption) {
-                    userSelectedOption = req.user.selectedPollOption;
-                    if (userSelectedOption) {
-                        hasVotedOnPoll = true;
-                    }
-                }
+            if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
+                userSelectedOption = req.user.selectedPollOption;
+                hasVotedOnPoll = userSelectedOption !== null;
             }
 
-            const postInfo = {
+            return {
                 _id: post._id,
                 userId: userId,
                 username: postUser.username,
@@ -1006,6 +997,7 @@ exports.getHiddenPosts = async (req, res) => {
                 hasDownvoted: hasDownvoted,
                 hasVotedOnPoll: hasVotedOnPoll,
                 selectedPollOption: userSelectedOption,
+                numberOfViews: post.numberOfViews,
                 votesUpCount: post.upVotes ? post.upVotes.length : 0,
                 votesDownCount: post.downVotes ? post.downVotes.length : 0,
                 sharesCount: post.sharesCount,
@@ -1022,14 +1014,12 @@ exports.getHiddenPosts = async (req, res) => {
                 sendPostReplyNotification: post.sendPostReplyNotification,
                 isCommentsLocked: post.isCommentsLocked,
                 isSaved: user.savedPosts.includes(post._id.toString()),
-                comments: post.comments,
                 date: post.date,
                 pollOptions: post.pollOptions,
                 attachments: post.attachments,
             };
+        }));
 
-            postInfoArray.push(postInfo);
-        }
         res.status(200).json(postInfoArray);
     } catch (error) {
         console.error('Error fetching hidden posts:', error);
@@ -1038,10 +1028,12 @@ exports.getHiddenPosts = async (req, res) => {
 };
 
 
-
 exports.markPostAsNsfw = async (req, res) => {
     try {
         const postId = req.params.postId;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const post = await Post.findByIdAndUpdate(postId, { isNsfw: true });
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
@@ -1055,6 +1047,9 @@ exports.markPostAsNsfw = async (req, res) => {
 
 exports.markPostAsNotNsfw = async (req, res) => {
     const postId = req.params.postId;
+    if (!postId || postId.length !== 24) {
+        return res.status(404).json({ message: "Post not found" });
+    }
     try {
         const post = await Post.findByIdAndUpdate(postId, { isNsfw: false });
         if (!post) {
@@ -1070,6 +1065,9 @@ exports.markPostAsNotNsfw = async (req, res) => {
 exports.reportPost = async (req, res) => {
     try {
         const postId = req.params.postId;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const { reason, subreason } = req.body;
         const userId = req.user._id;
 
@@ -1109,6 +1107,9 @@ exports.reportPost = async (req, res) => {
 exports.voteInPoll = async (req, res) => {
     try {
         const postId = req.params.postId;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
         const { selectedOption } = req.body;
 
         const userId = req.user._id;

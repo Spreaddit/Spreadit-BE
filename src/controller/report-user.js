@@ -20,17 +20,33 @@ exports.reportUser = async (req, res) => {
       console.log("user cannot report himself");
       return res.status(400).json({ error: "user cannot report himself" });
     }
-    const reason = req.body.reason;
+    const { reason, subreason } = req.body;
+
     if (!toReportID || !reporterID) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const reporterUser = await ReportUser.findByIdAndUpdate(
-      reporterID,
-      { $addToSet: { reportedUsers: { id: toReportID, reason: reason } } },
-      { new: true }
-    );
-    const toReportUser = await ReportUser.findById(toReportID);
+    if (!reason) {
+      return res.status(400).send({
+        message: "invalid report data must send reason",
+      });
+    }
+
+    const report = new Report({
+      userId: reporterID,
+      toReportID: toReportID,
+      reason: reason,
+      subreason: subreason,
+    });
+
+    await report.save();
+
+    // const reporterUser = await ReportUser.findByIdAndUpdate(
+    //   reporterID,
+    //   { $addToSet: { reportedUsers: { id: toReportID, reason: reason } } },
+    //   { new: true }
+    // );
+    // const toReportUser = await ReportUser.findById(toReportID);
 
     const response = {
       description: "User reported successfully",
