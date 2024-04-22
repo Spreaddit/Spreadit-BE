@@ -17,11 +17,13 @@
  * @apiParam {String} email Email of the user
  * @apiParam {String} username Username of the user
  * @apiParam {String} password password of the user
+ * @apiParam {Boolean} isCross Indicates whether the user is from cross platform or not
  * @apiParamExample {json} Request-Example:
  * {
  *      "email": "amiraelgarf99@gmail.com",
- *      "username": "amira123"
- *      "password": "myPassw@ord123",
+ *      "username": "amira123",
+ *      "password": "myPassword123",
+ *      "isCross": true
  * }
  * @apiSuccess {user-object} user user of the sign up operation
  * @apiSuccessExample {json} Success-Response:
@@ -2431,9 +2433,10 @@
  *
  * @apiHeader {String} Authorization User's authentication token.
  *
- * @apiParam {String} [name] Name of the user.
- * @apiParam {File} [avatar] URL of the user's avatar.
- * @apiParam {File} [banner] URL of the user's banner image.
+ * @apiParam {String} [name] Name of the user. 
+ * @apiParam {File} [banner] user banner (if applicable).
+ * @apiParam {File} [avatar] user avatar (if applicable).
+ * @apiParam {String} [fileType] Type of images (if applicable).
  * @apiParam {String} [about] About section of the user's profile.
  * @apiParam {Object} [socialLinks] Links to the user's social media profiles.
  * @apiParam {String} [username] Username of the user.
@@ -2444,8 +2447,9 @@
  * {
  *    "name": "Updated Name",
  *    "about": "Updated about section",
- *    "avatar": "Updated avatar",
- *    "image": "Updated image",
+ *    "avatar": "avatarfile",
+ *    "banner": "bannerfile",
+ *    "fileType": "image",
  *    "socialLinks": [
  *      {
  *          "platform": "facebook",
