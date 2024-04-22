@@ -40,16 +40,15 @@ app.use(
   })
 );
 
-app.use(authRoutes);
-app.use("/auth", authRoutes);
-app.use("/settings", settingsRoutes);
-app.use("/mobile/settings", mobileSettingsRoutes);
-app.use("/users", userActionRoutes);
-app.use("/posts", postsRoutes);
-app.use("/", uploadRoutes);
-app.use("/", listingRoutes);
-app.use(communityRoutes);
-app.use(commentRoutes);
+app.use("/api", authRoutes);
+app.use("/api/settings", settingsRoutes);
+app.use("/api/mobile/settings", mobileSettingsRoutes);
+app.use("/api/users", userActionRoutes);
+app.use("/api/posts", postsRoutes);
+app.use("/api", uploadRoutes);
+app.use("/api", listingRoutes);
+app.use("/api", communityRoutes);
+app.use("/api",commentRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,

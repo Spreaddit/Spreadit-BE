@@ -49,7 +49,7 @@ describe("GET /new", () => {
   });
 });
 
-// describe("get posts sorted by best", () => {
+// describe("get posts sorted by top", () => {
 //   test("It should return 404 if no posts found", async () => {
 //     await request(app).get("/home/best").expect(404);
 //   });
@@ -335,7 +335,7 @@ describe("sort post by new in community", () => {
   });
 });
 
-describe("return unauthorized user ", () => {
+describe("It should sort by best ", () => {
   test("It should sort by best", async () => {
     await request(app).post("/signup").send({
       email: "mahmoudaly@gmail.com",
@@ -428,7 +428,197 @@ describe("sort post by new in community best if no posts found", () => {
       .set("Authorization", `Bearer ${token}`)
       .expect(404);
   });
+
+  test("It should return 404 if no posts found in top", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/home/top")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
+
+  test("It should return 404 if no posts found in best", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/home/best")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
+
+  test("It should return 404 if no posts found in top now", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/home/top/now")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
+
+  test("It should return 404 if no posts found in top today", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/home/top/day")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
+
+  test("It should return 404 if no posts found in top month", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/home/top/month")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
+
+  test("It should return 404 if no posts found in top week", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/home/top/week")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
+
+  test("It should return 404 if no posts found in top year", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/home/top/year")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
+
+  test("It should return 404 if no posts found in sorting by comments", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/home/comments")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
+
+  test("It should return 404 if no posts found in sorting by views", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/home/views")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
 });
+
 // describe("get posts sorted by date in community", () => {
 //   test("It should return 404 if no posts found", async () => {
 //     await request(app).get("/subspreadit/amira/new").expect(404);
@@ -440,3 +630,465 @@ describe("sort post by new in community best if no posts found", () => {
 //     await request(app).get("/subspreadit/amira/top").expect(404);
 //   });
 // });
+
+// describe("sort post by top in community now", () => {
+//   test("It should sort by top", async () => {
+//     await request(app).post("/signup").send({
+//       email: "mahmoudaly@gmail.com",
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const logIn = await request(app).post("/login").send({
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const token = logIn.body.access_token;
+//     await User.findOneAndUpdate(
+//       { username: "mahmoud12" },
+//       { isVerified: true }
+//     );
+//     const newpost = new Post({
+//       userId: "jjhgd666",
+//       username: "mahmoud",
+//       title: "Test ",
+//       content: "",
+//       community: "mahmoud556",
+//       type: "Post",
+//       date: "2024-04-03T14:16:22.534+00:00",
+//     });
+//     await newpost.save();
+//     await request(app)
+//       .get("/subspreadit/mahmoud556/top/now")
+//       .set("Authorization", `Bearer ${token}`)
+//       .expect(200);
+//   });
+// });
+
+// describe("sort post by top in community day", () => {
+//   test("It should sort by top", async () => {
+//     await request(app).post("/signup").send({
+//       email: "mahmoudaly@gmail.com",
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const logIn = await request(app).post("/login").send({
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const token = logIn.body.access_token;
+//     await User.findOneAndUpdate(
+//       { username: "mahmoud12" },
+//       { isVerified: true }
+//     );
+//     const newpost = new Post({
+//       userId: "jjhgd666",
+//       username: "mahmoud",
+//       title: "Test ",
+//       content: "",
+//       community: "mahmoud556",
+//       type: "Post",
+//       date: "2024-04-03T14:16:22.534+00:00",
+//     });
+//     await newpost.save();
+//     await request(app)
+//       .get("/subspreadit/mahmoud556/top/day")
+//       .set("Authorization", `Bearer ${token}`)
+//       .expect(200);
+//   });
+// });
+
+// describe("sort post by top in community week", () => {
+//   test("It should sort by top", async () => {
+//     await request(app).post("/signup").send({
+//       email: "mahmoudaly@gmail.com",
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const logIn = await request(app).post("/login").send({
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const token = logIn.body.access_token;
+//     await User.findOneAndUpdate(
+//       { username: "mahmoud12" },
+//       { isVerified: true }
+//     );
+//     const newpost = new Post({
+//       userId: "jjhgd666",
+//       username: "mahmoud",
+//       title: "Test ",
+//       content: "",
+//       community: "mahmoud556",
+//       type: "Post",
+//       date: "2024-04-03T14:16:22.534+00:00",
+//     });
+//     await newpost.save();
+//     await request(app)
+//       .get("/subspreadit/mahmoud556/top/week")
+//       .set("Authorization", `Bearer ${token}`)
+//       .expect(200);
+//   });
+// });
+
+// describe("sort post by top in community month", () => {
+//   test("It should sort by top", async () => {
+//     await request(app).post("/signup").send({
+//       email: "mahmoudaly@gmail.com",
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const logIn = await request(app).post("/login").send({
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const token = logIn.body.access_token;
+//     await User.findOneAndUpdate(
+//       { username: "mahmoud12" },
+//       { isVerified: true }
+//     );
+//     const newpost = new Post({
+//       userId: "jjhgd666",
+//       username: "mahmoud",
+//       title: "Test ",
+//       content: "",
+//       community: "mahmoud556",
+//       type: "Post",
+//       date: "2024-04-03T14:16:22.534+00:00",
+//     });
+//     await newpost.save();
+//     await request(app)
+//       .get("/subspreadit/mahmoud556/top/month")
+//       .set("Authorization", `Bearer ${token}`)
+//       .expect(200);
+//   });
+// });
+
+// describe("sort post by top in community year", () => {
+//   test("It should sort by top", async () => {
+//     await request(app).post("/signup").send({
+//       email: "mahmoudaly@gmail.com",
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const logIn = await request(app).post("/login").send({
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const token = logIn.body.access_token;
+//     await User.findOneAndUpdate(
+//       { username: "mahmoud12" },
+//       { isVerified: true }
+//     );
+//     const newpost = new Post({
+//       userId: "jjhgd666",
+//       username: "mahmoud",
+//       title: "Test ",
+//       content: "",
+//       community: "mahmoud556",
+//       type: "Post",
+//       date: "2024-04-03T14:16:22.534+00:00",
+//     });
+//     await newpost.save();
+//     await request(app)
+//       .get("/subspreadit/mahmoud556/top/year")
+//       .set("Authorization", `Bearer ${token}`)
+//       .expect(200);
+//   });
+// });
+
+// describe("sort post by top now", () => {
+//   test("It should sort by top now", async () => {
+//     await request(app).post("/signup").send({
+//       email: "mahmoudaly@gmail.com",
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const logIn = await request(app).post("/login").send({
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const token = logIn.body.access_token;
+//     await User.findOneAndUpdate(
+//       { username: "mahmoud12" },
+//       { isVerified: true }
+//     );
+//     const newpost = new Post({
+//       userId: "jjhgd666",
+//       username: "mahmoud",
+//       title: "Test ",
+//       content: "",
+//       community: "mahmoud556",
+//       type: "Post",
+//       date: "2024-04-03T14:16:22.534+00:00",
+//     });
+//     await newpost.save();
+//     await request(app)
+//       .get("/home/top/now")
+//       .set("Authorization", `Bearer ${token}`)
+//       .expect(200);
+//   });
+// });
+
+// describe("sort post by top now", () => {
+//   test("It should sort by top now", async () => {
+//     await request(app).post("/signup").send({
+//       email: "mahmoudaly@gmail.com",
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const logIn = await request(app).post("/login").send({
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const token = logIn.body.access_token;
+//     await User.findOneAndUpdate(
+//       { username: "mahmoud12" },
+//       { isVerified: true }
+//     );
+//     const newpost = new Post({
+//       userId: "jjhgd666",
+//       username: "mahmoud",
+//       title: "Test ",
+//       content: "",
+//       community: "mahmoud556",
+//       type: "Post",
+//       date: "2024-04-03T14:16:22.534+00:00",
+//     });
+//     await newpost.save();
+//     await request(app)
+//       .get("/home/top/day")
+//       .set("Authorization", `Bearer ${token}`)
+//       .expect(200);
+//   });
+// });
+
+// describe("sort post by top now", () => {
+//   test("It should sort by top now", async () => {
+//     await request(app).post("/signup").send({
+//       email: "mahmoudaly@gmail.com",
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const logIn = await request(app).post("/login").send({
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const token = logIn.body.access_token;
+//     await User.findOneAndUpdate(
+//       { username: "mahmoud12" },
+//       { isVerified: true }
+//     );
+//     const newpost = new Post({
+//       userId: "jjhgd666",
+//       username: "mahmoud",
+//       title: "Test ",
+//       content: "",
+//       community: "mahmoud556",
+//       type: "Post",
+//       date: "2024-04-03T14:16:22.534+00:00",
+//     });
+//     await newpost.save();
+//     await request(app)
+//       .get("/home/top/now")
+//       .set("Authorization", `Bearer ${token}`)
+//       .expect(200);
+//   });
+// });
+
+// describe("sort post by top day", () => {
+//   test("It should sort by top day", async () => {
+//     await request(app).post("/signup").send({
+//       email: "mahmoudaly@gmail.com",
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const logIn = await request(app).post("/login").send({
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const token = logIn.body.access_token;
+//     await User.findOneAndUpdate(
+//       { username: "mahmoud12" },
+//       { isVerified: true }
+//     );
+//     const newpost = new Post({
+//       userId: "jjhgd666",
+//       username: "mahmoud",
+//       title: "Test ",
+//       content: "",
+//       community: "mahmoud556",
+//       type: "Post",
+//       date: "2024-04-03T14:16:22.534+00:00",
+//     });
+//     await newpost.save();
+//     await request(app)
+//       .get("/home/top/now")
+//       .set("Authorization", `Bearer ${token}`)
+//       .expect(200);
+//   });
+// });
+
+// describe("sort post by top week", () => {
+//   test("It should sort by top week", async () => {
+//     await request(app).post("/signup").send({
+//       email: "mahmoudaly@gmail.com",
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const logIn = await request(app).post("/login").send({
+//       username: "mahmoud12",
+//       password: "12345678",
+//     });
+//     const token = logIn.body.access_token;
+//     await User.findOneAndUpdate(
+//       { username: "mahmoud12" },
+//       { isVerified: true }
+//     );
+//     const newpost = new Post({
+//       userId: "jjhgd666",
+//       username: "mahmoud",
+//       title: "Test ",
+//       content: "",
+//       community: "mahmoud556",
+//       type: "Post",
+//       date: "2024-04-03T14:16:22.534+00:00",
+//     });
+//     await newpost.save();
+//     await request(app)
+//       .get("/home/top/week")
+//       .set("Authorization", `Bearer ${token}`)
+//       .expect(200);
+//   });
+// });
+
+describe("sort post by top month", () => {
+  test("It should sort by top month", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    const newpost = new Post({
+      userId: "jjhgd666",
+      username: "mahmoud",
+      title: "Test ",
+      content: "",
+      community: "mahmoud556",
+      type: "Post",
+      date: "2024-04-03T14:16:22.534+00:00",
+    });
+    await newpost.save();
+    await request(app)
+      .get("/home/top/month")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(200);
+  });
+});
+
+describe("sort post by top year", () => {
+  test("It should sort by top year", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    const newpost = new Post({
+      userId: "jjhgd666",
+      username: "mahmoud",
+      title: "Test ",
+      content: "",
+      community: "mahmoud556",
+      type: "Post",
+      date: "2024-04-03T14:16:22.534+00:00",
+    });
+    await newpost.save();
+    await request(app)
+      .get("/home/top/year")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(200);
+  });
+});
+
+describe("sort post by recent", () => {
+  test("It should sort by recent", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    const newpost = new Post({
+      userId: "jjhgd666",
+      username: "mahmoud",
+      title: "Test ",
+      content: "",
+      community: "mahmoud556",
+      type: "Post",
+      date: "2024-04-03T14:16:22.534+00:00",
+    });
+    await newpost.save();
+    await request(app)
+      .get("/home/recentposts")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(200);
+  });
+});
+
+describe("sort post by random in community ", () => {
+  test("It should sort by top", async () => {
+    await request(app).post("/signup").send({
+      email: "mahmoudaly@gmail.com",
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud12",
+      password: "12345678",
+    });
+    const token = logIn.body.access_token;
+    await User.findOneAndUpdate(
+      { username: "mahmoud12" },
+      { isVerified: true }
+    );
+    const newpost = new Post({
+      userId: "jjhgd666",
+      username: "mahmoud",
+      title: "Test ",
+      content: "",
+      community: "mahmoud556",
+      type: "Post",
+      date: "2024-04-03T14:16:22.534+00:00",
+    });
+    await newpost.save();
+    await request(app)
+      .get("/subspreadit/mahmoud556/random")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(200);
+  });
+});

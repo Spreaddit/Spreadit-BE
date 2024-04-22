@@ -81,11 +81,11 @@
  * @apiName GoogleOAuth
  * @apiGroup Authentication
  * @apiDescription Authenticate with Google OAuth to sign in or sign up a user.
- * This endpoint verifies the Google OAuth token provided in the request and 
- * either signs in an existing user or creates a new user if no user with the 
+ * This endpoint verifies the Google OAuth token provided in the request and
+ * either signs in an existing user or creates a new user if no user with the
  * Google ID exists.
  * @apiSampleRequest off
- * 
+ *
  * @apiParam {String} googleToken Google OAuth token.
  * @apiParam {Boolean} [remember_me=false] Optional. Set to true to remember the logged-in user.
  *
@@ -534,9 +534,9 @@
  * @apiGroup Comments
  * @apiDescription Add a comment to a specific post.
  * @apiSampleRequest off
- * 
+ *
  * @apiHeader {String} Authorization User's authentication token.
- * 
+ *
  * @apiParam {String} postId ID of the post to which the comment will be added.
  * @apiParam {String} content Content of the comment.
  * @apiParam {String} [fileType] Type of file being attached (e.g., image, video).
@@ -587,7 +587,7 @@
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
  *     {
@@ -683,7 +683,7 @@
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
 
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -756,7 +756,7 @@
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -849,7 +849,7 @@
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -941,7 +941,7 @@
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -1117,7 +1117,7 @@
  * @apiSuccess {Boolean} reply.is_upvoted if the reply is upvoted by the user
  * @apiSuccess {Boolean} reply.is_downvoted if the reply is upvoted by the user
  * @apiSuccess {replyObject[]} reply.replies if the reply has a reply by default empty array
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
  *     {
@@ -1211,7 +1211,7 @@
  * @apiSuccess {Boolean} replies.is_upvoted if the reply is upvoted by the user
  * @apiSuccess {Boolean} replies.is_downvoted if the reply is upvoted by the user
  * @apiSuccess {repliesObject[]} replies.replies if the reply has a reply by default empty array
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -1247,7 +1247,7 @@
  *           "is_hidden": false,
  *           "is_saved": false,
  *           "post_title": "Sample Post Title",
- *           "community_title": "Sample Community", 
+ *           "community_title": "Sample Community",
  *           "is_upvoted": true,
  *           "is_downvoted": false,
  *           "replies": []
@@ -2503,89 +2503,4075 @@
  *     }
  */
 
+//#endregion User
+
+//#region Useraction
+
 /**
- * @api {post} /follow Follow User
- * @apiVersion 1.0.0
+ * @api {post} /users/follow Follow User
+ * @apiVersion 0.1.0
  * @apiName FollowUser
  * @apiGroup User
- * @apiDescription Follows a user by their username.
+ * @apiDescription Follows a user.
+ * @apiSampleRequest off
  *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
+ * @apiHeader {String} Authorization User's authentication token.
+ *
  * @apiParam {String} username Username of the user to follow.
  *
- * @apiSuccess {String} description Success message indicating that the user was followed successfully.
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "username": "example_user"
+ * }
  *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot follow himself.
+ * @apiSuccess {String} description Success message indicating that the user has been followed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "description": "User followed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
  * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
  */
 
 /**
- * @api {post} /block Block User
- * @apiVersion 1.0.0
+ * @api {post} /users/block Block User
+ * @apiVersion 0.1.0
  * @apiName BlockUser
  * @apiGroup User
- * @apiDescription Blocks a user by their username.
+ * @apiDescription Blocks a user.
+ * @apiSampleRequest off
  *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
+ * @apiHeader {String} Authorization User's authentication token.
+ *
  * @apiParam {String} username Username of the user to block.
  *
- * @apiSuccess {String} description Success message indicating that the user was blocked successfully.
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "username": "example_user"
+ * }
  *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot block himself.
+ * @apiSuccess {String} description Success message indicating that the user has been blocked successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "description": "User blocked successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
  * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
- * @apiExample {curl} Example usage:
- *     curl -X POST -H "Authorization: Bearer <token>" -d "username=exampleUser" http://api.example.com/block
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
  */
 
 /**
- * @api {post} /unfollow Unfollow User
- * @apiVersion 1.0.0
+ * @api {post} /users/unfollow Unfollow User
+ * @apiVersion 0.1.0
  * @apiName UnfollowUser
  * @apiGroup User
- * @apiDescription Unfollows a user by their username.
+ * @apiDescription Unfollows a user.
+ * @apiSampleRequest off
  *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
+ * @apiHeader {String} Authorization User's authentication token.
+ *
  * @apiParam {String} username Username of the user to unfollow.
  *
- * @apiSuccess {String} description Success message indicating that the user was unfollowed successfully.
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "username": "example_user"
+ * }
  *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot unfollow himself.
+ * @apiSuccess {String} description Success message indicating that the user has been unfollowed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "description": "User unfollowed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
  * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
- * @apiExample {curl} Example usage:
- *     curl -X POST -H "Authorization: Bearer <token>" -d "username=exampleUser" http://api.example.com/unfollow
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
  */
 
 /**
- * @api {post} /report Report User
- * @apiVersion 1.0.0
+ * @api {post} /users/report Report User
+ * @apiVersion 0.1.0
  * @apiName ReportUser
  * @apiGroup User
- * @apiDescription Reports a user by their username.
+ * @apiDescription Reports a user.
+ * @apiSampleRequest off
  *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
+ * @apiHeader {String} Authorization User's authentication token.
+ *
  * @apiParam {String} username Username of the user to report.
  * @apiParam {String} reason Reason for reporting the user.
  *
- * @apiSuccess {String} description Success message indicating that the user was reported successfully.
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "username": "example_user",
+ *    "reason": "This user is posting inappropriate content."
+ * }
  *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot report himself.
+ * @apiSuccess {String} description Success message indicating that the user has been reported successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "description": "User reported successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
  * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
- * @apiExample {curl} Example usage:
- *     curl -X POST -H "Authorization: Bearer <token>" -d "username=exampleUser&reason=Spam" http://api.example.com/report
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
  */
 
-//#endregion User
+/**
+ * @api {get} /users/follow/isfollowed/:username Check if User is Followed
+ * @apiVersion 0.1.0
+ * @apiName IsUserFollowed
+ * @apiGroup User
+ * @apiDescription Checks if the user is followed by the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiParam {String} username Username of the user to check.
+ *
+ * @apiSuccess {Boolean} isFollowed Indicates whether the user is followed by the authenticated user.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "isFollowed": true
+ *     }
+ *
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+//#endregion Useraction
+
+//#region listing
+
+/**
+ * @api {get} /home/new Sort Posts by Newest
+ * @apiVersion 0.1.0
+ * @apiName SortPostsNewest
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by newest.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by newest.
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "posts": [
+ *            {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/top Sort Posts by Top today
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopTime
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top within a specified time period.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String="now","day","week","month","year"} time Time period to sort posts (now, day, week, month, year).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top within the specified time period.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       // Post objects
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/top/alltime Sort Posts by Top (All Time)
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopAllTime
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top of all time.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top of all time.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/top Sort Posts by Top within Community today
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top within a specified community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top within the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/top/alltime Sort Posts by Top (All Time) within Community
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopAllTimeCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top of all time within a specified community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top of all time within the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/new Sort Posts by Newest within Community
+ * @apiVersion 0.1.0
+ * @apiName SortPostsNewestCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by newest within a specified community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by newest within the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/views Sort Posts by Views
+ * @apiVersion 0.1.0
+ * @apiName SortPostsViews
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by number of views.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by number of views.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/comments Sort Posts by Comments
+ * @apiVersion 0.1.0
+ * @apiName SortPostsComments
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by number of comments.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by number of comments.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/best Sort Posts by Best
+ * @apiVersion 0.1.0
+ * @apiName SortPostsBest
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by best based on votes ratio.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by best.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/hot Sort Posts by Hot
+ * @apiVersion 0.1.0
+ * @apiName SortPostsHot
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by hotness score.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by hotness score.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/hot Sort Posts by Hot within Community
+ * @apiVersion 0.1.0
+ * @apiName SortPostsHotCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by hotness score within a specified community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by hotness score within the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/random Sort Posts Randomly within Community
+ * @apiVersion 0.1.0
+ * @apiName SortPostsRandomCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves random posts within a specified community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ *
+ * @apiSuccess {Object[]} posts List of randomly sorted posts within the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /subspreadit/:subspreaditname/top/:time Sort Posts by Top within Community and Time Period
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopTimeCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top within a specified community and time period.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} subspreaditname Name of the community (subspreadit).
+ * @apiParam {String="now","day","week","month","year"} time Time period to sort posts (now, day, week, month, year).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top within the specified community and time period.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/top/:time Sort Posts by Top within Time Period
+ * @apiVersion 0.1.0
+ * @apiName SortPostsTopTime
+ * @apiGroup Post
+ * @apiDescription Retrieves posts sorted by top within a specified time period.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String="now","day","week","month","year"} time Time period to sort posts (now, day, week, month, year).
+ *
+ * @apiSuccess {Object[]} posts List of posts sorted by top within the specified time period.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound No posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /home/recentposts Get Recent Posts of User
+ * @apiVersion 0.1.0
+ * @apiName GetRecentPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves the recent posts of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} recentPosts List of recent posts of the authenticated user.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *          {
+            "_id": "661b361e41fcced1c04cf20b",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 40,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.789Z",
+            "createdAt": "2024-04-14T01:49:18.789Z",
+            "updatedAt": "2024-04-14T19:02:13.078Z",
+            "__v": 0
+        },
+        {
+            "_id": "661b361e41fcced1c04cf1f4",
+            "userId": "624a52d75ff69df002d25035",
+            "username": "mahmoudabbas",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "upVotes": [],
+            "downVotes": [],
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 0,
+            "numberOfViews": 39,
+            "title": "jkjkjkjkjkj",
+            "content": [
+                ""
+            ],
+            "community": "Gaming",
+            "type": "Link",
+            "pollOptions": [],
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "votedUsers": [],
+            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
+            "attachments": [],
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "hiddenBy": [],
+            "comments": [],
+            "date": "2024-04-14T01:49:18.625Z",
+            "createdAt": "2024-04-14T01:49:18.625Z",
+            "updatedAt": "2024-04-14T04:07:09.555Z",
+            "__v": 0
+        },
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+//#endregion listing
+
+//#region Post
+
+/**
+ * @api {post} /post Create Post
+ * @apiVersion 0.1.0
+ * @apiName CreatePost
+ * @apiGroup Post
+ * @apiDescription Creates a new post.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} title Title of the post.
+ * @apiParam {String} content Content of the post.
+ * @apiParam {String} community Name of the community where the post is created.
+ * @apiParam {String} type Type of the post. Possible values are: "Post", "Images & Video", "Link", "Poll".
+ * @apiParam {String} [pollOptions] Options for a poll post.
+ * @apiParam {String} [pollVotingLength] Length of time for voting on a poll post.
+ * @apiParam {String} [fileType] Type of files attached to the post (if applicable).
+ * @apiParam {String} [link] Link attached to the post (if applicable).
+ * @apiParam {Boolean} [isSpoiler] Indicates if the post contains spoilers.
+ * @apiParam {Boolean} [isNsfw] Indicates if the post is not safe for work.
+ * @apiParam {Boolean} [sendPostReplyNotification] Indicates if notifications should be sent for replies to this post.
+ * @apiParam {File[]} [images] Array of images attached to the post (if applicable).
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "title": "Sample Title",
+ *    "content": "Sample Content",
+ *    "community": "Sample Community",
+ *    "type": "Post"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been created successfully.
+ * @apiSuccess {String} postId ID of the created post.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "message": "Post created successfully",
+ *       "postId": "1234567890"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User or community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid post data. Please provide title and community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/community/:community Get All Posts in Community
+ * @apiVersion 0.1.0
+ * @apiName GetAllPostsInCommunity
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts in a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} community Name of the community.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "community": "Sample Community"
+ * }
+ *
+ * @apiSuccess {Object[]} posts Array of post objects in the specified community.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *           "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": false,
+ *           "comments": [],
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found or no posts in the specified community.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Posts not found in the specified community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/save Save Post
+ * @apiVersion 0.1.0
+ * @apiName SavePost
+ * @apiGroup Post
+ * @apiDescription Saves a post for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be saved.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "postId": "1234567890"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been saved successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post saved successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Post or user not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Post ID is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/unsave Unsave Post
+ * @apiVersion 0.1.0
+ * @apiName UnsavePost
+ * @apiGroup Post
+ * @apiDescription Unsave a previously saved post for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be unsaved.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "postId": "1234567890"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been unsaved successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post unsaved successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Post or user not found, or post not saved by the user.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Post ID is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/save Get Saved Posts
+ * @apiVersion 0.1.0
+ * @apiName GetSavedPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts saved by the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts Array of post objects saved by the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *           "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "comments": [],
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found or no saved posts found for the user.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No saved posts found for the user"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {delete} /posts/:postId Delete Post
+ * @apiVersion 0.1.0
+ * @apiName DeletePost
+ * @apiGroup Post
+ * @apiDescription Deletes a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be deleted.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been deleted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post deleted successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /posts/:postId/edit Edit Post
+ * @apiVersion 0.1.0
+ * @apiName EditPost
+ * @apiGroup Post
+ * @apiDescription Edits a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be edited.
+ * @apiParam {String} [content] New content of the post.
+ * @apiParam {File[]} [images] New array of images attached to the post (if applicable).
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been edited successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post edited successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (403) Forbidden User is not authorized to edit this post.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/spoiler Spoiler Post Content
+ * @apiVersion 0.1.0
+ * @apiName SpoilerPostContent
+ * @apiGroup Post
+ * @apiDescription Spoilers the content of a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be spoilered.
+ *
+ * @apiSuccess {String} message Success message indicating that the post content has been spoilered successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post content blurred successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/unspoiler Unspoiler Post Content
+ * @apiVersion 0.1.0
+ * @apiName UnspoilerPostContent
+ * @apiGroup Post
+ * @apiDescription Removes the spoiler from the content of a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be unspoilered.
+ *
+ * @apiSuccess {String} message Success message indicating that the post content has been unspoilered successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post content unblurred successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/lock Lock Post Comments
+ * @apiVersion 0.1.0
+ * @apiName LockPostComments
+ * @apiGroup Post
+ * @apiDescription Locks the comments on a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to lock comments.
+ *
+ * @apiSuccess {String} message Success message indicating that the comments on the post have been locked successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post comments locked successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/unlock Unlock Post Comments
+ * @apiVersion 0.1.0
+ * @apiName UnlockPostComments
+ * @apiGroup Post
+ * @apiDescription Unlocks the comments on a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to unlock comments.
+ *
+ * @apiSuccess {String} message Success message indicating that the comments on the post have been unlocked successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post comments unlocked successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/upvote Upvote Post
+ * @apiVersion 0.1.0
+ * @apiName UpvotePost
+ * @apiGroup Post
+ * @apiDescription Upvotes a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to upvote.
+ *
+ * @apiSuccess {Number} votes Net votes of the post after upvoting.
+ * @apiSuccess {String} message Success message indicating that the post has been upvoted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "votes": 5,
+ *       "message": "Post has been upvoted successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/downvote Downvote Post
+ * @apiVersion 0.1.0
+ * @apiName DownvotePost
+ * @apiGroup Post
+ * @apiDescription Downvotes a post with the specified ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to downvote.
+ *
+ * @apiSuccess {Number} votes Net votes of the post after downvoting.
+ * @apiSuccess {String} message Success message indicating that the post has been downvoted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "votes": -3,
+ *       "message": "Post has been downvoted successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/upvote Get Upvoted Posts
+ * @apiVersion 0.1.0
+ * @apiName GetUpvotedPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts upvoted by the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts Array of post objects upvoted by the user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *           "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": true,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": false,
+ *           "comments": [],
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (404) NotFound Posts not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Posts not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/downvote Get Downvoted Posts
+ * @apiVersion 0.1.0
+ * @apiName GetDownvotedPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts downvoted by the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} posts Array of post objects downvoted by the user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *           "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": true,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": false,
+ *           "comments": [],
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (404) NotFound Posts not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Posts not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/hide Hide Post
+ * @apiVersion 0.1.0
+ * @apiName HidePost
+ * @apiGroup Post
+ * @apiDescription Hides a post for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to hide.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been hidden successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post hidden successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Post is already hidden by the user.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Post is already hidden by the user"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/unhide Unhide Post
+ * @apiVersion 0.1.0
+ * @apiName UnhidePost
+ * @apiGroup Post
+ * @apiDescription Unhides a previously hidden post for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to unhide.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been unhidden successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post unhidden successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Post is not hidden by the user.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Post is not hidden by the user"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/hide Get Hidden Posts
+ * @apiVersion 0.1.0
+ * @apiName GetHiddenPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts hidden by the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} hiddenPosts Array of post objects hidden by the user.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *           "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": false,
+ *           "comments": [],
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (404) NotFound No hidden posts found for the user.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "No hidden posts found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/nsfw Mark Post as NSFW
+ * @apiVersion 0.1.0
+ * @apiName MarkPostAsNsfw
+ * @apiGroup Post
+ * @apiDescription Marks a post as Not Safe For Work (NSFW).
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be marked as NSFW.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been marked as NSFW.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post updated successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/unnsfw Mark Post as Not NSFW
+ * @apiVersion 0.1.0
+ * @apiName MarkPostAsNotNsfw
+ * @apiGroup Post
+ * @apiDescription Marks a post as Not Not Safe For Work (NSFW).
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be marked as not NSFW.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been marked as not NSFW.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post updated successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/report Report Post
+ * @apiVersion 0.1.0
+ * @apiName ReportPost
+ * @apiGroup Post
+ * @apiDescription Reports a post for moderation.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be reported.
+ * @apiParam {String} reason Reason for reporting the post.
+ * @apiParam {String} [sureason] Supplementary reason for reporting the post.
+ *
+ * @apiSuccess {String} message Success message indicating that the post has been reported successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "message": "post reported successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid report data. Must include a reason for reporting the post.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "invalid report data must send reason"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "An error occurred while reporting the post"
+ *     }
+ */
+
+/**
+ * @api {post} /posts/:postId/poll/vote Vote in Poll
+ * @apiVersion 0.1.0
+ * @apiName VoteInPoll
+ * @apiGroup Post
+ * @apiDescription Casts a user's vote in a poll associated with a post.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post containing the poll.
+ * @apiParam {String} selectedOption The option selected by the user.
+ *
+ * @apiSuccess {String} message Success message indicating that the vote has been cast successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Vote cast successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Post ID and selected option are required.
+ * @apiError (404) NotFound Post not found or selected option not found in the poll.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Post ID and selected option are required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/:postId Get Post by ID
+ * @apiVersion 0.1.0
+ * @apiName GetPostById
+ * @apiGroup Post
+ * @apiDescription Retrieves a post by its ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to retrieve.
+ *
+ * @apiSuccess {Object} postInfo Information about the post.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "_id": "postId",
+ *       "userId": "userId",
+ *       "username": "username",
+ *       "userProfilePic": "userAvatar",
+ *       "hasUpvoted": true,
+ *       "hasDownvoted": false,
+ *       "hasVotedOnPoll": true,
+ *       "selectedPollOption": "pollOption",
+ *       "isHidden": false,
+ *       "votesUpCount": 5,
+ *       "votesDownCount": 2,
+ *       "sharesCount": 3,
+ *       "commentsCount": 10,
+ *       "title": "Post Title",
+ *       "content": "Post Content",
+ *       "community": "Community",
+ *       "type": "Post",
+ *       "pollExpiration": "2024-12-31T00:00:00.000Z",
+ *       "isPollEnabled": true,
+ *       "pollVotingLength": 7,
+ *       "isSpoiler": false,
+ *       "isNsfw": false,
+ *       "sendPostReplyNotification": true,
+ *       "isCommentsLocked": false,
+ *       "isSaved": true,
+ *       "comments": [],
+ *       "date": "2024-04-18T12:00:00.000Z",
+ *       "pollOptions": ["Option 1", "Option 2"],
+ *       "attachments": []
+ *     }
+ *
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /posts/username/:username Get All User Posts
+ * @apiVersion 0.1.0
+ * @apiName GetAllUserPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves all posts created by a user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the user whose posts are to be retrieved.
+ *
+ * @apiSuccess {Object[]} postInfoArray Array of post information.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "postId",
+ *         "userId": "userId",
+ *         "username": "username",
+ *         "userProfilePic": "userAvatar",
+ *         "hasUpvoted": true,
+ *         "hasDownvoted": false,
+ *         "hasVotedOnPoll": true,
+ *         "selectedPollOption": "pollOption",
+ *         "votesUpCount": 5,
+ *         "votesDownCount": 2,
+ *         "sharesCount": 3,
+ *         "commentsCount": 10,
+ *         "title": "Post Title",
+ *         "content": "Post Content",
+ *         "community": "Community",
+ *         "type": "Post",
+ *         "pollExpiration": "2024-12-31T00:00:00.000Z",
+ *         "isPollEnabled": true,
+ *         "pollVotingLength": 7,
+ *         "isSpoiler": false,
+ *         "isNsfw": false,
+ *         "sendPostReplyNotification": true,
+ *         "isCommentsLocked": false,
+ *         "isSaved": true,
+ *         "comments": [],
+ *         "date": "2024-04-18T12:00:00.000Z",
+ *         "pollOptions": ["Option 1", "Option 2"],
+ *         "attachments": []
+ *       },
+ *       {
+ *         // Next post...
+ *       }
+ *     ]
+ *
+ * @apiError (404) NotFound User not found or user has no posts.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+//#endregion Post
+
+//#region Settings
+
+/**
+ * @api {get} /settings/account Get Account Settings
+ * @apiVersion 0.1.0
+ * @apiName GetAccountSettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the account settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} accountSettings Account settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "email": "user@example.com",
+ *       "gender": "male",
+ *       "country": "USA",
+ *       "connectedAccounts": ["twitter", "facebook"]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/account Modify Account Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyAccountSettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the account settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} [email] User's email address.
+ * @apiParam {String} [gender] User's gender.
+ * @apiParam {String} [country] User's country.
+ * @apiParam {String[]} [connectedAccounts] Array of connected social media accounts.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "email": "newemail@example.com",
+ *    "gender": "female",
+ *    "country": "Canada",
+ *    "connectedAccounts": ["instagram", "linkedin"]
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the account settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Account settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (403) Forbidden Invalid email format.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "Invalid email format"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {delete} /settings/account Delete Account
+ * @apiVersion 0.1.0
+ * @apiName DeleteAccount
+ * @apiGroup Settings
+ * @apiDescription Deletes the account of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Success message indicating that the account has been deleted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Account deleted successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/chat-and-messaging Get Chat and Messaging Settings
+ * @apiVersion 0.1.0
+ * @apiName GetChatAndMessagingSetting
+ * @apiGroup Settings
+ * @apiDescription Retrieves the chat and messaging settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} chatAndMessagingSetting Chat and messaging settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "sendYouFriendRequests": true,
+ *       "sendYouPrivateMessages": true,
+ *       "approvedUsers": ["user1", "user2"]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/chat-and-messaging Modify Chat and Messaging Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyChatAndMessagingSetting
+ * @apiGroup Settings
+ * @apiDescription Modifies the chat and messaging settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Boolean} [sendYouFriendRequests] Indicates whether to allow others to send friend requests.
+ * @apiParam {Boolean} [sendYouPrivateMessages] Indicates whether to allow others to send private messages.
+ * @apiParam {String[]} [approvedUsers] Array of approved users who can send messages.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "sendYouFriendRequests": false,
+ *    "sendYouPrivateMessages": true,
+ *    "approvedUsers": ["user3", "user4"]
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the chat and messaging settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Chat and messaging settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid request body"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /settings/chat-and-messaging/make-all-as-read Make All Messages as Read
+ * @apiVersion 0.1.0
+ * @apiName MakeAllMessagesAsRead
+ * @apiGroup Settings
+ * @apiDescription Marks all unread messages as read for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Success message indicating that all messages have been marked as read successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "All messages marked as read successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/email Get Email Settings
+ * @apiVersion 0.1.0
+ * @apiName GetEmailSetting
+ * @apiGroup Settings
+ * @apiDescription Retrieves the email notification settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} emailSetting Email notification settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "newFollowerEmail": true,
+ *       "chatRequestEmail": true,
+ *       "unsubscribeAllEmails": false
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/email Modify Email Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyEmailSetting
+ * @apiGroup Settings
+ * @apiDescription Modifies the email notification settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Boolean} [newFollowerEmail] Indicates whether to receive email notifications for new followers.
+ * @apiParam {Boolean} [chatRequestEmail] Indicates whether to receive email notifications for chat requests.
+ * @apiParam {Boolean} [unsubscribeAllEmails] Indicates whether to unsubscribe from all email notifications.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "newFollowerEmail": false,
+ *    "chatRequestEmail": true,
+ *    "unsubscribeAllEmails": false
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the email settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Email settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid request body"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/feed Get Feed Settings
+ * @apiVersion 0.1.0
+ * @apiName GetFeedSetting
+ * @apiGroup Settings
+ * @apiDescription Retrieves the feed settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} feedSetting Feed settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "adultContent": false,
+ *       "autoplayMedia": true,
+ *       "communityThemes": true,
+ *       "communityContentSort": "hot",
+ *       "globalContentView": true,
+ *       "openPostsInNewTab": false
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/feed Modify Feed Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyFeedSetting
+ * @apiGroup Settings
+ * @apiDescription Modifies the feed settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Boolean} [adultContent] Indicates whether to show adult content in the feed.
+ * @apiParam {Boolean} [autoplayMedia] Indicates whether to autoplay media in the feed.
+ * @apiParam {Boolean} [communityThemes] Indicates whether to use community themes in the feed.
+ * @apiParam {String="hot","new","top"} [communityContentSort] Sort order of community content in the feed.
+ * @apiParam {Boolean} [globalContentView] Indicates whether to enable global content view in the feed.
+ * @apiParam {Boolean} [openPostsInNewTab] Indicates whether to open posts in a new tab.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "adultContent": false,
+ *    "autoplayMedia": true,
+ *    "communityThemes": true,
+ *    "communityContentSort": "new",
+ *    "globalContentView": false,
+ *    "openPostsInNewTab": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the feed settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Feed settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid request body"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/layout Check Password Match
+ * @apiVersion 0.1.0
+ * @apiName CheckPasswordMatch
+ * @apiGroup Settings
+ * @apiDescription Checks if the entered password matches the user's current password.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} enteredPassword Entered password to be checked.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "enteredPassword": "currentPassword123"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the entered password matches.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Password matches"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/notifications Get Notification Settings
+ * @apiVersion 0.1.0
+ * @apiName GetNotificationSettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the notification settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} notificationSetting Object containing the notification settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "mentions": true,
+ *       "comments": true,
+ *       "upvotesComments": true,
+ *       "upvotesPosts": true,
+ *       "replies": true,
+ *       "newFollowers": true,
+ *       "invitations": true,
+ *       "posts": true
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/notifications Modify Notification Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyNotificationSettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the notification settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Object} modifyNotificationSetting Object containing the modified notification settings.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "mentions": true,
+ *    "comments": true,
+ *    "upvotesComments": false,
+ *    "upvotesPosts": true,
+ *    "replies": false,
+ *    "newFollowers": true,
+ *    "invitations": true,
+ *    "posts": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the notification settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/profile Get Profile Settings
+ * @apiVersion 0.1.0
+ * @apiName GetProfileSettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the profile settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} profileSettings Object containing the profile settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "displayName": "John Doe",
+ *       "about": "Lorem ipsum dolor sit amet...",
+ *       "socialLinks": {
+ *          "twitter": "https://twitter.com/johndoe",
+ *          "facebook": "https://facebook.com/johndoe"
+ *       },
+ *       "profilePicture": "http://example.com/profile.jpg",
+ *       "banner": "http://example.com/banner.jpg",
+ *       "nsfw": false,
+ *       "allowFollow": true,
+ *       "contentVisibility": "Public",
+ *       "activeInCommunityVisibility": "Public",
+ *       "clearHistory": false
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/profile Modify Profile Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyProfileSettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the profile settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Object} modifyProfileSettings Object containing the modified profile settings.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "displayName": "John Doe",
+ *    "about": "Updated about section...",
+ *    "socialLinks": {
+ *        "twitter": "https://twitter.com/johndoe",
+ *        "facebook": "https://facebook.com/johndoe"
+ *    },
+ *    "profilePicture": "http://example.com/profile_updated.jpg",
+ *    "banner": "http://example.com/banner_updated.jpg",
+ *    "nsfw": true,
+ *    "allowFollow": false,
+ *    "contentVisibility": "Private",
+ *    "activeInCommunityVisibility": "Private",
+ *    "clearHistory": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the profile settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/safety-privacy Get Safety and Privacy Settings
+ * @apiVersion 0.1.0
+ * @apiName GetSafetyAndPrivacySettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the safety and privacy settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} safetyAndPrivacySettings Object containing the safety and privacy settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "blockedUsers": ["user1", "user2"],
+ *       "mutedCommunities": ["community1", "community2"]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/safety-privacy Modify Safety and Privacy Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifySafetyAndPrivacySettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the safety and privacy settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Object} modifySafetyAndPrivacySettings Object containing the modified safety and privacy settings.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "blockedUsers": ["user3", "user4"],
+ *    "mutedCommunities": ["community3", "community4"]
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the safety and privacy settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+//#endregion Settings
+
+
+//#region Mobile Settings
+
+/**
+ * @api {get} /mobile/settings/account Get Account Settings (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName GetAccountSettingsMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Retrieves the account settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} accountSettings Object containing the account settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "email": "user@example.com",
+ *       "gender": "male",
+ *       "country": "US",
+ *       "connectedAccounts": ["Google", "Facebook"]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /mobile/settings/account Modify Account Settings (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName ModifyAccountSettingsMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Modifies the account settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} [email] User's email address.
+ * @apiParam {String} [gender] User's gender.
+ * @apiParam {String} [country] User's country.
+ * @apiParam {String[]} [connectedAccounts] Array of connected accounts.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "email": "newemail@example.com",
+ *    "gender": "female",
+ *    "country": "UK",
+ *    "connectedAccounts": ["Google"]
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the account settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid email format"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {delete} /mobile/settings/account Delete Account (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName DeleteAccountMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Deletes the account of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Success message indicating that the account has been deleted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Account deleted successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /mobile/settings/blocking-permissions Get Blocking and Permissions Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName GetBlockingSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Retrieves the blocking and permissions settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} blockingSetting Object containing the blocking and permissions settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "blockedAccounts": ["user1", "user2"],
+ *       "allowFollow": true
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /mobile/settings/blocking-permissions Modify Blocking and Permissions Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName ModifyBlockingSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Modifies the blocking and permissions settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String[]} [blockedAccounts] Array of blocked account usernames.
+ * @apiParam {Boolean} [allowFollow] Indicates whether to allow followers.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "blockedAccounts": ["user3", "user4"],
+ *    "allowFollow": false
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the blocking and permissions settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /mobile/settings/contact Get Contact Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName GetContactSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Retrieves the contact settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} contactSetting Object containing the contact settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "inboxMessages": true,
+ *       "chatMessages": true,
+ *       "chatRequests": true,
+ *       "mentions": true,
+ *       "commentsOnYourPost": true,
+ *       "commentsYouFollow": true,
+ *       "upvotes": true,
+ *       "repliesToComments": true,
+ *       "newFollowers": true,
+ *       "cakeDay": true,
+ *       "modNotifications": true
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /mobile/settings/contact Modify Contact Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName ModifyContactSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Modifies the contact settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Boolean} [inboxMessages] Indicates whether to receive inbox messages.
+ * @apiParam {Boolean} [chatMessages] Indicates whether to receive chat messages.
+ * @apiParam {Boolean} [chatRequests] Indicates whether to receive chat requests.
+ * @apiParam {Boolean} [mentions] Indicates whether to receive mentions.
+ * @apiParam {Boolean} [commentsOnYourPost] Indicates whether to receive comments on your posts.
+ * @apiParam {Boolean} [commentsYouFollow] Indicates whether to receive comments you follow.
+ * @apiParam {Boolean} [upvotes] Indicates whether to receive upvotes.
+ * @apiParam {Boolean} [repliesToComments] Indicates whether to receive replies to comments.
+ * @apiParam {Boolean} [newFollowers] Indicates whether to receive notifications for new followers.
+ * @apiParam {Boolean} [cakeDay] Indicates whether to receive notifications for cake day.
+ * @apiParam {Boolean} [modNotifications] Indicates whether to receive mod notifications.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "inboxMessages": false,
+ *    "chatMessages": true,
+ *    "chatRequests": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the contact settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+
+//#endregion Mobile Settings 
