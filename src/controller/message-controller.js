@@ -38,3 +38,15 @@ exports.sendMessage = async (req, res) => {
     return res.status(500).json({ error: "internal server error" });
   }
 };
+
+exports.getInboxMessages = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const senderUser = await User.findById(userId);
+    const inboxMessages = await Message.find({ recieverId: userId });
+    res.status(200).json(inboxMessages);
+  } catch (error) {
+    console.error("Error send message :", error);
+    return res.status(500).json({ error: "internal server error" });
+  }
+};
