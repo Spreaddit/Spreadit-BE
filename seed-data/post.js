@@ -180,7 +180,7 @@ const postSeedData = [
     title: "Black Holes: The Enigma of the Cosmos",
     content: ["Delve into the mysteries of black holes, their formation, properties, and role in shaping the universe."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "624a6a677c8d9c9f5fd5eb1d", // Science Explorers Club
+    community: "624a48f143bd949036986953", // Science Explorers Club
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -190,7 +190,7 @@ const postSeedData = [
     title: "DNA Sequencing Breakthroughs",
     content: ["Explore recent advancements in DNA sequencing technologies and their implications for genetic research and medicine."],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "624a6a677c8d9c9f5fd5eb1d", // Science Explorers Club
+    community: "624a48f143bd949036986953", // Science Explorers Club
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -200,7 +200,7 @@ const postSeedData = [
     title: "The Quantum World: Weirdness and Wonders",
     content: ["Dive into the bizarre and fascinating realm of quantum mechanics, from superposition and entanglement to quantum computing."],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "624a6a677c8d9c9f5fd5eb1d", // Science Explorers Club
+    community: "624a48f143bd949036986953", // Science Explorers Club
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -210,7 +210,7 @@ const postSeedData = [
     title: "Climate Change: Challenges and Solutions",
     content: ["Discuss the latest research on climate change, its impacts on ecosystems and societies, and strategies for mitigation and adaptation."],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "624a6a677c8d9c9f5fd5eb1d", // Science Explorers Club
+    community: "624a48f143bd949036986953", // Science Explorers Club
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -220,7 +220,7 @@ const postSeedData = [
     title: "The Evolutionary Arms Race",
     content: ["What is the most significant factor driving the co-evolutionary dynamics between species and their predators?"],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "624a6a677c8d9c9f5fd5eb1d", // Science Explorers Club
+    community: "624a48f143bd949036986953", // Science Explorers Club
     comments: [],
     type: "Poll",
     isNsfw: false,
@@ -563,7 +563,7 @@ const postSeedData = [
     title: "Understanding Human Behavior: Insights from Psychology",
     content: ["Explore the fascinating realm of human behavior through insights from psychology, discussing theories, research findings, and practical applications."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "624a6a677c8d9c9f5fd5eb23", // Psychology Insights Circle
+    community: "624a6a677c8d9c9f5fd5eb36", // Psychology Insights Circle
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -573,7 +573,7 @@ const postSeedData = [
     title: "The Power of Emotional Intelligence: Navigating Relationships",
     content: ["Delve into the power of emotional intelligence and its role in navigating relationships, enhancing communication, and fostering empathy and understanding."],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "624a6a677c8d9c9f5fd5eb23", // Psychology Insights Circle
+    community: "624a6a677c8d9c9f5fd5eb36", // Psychology Insights Circle
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -583,7 +583,7 @@ const postSeedData = [
     title: "Cognitive Biases: Exploring the Quirks of the Human Mind",
     content: ["Examine cognitive biases and their impact on decision-making, perception, and behavior, unraveling the quirks of the human mind and how we perceive reality."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "624a6a677c8d9c9f5fd5eb23", // Psychology Insights Circle
+    community: "624a6a677c8d9c9f5fd5eb36", // Psychology Insights Circle
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -593,7 +593,7 @@ const postSeedData = [
     title: "Positive Psychology: Cultivating Happiness and Well-Being",
     content: ["Explore the principles of positive psychology and learn strategies for cultivating happiness, resilience, and well-being in everyday life."],
     userId: "624a6a677c8d9c9f5fd5eb0d", // Basem
-    community: "624a6a677c8d9c9f5fd5eb23", // Psychology Insights Circle
+    community: "624a6a677c8d9c9f5fd5eb36", // Psychology Insights Circle
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -603,7 +603,7 @@ const postSeedData = [
     title: "Psychological Resilience: Thriving in the Face of Adversity",
     content: ["Discover the concept of psychological resilience and explore strategies for thriving in the face of adversity, setbacks, and life's challenges."],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "624a6a677c8d9c9f5fd5eb23", // Psychology Insights Circle
+    community: "624a6a677c8d9c9f5fd5eb36", // Psychology Insights Circle
     comments: [],
     type: "Post",
     isNsfw: false,
