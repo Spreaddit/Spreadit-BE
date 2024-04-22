@@ -413,8 +413,7 @@ const postSeedData = [
     type: "Post",
     isNsfw: false, 
   },
-  
-  
+
   {
     _id: "624a6a677c8d9c9f5fd5eb67",
     title: "Poetry Corner: Embracing the Beauty of Words",
