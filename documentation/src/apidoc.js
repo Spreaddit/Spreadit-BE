@@ -5693,8 +5693,8 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "sendYouFriendRequests": true,
- *       "sendYouPrivateMessages": true,
+ *       "sendYouFriendRequests": "Everyone",
+ *       "sendYouPrivateMessages": "Everyone",
  *       "approvedUsers": ["user1", "user2"]
  *     }
  *
@@ -5724,14 +5724,14 @@
  *
  * @apiHeader {String} Authorization User's authentication token.
  *
- * @apiParam {Boolean} [sendYouFriendRequests] Indicates whether to allow others to send friend requests.
- * @apiParam {Boolean} [sendYouPrivateMessages] Indicates whether to allow others to send private messages.
+ * @apiParam {String="Everyone", "Accounts Older Than 30 Days", "Nobody"} [sendYouFriendRequests] Indicates who can send friend requests.
+ * @apiParam {String="Everyone", "Nobody"} [sendYouPrivateMessages] Indicates who can send private messages.
  * @apiParam {String[]} [approvedUsers] Array of approved users who can send messages.
  *
  * @apiParamExample {json} Request-Example:
  * {
- *    "sendYouFriendRequests": false,
- *    "sendYouPrivateMessages": true,
+ *    "sendYouFriendRequests": "Nobody",
+ *    "sendYouPrivateMessages": "Everyone",
  *    "approvedUsers": ["user3", "user4"]
  * }
  *
@@ -5759,7 +5759,6 @@
  *       "error": "Internal server error"
  *     }
  */
-
 /**
  * @api {post} /settings/chat-and-messaging/make-all-as-read Make All Messages as Read
  * @apiVersion 0.1.0
