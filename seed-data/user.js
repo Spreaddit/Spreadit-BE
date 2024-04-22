@@ -13,6 +13,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: true,
         isVerified: true,
+        subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1a", "624a6a677c8d9c9f5fd5eb20", "624a6a677c8d9c9f5fd5eb22", "624a6a677c8d9c9f5fd5eb29"], //[CodeCrafters, Writers' Haven, Mental Health Support Group, Movie Buffs Club ]
         followers: ["624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0b"],
         followings: ["624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0b"],
     },
@@ -28,6 +29,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: true,
         isVerified: true,
+        subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1a", "624a6a677c8d9c9f5fd5eb1b", "624a6a677c8d9c9f5fd5eb1e", "624a6a677c8d9c9f5fd5eb24", "624a6a677c8d9c9f5fd5eb26", "624a6a677c8d9c9f5fd5eb1f" ], //[CodeCrafters, TechTalks, Creative Minds Collective, Globetrotters Community, Culinary Delights, Visual Arts Gallery]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a6a677c8d9c9f5fd5eb0b"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a6a677c8d9c9f5fd5eb0b"],
     },
@@ -43,6 +45,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: false,
         isVerified: true,
+        subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1b", "624a6a677c8d9c9f5fd5eb1c"], //[TechTalks, CodeGeeks]
         followers: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0b"],
         followings: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0b"],
     },
@@ -58,6 +61,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: true,
         isVerified: true,
+        subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1c", "624a6a677c8d9c9f5fd5eb1a", "624a6a677c8d9c9f5fd5eb25", "624a6a677c8d9c9f5fd5eb27"], // [CodeGeeks, CodeCrafters, Adventurous Souls Society, Gourmet Adventures ]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -73,6 +77,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: true,
         isVerified: true,
+        subscribedCommunities: ["624a6a677c8d9c9f5fd5eb21", "624a6a677c8d9c9f5fd5eb25", "624a6a677c8d9c9f5fd5eb26", "624a6a677c8d9c9f5fd5eb28", "624a6a677c8d9c9f5fd5eb2a"], //[Mindfulness & Meditation Community, Adventurous Souls Society, Culinary Delights, Pop Culture Fanatics, Music Maniacs Lounge]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -88,6 +93,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: false,
         isVerified: true,
+        subscribedCommunities: ["624a6a677c8d9c9f5fd5eb21", "624a6a677c8d9c9f5fd5eb22", "624a6a677c8d9c9f5fd5eb27", "624a6a677c8d9c9f5fd5eb29"], //[Mindfulness & Meditation Community, Mental Health & Psychology, Food & Cooking, Movie Buffs Club]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -103,6 +109,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: true,
         isVerified: true,
+        subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1b", "624a6a677c8d9c9f5fd5eb1c", "624a6a677c8d9c9f5fd5eb1d",  "624a6a677c8d9c9f5fd5eb1f", "624a6a677c8d9c9f5fd5eb20", "624a6a677c8d9c9f5fd5eb36", "624a6a677c8d9c9f5fd5eb24", "624a6a677c8d9c9f5fd5eb26", "624a6a677c8d9c9f5fd5eb28"], //[TechTalks, CodeGeeks, Biology Buffs Society, Visual Arts Gallery, Writers' Haven, Psychology Insights Circle, Globetrotters Community, Culinary Delights, Pop Culture Fanatics]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -118,6 +125,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: false,
         isVerified: true,
+        subscribedCommunities: ["624a48f143bd949036986953", "624a6a677c8d9c9f5fd5eb1d", "624a6a677c8d9c9f5fd5eb20","624a6a677c8d9c9f5fd5eb21", "624a6a677c8d9c9f5fd5eb22", "624a6a677c8d9c9f5fd5eb24" ], //[Science Explorers Club, Biology Buffs Society, Writers' Haven, Mindfulness & Meditation Community, Mental Health Support Group, Globetrotters Community]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -133,6 +141,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: true,
         isVerified: true,
+        subscribedCommunities: [], 
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -148,6 +157,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: false,
         isVerified: true,
+        subscribedCommunities:  ["624a4052e28fb9d9c024671a"], //[Space & Astronomy Lovers]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -163,6 +173,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: true,
         isVerified: true,
+        subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1d"], //[Biology Buffs Society]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -178,6 +189,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: false,
         isVerified: true,
+        subscribedCommunities: ["624a4052e28fb9d9c024671a", "624a6a677c8d9c9f5fd5eb27", "624a6a677c8d9c9f5fd5eb29","624a6a677c8d9c9f5fd5eb2a"], // [Space & Astronomy Lovers, Gourmet Adventures, Movie Buffs Club, Music Maniacs Lounge ]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -193,6 +205,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: true,
         isVerified: true,
+        subscribedCommunities: ["624a48f143bd949036986953", "624a4052e28fb9d9c024671a", "624a6a677c8d9c9f5fd5eb1e", "624a6a677c8d9c9f5fd5eb1f", "624a6a677c8d9c9f5fd5eb36"], //[Science, Space & Astronomy Lovers, Creative Minds Collective, Visual Arts Gallery, Psychology Insights Circle]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -208,6 +221,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: false,
         isVerified: true,
+        subscribedCommunities: [],
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -223,6 +237,7 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: true,
         isVerified: true,
+        subscribedCommunities: ["624a48f143bd949036986953", "624a6a677c8d9c9f5fd5eb36", "624a6a677c8d9c9f5fd5eb25", "624a6a677c8d9c9f5fd5eb28", "624a6a677c8d9c9f5fd5eb2a"],
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
@@ -238,11 +253,12 @@ const users = [
         roleId: userRole.defaultRole._id,
         isnsfw: false,
         isVerified: true,
+        subscribedCommunities: [],
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
     },
     {
-        _id: "624a6a677c8d9c9f5fd5eb17", // Maher
+        _id: "624a6a677c8d9c9f5fd5eb17", // ashry
         name: "Ahmed Ashry",
         username: "ashry12",
         email: "ahmadashry2002@gmail.com",

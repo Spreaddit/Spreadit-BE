@@ -77,7 +77,7 @@ const ruleSeedData = [
     communityName: "Mental Health Support Group",
   },
   {
-    _id: "624a6a677c8d9c9f5fd5eb36",
+    _id: "624a6a677c8d9c9f5fd5eb3e",
     title: "Psychology Insights Circle Community Guidelines",
     description: "1. Discuss psychological topics with empathy and respect for diverse viewpoints.",
     reportReason: "Violation of community guidelines",

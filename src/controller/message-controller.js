@@ -38,3 +38,41 @@ exports.sendMessage = async (req, res) => {
     return res.status(500).json({ error: "internal server error" });
   }
 };
+
+exports.getInboxMessages = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const senderUser = await User.findById(userId);
+    const inboxMessages = await Message.find({ recieverId: userId });
+    if (inboxMessages.length == 0) {
+      return res.status(404).json({ error: "No messages found" });
+    }
+    res.status(200).json(inboxMessages);
+  } catch (error) {
+    console.error("Error get message :", error);
+    return res.status(500).json({ error: "internal server error" });
+  }
+};
+
+exports.deleteMessage = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const messageId = req.params.messageId;
+    if (!messageId || messageId.length !== 24) {
+      return res.status(404).json({ message: "message not found" });
+    }
+    const senderUser = await User.findById(userId);
+    const existMessage = await Message.findById(messageId);
+    if (!existMessage) {
+      return res
+        .status(404)
+        .json({ error: "Message not found or already deleted" });
+    }
+    const message = await Message.findByIdAndDelete(messageId);
+
+    res.status(200).json({ message: "Message deleted successfully" });
+  } catch (error) {
+    console.error("Error delete message :", error);
+    return res.status(500).json({ error: "internal server error" });
+  }
+};
