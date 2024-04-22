@@ -6,4 +6,12 @@ router
   .route("/message/compose/")
   .post(auth.authentication, messageController.sendMessage);
 
+router
+  .route("/message/inbox/")
+  .get(auth.authentication, messageController.getInboxMessages);
+
+router
+  .route("/message/deletemsg/:messageId")
+  .delete(auth.authentication, messageController.deleteMessage);
+
 module.exports = router;
