@@ -5,7 +5,7 @@ const postSeedData = [
     content: ["Learn the basics of Python programming with this introductory tutorial!"],
     userId: "624a4a94c66738f13854b474", // Amira
     community: "624a6a677c8d9c9f5fd5eb1a", // CodeCrafters
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -15,7 +15,7 @@ const postSeedData = [
     content: ["Explore advanced data structures such as trees, graphs, and heaps in Java programming."],
     userId: "624a4a94c66738f13854b474", // Amira
     community: "624a6a677c8d9c9f5fd5eb1a", // CodeCrafters
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -25,7 +25,7 @@ const postSeedData = [
     content: ["Join us for a crash course on modern web development technologies like HTML, CSS, and JavaScript."],
     userId: "624a52d75ff69df002d25035", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb1a", // CodeCrafters
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -35,7 +35,7 @@ const postSeedData = [
     content: ["Learn the fundamentals of machine learning, including algorithms, models, and applications."],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb1a", // CodeCrafters
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -47,7 +47,7 @@ const postSeedData = [
     community: "624a6a677c8d9c9f5fd5eb1a", // CodeCrafters
     type: "Post",
     isNsfw: false,
-    comments: [], // Placeholder for comments
+    comments: [],   
   },
 
 
@@ -57,7 +57,7 @@ const postSeedData = [
     content: ["Discuss the latest advancements and future prospects of artificial intelligence in our TechTalks community!"],
     userId: "624a52d75ff69df002d25035", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb1b", // TechTalks
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -67,7 +67,7 @@ const postSeedData = [
     content: ["Learn about the fundamentals of blockchain technology and its potential applications."],
     userId: "624a4fbf3f392aefdb4dd1c8", // Farouq
     community: "624a6a677c8d9c9f5fd5eb1b", // TechTalks
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -77,7 +77,7 @@ const postSeedData = [
     content: ["Discover essential cybersecurity best practices to protect your online identity and data."],
     userId: "624a4a94c66738f13854b474", // Amira
     community: "624a6a677c8d9c9f5fd5eb1b", // TechTalks
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -87,7 +87,7 @@ const postSeedData = [
     content: ["Explore the latest trends and innovations in cloud computing technologies."],
     userId: "624a4a94c66738f13854b474", // Amira
     community: "624a6a677c8d9c9f5fd5eb1b", // TechTalks
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -97,7 +97,7 @@ const postSeedData = [
     content: ["Share your favorite tech gadgets and accessories and discuss the latest innovations in consumer electronics."],
     userId: "624a52d75ff69df002d25035", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb1b", // TechTalks
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -109,7 +109,7 @@ const postSeedData = [
     content: ["Discuss the pros and cons of popular JavaScript frameworks like React, Angular, and Vue.js."],
     userId: "624a52d75ff69df002d25035", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb1c", // CodeGeeks
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -119,7 +119,7 @@ const postSeedData = [
     content: ["Engage in a debate about the advantages and disadvantages of Python and Java programming languages."],
     userId: "624a4a94c66738f13854b474", // Amira
     community: "624a6a677c8d9c9f5fd5eb1c", // CodeGeeks
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -129,7 +129,7 @@ const postSeedData = [
     content: ["Learn effective strategies for collaborating on projects using GitHub and maximizing team productivity."],
     userId: "624a4fbf3f392aefdb4dd1c8", // Farouq
     community: "624a6a677c8d9c9f5fd5eb1c", // CodeGeeks
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -139,7 +139,7 @@ const postSeedData = [
     content: ["Join our masterclass series to learn advanced data structures and algorithms techniques from industry experts."],
     userId: "624a52d75ff69df002d25035", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb1c", // CodeGeeks
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -149,7 +149,7 @@ const postSeedData = [
     content: ["Share your favorite web development bootcamps and resources for aspiring developers."],
     userId: "624a4fbf3f392aefdb4dd1c8", // Farouq
     community: "624a6a677c8d9c9f5fd5eb1c", // CodeGeeks
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -161,7 +161,7 @@ const postSeedData = [
     content: ["Delve into the mysteries of black holes, their formation, properties, and role in shaping the universe."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb1d", // Science Explorers Club
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -171,7 +171,7 @@ const postSeedData = [
     content: ["Explore recent advancements in DNA sequencing technologies and their implications for genetic research and medicine."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb1d", // Science Explorers Club
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -181,7 +181,7 @@ const postSeedData = [
     content: ["Dive into the bizarre and fascinating realm of quantum mechanics, from superposition and entanglement to quantum computing."],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb1d", // Science Explorers Club
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -191,7 +191,7 @@ const postSeedData = [
     content: ["Discuss the latest research on climate change, its impacts on ecosystems and societies, and strategies for mitigation and adaptation."],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb1d", // Science Explorers Club
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -201,7 +201,7 @@ const postSeedData = [
     content: ["Explore the co-evolutionary dynamics between species and their predators, from mimicry and camouflage to predator-prey relationships."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb1d", // Science Explorers Club
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -213,7 +213,7 @@ const postSeedData = [
     content: ["Embark on a cosmic voyage to the farthest reaches of the observable universe, exploring galaxies, nebulae, and the cosmic web."],
     userId: "624a6a677c8d9c9f5fd5eb12", // Galal
     community: "624a4052e28fb9d9c024671a", // Space & Astronomy Lovers
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -223,7 +223,7 @@ const postSeedData = [
     content: ["Join the quest for life beyond Earth, from the exploration of Mars and Europa to the study of exoplanets and SETI initiatives."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a4052e28fb9d9c024671a", // Space & Astronomy Lovers
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -233,7 +233,7 @@ const postSeedData = [
     content: ["Marvel at the splendor of cosmic events like supernovae, eclipses, meteor showers, and auroras, captured by astronomers and astrophotographers."],
     userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
     community: "624a4052e28fb9d9c024671a", // Space & Astronomy Lovers
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -243,7 +243,7 @@ const postSeedData = [
     content: ["Discover the diverse moons of Jupiter, including Ganymede, Europa, and Io, and their potential for habitability and scientific exploration."],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a4052e28fb9d9c024671a", // Space & Astronomy Lovers
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -253,7 +253,7 @@ const postSeedData = [
     content: ["Learn essential tips for stargazing, including choosing the right telescope, identifying constellations, and observing celestial events."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a4052e28fb9d9c024671a", // Space & Astronomy Lovers
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -265,7 +265,7 @@ const postSeedData = [
     content: ["Explore the fascinating world of genetic diversity and its implications for evolution, adaptation, and conservation."],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb1d", // Biology Buffs Society
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -275,7 +275,7 @@ const postSeedData = [
     content: ["Discuss the principles of ecology, ecosystem dynamics, and strategies for biodiversity conservation in the face of environmental challenges."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb1d", // Biology Buffs Society
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -285,7 +285,7 @@ const postSeedData = [
     content: ["Explore remarkable adaptations in the animal kingdom, from camouflage and mimicry to specialized anatomical features for survival."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb1d", // Biology Buffs Society
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -295,7 +295,7 @@ const postSeedData = [
     content: ["Dive into the wonders of marine biology, exploring diverse ecosystems, marine organisms, and the importance of ocean conservation."],
     userId: "624a6a677c8d9c9f5fd5eb17", // Basem
     community: "624a6a677c8d9c9f5fd5eb1d", // Biology Buffs Society
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -305,7 +305,7 @@ const postSeedData = [
     content: ["Delve into the field of genomics, examining breakthroughs in DNA sequencing, genetic engineering, and personalized medicine."],
     userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
     community: "624a6a677c8d9c9f5fd5eb1d", // Biology Buffs Society
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -317,7 +317,7 @@ const postSeedData = [
     content: ["Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."],
     userId: "624a4fbf3f392aefdb4dd1c8", // Farouq
     community: "624a6a677c8d9c9f5fd5eb1e", // Creative Minds Collective
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -327,7 +327,7 @@ const postSeedData = [
     content: ["Embark on a creative journey to explore the intersection of music and visual arts, where sound inspires vivid imagery and vice versa."],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb1e", // Creative Minds Collective
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -337,7 +337,7 @@ const postSeedData = [
     content: ["Indulge in poetic reflections as writers pen verses that transport readers on a journey through emotions, memories, and dreams."],
     userId: "624a4a94c66738f13854b474", // Amira
     community: "624a6a677c8d9c9f5fd5eb1e", // Creative Minds Collective
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -347,7 +347,7 @@ const postSeedData = [
     content: ["Immerse yourself in a photography showcase, where each image captures life's essence, frozen in time to evoke emotions and memories."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb1e", // Creative Minds Collective
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -357,7 +357,7 @@ const postSeedData = [
     content: ["Embark on a journey through musical masterpieces, where artists harmonize creativity to compose melodies that resonate with the soul."],
     userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
     community: "624a6a677c8d9c9f5fd5eb1e", // Creative Minds Collective
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -369,7 +369,7 @@ const postSeedData = [
     content: ["Explore the world of sculpture as artists breathe life into clay, stone, and metal, embodying creativity in tangible forms that captivate the imagination."],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb1f", // Visual Arts Gallery
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -379,7 +379,7 @@ const postSeedData = [
     content: ["Immerse yourself in a digital art showcase, where artists explore virtual realms, blending imagination and technology to create captivating digital masterpieces."],
     userId: "624a6a677c8d9c9f5fd5eb17", // Galal
     community: "624a6a677c8d9c9f5fd5eb1f", // Visual Arts Gallery
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -389,7 +389,7 @@ const postSeedData = [
     content: ["Dive into abstract expressions as artists experiment with color and form, transcending traditional boundaries to evoke emotions and spark imagination."],
     userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
     community: "624a6a677c8d9c9f5fd5eb1f", // Visual Arts Gallery
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -399,7 +399,7 @@ const postSeedData = [
     content: ["Experience impressionist inspirations as artists capture moments in time, using vibrant brushstrokes and light to convey fleeting emotions and scenes."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb1f", // Visual Arts Gallery
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -409,7 +409,7 @@ const postSeedData = [
     content: ["Rediscover realism as artists portray life's authenticity, capturing intricate details and subtle nuances that mirror the beauty and complexity of existence."],
     userId: "624a4a94c66738f13854b474", // Amira
     community: "624a6a677c8d9c9f5fd5eb1f", // Visual Arts Gallery
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -421,7 +421,7 @@ const postSeedData = [
     content: ["Step into the poetry corner and immerse yourself in the beauty of words, where emotions flow freely and thoughts take flight on the wings of imagination."],
     userId: "624a4a94c66738f13854b474", // Amira
     community: "624a6a677c8d9c9f5fd5eb20", // Writers' Haven
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -431,7 +431,7 @@ const postSeedData = [
     content: ["Embark on a journey through the short story showcase, where authors unveil worlds in few words, weaving tales that linger in the mind long after they're read."],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb20", // Writers' Haven
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -441,7 +441,7 @@ const postSeedData = [
     content: ["Ignite your creative sparks with a plethora of writing prompts, designed to inspire, challenge, and fuel your imagination on the writer's journey."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb20", // Writers' Haven
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -451,7 +451,7 @@ const postSeedData = [
     content: ["Embark on discussions about novels, exploring literary worlds, characters, themes, and narratives that leave an indelible mark on readers' hearts and minds."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb20", // Writers' Haven
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -461,7 +461,7 @@ const postSeedData = [
     content: ["Celebrate creative voices in the author spotlight, where writers share insights, experiences, and reflections on their writing journeys and literary inspirations."],
     userId: "624a6a677c8d9c9f5fd5eb12", // Galal
     community: "624a6a677c8d9c9f5fd5eb20", // Writers' Haven
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -473,7 +473,7 @@ const postSeedData = [
     content: ["Join us for a guided meditation session focused on cultivating inner peace, mindfulness, and serenity amidst the hustle and bustle of daily life."],
     userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
     community: "624a6a677c8d9c9f5fd5eb21", // Mindfulness & Meditation Community
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -483,7 +483,7 @@ const postSeedData = [
     content: ["Explore the practice of mindfulness in motion, embracing the present moment with awareness and intention in every step, breath, and movement."],
     userId: "624a6a677c8d9c9f5fd5eb17", // Basem
     community: "624a6a677c8d9c9f5fd5eb21", // Mindfulness & Meditation Community
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -493,7 +493,7 @@ const postSeedData = [
     content: ["Embark on the journey of mindful living, nurturing the mind, body, and spirit through practices that promote self-awareness, compassion, and well-being."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb21", // Mindfulness & Meditation Community
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -503,7 +503,7 @@ const postSeedData = [
     content: ["Discover stress management techniques to find calm in chaos, empowering yourself to navigate life's challenges with resilience, balance, and inner strength."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb21", // Mindfulness & Meditation Community
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -513,7 +513,7 @@ const postSeedData = [
     content: ["Practice mindful breathing exercises to anchor yourself in the present moment, cultivating a sense of calm, clarity, and presence in your daily life."],
     userId: "624a6a677c8d9c9f5fd5eb12", // Galal
     community: "624a6a677c8d9c9f5fd5eb21", // Mindfulness & Meditation Community
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -525,7 +525,7 @@ const postSeedData = [
     content: ["Explore the fascinating realm of human behavior through insights from psychology, discussing theories, research findings, and practical applications."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb23", // Psychology Insights Circle
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -535,7 +535,7 @@ const postSeedData = [
     content: ["Delve into the power of emotional intelligence and its role in navigating relationships, enhancing communication, and fostering empathy and understanding."],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb23", // Psychology Insights Circle
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -545,7 +545,7 @@ const postSeedData = [
     content: ["Examine cognitive biases and their impact on decision-making, perception, and behavior, unraveling the quirks of the human mind and how we perceive reality."],
     userId: "624a6a677c8d9c9f5fd5eb12", // Galal
     community: "624a6a677c8d9c9f5fd5eb23", // Psychology Insights Circle
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -555,7 +555,7 @@ const postSeedData = [
     content: ["Explore the principles of positive psychology and learn strategies for cultivating happiness, resilience, and well-being in everyday life."],
     userId: "624a6a677c8d9c9f5fd5eb17", // Basem
     community: "624a6a677c8d9c9f5fd5eb23", // Psychology Insights Circle
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -565,7 +565,7 @@ const postSeedData = [
     content: ["Discover the concept of psychological resilience and explore strategies for thriving in the face of adversity, setbacks, and life's challenges."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb23", // Psychology Insights Circle
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -577,7 +577,7 @@ const postSeedData = [
     content: ["Share your bucket list destinations and dream travel experiences, and inspire fellow globetrotters with your adventurous spirit!"],
     userId: "624a4fbf3f392aefdb4dd1c8", // Farouq
     community: "624a6a677c8d9c9f5fd5eb24", // Globetrotters Community
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -587,7 +587,7 @@ const postSeedData = [
     content: ["Embark on a journey of self-discovery and adventure with solo travel experiences, sharing tips, stories, and insights for fellow solo travelers."],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb24", // Globetrotters Community
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -597,7 +597,7 @@ const postSeedData = [
     content: ["Discover hidden gems and off-the-beaten-path destinations around the world, sharing local experiences, cultural insights, and travel recommendations."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb24", // Globetrotters Community
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -607,7 +607,7 @@ const postSeedData = [
     content: "Share your most memorable adventure travel stories, from adrenaline-pumping activities to awe-inspiring natural landscapes, and inspire fellow adventurers!",
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb24", // Globetrotters Community
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -617,7 +617,7 @@ const postSeedData = [
     content: ["Immerse yourself in different cultures, traditions, and lifestyles through cultural immersion experiences, fostering meaningful connections and understanding."],
     userId: "624a6a677c8d9c9f5fd5eb17", // Basem
     community: "624a6a677c8d9c9f5fd5eb24", // Globetrotters Community
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -628,7 +628,7 @@ const postSeedData = [
     content: ["Share your favorite hiking trails, breathtaking landscapes, and tips for fellow outdoor enthusiasts to embark on memorable hiking adventures!"],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb25", // Adventurous Souls Society
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -638,7 +638,7 @@ const postSeedData = [
     content: ["Discuss extreme sports experiences, adrenaline-pumping activities, and tips for daredevils seeking the ultimate thrill!"],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb25", // Adventurous Souls Society
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -648,7 +648,7 @@ const postSeedData = [
     content: ["Share your backpacking adventures, travel tales, budget travel tips, and inspiring stories for fellow backpackers!"],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb25", // Adventurous Souls Society
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -658,7 +658,7 @@ const postSeedData = [
     content: ["Discuss water sports activities, from surfing and scuba diving to kayaking and sailing, and share tips for ocean-loving adventurers!"],
     userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
     community: "624a6a677c8d9c9f5fd5eb25", // Adventurous Souls Society
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -668,7 +668,7 @@ const postSeedData = [
     content: ["Share your most memorable road trip experiences, scenic routes, and travel tips for fellow road warriors!"],
     userId: "624a6a677c8d9c9f5fd5eb12", // Galal
     community: "624a6a677c8d9c9f5fd5eb25", // Adventurous Souls Society
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -680,7 +680,7 @@ const postSeedData = [
     content: ["Share your favorite international cuisines, traditional dishes, and recipes from different cultures, and embark on a virtual culinary journey!"],
     userId: "624a4fbf3f392aefdb4dd1c8", // Farouq
     community: "624a6a677c8d9c9f5fd5eb26", // Culinary Delights
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -690,7 +690,7 @@ const postSeedData = [
     content: ["Share your foodie adventures, hidden gems, and culinary discoveries from around the globe, and inspire fellow gastronomes!"],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb26", // Culinary Delights
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -700,7 +700,7 @@ const postSeedData = [
     content: ["Discuss cooking techniques, kitchen hacks, and share your favorite recipes to help aspiring chefs elevate their culinary creations!"],
     userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
     community: "624a6a677c8d9c9f5fd5eb26", // Culinary Delights
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -710,7 +710,7 @@ const postSeedData = [
     content: ["Share your love for desserts, pastry recipes, and sweet indulgences from all corners of the world, and satisfy your sweet tooth!"],
     userId: "624a6a677c8d9c9f5fd5eb17", // Basem
     community: "624a6a677c8d9c9f5fd5eb26", // Culinary Delights
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -720,7 +720,7 @@ const postSeedData = [
     content: ["Discuss sustainable farming practices, organic food movements, and tips for adopting eco-friendly eating habits to support the planet!"],
     userId: "624a6a677c8d9c9f5fd5eb12", // Galal
     community: "624a6a677c8d9c9f5fd5eb26", // Culinary Delights
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -732,7 +732,7 @@ const postSeedData = [
     content: ["Embark on a culinary adventure and share your experiences tasting exotic dishes, gourmet delicacies, and unique flavors from around the world!"],
     userId: "624a4fbf3f392aefdb4dd1c8", // Farouq
     community: "624a6a677c8d9c9f5fd5eb27", // Gourmet Adventures
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -742,7 +742,7 @@ const postSeedData = [
     content: ["Share your gourmet travel experiences, culinary discoveries, and memorable dining experiences at Michelin-starred restaurants around the globe!"],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb27", // Gourmet Adventures
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -752,7 +752,7 @@ const postSeedData = [
     content: ["Share your epicurean escapes, culinary tours, and memorable foodie experiences that tantalized your taste buds and ignited your senses!"],
     userId: "624a6a677c8d9c9f5fd5eb17", // Basem
     community: "624a6a677c8d9c9f5fd5eb27", // Gourmet Adventures
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -762,7 +762,7 @@ const postSeedData = [
     content: ["Dive into the world of gastronomy and explore local cuisine, food traditions, and authentic flavors from different regions and cultures!"],
     userId: "624a6a677c8d9c9f5fd5eb12", // Galal
     community: "624a6a677c8d9c9f5fd5eb27", // Gourmet Adventures
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -772,7 +772,7 @@ const postSeedData = [
     content: ["Experiment with new ingredients, innovative cooking techniques, and share your culinary creations that push the boundaries of traditional cuisine!"],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb27", // Gourmet Adventures
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -784,7 +784,7 @@ const postSeedData = [
     content: ["Join the discussion on internet memes, their cultural significance, and how they reflect the collective consciousness of today's society!"],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb28", // Pop Culture Fanatics
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -794,7 +794,7 @@ const postSeedData = [
     content: ["Explore the evolution of pop music, from the classic hits that shaped generations to the modern chart-toppers that dominate the airwaves!"],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb28", // Pop Culture Fanatics
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -804,7 +804,7 @@ const postSeedData = [
     content: "Share your favorite movie quotes, iconic lines, and memorable moments that have become ingrained in pop culture history!",
     userId: "624a4a94c66738f13854b474", // Amira
     community: "624a6a677c8d9c9f5fd5eb28", // Pop Culture Fanatics
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -814,7 +814,7 @@ const postSeedData = [
     content: ["Take a trip down memory lane and reminisce about your favorite childhood TV shows, cartoons, and animated series that shaped your upbringing!"],
     userId: "624a6a677c8d9c9f5fd5eb12", // Galal
     community: "624a6a677c8d9c9f5fd5eb28", // Pop Culture Fanatics
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -824,7 +824,7 @@ const postSeedData = [
     content: ["Discuss the pervasive influence of pop culture on society, including trends, fads, and cultural phenomena that shape our lives and perceptions!"],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb28", // Pop Culture Fanatics
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -836,7 +836,7 @@ const postSeedData = [
     content: ["Discover timeless classics from the golden age of Hollywood, featuring iconic performances, gripping plots, and unforgettable cinematic moments!"],
     userId: "624a4a94c66738f13854b474", // Amira
     community: "624a6a677c8d9c9f5fd5eb29", // Movie Buffs Club
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -846,7 +846,7 @@ const postSeedData = [
     content: ["Share your favorite underrated films that have flown under the radar but deserve more recognition for their exceptional storytelling and performances!"],
     userId: "624a6a677c8d9c9f5fd5eb17", // Basem
     community: "624a6a677c8d9c9f5fd5eb29", // Movie Buffs Club
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -856,7 +856,7 @@ const postSeedData = [
     content: ["Discuss recent films that have pushed the boundaries of storytelling, cinematography, and visual effects, leaving a lasting impact on the world of cinema!"],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb29", // Movie Buffs Club
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -866,7 +866,7 @@ const postSeedData = [
     content: ["Pay tribute to the visionary directors, actors, and behind-the-scenes talents who have shaped the landscape of cinema and left an indelible mark on movie history!"],
     userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
     community: "624a6a677c8d9c9f5fd5eb29", // Movie Buffs Club
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -876,7 +876,7 @@ const postSeedData = [
     content: ["Share tips, recommendations, and themed movie marathon ideas for hosting the ultimate film fest with friends and family, complete with popcorn and cozy blankets!"],
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb29", // Movie Buffs Club
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -888,7 +888,7 @@ const postSeedData = [
     content: ["Share the songs that hold a special place in your heart and have accompanied you through life's ups and downs, shaping your personal soundtrack!"],
     userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
     community: "624a6a677c8d9c9f5fd5eb2a", // Music Maniacs Lounge
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -898,7 +898,7 @@ const postSeedData = [
     content: ["Embark on a musical journey across different genres and discover hidden gems, underrated artists, and diverse cultural influences that enrich the world of music!"],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     community: "624a6a677c8d9c9f5fd5eb2a", // Music Maniacs Lounge
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -908,7 +908,7 @@ const postSeedData = [
     content: "Share your most unforgettable experiences from live concerts and music festivals, from electrifying performances to heartwarming interactions with fellow fans!",
     userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb2a", // Music Maniacs Lounge
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false, 
   },
@@ -918,7 +918,7 @@ const postSeedData = [
     content: ["Discuss legendary albums that have left an enduring legacy, influencing generations of music lovers and shaping the evolution of musical genres!"],
     userId: "624a6a677c8d9c9f5fd5eb12", // Galal
     community: "624a6a677c8d9c9f5fd5eb2a", // Music Maniacs Lounge
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
@@ -928,7 +928,7 @@ const postSeedData = [
     content: ["Share serendipitous encounters with music, from chance discoveries of new artists to unexpected connections with songs that resonate deeply with your soul!"],
     userId: "624a6a677c8d9c9f5fd5eb14", // Basma
     community: "624a6a677c8d9c9f5fd5eb2a", // Music Maniacs Lounge
-    comments: [], // Placeholder for comments
+    comments: [],   
     type: "Post",
     isNsfw: false,
   },
