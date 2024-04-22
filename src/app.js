@@ -14,6 +14,7 @@ const mobileSettingsRoutes = require("./routes/mobile-settings");
 const communityRoutes = require("./routes/community");
 const commentRoutes = require("./routes/comment");
 const listingRoutes = require("./routes/listing");
+const messageRoutes = require("./routes/message");
 
 //seeding
 const UserRoleSeeder = require("../seeders/user-role.seeder");
@@ -49,6 +50,7 @@ app.use("/api", uploadRoutes);
 app.use("/api", listingRoutes);
 app.use("/api", communityRoutes);
 app.use("/api", commentRoutes);
+app.use("/api", messageRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
@@ -72,9 +74,10 @@ mongoose
         console.log(`Running ${seeder.constructor.name} Seeder...`);
         await seeder.run();
         console.log(`${seeder.constructor.name} Seeder executed successfully`);
-
       } else {
-        console.log(`${seeder.constructor.name} Seeder already executed, skipping...`); // Use backticks instead of single quotes
+        console.log(
+          `${seeder.constructor.name} Seeder already executed, skipping...`
+        ); // Use backticks instead of single quotes
       }
     }
 

@@ -3,7 +3,7 @@ const User = require("../models/user.js");
 const Community = require("../models/community.js");
 const axios = require("axios");
 //const auth = require("../middleware/authentication");
-const { verifyGoogleToken } = require("../middleware/authentication");
+//const { verifyGoogleToken } = require("../middleware/authentication");
 const auth = require("../middleware/authentication");
 const config = require("../configuration");
 const cookieParser = require("cookie-parser");
@@ -108,7 +108,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/google/oauth", verifyGoogleToken, async (req, res) => {
+router.post("/google/oauth", auth.verifyGoogleToken, async (req, res) => {
   try {
     const userData = req.decoded;
     //console.log(userData);
@@ -165,7 +165,7 @@ router.post("/google/oauth", verifyGoogleToken, async (req, res) => {
 
 //connected accounts
 
-router.post("/google/connected-accounts", verifyGoogleToken, auth.authentication, async (req, res) => {
+router.post("/google/connected-accounts", auth.verifyGoogleToken, auth.authentication, async (req, res) => {
   try {
     const userData = req.decoded;
     const userId = req.user._id;
