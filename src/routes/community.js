@@ -414,7 +414,6 @@ router.get("/community/random-category", async (req, res) => {
 
       communities = await Community.aggregate([
         { $match: { category: randomCategory } },
-        { $sample: { size: 25 } },
         {
           $lookup: {
             from: "rules",
@@ -460,7 +459,6 @@ router.get("/community/get-specific-category", async (req, res) => {
 
     const communities = await Community.aggregate([
       { $match: { category } },
-      { $sample: { size: 25 } },
       {
         $lookup: {
           from: "rules",

@@ -27,6 +27,19 @@ const communitySeedData = [
       moderators: ["624a52d75ff69df002d25035"], 
       membersCount: 2,
     },
+    {
+      name: "Gaming2",
+      category: "Entertainment",
+      description: "A community for gamers",
+      is18plus: false,
+      allowNfsw: true,
+      allowSpoile: true,
+      communityType: "Public",
+      creator: "624a52d75ff69df002d25035", 
+      members: ["624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"], 
+      moderators: ["624a52d75ff69df002d25035"], 
+      membersCount: 2,
+    },
     
 ];
   
