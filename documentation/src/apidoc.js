@@ -307,7 +307,7 @@
  * @apiDescription Retrieves basic information about the logged-in user so that he resets his password
  * @apiSampleRequest off
  *
- * @apiHeader {String} token User authentication token.
+ * @apiHeader {String} Authorization User Authorization token.
  *
  * @apiSuccess {String} avatar URL of the user's avatar image.
  * @apiSuccess {String} email Email address of the user.
@@ -2391,10 +2391,18 @@
  *       ],
  *       "isVisible": true,
  *       "isActive": true,
- *       "socialLinks": {
- *         "facebook": "https://www.facebook.com/sample_user",
- *         "twitter": "https://www.twitter.com/sample_user"
- *       }
+ *    "socialLinks": [
+ *      {
+ *          "platform": "facebook",
+ *          "url": "https://www.facebook.com/sample_user",
+ *          "displayName": "FacebookGroup"
+ *      },
+ *      {
+ *          "platform": "twitter",
+ *          "url": "https://twitter.com/sample_user",
+ *          "displayName": "TwitterProfile"
+ *      }
+ *      ],
  *     }
  *
  * @apiError (404) NotFound User not found.
@@ -2424,8 +2432,8 @@
  * @apiHeader {String} Authorization User's authentication token.
  *
  * @apiParam {String} [name] Name of the user.
- * @apiParam {String} [avatar] URL of the user's avatar.
- * @apiParam {String} [banner] URL of the user's banner image.
+ * @apiParam {File} [avatar] URL of the user's avatar.
+ * @apiParam {File} [banner] URL of the user's banner image.
  * @apiParam {String} [about] About section of the user's profile.
  * @apiParam {Object} [socialLinks] Links to the user's social media profiles.
  * @apiParam {String} [username] Username of the user.
@@ -2436,10 +2444,20 @@
  * {
  *    "name": "Updated Name",
  *    "about": "Updated about section",
- *    "socialLinks": {
- *        "facebook": "https://www.facebook.com/updated_user",
- *        "twitter": "https://www.twitter.com/updated_user"
- *    },
+ *    "avatar": "Updated avatar",
+ *    "image": "Updated image",
+ *    "socialLinks": [
+ *      {
+ *          "platform": "facebook",
+ *          "url": "https://www.facebook.com/sample_user",
+ *          "displayName": "FacebookGroup"
+ *      },
+ *      {
+ *          "platform": "twitter",
+ *          "url": "https://twitter.com/sample_user",
+ *          "displayName": "TwitterProfile"
+ *      }
+ *      ],
  *    "isVisible": true,
  *    "isActive": true
  * }
@@ -6274,7 +6292,6 @@
 
 //#endregion Settings
 
-
 //#region Mobile Settings
 
 /**
@@ -6573,5 +6590,4 @@
  *     }
  */
 
-
-//#endregion Mobile Settings 
+//#endregion Mobile Settings
