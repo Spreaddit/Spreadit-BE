@@ -42,6 +42,7 @@ router.post("/signup", async (req, res) => {
         emailContent = `To confirm your email, click the link below: www.spreadit.me/verify-email/${emailToken}`;
       }
       //await sendEmail(savedUser.email, 'Please Confirm Your Email', emailContent);
+      
 
       const userObj = await User.generateUserObject(savedUser);
 
