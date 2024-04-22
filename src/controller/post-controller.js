@@ -111,7 +111,6 @@ exports.getAllUserPosts = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
         const userId = user._id;
-
         const posts = await Post.find({ userId });
         if (!posts || posts.length === 0) {
             return res.status(404).json({ error: 'User has no posts' });
@@ -231,14 +230,14 @@ exports.createPost = async (req, res) => {
                 return res.status(400).json({ error: ' poll options, and pollVotingLength are required for poll posts' });
             }
         }
-        const communityObject = await Community.findOne({ name: community });
-        if (!communityObject) {
-            return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
-        }
-        const communityObjectID = communityObject._id;
-        if (!user.subscribedCommunities.some(id => id.equals(communityObjectID)) && user.username != community) {
-            return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
-        }
+        /*  const communityObject = await Community.findOne({ name: community });
+         if (!communityObject) {
+             return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
+         }
+         const communityObjectID = communityObject._id;
+         if (!user.subscribedCommunities.some(id => id.equals(communityObjectID)) && user.username != community) {
+             return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
+         } */
         /*         if (!user.communities.includes(community)) {
                     return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
                 } */

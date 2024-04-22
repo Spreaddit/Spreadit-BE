@@ -6,15 +6,9 @@ const PostSchema = new Schema(
   {
 
     userId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true
-    },
-    username: {
-      type: String,
-      required: true
-    },
-    userProfilePic: {
-      type: String,
     },
     upVotes: {
       type: [],
@@ -23,14 +17,6 @@ const PostSchema = new Schema(
     downVotes: {
       type: [],
       default: null
-    },
-    votesUpCount: {
-      type: Number,
-      default: 0
-    },
-    votesDownCount: {
-      type: Number,
-      default: 0
     },
     sharesCount: {
       type: Number,
@@ -110,10 +96,6 @@ const PostSchema = new Schema(
       default: true
     },
     isCommentsLocked: {
-      type: Boolean,
-      default: false
-    },
-    isSaved: {
       type: Boolean,
       default: false
     },
