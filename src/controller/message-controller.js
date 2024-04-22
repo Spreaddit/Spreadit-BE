@@ -76,3 +76,56 @@ exports.deleteMessage = async (req, res) => {
     return res.status(500).json({ error: "internal server error" });
   }
 };
+
+exports.getAllMessages = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const senderUser = await User.findById(userId);
+    const allMessages = await Message.find({
+      recieverId: userId,
+      contentType: "text",
+    });
+    if (allMessages.length == 0) {
+      return res.status(404).json({ error: "No messages found" });
+    }
+    res.status(200).json(allMessages);
+  } catch (error) {
+    console.error("Error get message :", error);
+    return res.status(500).json({ error: "internal server error" });
+  }
+};
+exports.getPostReplies = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const senderUser = await User.findById(userId);
+    const allMessages = await Message.find({
+      recieverId: userId,
+      contentType: "comment",
+    });
+    if (allMessages.length == 0) {
+      return res.status(404).json({ error: "No messages found" });
+    }
+    res.status(200).json(allMessages);
+  } catch (error) {
+    console.error("Error get message :", error);
+    return res.status(500).json({ error: "internal server error" });
+  }
+};
+
+exports.getSentMessages = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const senderUser = await User.findById(userId);
+    const allMessages = await Message.find({
+      senderId: userId,
+      contentType: "text",
+    });
+    if (allMessages.length == 0) {
+      return res.status(404).json({ error: "No messages found" });
+    }
+    res.status(200).json(allMessages);
+  } catch (error) {
+    console.error("Error get message :", error);
+    return res.status(500).json({ error: "internal server error" });
+  }
+};

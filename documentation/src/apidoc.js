@@ -4409,6 +4409,48 @@
  *     }
  */
 
+/**
+ * @api {delete} /post/deleterecent/:postId Delete Recent Post
+ * @apiVersion 0.1.0
+ * @apiName DeleteRecentPost
+ * @apiGroup Post
+ * @apiDescription Deletes a post from the recent posts of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be deleted from recent posts.
+ *
+ * @apiSuccess {String} message Success message indicating that the post was deleted from recent posts successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post deleted from recent successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Post not found or user not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
 //#endregion listing
 
 //#region Post
@@ -6272,7 +6314,6 @@
 
 //#endregion Settings
 
-
 //#region Mobile Settings
 
 /**
@@ -6571,5 +6612,4 @@
  *     }
  */
 
-
-//#endregion Mobile Settings 
+//#endregion Mobile Settings
