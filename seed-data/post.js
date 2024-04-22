@@ -948,7 +948,7 @@ const postSeedData = [
       { option: "Stairway to Heaven - Led Zeppelin", votes: 0 },
       { option: "Hotel California - Eagles", votes: 0 }
     ],
-    pollVotingLength: "7 days"
+    pollVotingLength: "7 Days"
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb95",

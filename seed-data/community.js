@@ -136,7 +136,7 @@ const communitySeedData = [
 },
 {
     _id: "624a6a677c8d9c9f5fd5eb21",
-    name: "Mindfulness & Meditation Community",
+    name: "Mindfulness & Meditation",
     category: "Mental Health & Psychology",
     rules: ["624a6a677c8d9c9f5fd5eb34"], 
     description: "Explore mindfulness practices, meditation techniques, and mental well-being strategies in a supportive community environment.",

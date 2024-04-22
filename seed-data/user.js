@@ -73,7 +73,7 @@ const users = [
         _id: "624a6a677c8d9c9f5fd5eb0c", // Mimo
         // Username: mimo
         name: "Mariam Mahrous",
-        username: "mimo",
+        username: "mimo123",
         email: "mariam.aal03@eng-st.cu.edu.eg",
         password: "12345678",
         gender: "Female",
