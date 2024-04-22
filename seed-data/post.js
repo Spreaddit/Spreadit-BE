@@ -48,7 +48,7 @@ const postSeedData = [
   {
     _id: "624a6a677c8d9c9f5fd5eb43",
     title: "Debugging Tips and Tricks",
-    userId: "624a6a677c8d9c9f5fd5eb12", // Galal
+    userId: "624a6a677c8d9c9f5fd5eb13", // Galal
     community: "624a6a677c8d9c9f5fd5eb1a", // CodeCrafters
     type: "Images & Video",
     isNsfw: false,
@@ -219,7 +219,7 @@ const postSeedData = [
     _id: "624a6a677c8d9c9f5fd5eb52",
     title: "The Evolutionary Arms Race",
     content: ["What is the most significant factor driving the co-evolutionary dynamics between species and their predators?"],
-    userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
+    userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb1d", // Science Explorers Club
     comments: [],
     type: "Poll",
@@ -237,7 +237,7 @@ const postSeedData = [
   {
     _id: "624a6a677c8d9c9f5fd5eb53",
     title: "Journey to the Edge of the Universe",
-    userId: "624a6a677c8d9c9f5fd5eb12", // Galal
+    userId: "624a6a677c8d9c9f5fd5eb13", // Galal
     community: "624a4052e28fb9d9c024671a", // Space & Astronomy Lovers
     comments: [],
     type: "Images & Video",
@@ -260,7 +260,7 @@ const postSeedData = [
   {
     _id: "624a6a677c8d9c9f5fd5eb55",
     title: "The Beauty of Celestial Phenomena",
-    userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
+    userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
     community: "624a4052e28fb9d9c024671a", // Space & Astronomy Lovers
     comments: [],
     type: "Images & Video",
@@ -342,7 +342,7 @@ const postSeedData = [
   {
     _id: "624a6a677c8d9c9f5fd5eb5c",
     title: "Genomics Revolution: Unraveling the Genetic Code",
-    userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
+    userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
     community: "624a6a677c8d9c9f5fd5eb1d", // Biology Buffs Society
     comments: [],
     type: "Link",
@@ -665,7 +665,7 @@ const postSeedData = [
     _id: "624a6a677c8d9c9f5fd5eb7b",
     title: "Favorite Hiking Trail",
     content: ["What is your favorite hiking trail for exploring nature's wonders on foot?"],
-    userId: "624a6a677c8d9c9f5fd5eb13", // Abdullah
+    userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
     community: "624a6a677c8d9c9f5fd5eb25", // Adventurous Souls Society
     comments: [],
     type: "Poll",
@@ -702,7 +702,7 @@ const postSeedData = [
   {
     _id: "624a6a677c8d9c9f5fd5eb7e",
     title: "Water Sports Wonderland: Dive into Aquatic Adventures",
-    userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
+    userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
     community: "624a6a677c8d9c9f5fd5eb25", // Adventurous Souls Society
     comments: [],
     type: "Images & Video",
@@ -936,7 +936,7 @@ const postSeedData = [
     _id: "624a6a677c8d9c9f5fd5eb94",
     title: "Favorite Life Soundtrack Song",
     content: ["Which song holds a special place in your heart and defines your life's journey?"],
-    userId: "624a6a677c8d9c9f5fd5eb15", // Mimo
+    userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
     community: "624a6a677c8d9c9f5fd5eb2a", // Music Maniacs Lounge
     comments: [],
     type: "Poll",
