@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-require("./user");
 
 const NotificationsSubSchema = new Schema(
   {
@@ -10,15 +9,7 @@ const NotificationsSubSchema = new Schema(
       index: true,
       ref: "user",
     },
-    subscription: {
-      type: Object,
-      required: true,
-    },
-    privateKey: {
-      type: String,
-      required: true,
-    },
-    publicKey: {
+    fcmToken: {
       type: String,
       required: true,
     },

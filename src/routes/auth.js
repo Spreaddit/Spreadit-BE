@@ -3,7 +3,8 @@ const User = require("../models/user.js");
 const Community = require("../models/community.js");
 const axios = require("axios");
 //const auth = require("../middleware/authentication");
-const { verifyGoogleToken } = require("../middleware/authentication");
+//const { verifyGoogleToken } = require("../middleware/authentication");
+const auth = require("../middleware/authentication");
 const config = require("../configuration");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
@@ -11,7 +12,6 @@ const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const sendEmail = require("../models/send-email.js");
 const jwt = require("jwt-decode");
 const bcrypt = require("bcryptjs");
-const auth = require("../middleware/authentication");
 const router = express.Router();
 const upload = require("../service/fileUpload");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -118,7 +118,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/google/oauth", verifyGoogleToken, async (req, res) => {
+router.post("/google/oauth", auth.verifyGoogleToken, async (req, res) => {
   try {
     const userData = req.decoded;
     //console.log(userData);
@@ -173,6 +173,65 @@ router.post("/google/oauth", verifyGoogleToken, async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+//connected accounts
+
+router.post("/google/connected-accounts", auth.verifyGoogleToken, auth.authentication, async (req, res) => {
+  try {
+    const userData = req.decoded;
+    const userId = req.user._id;
+    //console.log(userData);
+    let user = await User.findById(userId);
+
+    //let user = await User.findOne({ googleId: userData.id });
+    //console.log(user);
+    if (user) {
+
+      user.googleId = userData.id;
+      user.connectedAccounts = [userData.email];
+      user.isVerified = true;
+
+      const savedUser = await user.save();
+      const userObj = await User.generateUserObject(savedUser);
+
+      res.status(200).send({
+        user: userObj,
+        message: "Connected Accounts has been added successfully",
+      });
+
+    }
+    else {
+      res.status(400).send({
+        message: "Invalid User data",
+      });
+    }
+  } catch (error) {
+    console.error("Error during token verification:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.post("/add-password", auth.authentication, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    let user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    if (user && user.googleId !== " ") {
+      user.email = user.connectedAccounts[0];
+      user.password = req.body.password;
+      await user.save();
+      res.status(200).send({ message: "Password added successfully" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+//connected accounts
 
 router.post("/forgot-password", async (req, res) => {
   try {

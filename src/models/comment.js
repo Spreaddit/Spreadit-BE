@@ -150,6 +150,7 @@ CommentSchema.statics.getCommentObject = async function (
       community_title: subredditTitle,
       is_upvoted: isUpvoted,
       is_downvoted: isDownVoted,
+      potsId: comment.postId,
       replies: [],
     };
     

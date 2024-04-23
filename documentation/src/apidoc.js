@@ -4431,6 +4431,48 @@
  *     }
  */
 
+/**
+ * @api {delete} /post/deleterecent/:postId Delete Recent Post
+ * @apiVersion 0.1.0
+ * @apiName DeleteRecentPost
+ * @apiGroup Post
+ * @apiDescription Deletes a post from the recent posts of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be deleted from recent posts.
+ *
+ * @apiSuccess {String} message Success message indicating that the post was deleted from recent posts successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post deleted from recent successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Post not found or user not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
 //#endregion listing
 
 //#region Post
@@ -4451,12 +4493,12 @@
  * @apiParam {String} type Type of the post. Possible values are: "Post", "Images & Video", "Link", "Poll".
  * @apiParam {String} [pollOptions] Options for a poll post.
  * @apiParam {String} [pollVotingLength] Length of time for voting on a poll post.
- * @apiParam {String} [fileType] Type of files attached to the post (if applicable).
  * @apiParam {String} [link] Link attached to the post (if applicable).
  * @apiParam {Boolean} [isSpoiler] Indicates if the post contains spoilers.
  * @apiParam {Boolean} [isNsfw] Indicates if the post is not safe for work.
  * @apiParam {Boolean} [sendPostReplyNotification] Indicates if notifications should be sent for replies to this post.
- * @apiParam {File[]} [images] Array of images attached to the post (if applicable).
+ * @apiParam {File[]} [attachments] Array of images attached to the post (if applicable).
+ * @apiParam {String} [fileType] (must sent it with attachments)Type of files attached to the post (if you send image in attachment send this fileType=image and if you send video in attachments make fileType=video )(if applicable).
  *
  * @apiParamExample {json} Request-Example:
  * {
@@ -4524,6 +4566,7 @@
  *           "hasDownvoted": false,
  *           "hasVotedOnPoll": false,
  *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
  *           "votesUpCount": 10,
  *           "votesDownCount": 2,
  *           "sharesCount": 5,
@@ -4540,7 +4583,6 @@
  *           "sendPostReplyNotification": true,
  *           "isCommentsLocked": false,
  *           "isSaved": false,
- *           "comments": [],
  *           "date": "2024-04-16T10:00:00.000Z",
  *           "pollOptions": [],
  *           "attachments": []
@@ -4674,6 +4716,7 @@
  *           "hasDownvoted": false,
  *           "hasVotedOnPoll": false,
  *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
  *           "votesUpCount": 10,
  *           "votesDownCount": 2,
  *           "sharesCount": 5,
@@ -4690,7 +4733,6 @@
  *           "sendPostReplyNotification": true,
  *           "isCommentsLocked": false,
  *           "isSaved": true,
- *           "comments": [],
  *           "date": "2024-04-16T10:00:00.000Z",
  *           "pollOptions": [],
  *           "attachments": []
@@ -4764,7 +4806,6 @@
  *
  * @apiParam {String} postId ID of the post to be edited.
  * @apiParam {String} [content] New content of the post.
- * @apiParam {File[]} [images] New array of images attached to the post (if applicable).
  *
  * @apiSuccess {String} message Success message indicating that the post has been edited successfully.
  *
@@ -5036,6 +5077,7 @@
  *           "hasDownvoted": false,
  *           "hasVotedOnPoll": false,
  *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
  *           "votesUpCount": 10,
  *           "votesDownCount": 2,
  *           "sharesCount": 5,
@@ -5052,7 +5094,6 @@
  *           "sendPostReplyNotification": true,
  *           "isCommentsLocked": false,
  *           "isSaved": false,
- *           "comments": [],
  *           "date": "2024-04-16T10:00:00.000Z",
  *           "pollOptions": [],
  *           "attachments": []
@@ -5098,6 +5139,7 @@
  *           "hasDownvoted": true,
  *           "hasVotedOnPoll": false,
  *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
  *           "votesUpCount": 10,
  *           "votesDownCount": 2,
  *           "sharesCount": 5,
@@ -5114,7 +5156,6 @@
  *           "sendPostReplyNotification": true,
  *           "isCommentsLocked": false,
  *           "isSaved": false,
- *           "comments": [],
  *           "date": "2024-04-16T10:00:00.000Z",
  *           "pollOptions": [],
  *           "attachments": []
@@ -5247,6 +5288,7 @@
  *           "hasDownvoted": false,
  *           "hasVotedOnPoll": false,
  *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
  *           "votesUpCount": 10,
  *           "votesDownCount": 2,
  *           "sharesCount": 5,
@@ -5263,7 +5305,6 @@
  *           "sendPostReplyNotification": true,
  *           "isCommentsLocked": false,
  *           "isSaved": false,
- *           "comments": [],
  *           "date": "2024-04-16T10:00:00.000Z",
  *           "pollOptions": [],
  *           "attachments": []
@@ -5370,7 +5411,7 @@
  *
  * @apiParam {String} postId ID of the post to be reported.
  * @apiParam {String} reason Reason for reporting the post.
- * @apiParam {String} [sureason] Supplementary reason for reporting the post.
+ * @apiParam {String} [subreason] Supplementary reason for reporting the post.
  *
  * @apiSuccess {String} message Success message indicating that the post has been reported successfully.
  *
@@ -5472,6 +5513,7 @@
  *       "hasDownvoted": false,
  *       "hasVotedOnPoll": true,
  *       "selectedPollOption": "pollOption",
+ *       "numberOfViews": 1080,
  *       "isHidden": false,
  *       "votesUpCount": 5,
  *       "votesDownCount": 2,
@@ -5489,7 +5531,6 @@
  *       "sendPostReplyNotification": true,
  *       "isCommentsLocked": false,
  *       "isSaved": true,
- *       "comments": [],
  *       "date": "2024-04-18T12:00:00.000Z",
  *       "pollOptions": ["Option 1", "Option 2"],
  *       "attachments": []
@@ -5537,6 +5578,7 @@
  *         "hasDownvoted": false,
  *         "hasVotedOnPoll": true,
  *         "selectedPollOption": "pollOption",
+ *         "numberOfViews": 1080,
  *         "votesUpCount": 5,
  *         "votesDownCount": 2,
  *         "sharesCount": 3,
@@ -5553,7 +5595,6 @@
  *         "sendPostReplyNotification": true,
  *         "isCommentsLocked": false,
  *         "isSaved": true,
- *         "comments": [],
  *         "date": "2024-04-18T12:00:00.000Z",
  *         "pollOptions": ["Option 1", "Option 2"],
  *         "attachments": []
@@ -5600,7 +5641,7 @@
  *       "email": "user@example.com",
  *       "gender": "male",
  *       "country": "USA",
- *       "connectedAccounts": ["twitter", "facebook"]
+ *       "connectedAccounts": ["test@gmail.com","test2@gmail.com"]
  *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -5632,14 +5673,14 @@
  * @apiParam {String} [email] User's email address.
  * @apiParam {String} [gender] User's gender.
  * @apiParam {String} [country] User's country.
- * @apiParam {String[]} [connectedAccounts] Array of connected social media accounts.
+ * @apiParam {String[]} [connectedAccounts] Array of emails of connected social media accounts.
  *
  * @apiParamExample {json} Request-Example:
  * {
  *    "email": "newemail@example.com",
  *    "gender": "female",
  *    "country": "Canada",
- *    "connectedAccounts": ["instagram", "linkedin"]
+ *    "connectedAccounts": ["test@gmail.com", "test2@gmail.com"]
  * }
  *
  * @apiSuccess {String} message Success message indicating that the account settings have been modified successfully.
@@ -5716,8 +5757,8 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "sendYouFriendRequests": true,
- *       "sendYouPrivateMessages": true,
+ *       "sendYouFriendRequests": "Everyone",
+ *       "sendYouPrivateMessages": "Everyone",
  *       "approvedUsers": ["user1", "user2"]
  *     }
  *
@@ -5747,14 +5788,14 @@
  *
  * @apiHeader {String} Authorization User's authentication token.
  *
- * @apiParam {Boolean} [sendYouFriendRequests] Indicates whether to allow others to send friend requests.
- * @apiParam {Boolean} [sendYouPrivateMessages] Indicates whether to allow others to send private messages.
+ * @apiParam {String="Everyone", "Accounts Older Than 30 Days", "Nobody"} [sendYouFriendRequests] Indicates who can send friend requests.
+ * @apiParam {String="Everyone", "Nobody"} [sendYouPrivateMessages] Indicates who can send private messages.
  * @apiParam {String[]} [approvedUsers] Array of approved users who can send messages.
  *
  * @apiParamExample {json} Request-Example:
  * {
- *    "sendYouFriendRequests": false,
- *    "sendYouPrivateMessages": true,
+ *    "sendYouFriendRequests": "Nobody",
+ *    "sendYouPrivateMessages": "Everyone",
  *    "approvedUsers": ["user3", "user4"]
  * }
  *
@@ -5782,7 +5823,6 @@
  *       "error": "Internal server error"
  *     }
  */
-
 /**
  * @api {post} /settings/chat-and-messaging/make-all-as-read Make All Messages as Read
  * @apiVersion 0.1.0
@@ -6139,7 +6179,7 @@
  *          "twitter": "https://twitter.com/johndoe",
  *          "facebook": "https://facebook.com/johndoe"
  *       },
- *       "profilePicture": "http://example.com/profile.jpg",
+ *       "avatar": "http://example.com/profile.jpg",
  *       "banner": "http://example.com/banner.jpg",
  *       "nsfw": false,
  *       "allowFollow": true,
@@ -6184,7 +6224,7 @@
  *        "twitter": "https://twitter.com/johndoe",
  *        "facebook": "https://facebook.com/johndoe"
  *    },
- *    "profilePicture": "http://example.com/profile_updated.jpg",
+ *    "avatar": "http://example.com/profile_updated.jpg",
  *    "banner": "http://example.com/banner_updated.jpg",
  *    "nsfw": true,
  *    "allowFollow": false,
@@ -6232,8 +6272,8 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "blockedUsers": ["user1", "user2"],
- *       "mutedCommunities": ["community1", "community2"]
+ *       "blockedUsers": ["6622dd82f5dae2fd48618252", "6622dd82f5dae2fd48618257"],
+ *       "mutedCommunities": ["6622dd82f5dae2fd48618267", "6622dd82f5dae2fd48618272"]
  *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -6266,8 +6306,8 @@
  *
  * @apiParamExample {json} Request-Example:
  * {
- *    "blockedUsers": ["user3", "user4"],
- *    "mutedCommunities": ["community3", "community4"]
+ *    "blockedUsername": "farouq12",
+ *    "mutedCommunityname ": "Programming"
  * }
  *
  * @apiSuccess {String} message Success message indicating that the safety and privacy settings have been successfully updated.
@@ -6299,7 +6339,7 @@
 //#region Mobile Settings
 
 /**
- * @api {get} /mobile/settings/account Get Account Settings (Mobile)
+ * @api {get} /mobile/settings/general/account Get Account Settings (Mobile)
  * @apiVersion 0.1.0
  * @apiName GetAccountSettingsMobile
  * @apiGroup Mobile Settings
@@ -6316,7 +6356,7 @@
  *       "email": "user@example.com",
  *       "gender": "male",
  *       "country": "US",
- *       "connectedAccounts": ["Google", "Facebook"]
+ *       "connectedAccounts": ["test@gmail.com", "test2@gmail.com"]
  *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -6336,7 +6376,7 @@
  */
 
 /**
- * @api {put} /mobile/settings/account Modify Account Settings (Mobile)
+ * @api {put} /mobile/settings/general/account Modify Account Settings (Mobile)
  * @apiVersion 0.1.0
  * @apiName ModifyAccountSettingsMobile
  * @apiGroup Mobile Settings
@@ -6348,14 +6388,14 @@
  * @apiParam {String} [email] User's email address.
  * @apiParam {String} [gender] User's gender.
  * @apiParam {String} [country] User's country.
- * @apiParam {String[]} [connectedAccounts] Array of connected accounts.
+ * @apiParam {String[]} [connectedAccounts] Array of emails of connected accounts.
  *
  * @apiParamExample {json} Request-Example:
  * {
  *    "email": "newemail@example.com",
  *    "gender": "female",
  *    "country": "UK",
- *    "connectedAccounts": ["Google"]
+ *    "connectedAccounts": ["test@gmail.com", "test2@gmail.com"]
  * }
  *
  * @apiSuccess {String} message Success message indicating that the account settings have been successfully updated.
@@ -6384,7 +6424,7 @@
  */
 
 /**
- * @api {delete} /mobile/settings/account Delete Account (Mobile)
+ * @api {delete} /mobile/settings/general/account Delete Account (Mobile)
  * @apiVersion 0.1.0
  * @apiName DeleteAccountMobile
  * @apiGroup Mobile Settings
@@ -6432,7 +6472,7 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "blockedAccounts": ["user1", "user2"],
+ *       "blockedUsers": ["6622dd82f5dae2fd48618252", "6622dd82f5dae2fd48618256"],
  *       "allowFollow": true
  *     }
  *
@@ -6462,12 +6502,12 @@
  *
  * @apiHeader {String} Authorization User's authentication token.
  *
- * @apiParam {String[]} [blockedAccounts] Array of blocked account usernames.
+ * @apiParam {String} [blockedUser] username of the user you want to add to blocklist.
  * @apiParam {Boolean} [allowFollow] Indicates whether to allow followers.
  *
  * @apiParamExample {json} Request-Example:
  * {
- *    "blockedAccounts": ["user3", "user4"],
+ *    "blockedUser": "farouq12",
  *    "allowFollow": false
  * }
  *
