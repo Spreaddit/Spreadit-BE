@@ -1,7 +1,9 @@
 const Message = require('./../models/message');
+const Community = require('./../models/community');
 const User = require('./../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
+const { uploadMedia } = require("../service/cloudinary.js");
 
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,16 +26,39 @@ exports.modifyAccountSettings = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const modifyAccountSettings = req.body;
-        if (!isValidEmail(modifyAccountSettings.email)) {
+        const { email, gender, country, connectedAccounts } = req.body;
+
+        if (email && !isValidEmail(email)) {
             return res.status(403).json({ error: 'Invalid email format' });
         }
-        const accountSetting = await User.findOne({ _id: userId });
-        Object.assign(accountSetting, modifyAccountSettings);
 
-        await accountSetting.save();
+        if (connectedAccounts && !Array.isArray(connectedAccounts)) {
+            return res.status(403).json({ error: 'connectedAccounts must be an array' });
+        }
+        if (connectedAccounts) {
+            for (const acc of connectedAccounts) {
+                if (!isValidEmail(acc)) {
+                    return res.status(403).json({ error: `${acc} is not a valid email format` });
+                }
+            }
+        }
+        const updatedFields = {};
+        if (email) {
+            updatedFields.email = email;
+        }
+        if (gender) {
+            updatedFields.gender = gender;
+        }
+        if (country) {
+            updatedFields.country = country;
+        }
+        if (connectedAccounts) {
+            updatedFields.connectedAccounts = connectedAccounts;
+        }
+
+        await User.findOneAndUpdate({ _id: userId }, { $set: updatedFields });
+
         res.status(200).json({ message: "Successful update" });
-
     } catch (err) {
         console.error('Error modifying account settings', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -68,17 +93,29 @@ exports.modifyChatAndMessagingSetting = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const modifyChatAndMessagingSetting = req.body;
-        const chatAndMessagingSetting = await User.findOne({ _id: userId });
-        Object.assign(chatAndMessagingSetting, modifyChatAndMessagingSetting);
-        await chatAndMessagingSetting.save();
-        res.status(200).json({ message: "Successful update" });
+        const { sendYouFriendRequests, sendYouPrivateMessages, approvedUsers } = req.body;
 
+        // Create an object to store only the fields that are provided in the request body
+        const updatedFields = {};
+        if (sendYouFriendRequests !== undefined) {
+            updatedFields.sendYouFriendRequests = sendYouFriendRequests;
+        }
+        if (sendYouPrivateMessages !== undefined) {
+            updatedFields.sendYouPrivateMessages = sendYouPrivateMessages;
+        }
+        if (approvedUsers !== undefined) {
+            updatedFields.approvedUsers = approvedUsers;
+        }
+
+        await User.findOneAndUpdate({ _id: userId }, { $set: updatedFields });
+
+        res.status(200).json({ message: "Successful update" });
     } catch (err) {
         console.error('Error modifying chatAndMessaging settings', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 exports.makeAllAsRead = async (req, res) => {
 
@@ -108,18 +145,29 @@ exports.getEmailSetting = async (req, res) => {
 exports.modifyEmailSetting = async (req, res) => {
     try {
         const userId = req.user._id;
-        const modifyEmailSetting = req.body;
-        const emailSetting = await User.findOne({ _id: userId });
-        Object.assign(emailSetting, modifyEmailSetting);
 
-        await emailSetting.save();
+        const { newFollowerEmail, chatRequestEmail, unsubscribeAllEmails } = req.body;
+
+        // Create an object to store only the fields that are provided in the request body
+        const updatedFields = {};
+        if (newFollowerEmail !== undefined) {
+            updatedFields.newFollowerEmail = newFollowerEmail;
+        }
+        if (chatRequestEmail !== undefined) {
+            updatedFields.chatRequestEmail = chatRequestEmail;
+        }
+        if (unsubscribeAllEmails !== undefined) {
+            updatedFields.unsubscribeAllEmails = unsubscribeAllEmails;
+        }
+        await User.findOneAndUpdate({ _id: userId }, { $set: updatedFields });
+
         res.status(200).json({ message: "Successful update" });
-
     } catch (err) {
         console.error('Error modifying email settings', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 exports.getFeedSetting = async (req, res) => {
     try {
@@ -134,17 +182,38 @@ exports.getFeedSetting = async (req, res) => {
 exports.modifyFeedSetting = async (req, res) => {
     try {
         const userId = req.user._id;
-        const modifyFeedSetting = req.body;
-        const feedSetting = await User.findOne({ _id: userId });
-        Object.assign(feedSetting, modifyFeedSetting);
-        await feedSetting.save();
-        res.status(200).json({ message: "Successful update" });
 
+        const { adultContent, autoplayMedia, communityThemes, communityContentSort, globalContentView, openPostsInNewTab } = req.body;
+
+        const updatedFields = {};
+        if (adultContent !== undefined) {
+            updatedFields.adultContent = adultContent;
+        }
+        if (autoplayMedia !== undefined) {
+            updatedFields.autoplayMedia = autoplayMedia;
+        }
+        if (communityThemes !== undefined) {
+            updatedFields.communityThemes = communityThemes;
+        }
+        if (communityContentSort !== undefined) {
+            updatedFields.communityContentSort = communityContentSort;
+        }
+        if (globalContentView !== undefined) {
+            updatedFields.globalContentView = globalContentView;
+        }
+        if (openPostsInNewTab !== undefined) {
+            updatedFields.openPostsInNewTab = openPostsInNewTab;
+        }
+
+        await User.findOneAndUpdate({ _id: userId }, { $set: updatedFields });
+
+        res.status(200).json({ message: "Successful update" });
     } catch (err) {
         console.error('Error modifying feed settings', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 exports.checkPasswordMatch = async (req, res) => {
     try {
@@ -166,7 +235,7 @@ exports.checkPasswordMatch = async (req, res) => {
 exports.getProfileSetting = async (req, res) => {
     try {
         const userId = req.user._id;
-        const profileSettings = await User.findOne({ _id: userId }).select('displayName about socialLinks profilePicture banner nsfw allowFollow contentVisibility activeInCommunityVisibility clearHistory');
+        const profileSettings = await User.findOne({ _id: userId }).select('displayName about socialLinks avatar banner nsfw allowFollow contentVisibility activeInCommunityVisibility clearHistory');
         res.status(200).json(profileSettings);
     } catch (err) {
         res.status(500).json({ err: 'Internal server error' });
@@ -177,13 +246,61 @@ exports.modifyProfileSettings = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const modifyProfileSettings = req.body;
-        const profileSetting = await User.findOne({ _id: userId });
-        Object.assign(profileSetting, modifyProfileSettings);
+        const {
+            displayName,
+            about,
+            socialLinks,
+            banner,
+            nsfw,
+            allowFollow,
+            contentVisibility,
+            activeInCommunityVisibility,
+            clearHistory
+        } = req.body;
 
-        await profileSetting.save();
+        const updatedFields = {};
+        if (displayName !== undefined) {
+            updatedFields.displayName = displayName;
+        }
+        if (about !== undefined) {
+            updatedFields.about = about;
+        }
+        if (socialLinks !== undefined) {
+            updatedFields.socialLinks = socialLinks;
+        }
+        /*  if (avatar !== undefined) {
+             updatedFields.avatar = avatar;
+         } */
+        if (req.file) {
+            const result = await uploadMedia(req.file, "image");
+            //const url = `${config.baseUrl}/media/${result.Key}`;
+            const url = result.secure_url;
+            updatedFields.avatar = url;
+            // const attachmentObj = { type: fileType, link: url };
+            // attachments.push(attachmentObj);
+        }
+        if (banner !== undefined) {
+            updatedFields.banner = banner;
+        }
+        if (nsfw !== undefined) {
+            updatedFields.nsfw = nsfw;
+        }
+        if (allowFollow !== undefined) {
+            updatedFields.allowFollow = allowFollow;
+        }
+        if (contentVisibility !== undefined) {
+            updatedFields.contentVisibility = contentVisibility;
+        }
+        if (activeInCommunityVisibility !== undefined) {
+            updatedFields.activeInCommunityVisibility = activeInCommunityVisibility;
+        }
+        if (clearHistory !== undefined) {
+            updatedFields.clearHistory = clearHistory;
+        }
+
+        await User.findOneAndUpdate({ _id: userId }, { $set: updatedFields });
+
         res.status(200).json({ message: "Successful update" });
-
     } catch (err) {
         console.error('Error modifying profile settings', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -193,7 +310,14 @@ exports.modifyProfileSettings = async (req, res) => {
 exports.getSafetyAndPrivacySettings = async (req, res) => {
     try {
         const userId = req.user._id;
-        const safetyAndPrivacySettings = await User.findOne({ _id: userId }).select('blockedUsers mutedCommunities');
+        const safetyAndPrivacySettings = await User.findOne({ _id: userId }).select('blockedUsers mutedCommunities').populate({
+            path: 'blockedUsers',
+            select: '_id username avatar'
+        })
+            .populate({
+                path: 'mutedCommunities',
+                select: '_id name image'
+            });
         res.status(200).json(safetyAndPrivacySettings);
     } catch (err) {
         console.log(err)
@@ -204,20 +328,44 @@ exports.getSafetyAndPrivacySettings = async (req, res) => {
 exports.modifySafetyAndPrivacySettings = async (req, res) => {
     try {
         const userId = req.user._id;
+        const { blockedUsername, mutedCommunityname } = req.body;
+        const user = await User.findOne({ _id: userId });
 
-        const modifySafetyAndPrivacySettings = req.body;
-        const SafetyAndPrivacySettings = await User.findOne({ _id: userId });
-        Object.assign(SafetyAndPrivacySettings, modifySafetyAndPrivacySettings);
+        if (blockedUsername) {
+            const blockedUser = await User.findOne({ username: blockedUsername });
+            if (blockedUser) {
+                if (!user.blockedUsers.includes(blockedUser._id)) {
+                    user.blockedUsers.push(blockedUser._id);
+                }
+                else {
+                    return res.status(400).json({ error: 'User is already blocked' });
+                }
+            } else {
+                return res.status(404).json({ error: 'Blocked user not found' });
+            }
+        }
 
-        await SafetyAndPrivacySettings.save();
-        const response = SafetyAndPrivacySettings;
+        if (mutedCommunityname) {
+            const mutedCommunity = await Community.findOne({ name: mutedCommunityname });
+            if (mutedCommunity) {
+                if (!user.mutedCommunities.includes(mutedCommunity._id)) {
+                    user.mutedCommunities.push(mutedCommunity._id);
+                } else {
+                    return res.status(400).json({ error: 'Community is already muted' });
+                }
+            } else {
+                return res.status(404).json({ error: 'Muted community not found' });
+            }
+        }
+        await user.save();
+
         res.status(200).json({ message: "Successful update" });
-
     } catch (err) {
         console.error('Error modifying safety and privacy settings', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 exports.getNotificationSetting = async (req, res) => {
     try {
@@ -233,11 +381,46 @@ exports.modifyNotificationSetting = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const modifyNotificationSetting = req.body;
+        const {
+            mentions,
+            comments,
+            upvotesComments,
+            upvotesPosts,
+            replies,
+            newFollowers,
+            invitations,
+            posts
+        } = req.body;
+
         const notificationSetting = await User.findOne({ _id: userId });
-        Object.assign(notificationSetting, modifyNotificationSetting);
+
+        if (mentions !== undefined) {
+            notificationSetting.mentions = mentions;
+        }
+        if (comments !== undefined) {
+            notificationSetting.comments = comments;
+        }
+        if (upvotesComments !== undefined) {
+            notificationSetting.upvotesComments = upvotesComments;
+        }
+        if (upvotesPosts !== undefined) {
+            notificationSetting.upvotesPosts = upvotesPosts;
+        }
+        if (replies !== undefined) {
+            notificationSetting.replies = replies;
+        }
+        if (newFollowers !== undefined) {
+            notificationSetting.newFollowers = newFollowers;
+        }
+        if (invitations !== undefined) {
+            notificationSetting.invitations = invitations;
+        }
+        if (posts !== undefined) {
+            notificationSetting.posts = posts;
+        }
 
         await notificationSetting.save();
+
         res.status(200).json({ message: "Successful update" });
 
     } catch (err) {

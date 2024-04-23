@@ -273,6 +273,18 @@ router.get("/community/is-mute", auth.authentication, async (req, res) => {
   }
 });
 
+router.get("/community/muted", auth.authentication, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId).populate("mutedCommunities", "name description image communityBanner membersCount");
+    res.status(200).json(user.mutedCommunities);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 router.post("/community/subscribe", auth.authentication, async (req, res) => {
   try {
     const { communityName } = req.body;
@@ -414,7 +426,6 @@ router.get("/community/random-category", async (req, res) => {
 
       communities = await Community.aggregate([
         { $match: { category: randomCategory } },
-        { $sample: { size: 25 } },
         {
           $lookup: {
             from: "rules",
@@ -460,7 +471,6 @@ router.get("/community/get-specific-category", async (req, res) => {
 
     const communities = await Community.aggregate([
       { $match: { category } },
-      { $sample: { size: 25 } },
       {
         $lookup: {
           from: "rules",

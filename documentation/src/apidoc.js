@@ -17,11 +17,13 @@
  * @apiParam {String} email Email of the user
  * @apiParam {String} username Username of the user
  * @apiParam {String} password password of the user
+ * @apiParam {Boolean} is_cross Indicates whether the user is from cross platform or not
  * @apiParamExample {json} Request-Example:
  * {
  *      "email": "amiraelgarf99@gmail.com",
- *      "username": "amira123"
- *      "password": "myPassw@ord123",
+ *      "username": "amira123",
+ *      "password": "myPassword123",
+ *      "isCross": true
  * }
  * @apiSuccess {user-object} user user of the sign up operation
  * @apiSuccessExample {json} Success-Response:
@@ -307,7 +309,7 @@
  * @apiDescription Retrieves basic information about the logged-in user so that he resets his password
  * @apiSampleRequest off
  *
- * @apiHeader {String} token User authentication token.
+ * @apiHeader {String} Authorization User Authorization token.
  *
  * @apiSuccess {String} avatar URL of the user's avatar image.
  * @apiSuccess {String} email Email address of the user.
@@ -1433,7 +1435,7 @@
  *
  * @apiParam {String} commentId ID of the comment to be reported.
  * @apiParam {String} reason Reason for reporting the comment.
- * @apiParam {String} sureason Specific reason for reporting the comment.
+ * @apiParam {String} subreason Specific reason for reporting the comment.
  *
  * @apiSuccess {String} message Confirmation message indicating that the comment has been reported successfully.
  *
@@ -2391,10 +2393,18 @@
  *       ],
  *       "isVisible": true,
  *       "isActive": true,
- *       "socialLinks": {
- *         "facebook": "https://www.facebook.com/sample_user",
- *         "twitter": "https://www.twitter.com/sample_user"
- *       }
+ *    "socialLinks": [
+ *      {
+ *          "platform": "facebook",
+ *          "url": "https://www.facebook.com/sample_user",
+ *          "displayName": "FacebookGroup"
+ *      },
+ *      {
+ *          "platform": "twitter",
+ *          "url": "https://twitter.com/sample_user",
+ *          "displayName": "TwitterProfile"
+ *      }
+ *      ],
  *     }
  *
  * @apiError (404) NotFound User not found.
@@ -2424,8 +2434,9 @@
  * @apiHeader {String} Authorization User's authentication token.
  *
  * @apiParam {String} [name] Name of the user.
- * @apiParam {String} [avatar] URL of the user's avatar.
- * @apiParam {String} [banner] URL of the user's banner image.
+ * @apiParam {File} [banner] user banner (if applicable).
+ * @apiParam {File} [avatar] user avatar (if applicable).
+ * @apiParam {String} [fileType] Type of images (if applicable).
  * @apiParam {String} [about] About section of the user's profile.
  * @apiParam {Object} [socialLinks] Links to the user's social media profiles.
  * @apiParam {String} [username] Username of the user.
@@ -2436,10 +2447,21 @@
  * {
  *    "name": "Updated Name",
  *    "about": "Updated about section",
- *    "socialLinks": {
- *        "facebook": "https://www.facebook.com/updated_user",
- *        "twitter": "https://www.twitter.com/updated_user"
- *    },
+ *    "avatar": "avatarfile",
+ *    "banner": "bannerfile",
+ *    "fileType": "image",
+ *    "socialLinks": [
+ *      {
+ *          "platform": "facebook",
+ *          "url": "https://www.facebook.com/sample_user",
+ *          "displayName": "FacebookGroup"
+ *      },
+ *      {
+ *          "platform": "twitter",
+ *          "url": "https://twitter.com/sample_user",
+ *          "displayName": "TwitterProfile"
+ *      }
+ *      ],
  *    "isVisible": true,
  *    "isActive": true
  * }
@@ -2503,83 +2525,6 @@
  *     }
  */
 
-/**
- * @api {post} /follow Follow User
- * @apiVersion 1.0.0
- * @apiName FollowUser
- * @apiGroup User
- * @apiDescription Follows a user by their username.
- *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
- * @apiParam {String} username Username of the user to follow.
- *
- * @apiSuccess {String} description Success message indicating that the user was followed successfully.
- *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot follow himself.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
- */
-
-/**
- * @api {post} /block Block User
- * @apiVersion 1.0.0
- * @apiName BlockUser
- * @apiGroup User
- * @apiDescription Blocks a user by their username.
- *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
- * @apiParam {String} username Username of the user to block.
- *
- * @apiSuccess {String} description Success message indicating that the user was blocked successfully.
- *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot block himself.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
- */
-
-/**
- * @api {post} /unfollow Unfollow User
- * @apiVersion 1.0.0
- * @apiName UnfollowUser
- * @apiGroup User
- * @apiDescription Unfollows a user by their username.
- *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
- * @apiParam {String} username Username of the user to unfollow.
- *
- * @apiSuccess {String} description Success message indicating that the user was unfollowed successfully.
- *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot unfollow himself.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
- */
-
-/**
- * @api {post} /report Report User
- * @apiVersion 1.0.0
- * @apiName ReportUser
- * @apiGroup User
- * @apiDescription Reports a user by their username.
- *
- * @apiHeader {String} Authorization User's access token. Include the word `Bearer` followed by a space and then the token.
- * @apiParam {String} username Username of the user to report.
- * @apiParam {String} reason Reason for reporting the user.
- *
- * @apiSuccess {String} description Success message indicating that the user was reported successfully.
- *
- * @apiError (400 Bad Request) {String} error Username is required.
- * @apiError (400 Bad Request) {String} error User cannot report himself.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404 Not Found) {String} error User not found.
- * @apiError (500 Internal Server Error) {String} error Internal server error.
- */
-
 //#endregion User
 
 //#region Useraction
@@ -2634,7 +2579,7 @@
  */
 
 /**
- * @api {post} /block Block User
+ * @api {post} /users/block Block User
  * @apiVersion 0.1.0
  * @apiName BlockUser
  * @apiGroup User
@@ -2683,7 +2628,7 @@
  */
 
 /**
- * @api {post} /unfollow Unfollow User
+ * @api {post} /users/unfollow Unfollow User
  * @apiVersion 0.1.0
  * @apiName UnfollowUser
  * @apiGroup User
@@ -2738,7 +2683,7 @@
  */
 
 /**
- * @api {post} /report Report User
+ * @api {post} /users/report Report User
  * @apiVersion 0.1.0
  * @apiName ReportUser
  * @apiGroup User
@@ -2789,7 +2734,7 @@
  */
 
 /**
- * @api {get} /follow/isfollowed/:username Check if User is Followed
+ * @api {get} /users/follow/isfollowed/:username Check if User is Followed
  * @apiVersion 0.1.0
  * @apiName IsUserFollowed
  * @apiGroup User
@@ -2845,79 +2790,36 @@
  *     {
  *       "posts": [
  *            {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *       ],
  *       "totalPages": 5,
  *       "currentPage": 1
@@ -3005,79 +2907,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3121,79 +2980,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3237,79 +3053,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3353,79 +3126,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3467,79 +3197,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3580,80 +3267,37 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     [
- *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *         {
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3695,79 +3339,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3809,79 +3410,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3925,79 +3483,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -4040,80 +3555,37 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     [
- *         {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *        {
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -4158,79 +3630,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -4274,79 +3703,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -4388,79 +3774,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -4486,8 +3829,49 @@
  *     }
  */
 
+/**
+ * @api {delete} /post/deleterecent/:postId Delete Recent Post
+ * @apiVersion 0.1.0
+ * @apiName DeleteRecentPost
+ * @apiGroup Post
+ * @apiDescription Deletes a post from the recent posts of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} postId ID of the post to be deleted from recent posts.
+ *
+ * @apiSuccess {String} message Success message indicating that the post was deleted from recent posts successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post deleted from recent successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Post not found or user not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Post not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
 //#endregion listing
-
 
 //#region Post
 
@@ -4507,12 +3891,12 @@
  * @apiParam {String} type Type of the post. Possible values are: "Post", "Images & Video", "Link", "Poll".
  * @apiParam {String} [pollOptions] Options for a poll post.
  * @apiParam {String} [pollVotingLength] Length of time for voting on a poll post.
- * @apiParam {String} [fileType] Type of files attached to the post (if applicable).
  * @apiParam {String} [link] Link attached to the post (if applicable).
  * @apiParam {Boolean} [isSpoiler] Indicates if the post contains spoilers.
  * @apiParam {Boolean} [isNsfw] Indicates if the post is not safe for work.
  * @apiParam {Boolean} [sendPostReplyNotification] Indicates if notifications should be sent for replies to this post.
- * @apiParam {File[]} [images] Array of images attached to the post (if applicable).
+ * @apiParam {File[]} [attachments] Array of images attached to the post (if applicable).
+ * @apiParam {String} [fileType] (must sent it with attachments)Type of files attached to the post (if you send image in attachment send this fileType=image and if you send video in attachments make fileType=video )(if applicable).
  *
  * @apiParamExample {json} Request-Example:
  * {
@@ -4580,6 +3964,7 @@
  *           "hasDownvoted": false,
  *           "hasVotedOnPoll": false,
  *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
  *           "votesUpCount": 10,
  *           "votesDownCount": 2,
  *           "sharesCount": 5,
@@ -4588,6 +3973,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -4596,7 +3982,6 @@
  *           "sendPostReplyNotification": true,
  *           "isCommentsLocked": false,
  *           "isSaved": false,
- *           "comments": [],
  *           "date": "2024-04-16T10:00:00.000Z",
  *           "pollOptions": [],
  *           "attachments": []
@@ -4730,6 +4115,7 @@
  *           "hasDownvoted": false,
  *           "hasVotedOnPoll": false,
  *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
  *           "votesUpCount": 10,
  *           "votesDownCount": 2,
  *           "sharesCount": 5,
@@ -4738,6 +4124,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -4746,7 +4133,6 @@
  *           "sendPostReplyNotification": true,
  *           "isCommentsLocked": false,
  *           "isSaved": true,
- *           "comments": [],
  *           "date": "2024-04-16T10:00:00.000Z",
  *           "pollOptions": [],
  *           "attachments": []
@@ -4820,7 +4206,6 @@
  *
  * @apiParam {String} postId ID of the post to be edited.
  * @apiParam {String} [content] New content of the post.
- * @apiParam {File[]} [images] New array of images attached to the post (if applicable).
  *
  * @apiSuccess {String} message Success message indicating that the post has been edited successfully.
  *
@@ -5092,6 +4477,7 @@
  *           "hasDownvoted": false,
  *           "hasVotedOnPoll": false,
  *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
  *           "votesUpCount": 10,
  *           "votesDownCount": 2,
  *           "sharesCount": 5,
@@ -5100,6 +4486,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -5108,7 +4495,6 @@
  *           "sendPostReplyNotification": true,
  *           "isCommentsLocked": false,
  *           "isSaved": false,
- *           "comments": [],
  *           "date": "2024-04-16T10:00:00.000Z",
  *           "pollOptions": [],
  *           "attachments": []
@@ -5154,6 +4540,7 @@
  *           "hasDownvoted": true,
  *           "hasVotedOnPoll": false,
  *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
  *           "votesUpCount": 10,
  *           "votesDownCount": 2,
  *           "sharesCount": 5,
@@ -5162,6 +4549,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -5170,7 +4558,6 @@
  *           "sendPostReplyNotification": true,
  *           "isCommentsLocked": false,
  *           "isSaved": false,
- *           "comments": [],
  *           "date": "2024-04-16T10:00:00.000Z",
  *           "pollOptions": [],
  *           "attachments": []
@@ -5303,6 +4690,7 @@
  *           "hasDownvoted": false,
  *           "hasVotedOnPoll": false,
  *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
  *           "votesUpCount": 10,
  *           "votesDownCount": 2,
  *           "sharesCount": 5,
@@ -5311,6 +4699,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -5319,7 +4708,6 @@
  *           "sendPostReplyNotification": true,
  *           "isCommentsLocked": false,
  *           "isSaved": false,
- *           "comments": [],
  *           "date": "2024-04-16T10:00:00.000Z",
  *           "pollOptions": [],
  *           "attachments": []
@@ -5426,7 +4814,7 @@
  *
  * @apiParam {String} postId ID of the post to be reported.
  * @apiParam {String} reason Reason for reporting the post.
- * @apiParam {String} [sureason] Supplementary reason for reporting the post.
+ * @apiParam {String} [subreason] Supplementary reason for reporting the post.
  *
  * @apiSuccess {String} message Success message indicating that the post has been reported successfully.
  *
@@ -5528,6 +4916,7 @@
  *       "hasDownvoted": false,
  *       "hasVotedOnPoll": true,
  *       "selectedPollOption": "pollOption",
+ *       "numberOfViews": 1080,
  *       "isHidden": false,
  *       "votesUpCount": 5,
  *       "votesDownCount": 2,
@@ -5537,6 +4926,7 @@
  *       "content": "Post Content",
  *       "community": "Community",
  *       "type": "Post",
+ *       "link": "http://example.com",
  *       "pollExpiration": "2024-12-31T00:00:00.000Z",
  *       "isPollEnabled": true,
  *       "pollVotingLength": 7,
@@ -5545,7 +4935,6 @@
  *       "sendPostReplyNotification": true,
  *       "isCommentsLocked": false,
  *       "isSaved": true,
- *       "comments": [],
  *       "date": "2024-04-18T12:00:00.000Z",
  *       "pollOptions": ["Option 1", "Option 2"],
  *       "attachments": []
@@ -5593,6 +4982,7 @@
  *         "hasDownvoted": false,
  *         "hasVotedOnPoll": true,
  *         "selectedPollOption": "pollOption",
+ *         "numberOfViews": 1080,
  *         "votesUpCount": 5,
  *         "votesDownCount": 2,
  *         "sharesCount": 3,
@@ -5601,6 +4991,7 @@
  *         "content": "Post Content",
  *         "community": "Community",
  *         "type": "Post",
+ *         "link": "http://example.com",
  *         "pollExpiration": "2024-12-31T00:00:00.000Z",
  *         "isPollEnabled": true,
  *         "pollVotingLength": 7,
@@ -5609,7 +5000,6 @@
  *         "sendPostReplyNotification": true,
  *         "isCommentsLocked": false,
  *         "isSaved": true,
- *         "comments": [],
  *         "date": "2024-04-18T12:00:00.000Z",
  *         "pollOptions": ["Option 1", "Option 2"],
  *         "attachments": []
@@ -5636,3 +5026,1171 @@
  */
 
 //#endregion Post
+
+//#region Settings
+
+/**
+ * @api {get} /settings/account Get Account Settings
+ * @apiVersion 0.1.0
+ * @apiName GetAccountSettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the account settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} accountSettings Account settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "email": "user@example.com",
+ *       "gender": "male",
+ *       "country": "USA",
+ *       "connectedAccounts": ["test@gmail.com","test2@gmail.com"]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/account Modify Account Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyAccountSettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the account settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} [email] User's email address.
+ * @apiParam {String} [gender] User's gender.
+ * @apiParam {String} [country] User's country.
+ * @apiParam {String[]} [connectedAccounts] Array of emails of connected social media accounts.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "email": "newemail@example.com",
+ *    "gender": "female",
+ *    "country": "Canada",
+ *    "connectedAccounts": ["test@gmail.com", "test2@gmail.com"]
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the account settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Account settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (403) Forbidden Invalid email format.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "Invalid email format"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /google/connected-accounts Add Connected Google Accounts
+ * @apiName AddConnectedGoogleAccounts
+ * @apiGroup settings
+ * @apiDescription Adds connected Google accounts to the user profile.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiSuccess {Object} user User object with updated connected accounts.
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "user": {
+ *         // User object
+ *       },
+ *       "message": "Connected Accounts has been added successfully"
+ *     }
+ *
+ * @apiError InvalidUser Invalid user data.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid User data"
+ *     }
+ *
+ * @apiError InternalServerError Internal server error.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /settings/add-password/email Request Email for Adding Password
+ * @apiName RequestEmailForAddingPassword
+ * @apiGroup Settings
+ * @apiDescription Requests an email to add a password for the user account.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiSuccess {String} message Success message.
+ * @apiParam {Boolean} is_cross Indicates whether the user is from cross platform or not
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "is_cross": true
+ * }
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "email for adding the password is sent successfully"
+ *     }
+ *
+ * @apiError UserNotFound User not found.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiError InternalServerError Internal server error.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /settings/add-password Add Password via Email Confirmation
+ * @apiName AddPasswordViaEmailConfirmation
+ * @apiGroup Settings
+ * @apiDescription Adds password to the user account via email confirmation.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} password User's new password.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "password": "myPassword123",
+ * }
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Password added successfully"
+ *     }
+ *
+ * @apiError UserNotFound User not found.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiError InternalServerError Internal server error.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {delete} /settings/account Delete Account
+ * @apiVersion 0.1.0
+ * @apiName DeleteAccount
+ * @apiGroup Settings
+ * @apiDescription Deletes the account of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Success message indicating that the account has been deleted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Account deleted successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/chat-and-messaging Get Chat and Messaging Settings
+ * @apiVersion 0.1.0
+ * @apiName GetChatAndMessagingSetting
+ * @apiGroup Settings
+ * @apiDescription Retrieves the chat and messaging settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} chatAndMessagingSetting Chat and messaging settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "sendYouFriendRequests": "Everyone",
+ *       "sendYouPrivateMessages": "Everyone",
+ *       "approvedUsers": ["user1", "user2"]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/chat-and-messaging Modify Chat and Messaging Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyChatAndMessagingSetting
+ * @apiGroup Settings
+ * @apiDescription Modifies the chat and messaging settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String="Everyone", "Accounts Older Than 30 Days", "Nobody"} [sendYouFriendRequests] Indicates who can send friend requests.
+ * @apiParam {String="Everyone", "Nobody"} [sendYouPrivateMessages] Indicates who can send private messages.
+ * @apiParam {String[]} [approvedUsers] Array of approved users who can send messages.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "sendYouFriendRequests": "Nobody",
+ *    "sendYouPrivateMessages": "Everyone",
+ *    "approvedUsers": ["user3", "user4"]
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the chat and messaging settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Chat and messaging settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid request body"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+/**
+ * @api {post} /settings/chat-and-messaging/make-all-as-read Make All Messages as Read
+ * @apiVersion 0.1.0
+ * @apiName MakeAllMessagesAsRead
+ * @apiGroup Settings
+ * @apiDescription Marks all unread messages as read for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Success message indicating that all messages have been marked as read successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "All messages marked as read successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/email Get Email Settings
+ * @apiVersion 0.1.0
+ * @apiName GetEmailSetting
+ * @apiGroup Settings
+ * @apiDescription Retrieves the email notification settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} emailSetting Email notification settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "newFollowerEmail": true,
+ *       "chatRequestEmail": true,
+ *       "unsubscribeAllEmails": false
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/email Modify Email Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyEmailSetting
+ * @apiGroup Settings
+ * @apiDescription Modifies the email notification settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Boolean} [newFollowerEmail] Indicates whether to receive email notifications for new followers.
+ * @apiParam {Boolean} [chatRequestEmail] Indicates whether to receive email notifications for chat requests.
+ * @apiParam {Boolean} [unsubscribeAllEmails] Indicates whether to unsubscribe from all email notifications.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "newFollowerEmail": false,
+ *    "chatRequestEmail": true,
+ *    "unsubscribeAllEmails": false
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the email settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Email settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid request body"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/feed Get Feed Settings
+ * @apiVersion 0.1.0
+ * @apiName GetFeedSetting
+ * @apiGroup Settings
+ * @apiDescription Retrieves the feed settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} feedSetting Feed settings of the authenticated user.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "adultContent": false,
+ *       "autoplayMedia": true,
+ *       "communityThemes": true,
+ *       "communityContentSort": "hot",
+ *       "globalContentView": true,
+ *       "openPostsInNewTab": false
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/feed Modify Feed Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyFeedSetting
+ * @apiGroup Settings
+ * @apiDescription Modifies the feed settings of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Boolean} [adultContent] Indicates whether to show adult content in the feed.
+ * @apiParam {Boolean} [autoplayMedia] Indicates whether to autoplay media in the feed.
+ * @apiParam {Boolean} [communityThemes] Indicates whether to use community themes in the feed.
+ * @apiParam {String="hot","new","top"} [communityContentSort] Sort order of community content in the feed.
+ * @apiParam {Boolean} [globalContentView] Indicates whether to enable global content view in the feed.
+ * @apiParam {Boolean} [openPostsInNewTab] Indicates whether to open posts in a new tab.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "adultContent": false,
+ *    "autoplayMedia": true,
+ *    "communityThemes": true,
+ *    "communityContentSort": "new",
+ *    "globalContentView": false,
+ *    "openPostsInNewTab": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the feed settings have been modified successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Feed settings modified successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid request body"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/layout Check Password Match
+ * @apiVersion 0.1.0
+ * @apiName CheckPasswordMatch
+ * @apiGroup Settings
+ * @apiDescription Checks if the entered password matches the user's current password.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} enteredPassword Entered password to be checked.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "enteredPassword": "currentPassword123"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the entered password matches.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Password matches"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/notifications Get Notification Settings
+ * @apiVersion 0.1.0
+ * @apiName GetNotificationSettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the notification settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} notificationSetting Object containing the notification settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "mentions": true,
+ *       "comments": true,
+ *       "upvotesComments": true,
+ *       "upvotesPosts": true,
+ *       "replies": true,
+ *       "newFollowers": true,
+ *       "invitations": true,
+ *       "posts": true
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/notifications Modify Notification Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyNotificationSettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the notification settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Object} modifyNotificationSetting Object containing the modified notification settings.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "mentions": true,
+ *    "comments": true,
+ *    "upvotesComments": false,
+ *    "upvotesPosts": true,
+ *    "replies": false,
+ *    "newFollowers": true,
+ *    "invitations": true,
+ *    "posts": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the notification settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/profile Get Profile Settings
+ * @apiVersion 0.1.0
+ * @apiName GetProfileSettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the profile settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} profileSettings Object containing the profile settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "displayName": "John Doe",
+ *       "about": "Lorem ipsum dolor sit amet...",
+ *       "socialLinks": [
+ *      {
+ *          "platform": "facebook",
+ *          "url": "https://www.facebook.com/sample_user",
+ *          "displayName": "FacebookGroup"
+ *      },
+ *      {
+ *          "platform": "twitter",
+ *          "url": "https://twitter.com/sample_user",
+ *          "displayName": "TwitterProfile"
+ *      }
+ *      ],
+ *       "avatar": "http://example.com/profile.jpg",
+ *       "banner": "http://example.com/banner.jpg",
+ *       "nsfw": false,
+ *       "allowFollow": true,
+ *       "contentVisibility": "Public",
+ *       "activeInCommunityVisibility": "Public",
+ *       "clearHistory": false
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/profile Modify Profile Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifyProfileSettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the profile settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Object} modifyProfileSettings Object containing the modified profile settings.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "displayName": "John Doe",
+ *    "about": "Updated about section...",
+ *    "socialLinks": [
+ *      {
+ *          "platform": "facebook",
+ *          "url": "https://www.facebook.com/sample_user",
+ *          "displayName": "FacebookGroup"
+ *      },
+ *      {
+ *          "platform": "twitter",
+ *          "url": "https://twitter.com/sample_user",
+ *          "displayName": "TwitterProfile"
+ *      }
+ *      ],
+ *    "avatar": "http://example.com/profile_updated.jpg",
+ *    "banner": "http://example.com/banner_updated.jpg",
+ *    "nsfw": true,
+ *    "allowFollow": false,
+ *    "contentVisibility": "Private",
+ *    "activeInCommunityVisibility": "Private",
+ *    "clearHistory": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the profile settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /settings/safety-privacy Get Safety and Privacy Settings
+ * @apiVersion 0.1.0
+ * @apiName GetSafetyAndPrivacySettings
+ * @apiGroup Settings
+ * @apiDescription Retrieves the safety and privacy settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} safetyAndPrivacySettings Object containing the safety and privacy settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "blockedUsers": [
+ *           {
+ *               "_id": "606622dd82f5dae2fd4861825",
+ *               "username": "farouq12",
+ *               "avatar": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713826823/uploads/avatar-1713826815124.png.png"
+ *           }
+ *       ],
+ *       "mutedCommunities": [
+ *           {
+ *               "_id": "6622dd82f5dae2fd48618267",
+ *               "name": "GourmetAdventures",
+ *               "image": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png"
+ *           },
+ *           {
+ *               "_id": "6622dd82f5dae2fd48618272",
+ *               "name": "TravelEnthusiasts",
+ *               "image": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png"
+ *           }
+ *       ]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /settings/safety-privacy Modify Safety and Privacy Settings
+ * @apiVersion 0.1.0
+ * @apiName ModifySafetyAndPrivacySettings
+ * @apiGroup Settings
+ * @apiDescription Modifies the safety and privacy settings of the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Object} modifySafetyAndPrivacySettings Object containing the modified safety and privacy settings.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "blockedUsername": "farouq12",
+ *    "mutedCommunityname ": "Programming"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the safety and privacy settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+//#endregion Settings
+
+//#region Mobile Settings
+
+/**
+ * @api {get} /mobile/settings/general/account Get Account Settings (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName GetAccountSettingsMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Retrieves the account settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} accountSettings Object containing the account settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "email": "user@example.com",
+ *       "gender": "male",
+ *       "country": "US",
+ *       "connectedAccounts": ["test@gmail.com", "test2@gmail.com"]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /mobile/settings/general/account Modify Account Settings (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName ModifyAccountSettingsMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Modifies the account settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} [email] User's email address.
+ * @apiParam {String} [gender] User's gender.
+ * @apiParam {String} [country] User's country.
+ * @apiParam {String[]} [connectedAccounts] Array of emails of connected accounts.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "email": "newemail@example.com",
+ *    "gender": "female",
+ *    "country": "UK",
+ *    "connectedAccounts": ["test@gmail.com", "test2@gmail.com"]
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the account settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid email format"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {delete} /mobile/settings/general/account Delete Account (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName DeleteAccountMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Deletes the account of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Success message indicating that the account has been deleted successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Account deleted successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /mobile/settings/blocking-permissions Get Blocking and Permissions Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName GetBlockingSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Retrieves the blocking and permissions settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} blockingSetting Object containing the blocking and permissions settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "blockedUsers": [
+ *           {
+ *               "_id": "606622dd82f5dae2fd4861825",
+ *               "username": "farouq12",
+ *               "avatar": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713826823/uploads/avatar-1713826815124.png.png"
+ *           }
+ *       ],
+ *       "allowFollow": true
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /mobile/settings/blocking-permissions Modify Blocking and Permissions Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName ModifyBlockingSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Modifies the blocking and permissions settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} [blockedUser] username of the user you want to add to blocklist.
+ * @apiParam {Boolean} [allowFollow] Indicates whether to allow followers.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "blockedUser": "farouq12",
+ *    "allowFollow": false
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the blocking and permissions settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /mobile/settings/contact Get Contact Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName GetContactSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Retrieves the contact settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object} contactSetting Object containing the contact settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "inboxMessages": true,
+ *       "chatMessages": true,
+ *       "chatRequests": true,
+ *       "mentions": true,
+ *       "commentsOnYourPost": true,
+ *       "commentsYouFollow": true,
+ *       "upvotes": true,
+ *       "repliesToComments": true,
+ *       "newFollowers": true,
+ *       "cakeDay": true,
+ *       "modNotifications": true
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Unauthorized"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /mobile/settings/contact Modify Contact Setting (Mobile)
+ * @apiVersion 0.1.0
+ * @apiName ModifyContactSettingMobile
+ * @apiGroup Mobile Settings
+ * @apiDescription Modifies the contact settings of the current user for mobile devices.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {Boolean} [inboxMessages] Indicates whether to receive inbox messages.
+ * @apiParam {Boolean} [chatMessages] Indicates whether to receive chat messages.
+ * @apiParam {Boolean} [chatRequests] Indicates whether to receive chat requests.
+ * @apiParam {Boolean} [mentions] Indicates whether to receive mentions.
+ * @apiParam {Boolean} [commentsOnYourPost] Indicates whether to receive comments on your posts.
+ * @apiParam {Boolean} [commentsYouFollow] Indicates whether to receive comments you follow.
+ * @apiParam {Boolean} [upvotes] Indicates whether to receive upvotes.
+ * @apiParam {Boolean} [repliesToComments] Indicates whether to receive replies to comments.
+ * @apiParam {Boolean} [newFollowers] Indicates whether to receive notifications for new followers.
+ * @apiParam {Boolean} [cakeDay] Indicates whether to receive notifications for cake day.
+ * @apiParam {Boolean} [modNotifications] Indicates whether to receive mod notifications.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "inboxMessages": false,
+ *    "chatMessages": true,
+ *    "chatRequests": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the contact settings have been successfully updated.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Successful update"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+//#endregion Mobile Settings

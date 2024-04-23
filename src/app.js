@@ -14,6 +14,7 @@ const mobileSettingsRoutes = require("./routes/mobile-settings");
 const communityRoutes = require("./routes/community");
 const commentRoutes = require("./routes/comment");
 const listingRoutes = require("./routes/listing");
+const messageRoutes = require("./routes/message");
 
 //seeding
 const UserRoleSeeder = require("../seeders/user-role.seeder");
@@ -39,17 +40,17 @@ app.use(
     origin: "*",
   })
 );
-
-app.use(authRoutes);
-app.use("/auth", authRoutes);
-app.use("/settings", settingsRoutes);
-app.use("/mobile/settings", mobileSettingsRoutes);
-app.use("/users", userActionRoutes);
-app.use("/posts", postsRoutes);
-app.use("/", uploadRoutes);
-app.use("/", listingRoutes);
-app.use(communityRoutes);
-app.use(commentRoutes);
+app.use("/api", userRoutes);
+app.use("/api", authRoutes);
+app.use("/api/settings", settingsRoutes);
+app.use("/api/mobile/settings", mobileSettingsRoutes);
+app.use("/api/users", userActionRoutes);
+app.use("/api/posts", postsRoutes);
+app.use("/api", uploadRoutes);
+app.use("/api", listingRoutes);
+app.use("/api", communityRoutes);
+app.use("/api", commentRoutes);
+app.use("/api", messageRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
@@ -60,24 +61,25 @@ mongoose
 
     // Seed the database
     const seeders = [
-      new UserRoleSeeder(), 
+      new UserRoleSeeder(),
       new UserSeeder(),
       new CommunitySeeder(),
       new RuleSeeder(),
       new PostSeeder(),
       new CommentSeeder(),
     ];
-    for (const seeder of seeders){
+    for (const seeder of seeders) {
       const shouldRun = await seeder.shouldRun();
       if (shouldRun) {
         console.log(`Running ${seeder.constructor.name} Seeder...`);
         await seeder.run();
         console.log(`${seeder.constructor.name} Seeder executed successfully`);
-
       } else {
-        console.log(`${seeder.constructor.name} Seeder already executed, skipping...`); // Use backticks instead of single quotes
+        console.log(
+          `${seeder.constructor.name} Seeder already executed, skipping...`
+        ); // Use backticks instead of single quotes
       }
-    }    
+    }
 
     // Start the server after seeding
     app.listen(port, () => {

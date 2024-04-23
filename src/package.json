@@ -4,9 +4,27 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^2.1.0",
+    "dotenv": "^16.4.5",
+    "firebase-admin": "^12.1.0",
+    "jwt-decode": "^4.0.0",
+    "mongoose-data-seed": "^2.1.6",
+    "multer": "^1.4.5-lts.1",
+    "node-schedule": "^2.1.1",
+    "passport": "^0.7.0",
+    "passport-google-oauth2": "^0.2.0",
+    "web-push": "^3.6.7",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
 }
