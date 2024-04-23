@@ -2433,7 +2433,7 @@
  *
  * @apiHeader {String} Authorization User's authentication token.
  *
- * @apiParam {String} [name] Name of the user. 
+ * @apiParam {String} [name] Name of the user.
  * @apiParam {File} [banner] user banner (if applicable).
  * @apiParam {File} [avatar] user avatar (if applicable).
  * @apiParam {String} [fileType] Type of images (if applicable).
@@ -6175,10 +6175,18 @@
  *     {
  *       "displayName": "John Doe",
  *       "about": "Lorem ipsum dolor sit amet...",
- *       "socialLinks": {
- *          "twitter": "https://twitter.com/johndoe",
- *          "facebook": "https://facebook.com/johndoe"
- *       },
+ *       "socialLinks": [
+ *      {
+ *          "platform": "facebook",
+ *          "url": "https://www.facebook.com/sample_user",
+ *          "displayName": "FacebookGroup"
+ *      },
+ *      {
+ *          "platform": "twitter",
+ *          "url": "https://twitter.com/sample_user",
+ *          "displayName": "TwitterProfile"
+ *      }
+ *      ],
  *       "avatar": "http://example.com/profile.jpg",
  *       "banner": "http://example.com/banner.jpg",
  *       "nsfw": false,
@@ -6220,10 +6228,18 @@
  * {
  *    "displayName": "John Doe",
  *    "about": "Updated about section...",
- *    "socialLinks": {
- *        "twitter": "https://twitter.com/johndoe",
- *        "facebook": "https://facebook.com/johndoe"
- *    },
+ *    "socialLinks": [
+ *      {
+ *          "platform": "facebook",
+ *          "url": "https://www.facebook.com/sample_user",
+ *          "displayName": "FacebookGroup"
+ *      },
+ *      {
+ *          "platform": "twitter",
+ *          "url": "https://twitter.com/sample_user",
+ *          "displayName": "TwitterProfile"
+ *      }
+ *      ],
  *    "avatar": "http://example.com/profile_updated.jpg",
  *    "banner": "http://example.com/banner_updated.jpg",
  *    "nsfw": true,
