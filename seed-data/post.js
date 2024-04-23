@@ -274,7 +274,7 @@ const postSeedData = [
     _id: "624a6a677c8d9c9f5fd5eb56",
     title: "Most Interesting Moon of Jupiter",
     content: ["Which moon of Jupiter do you find the most fascinating?"],
-    userId: "624a6a677c8d9c9f5fd5eb14", // Basma
+    userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
     community: "Space & Astronomy Lovers", // Space & Astronomy Lovers
     comments: [],
     type: "Poll",
