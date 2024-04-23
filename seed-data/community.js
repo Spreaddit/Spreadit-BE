@@ -284,6 +284,7 @@ const communitySeedData = [
     moderators: ["624a6a677c8d9c9f5fd5eb0c"], // Mimo
     membersCount: 3,
 },
+
     
 ];
   

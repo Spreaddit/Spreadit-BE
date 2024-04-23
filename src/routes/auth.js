@@ -13,6 +13,9 @@ const sendEmail = require("../models/send-email.js");
 const jwt = require("jwt-decode");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
+const upload = require("../service/fileUpload");
+const { uploadMedia } = require("../service/cloudinary.js");
+
 router.use(passport.initialize());
 //const express = require('express');
 //router.use(passport.session());
@@ -21,6 +24,7 @@ router.use(cookieParser("spreaditsecret"));
 router.post("/signup", async (req, res) => {
   try {
     const user = new User(req.body);
+    const { isCross } = req.body.isCross;
     const userAvatar = "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png";
     user.avatar = userAvatar;
     if (!(await User.checkExistence(user.email, user.username))) {
@@ -31,8 +35,14 @@ router.post("/signup", async (req, res) => {
       //const userObj = await User.generateUserObject(savedUser);
       const token = await savedUser.generateToken();
       const emailToken = await savedUser.generateEmailToken();
-      const emailContent = `To confirm your email, click the link below: /verify-email/${emailToken}`;
+      let emailContent;
+      if (isCross) {
+        emailContent = `To confirm your email, click the link below: app.spreadit.me/verify-email/${emailToken}`;
+      } else {
+        emailContent = `To confirm your email, click the link below: www.spreadit.me/verify-email/${emailToken}`;
+      }
       //await sendEmail(savedUser.email, 'Please Confirm Your Email', emailContent);
+      
 
       const userObj = await User.generateUserObject(savedUser);
 
@@ -144,7 +154,8 @@ router.post("/google/oauth", auth.verifyGoogleToken, async (req, res) => {
         username: newUsername,
         isVerified: true,
       });
-      const userAvatar = "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png";
+      const userAvatar =
+        "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png";
       newUser.avatar = userAvatar;
 
       const savedUser = await newUser.save();
@@ -234,7 +245,7 @@ router.post("/forgot-password", async (req, res) => {
       return res.status(400).send({ message: "Error, wrong email" });
     }
     const resetToken = await user.generateResetToken();
-    const emailContent = `/reset-password-by-token?token=${resetToken}`;
+    const emailContent = `www.spreadit.me/reset-password-by-token?token=${resetToken}`;
     //await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
     res.status(200).send({ message: "Password reset link sent successfully" });
   } catch (err) {
@@ -258,7 +269,7 @@ router.post("/app/forgot-password", async (req, res) => {
 
     const resetToken = await user.generateResetToken();
 
-    const emailContent = `/reset-password-by-token?token=${resetToken}`;
+    const emailContent = `app.spreadit.me/reset-password-by-token?token=${resetToken}`;
     //await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
 
     res.status(200).send({ message: "Password reset link sent successfully" });
@@ -290,7 +301,6 @@ router.post("/reset-password-by-token", async (req, res) => {
 
 router.get("/reset-password/user-info", auth.authentication, async (req, res) => {
   try {
-
     const user = await User.findById(req.user._id);
 
     if (!user) {
@@ -420,52 +430,68 @@ router.get("/user/profile-info/:username", async (req, res) => {
   }
 });
 
-router.put("/user/profile-info", auth.authentication, async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const { name, avatar, banner, about, socialLinks, username, isVisible, isActive } = req.body;
-    const bio = about;
-    const updatedFields = {
-      name,
-      avatar,
-      banner,
-      bio,
-      socialLinks,
-      username,
-      isVisible,
-      isActive,
-    };
-    const user = await User.findById(userId);
-
-    if (username) {
-      const exists = await User.getUserByEmailOrUsername(username);
-      if (exists.username != user.username || username.length > 14) {
-        return res.status(400).json({ message: "Username not available" });
+router.put(
+  "/user/profile-info",
+  auth.authentication,
+  upload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "banner", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const { name, about, socialLinks, username, isVisible, isActive, fileType } = req.body;
+      let { avatar, banner } = req.files;
+      const bio = about;
+      let avatarUrl, bannerUrl;
+      if (avatar && banner) {
+        const avatarResult = await uploadMedia(avatar[0], fileType);
+        const bannerResult = await uploadMedia(banner[0], fileType);
+        avatarUrl = avatarResult.secure_url;
+        bannerUrl = bannerResult.secure_url;
       }
+      const updatedFields = {
+        name,
+        avatar: avatarUrl,
+        banner: bannerUrl,
+        bio,
+        socialLinks,
+        username,
+        isVisible,
+        isActive,
+      };
+      const user = await User.findById(userId);
+
+      if (username) {
+        const exists = await User.getUserByEmailOrUsername(username);
+        if (exists.username != user.username || username.length > 14) {
+          return res.status(400).json({ message: "Username not available" });
+        }
+      }
+
+      const updatedUser = await User.findOneAndUpdate({ _id: userId }, { $set: updatedFields }, { new: true });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.status(200).json({
+        username: updatedUser.username,
+        name: updatedUser.name,
+        avatar: updatedUser.avatar,
+        banner: updatedUser.banner,
+        about: updatedUser.bio,
+        createdAt: updatedUser.createdAt,
+        subscribedCommunities: updatedUser.subscribedCommunities,
+        isVisible: updatedUser.isVisible,
+        isActive: updatedUser.isActive,
+        socialLinks: updatedUser.socialLinks,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    const updatedUser = await User.findOneAndUpdate({ _id: userId }, { $set: updatedFields }, { new: true });
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.status(200).json({
-      username: updatedUser.username,
-      name: updatedUser.name,
-      avatar: updatedUser.avatar,
-      banner: updatedUser.banner,
-      about: updatedUser.bio,
-      createdAt: updatedUser.createdAt,
-      subscribedCommunities: updatedUser.subscribedCommunities,
-      isVisible: updatedUser.isVisible,
-      isActive: updatedUser.isActive,
-      socialLinks: updatedUser.socialLinks,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
 module.exports = router;
