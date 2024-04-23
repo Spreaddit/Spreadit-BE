@@ -17,7 +17,7 @@
  * @apiParam {String} email Email of the user
  * @apiParam {String} username Username of the user
  * @apiParam {String} password password of the user
- * @apiParam {Boolean} isCross Indicates whether the user is from cross platform or not
+ * @apiParam {Boolean} is_cross Indicates whether the user is from cross platform or not
  * @apiParamExample {json} Request-Example:
  * {
  *      "email": "amiraelgarf99@gmail.com",
@@ -1435,7 +1435,7 @@
  *
  * @apiParam {String} commentId ID of the comment to be reported.
  * @apiParam {String} reason Reason for reporting the comment.
- * @apiParam {String} sureason Specific reason for reporting the comment.
+ * @apiParam {String} subreason Specific reason for reporting the comment.
  *
  * @apiSuccess {String} message Confirmation message indicating that the comment has been reported successfully.
  *
@@ -5706,6 +5706,121 @@
  *     HTTP/1.1 500 Internal Server Error
  *     {
  *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /google/connected-accounts Add Connected Google Accounts
+ * @apiName AddConnectedGoogleAccounts
+ * @apiGroup settings
+ * @apiDescription Adds connected Google accounts to the user profile.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ * 
+ * @apiSuccess {Object} user User object with updated connected accounts.
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "user": {
+ *         // User object
+ *       },
+ *       "message": "Connected Accounts has been added successfully"
+ *     }
+ *
+ * @apiError InvalidUser Invalid user data.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid User data"
+ *     }
+ *
+ * @apiError InternalServerError Internal server error.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /settings/add-password/email Request Email for Adding Password
+ * @apiName RequestEmailForAddingPassword
+ * @apiGroup Settings
+ * @apiDescription Requests an email to add a password for the user account.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiSuccess {String} message Success message.
+ * @apiParam {Boolean} is_cross Indicates whether the user is from cross platform or not
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "is_cross": true
+ * }
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "email for adding the password is sent successfully"
+ *     }
+ *
+ * @apiError UserNotFound User not found.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiError InternalServerError Internal server error.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /settings/add-password Add Password via Email Confirmation
+ * @apiName AddPasswordViaEmailConfirmation
+ * @apiGroup Settings
+ * @apiDescription Adds password to the user account via email confirmation.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} password User's new password.
+ *
+ * @apiSuccess {String} message Success message.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "password": "myPassword123",
+ * }
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Password added successfully"
+ *     }
+ *
+ * @apiError UserNotFound User not found.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiError InternalServerError Internal server error.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
  *     }
  */
 

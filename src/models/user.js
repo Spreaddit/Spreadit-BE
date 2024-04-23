@@ -224,7 +224,7 @@ const UserSchema = new Schema(
     avatar: {
       type: String,
       trim: true,
-      default: "",
+      default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     },
     banner: {
       type: String,
