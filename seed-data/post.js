@@ -180,7 +180,7 @@ const postSeedData = [
     title: "Black Holes: The Enigma of the Cosmos",
     content: ["Delve into the mysteries of black holes, their formation, properties, and role in shaping the universe."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Science Explorers Club", // Science Explorers Club
+    community: "ScienceExplorersClub", // ScienceExplorersClub
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -190,7 +190,7 @@ const postSeedData = [
     title: "DNA Sequencing Breakthroughs",
     content: ["Explore recent advancements in DNA sequencing technologies and their implications for genetic research and medicine."],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Science Explorers Club", // Science Explorers Club
+    community: "ScienceExplorersClub", // ScienceExplorersClub
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -200,7 +200,7 @@ const postSeedData = [
     title: "The Quantum World: Weirdness and Wonders",
     content: ["Dive into the bizarre and fascinating realm of quantum mechanics, from superposition and entanglement to quantum computing."],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Science Explorers Club", // Science Explorers Club
+    community: "ScienceExplorersClub", // ScienceExplorersClub
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -210,7 +210,7 @@ const postSeedData = [
     title: "Climate Change: Challenges and Solutions",
     content: ["Discuss the latest research on climate change, its impacts on ecosystems and societies, and strategies for mitigation and adaptation."],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Science Explorers Club", // Science Explorers Club
+    community: "ScienceExplorersClub", // ScienceExplorersClub
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -220,7 +220,7 @@ const postSeedData = [
     title: "The Evolutionary Arms Race",
     content: ["What is the most significant factor driving the co-evolutionary dynamics between species and their predators?"],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Science Explorers Club", // Science Explorers Club
+    community: "ScienceExplorersClub", // ScienceExplorersClub
     comments: [],
     type: "Poll",
     isNsfw: false,
@@ -238,7 +238,7 @@ const postSeedData = [
     _id: "624a6a677c8d9c9f5fd5eb53",
     title: "Journey to the Edge of the Universe",
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Space & Astronomy Lovers", // Space & Astronomy Lovers
+    community: "Space&AstronomyLovers", // Space&AstronomyLovers
     comments: [],
     type: "Images & Video",
     isNsfw: false,
@@ -252,7 +252,7 @@ const postSeedData = [
     title: "The Search for Extraterrestrial Life",
     content: ["Join the quest for life beyond Earth, from the exploration of Mars and Europa to the study of exoplanets and SETI initiatives."],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Space & Astronomy Lovers", // Space & Astronomy Lovers
+    community: "Space&AstronomyLovers", // Space&AstronomyLovers
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -261,7 +261,7 @@ const postSeedData = [
     _id: "624a6a677c8d9c9f5fd5eb55",
     title: "The Beauty of Celestial Phenomena",
     userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    community: "Space & Astronomy Lovers", // Space & Astronomy Lovers
+    community: "Space&AstronomyLovers", // Space&AstronomyLovers
     comments: [],
     type: "Images & Video",
     isNsfw: false,
@@ -275,7 +275,7 @@ const postSeedData = [
     title: "Most Interesting Moon of Jupiter",
     content: ["Which moon of Jupiter do you find the most fascinating?"],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Space & Astronomy Lovers", // Space & Astronomy Lovers
+    community: "Space&AstronomyLovers", // Space&AstronomyLovers
     comments: [],
     type: "Poll",
     isNsfw: false,
@@ -292,7 +292,7 @@ const postSeedData = [
     title: "Stargazing Tips and Tricks",
     content: ["Learn essential tips for stargazing, including choosing the right telescope, identifying constellations, and observing celestial events."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Space & Astronomy Lovers", // Space & Astronomy Lovers
+    community: "Space&AstronomyLovers", // Space&AstronomyLovers
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -304,7 +304,7 @@ const postSeedData = [
     title: "The Wonders of Genetic Diversity",
     content: ["Explore the fascinating world of genetic diversity and its implications for evolution, adaptation, and conservation."],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Biology Buffs Society", // Biology Buffs Society
+    community: "BiologyBuffsSociety", // BiologyBuffsSociety
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -314,7 +314,7 @@ const postSeedData = [
     title: "Ecology and Biodiversity Conservation",
     content: ["Discuss the principles of ecology, ecosystem dynamics, and strategies for biodiversity conservation in the face of environmental challenges."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Biology Buffs Society", // Biology Buffs Society
+    community: "BiologyBuffsSociety", // BiologyBuffsSociety
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -324,7 +324,7 @@ const postSeedData = [
     title: "Adaptations in the Animal Kingdom",
     content: ["Explore remarkable adaptations in the animal kingdom, from camouflage and mimicry to specialized anatomical features for survival."],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Biology Buffs Society", // Biology Buffs Society
+    community: "BiologyBuffsSociety", // BiologyBuffsSociety
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -334,7 +334,7 @@ const postSeedData = [
     title: "The Marvels of Marine Biology",
     content: ["Dive into the wonders of marine biology, exploring diverse ecosystems, marine organisms, and the importance of ocean conservation."],
     userId: "624a6a677c8d9c9f5fd5eb0d", // Basem
-    community: "Biology Buffs Society", // Biology Buffs Society
+    community: "BiologyBuffsSociety", // BiologyBuffsSociety
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -343,7 +343,7 @@ const postSeedData = [
     _id: "624a6a677c8d9c9f5fd5eb5c",
     title: "Genomics Revolution: Unraveling the Genetic Code",
     userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    community: "Biology Buffs Society", // Biology Buffs Society
+    community: "BiologyBuffsSociety", // BiologyBuffsSociety
     comments: [],
     type: "Link",
     isNsfw: false,
@@ -356,7 +356,7 @@ const postSeedData = [
     title: "Expressive Artistry: Painting with Emotions",
     content: ["Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."],
     userId: "624a4fbf3f392aefdb4dd1c8", // Farouq
-    community: "Creative Minds Collective", // Creative Minds Collective
+    community: "CreativeMindsCollective", // CreativeMindsCollective
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -366,7 +366,7 @@ const postSeedData = [
     title: "Exploring the Intersection of Music and Visual Arts",
     content: ["Embark on a creative journey to explore the intersection of music and visual arts, where sound inspires vivid imagery and vice versa."],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Creative Minds Collective", // Creative Minds Collective
+    community: "CreativeMindsCollective", // CreativeMindsCollective
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -376,7 +376,7 @@ const postSeedData = [
     title: "Poetic Reflections: A Journey Through Words",
     content: ["Indulge in poetic reflections as writers pen verses that transport readers on a journey through emotions, memories, and dreams."],
     userId: "624a4a94c66738f13854b474", // Amira
-    community: "Creative Minds Collective", // Creative Minds Collective
+    community: "CreativeMindsCollective", // CreativeMindsCollective
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -386,7 +386,7 @@ const postSeedData = [
     title: "Photography Showcase: Capturing Life's Essence",
     content: ["Immerse yourself in a photography showcase, where each image captures life's essence, frozen in time to evoke emotions and memories."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Creative Minds Collective", // Creative Minds Collective
+    community: "CreativeMindsCollective", // CreativeMindsCollective
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -396,7 +396,7 @@ const postSeedData = [
     title: "Musical Masterpieces: Harmonizing Creativity",
     content: ["Embark on a journey through musical masterpieces, where artists harmonize creativity to compose melodies that resonate with the soul."],
     userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    community: "Creative Minds Collective", // Creative Minds Collective
+    community: "CreativeMindsCollective", // CreativeMindsCollective
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -408,7 +408,7 @@ const postSeedData = [
     title: "Sculpture Spotlight: Embodying Creativity in Form",
     content: ["Explore the world of sculpture as artists breathe life into clay, stone, and metal, embodying creativity in tangible forms that captivate the imagination."],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Visual Arts Gallery", // Visual Arts Gallery
+    community: "VisualArtsGallery", // VisualArtsGallery
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -418,7 +418,7 @@ const postSeedData = [
     title: "Digital Art Showcase: Exploring Virtual Realms",
     content: ["Immerse yourself in a digital art showcase, where artists explore virtual realms, blending imagination and technology to create captivating digital masterpieces."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Visual Arts Gallery", // Visual Arts Gallery
+    community: "VisualArtsGallery", // VisualArtsGallery
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -428,7 +428,7 @@ const postSeedData = [
     title: "Abstract Expressions: An Exploration of Color and Form",
     content: ["Dive into abstract expressions as artists experiment with color and form, transcending traditional boundaries to evoke emotions and spark imagination."],
     userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    community: "Visual Arts Gallery", // Visual Arts Gallery
+    community: "VisualArtsGallery", // VisualArtsGallery
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -438,7 +438,7 @@ const postSeedData = [
     title: "Impressionist Inspirations: Capturing Moments in Time",
     content: ["Experience impressionist inspirations as artists capture moments in time, using vibrant brushstrokes and light to convey fleeting emotions and scenes."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Visual Arts Gallery", // Visual Arts Gallery
+    community: "VisualArtsGallery", // VisualArtsGallery
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -448,7 +448,7 @@ const postSeedData = [
     title: "Realism Rediscovered: Portraying Life's Authenticity",
     content: ["Rediscover realism as artists portray life's authenticity, capturing intricate details and subtle nuances that mirror the beauty and complexity of existence."],
     userId: "624a4a94c66738f13854b474", // Amira
-    community: "Visual Arts Gallery", // Visual Arts Gallery
+    community: "VisualArtsGallery", // VisualArtsGallery
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -459,7 +459,7 @@ const postSeedData = [
     title: "Poetry Corner: Embracing the Beauty of Words",
     content: ["Step into the poetry corner and immerse yourself in the beauty of words, where emotions flow freely and thoughts take flight on the wings of imagination."],
     userId: "624a4a94c66738f13854b474", // Amira
-    community: "Writers' Haven", // Writers' Haven
+    community: "Writers'Haven", // Writers'Haven
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -469,7 +469,7 @@ const postSeedData = [
     title: "Short Story Showcase: Unveiling Worlds in Few Words",
     content: ["Embark on a journey through the short story showcase, where authors unveil worlds in few words, weaving tales that linger in the mind long after they're read."],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Writers' Haven", // Writers' Haven
+    community: "Writers'Haven", // Writers'Haven
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -479,7 +479,7 @@ const postSeedData = [
     title: "Writing Prompts Galore: Igniting Creative Sparks",
     content: ["Ignite your creative sparks with a plethora of writing prompts, designed to inspire, challenge, and fuel your imagination on the writer's journey."],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Writers' Haven", // Writers' Haven
+    community: "Writers'Haven", // Writers'Haven
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -489,7 +489,7 @@ const postSeedData = [
     title: "Novel Discussions: Exploring Literary Worlds",
     content: ["Embark on discussions about novels, exploring literary worlds, characters, themes, and narratives that leave an indelible mark on readers' hearts and minds."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Writers' Haven", // Writers' Haven
+    community: "Writers'Haven", // Writers'Haven
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -499,7 +499,7 @@ const postSeedData = [
     title: "Author Spotlight: Celebrating Creative Voices",
     content: ["Celebrate creative voices in the author spotlight, where writers share insights, experiences, and reflections on their writing journeys and literary inspirations."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Writers' Haven", // Writers' Haven
+    community: "Writers'Haven", // Writers'Haven
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -511,7 +511,7 @@ const postSeedData = [
     title: "Guided Meditation Session: Cultivating Inner Peace",
     content: ["Join us for a guided meditation session focused on cultivating inner peace, mindfulness, and serenity amidst the hustle and bustle of daily life."],
     userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    community: "Mindfulness & Meditation", // Mindfulness & Meditation Community
+    community: "Mindfulness&Meditation", // Mindfulness&Meditation Community
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -521,7 +521,7 @@ const postSeedData = [
     title: "Mindfulness in Motion: Embracing the Present Moment",
     content: ["Explore the practice of mindfulness in motion, embracing the present moment with awareness and intention in every step, breath, and movement."],
     userId: "624a6a677c8d9c9f5fd5eb0d", // Basem
-    community: "Mindfulness & Meditation", // Mindfulness & Meditation Community
+    community: "Mindfulness&Meditation", // Mindfulness&Meditation Community
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -531,7 +531,7 @@ const postSeedData = [
     title: "Mindful Living: Nurturing the Mind, Body & Spirit",
     content: ["Embark on the journey of mindful living, nurturing the mind, body, and spirit through practices that promote self-awareness, compassion, and well-being."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Mindfulness & Meditation", // Mindfulness & Meditation Community
+    community: "Mindfulness&Meditation", // Mindfulness&Meditation Community
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -541,7 +541,7 @@ const postSeedData = [
     title: "Stress Management Techniques: Finding Calm in Chaos",
     content: ["Discover stress management techniques to find calm in chaos, empowering yourself to navigate life's challenges with resilience, balance, and inner strength."],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Mindfulness & Meditation", // Mindfulness & Meditation Community
+    community: "Mindfulness&Meditation", // Mindfulness&Meditation Community
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -551,7 +551,7 @@ const postSeedData = [
     title: "Mindful Breathing Exercises: Anchoring in the Present",
     content: ["Practice mindful breathing exercises to anchor yourself in the present moment, cultivating a sense of calm, clarity, and presence in your daily life."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Mindfulness & Meditation", // Mindfulness & Meditation Community
+    community: "Mindfulness&Meditation", // Mindfulness&Meditation Community
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -563,7 +563,7 @@ const postSeedData = [
     title: "Understanding Human Behavior: Insights from Psychology",
     content: ["Explore the fascinating realm of human behavior through insights from psychology, discussing theories, research findings, and practical applications."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Psychology Insights Circle", // Psychology Insights Circle
+    community: "PsychologyInsightsCircle", // PsychologyInsightsCircle
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -573,7 +573,7 @@ const postSeedData = [
     title: "The Power of Emotional Intelligence: Navigating Relationships",
     content: ["Delve into the power of emotional intelligence and its role in navigating relationships, enhancing communication, and fostering empathy and understanding."],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Psychology Insights Circle", // Psychology Insights Circle
+    community: "PsychologyInsightsCircle", // PsychologyInsightsCircle
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -583,7 +583,7 @@ const postSeedData = [
     title: "Cognitive Biases: Exploring the Quirks of the Human Mind",
     content: ["Examine cognitive biases and their impact on decision-making, perception, and behavior, unraveling the quirks of the human mind and how we perceive reality."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Psychology Insights Circle", // Psychology Insights Circle
+    community: "PsychologyInsightsCircle", // PsychologyInsightsCircle
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -593,7 +593,7 @@ const postSeedData = [
     title: "Positive Psychology: Cultivating Happiness and Well-Being",
     content: ["Explore the principles of positive psychology and learn strategies for cultivating happiness, resilience, and well-being in everyday life."],
     userId: "624a6a677c8d9c9f5fd5eb0d", // Basem
-    community: "Psychology Insights Circle", // Psychology Insights Circle
+    community: "PsychologyInsightsCircle", // PsychologyInsightsCircle
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -603,7 +603,7 @@ const postSeedData = [
     title: "Psychological Resilience: Thriving in the Face of Adversity",
     content: ["Discover the concept of psychological resilience and explore strategies for thriving in the face of adversity, setbacks, and life's challenges."],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Psychology Insights Circle", // Psychology Insights Circle
+    community: "PsychologyInsightsCircle", // PsychologyInsightsCircle
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -615,7 +615,7 @@ const postSeedData = [
     title: "Bucket List Destinations: Must-Visit Places Around the World",
     content: ["Share your bucket list destinations and dream travel experiences, and inspire fellow globetrotters with your adventurous spirit!"],
     userId: "624a4fbf3f392aefdb4dd1c8", // Farouq
-    community: "Globetrotters Community", // Globetrotters Community
+    community: "GlobetrottersCommunity", // GlobetrottersCommunity
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -625,7 +625,7 @@ const postSeedData = [
     title: "Solo Travel Adventures: Embracing Independence and Discovery",
     content: ["Embark on a journey of self-discovery and adventure with solo travel experiences, sharing tips, stories, and insights for fellow solo travelers."],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Globetrotters Community", // Globetrotters Community
+    community: "GlobetrottersCommunity", // GlobetrottersCommunity
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -635,7 +635,7 @@ const postSeedData = [
     title: "Off-the-Beaten-Path Adventures: Hidden Gems and Local Experiences",
     content: ["Discover hidden gems and off-the-beaten-path destinations around the world, sharing local experiences, cultural insights, and travel recommendations."],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Globetrotters Community", // Globetrotters Community
+    community: "GlobetrottersCommunity", // GlobetrottersCommunity
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -645,7 +645,7 @@ const postSeedData = [
     title: "Adventure Travel Stories: Tales of Thrills and Exploration",
     content: "Share your most memorable adventure travel stories, from adrenaline-pumping activities to awe-inspiring natural landscapes, and inspire fellow adventurers!",
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Globetrotters Community", // Globetrotters Community
+    community: "GlobetrottersCommunity", // GlobetrottersCommunity
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -655,7 +655,7 @@ const postSeedData = [
     title: "Cultural Immersion Experiences: Connecting with Local Communities",
     content: ["Immerse yourself in different cultures, traditions, and lifestyles through cultural immersion experiences, fostering meaningful connections and understanding."],
     userId: "624a6a677c8d9c9f5fd5eb0d", // Basem
-    community: "Globetrotters Community", // Globetrotters Community
+    community: "GlobetrottersCommunity", // GlobetrottersCommunity
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -666,7 +666,7 @@ const postSeedData = [
     title: "Favorite Hiking Trail",
     content: ["What is your favorite hiking trail for exploring nature's wonders on foot?"],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Adventurous Souls Society", // Adventurous Souls Society
+    community: "AdventurousSoulsSociety", // AdventurousSoulsSociety
     comments: [],
     type: "Poll",
     isNsfw: false,
@@ -684,7 +684,7 @@ const postSeedData = [
     title: "Extreme Sports Escapades: Pushing Limits and Seeking Thrills",
     content: ["Share your wildest extreme sports experiences, heart-racing activities, and tips for thrill-seekers venturing into the realm of extreme adventure! Warning: Content may contain graphic descriptions and intense scenarios. Viewer discretion is advised."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Adventurous Souls Society", // Adventurous Souls Society
+    community: "AdventurousSoulsSociety", // AdventurousSoulsSociety
     comments: [],
     type: "Post",
     isNsfw: true,
@@ -694,7 +694,7 @@ const postSeedData = [
     title: "Backpacking Adventures: Wanderlust Tales from Around the Globe",
     content: ["Share your backpacking adventures, travel tales, budget travel tips, and inspiring stories for fellow backpackers!"],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Adventurous Souls Society", // Adventurous Souls Society
+    community: "AdventurousSoulsSociety", // AdventurousSoulsSociety
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -703,7 +703,7 @@ const postSeedData = [
     _id: "624a6a677c8d9c9f5fd5eb7e",
     title: "Water Sports Wonderland: Dive into Aquatic Adventures",
     userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    community: "Adventurous Souls Society", // Adventurous Souls Society
+    community: "AdventurousSoulsSociety", // AdventurousSoulsSociety
     comments: [],
     type: "Images & Video",
     isNsfw: false,
@@ -717,7 +717,7 @@ const postSeedData = [
     title: "Road Trip Chronicles: Tales of Freedom on the Open Road",
     content: ["Share your most memorable road trip experiences, scenic routes, and travel tips for fellow road warriors!"],
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Adventurous Souls Society", // Adventurous Souls Society
+    community: "AdventurousSoulsSociety", // AdventurousSoulsSociety
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -729,7 +729,7 @@ const postSeedData = [
     title: "Global Gastronomy: Exploring Culinary Delights Around the World",
     content: ["Share your favorite international cuisines, traditional dishes, and recipes from different cultures, and embark on a virtual culinary journey!"],
     userId: "624a4fbf3f392aefdb4dd1c8", // Farouq
-    community: "Culinary Delights", // Culinary Delights
+    community: "CulinaryDelights", // CulinaryDelights
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -739,7 +739,7 @@ const postSeedData = [
     title: "Foodie Adventures: Experiencing Exotic Flavors and Local Delicacies",
     content: ["Share your foodie adventures, hidden gems, and culinary discoveries from around the globe, and inspire fellow gastronomes!"],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Culinary Delights", // Culinary Delights
+    community: "CulinaryDelights", // CulinaryDelights
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -749,7 +749,7 @@ const postSeedData = [
     title: "Cooking Masterclass: Tips and Tricks for Perfecting Your Culinary Skills",
     content: ["Discuss cooking techniques, kitchen hacks, and share your favorite recipes to help aspiring chefs elevate their culinary creations!"],
     userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    community: "Culinary Delights", // Culinary Delights
+    community: "CulinaryDelights", // CulinaryDelights
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -759,7 +759,7 @@ const postSeedData = [
     title: "Sweet Treats Galore: Indulging in Dessert Delights",
     content: ["Share your love for desserts, pastry recipes, and sweet indulgences from all corners of the world, and satisfy your sweet tooth!"],
     userId: "624a6a677c8d9c9f5fd5eb0d", // Basem
-    community: "Culinary Delights", // Culinary Delights
+    community: "CulinaryDelights", // CulinaryDelights
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -769,7 +769,7 @@ const postSeedData = [
     title: "Farm-to-Table Chronicles: Embracing Sustainable Food Practices",
     content: ["Discuss sustainable farming practices, organic food movements, and tips for adopting eco-friendly eating habits to support the planet!"],
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Culinary Delights", // Culinary Delights
+    community: "CulinaryDelights", // CulinaryDelights
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -781,7 +781,7 @@ const postSeedData = [
     title: "Exploring Exotic Flavors: A Journey Through Gourmet Cuisine",
     content: ["Embark on a culinary adventure and share your experiences tasting exotic dishes, gourmet delicacies, and unique flavors from around the world!"],
     userId: "624a4fbf3f392aefdb4dd1c8", // Farouq
-    community: "Gourmet Adventures", // Gourmet Adventures
+    community: "GourmetAdventures", // GourmetAdventures
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -791,7 +791,7 @@ const postSeedData = [
     title: "Gourmet Travel Diary: Discovering Michelin-Starred Restaurants",
     content: ["Share your gourmet travel experiences, culinary discoveries, and memorable dining experiences at Michelin-starred restaurants around the globe!"],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Gourmet Adventures", // Gourmet Adventures
+    community: "GourmetAdventures", // GourmetAdventures
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -801,7 +801,7 @@ const postSeedData = [
     title: "Epicurean Escapes: Unforgettable Gourmet Adventures",
     content: ["Share your epicurean escapes, culinary tours, and memorable foodie experiences that tantalized your taste buds and ignited your senses!"],
     userId: "624a6a677c8d9c9f5fd5eb0d", // Basem
-    community: "Gourmet Adventures", // Gourmet Adventures
+    community: "GourmetAdventures", // GourmetAdventures
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -811,7 +811,7 @@ const postSeedData = [
     title: "Gastronomic Delights: Exploring Local Cuisine and Food Traditions",
     content: ["Dive into the world of gastronomy and explore local cuisine, food traditions, and authentic flavors from different regions and cultures!"],
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Gourmet Adventures", // Gourmet Adventures
+    community: "GourmetAdventures", // GourmetAdventures
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -821,7 +821,7 @@ const postSeedData = [
     title: "Culinary Experiments: Unleashing Creativity in the Kitchen",
     content: ["Experiment with new ingredients, innovative cooking techniques, and share your culinary creations that push the boundaries of traditional cuisine!"],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Gourmet Adventures", // Gourmet Adventures
+    community: "GourmetAdventures", // GourmetAdventures
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -833,7 +833,7 @@ const postSeedData = [
     title: "Unraveling Pop Culture Mysteries: The Significance of Internet Memes",
     content: ["Join the discussion on internet memes, their cultural significance, and how they reflect the collective consciousness of today's society!"],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Pop Culture Fanatics", // Pop Culture Fanatics
+    community: "PopCultureFanatics", // PopCultureFanatics
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -843,7 +843,7 @@ const postSeedData = [
     title: "The Evolution of Pop Music: From Classics to Modern Hits",
     content: ["Explore the evolution of pop music, from the classic hits that shaped generations to the modern chart-toppers that dominate the airwaves!"],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Pop Culture Fanatics", // Pop Culture Fanatics
+    community: "PopCultureFanatics", // PopCultureFanatics
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -853,7 +853,7 @@ const postSeedData = [
     title: "Iconic Movie Quotes: Memorable Lines That Define Pop Culture",
     content: "Share your favorite movie quotes, iconic lines, and memorable moments that have become ingrained in pop culture history!",
     userId: "624a4a94c66738f13854b474", // Amira
-    community: "Pop Culture Fanatics", // Pop Culture Fanatics
+    community: "PopCultureFanatics", // PopCultureFanatics
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -863,7 +863,7 @@ const postSeedData = [
     title: "Nostalgic TV Shows: Rediscovering Childhood Favorites",
     content: ["Take a trip down memory lane and reminisce about your favorite childhood TV shows, cartoons, and animated series that shaped your upbringing!"],
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Pop Culture Fanatics", // Pop Culture Fanatics
+    community: "PopCultureFanatics", // PopCultureFanatics
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -873,7 +873,7 @@ const postSeedData = [
     title: "The Influence of Pop Culture: Trends, Fads, and Cultural Phenomena",
     content: ["Discuss the pervasive influence of pop culture on society, including trends, fads, and cultural phenomena that shape our lives and perceptions!"],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Pop Culture Fanatics", // Pop Culture Fanatics
+    community: "PopCultureFanatics", // PopCultureFanatics
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -885,7 +885,7 @@ const postSeedData = [
     title: "Classic Hollywood Gems: Must-Watch Films from the Golden Age",
     content: ["Discover timeless classics from the golden age of Hollywood, featuring iconic performances, gripping plots, and unforgettable cinematic moments!"],
     userId: "624a4a94c66738f13854b474", // Amira
-    community: "Movie Buffs Club", // Movie Buffs Club
+    community: "MovieBuffsClub", // MovieBuffsClub
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -895,7 +895,7 @@ const postSeedData = [
     title: "Hidden Movie Gems: Underrated Films That Deserve More Recognition",
     content: ["Share your favorite underrated films that have flown under the radar but deserve more recognition for their exceptional storytelling and performances!"],
     userId: "624a6a677c8d9c9f5fd5eb0d", // Basem
-    community: "Movie Buffs Club", // Movie Buffs Club
+    community: "MovieBuffsClub", // MovieBuffsClub
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -905,7 +905,7 @@ const postSeedData = [
     title: "Modern Masterpieces: Recent Films That Redefined Cinema",
     content: ["Discuss recent films that have pushed the boundaries of storytelling, cinematography, and visual effects, leaving a lasting impact on the world of cinema!"],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Movie Buffs Club", // Movie Buffs Club
+    community: "MovieBuffsClub", // MovieBuffsClub
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -915,7 +915,7 @@ const postSeedData = [
     title: "Cinematic Legends: Celebrating the Greatest Filmmakers of All Time",
     content: ["Pay tribute to the visionary directors, actors, and behind-the-scenes talents who have shaped the landscape of cinema and left an indelible mark on movie history!"],
     userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    community: "Movie Buffs Club", // Movie Buffs Club
+    community: "MovieBuffsClub", // MovieBuffsClub
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -925,7 +925,7 @@ const postSeedData = [
     title: "Movie Marathon Madness: Planning the Ultimate Film Fest",
     content: ["Share tips, recommendations, and themed movie marathon ideas for hosting the ultimate film fest with friends and family, complete with popcorn and cozy blankets!"],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Movie Buffs Club", // Movie Buffs Club
+    community: "MovieBuffsClub", // MovieBuffsClub
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -937,7 +937,7 @@ const postSeedData = [
     title: "Favorite Life Soundtrack Song",
     content: ["Which song holds a special place in your heart and defines your life's journey?"],
     userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    community: "Music Maniacs Lounge", // Music Maniacs Lounge
+    community: "MusicManiacsLounge", // MusicManiacsLounge
     comments: [],
     type: "Poll",
     isNsfw: false,
@@ -955,7 +955,7 @@ const postSeedData = [
     title: "Genre Exploration: Diving Deep into Musical Diversity",
     content: ["Embark on a musical journey across different genres and discover hidden gems, underrated artists, and diverse cultural influences that enrich the world of music!"],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Music Maniacs Lounge", // Music Maniacs Lounge
+    community: "MusicManiacsLounge", // MusicManiacsLounge
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -965,7 +965,7 @@ const postSeedData = [
     title: "Concert Chronicles: Memorable Moments from Live Shows",
     content: "Share your most unforgettable experiences from live concerts and music festivals, from electrifying performances to heartwarming interactions with fellow fans!",
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Music Maniacs Lounge", // Music Maniacs Lounge
+    community: "MusicManiacsLounge", // MusicManiacsLounge
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -975,7 +975,7 @@ const postSeedData = [
     title: "Musical Masterpieces: Iconic Albums That Stand the Test of Time",
     content: ["Discuss legendary albums that have left an enduring legacy, influencing generations of music lovers and shaping the evolution of musical genres!"],
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Music Maniacs Lounge", // Music Maniacs Lounge
+    community: "MusicManiacsLounge", // MusicManiacsLounge
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -985,7 +985,7 @@ const postSeedData = [
     title: "Musical Encounters: Stories of Serendipitous Discoveries",
     content: ["Share serendipitous encounters with music, from chance discoveries of new artists to unexpected connections with songs that resonate deeply with your soul!"],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Music Maniacs Lounge", // Music Maniacs Lounge
+    community: "MusicManiacsLounge", // MusicManiacsLounge
     comments: [],
     type: "Post",
     isNsfw: false,
