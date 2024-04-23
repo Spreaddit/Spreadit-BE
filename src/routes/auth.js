@@ -268,7 +268,7 @@ router.post("/forgot-password", async (req, res) => {
     }
     const resetToken = await user.generateResetToken();
     const emailContent = `www.spreadit.me/reset-password-by-token?token=${resetToken}`;
-    //await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
+    await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
     res.status(200).send({ message: "Password reset link sent successfully" });
   } catch (err) {
     console.log(err);
@@ -292,7 +292,7 @@ router.post("/app/forgot-password", async (req, res) => {
     const resetToken = await user.generateResetToken();
 
     const emailContent = `app.spreadit.me/reset-password-by-token?token=${resetToken}`;
-    //await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
+    await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
 
     res.status(200).send({ message: "Password reset link sent successfully" });
   } catch (err) {
@@ -403,15 +403,18 @@ router.post("/forgot-username", async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.getUserByEmailOrUsername(email);
+    const isCross = req.body.is_cross;
 
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-
-    const loginLink = `Your username is ${user.username} you can login now: /login`;
-
-    //await sendEmail(user.email, 'So you wanna know your username, huh?', loginLink);
-
+    let emailContent;
+      if (isCross) {
+        emailContent = `Your username is ${user.username} you can login now: app.spreadit.me/login`;
+      } else {
+        emailContent = `Your username is ${user.username} you can login now: www.spreadit.me/login`;
+      }
+      await sendEmail(savedUser.email, 'So you wanna know your username, huh?', emailContent);
     res.status(200).send({ message: "Username sent successfully" });
   } catch (err) {
     console.error(err);
