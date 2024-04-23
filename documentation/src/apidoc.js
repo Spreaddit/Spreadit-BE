@@ -4575,6 +4575,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -4725,6 +4726,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -5086,6 +5088,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -5148,6 +5151,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -5297,6 +5301,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -5523,6 +5528,7 @@
  *       "content": "Post Content",
  *       "community": "Community",
  *       "type": "Post",
+ *       "link": "http://example.com",
  *       "pollExpiration": "2024-12-31T00:00:00.000Z",
  *       "isPollEnabled": true,
  *       "pollVotingLength": 7,
@@ -5587,6 +5593,7 @@
  *         "content": "Post Content",
  *         "community": "Community",
  *         "type": "Post",
+ *         "link": "http://example.com",
  *         "pollExpiration": "2024-12-31T00:00:00.000Z",
  *         "isPollEnabled": true,
  *         "pollVotingLength": 7,
@@ -6288,8 +6295,25 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "blockedUsers": ["6622dd82f5dae2fd48618252", "6622dd82f5dae2fd48618257"],
- *       "mutedCommunities": ["6622dd82f5dae2fd48618267", "6622dd82f5dae2fd48618272"]
+ *       "blockedUsers": [
+ *           {
+ *               "_id": "606622dd82f5dae2fd4861825",
+ *               "username": "farouq12",
+ *               "avatar": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713826823/uploads/avatar-1713826815124.png.png"
+ *           }
+ *       ],
+ *       "mutedCommunities": [
+ *           {
+ *               "_id": "6622dd82f5dae2fd48618267",
+ *               "name": "GourmetAdventures",
+ *               "image": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png"
+ *           },
+ *           {
+ *               "_id": "6622dd82f5dae2fd48618272",
+ *               "name": "TravelEnthusiasts",
+ *               "image": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png"
+ *           }
+ *       ]
  *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -6488,7 +6512,13 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "blockedUsers": ["6622dd82f5dae2fd48618252", "6622dd82f5dae2fd48618256"],
+ *       "blockedUsers": [
+ *           {
+ *               "_id": "606622dd82f5dae2fd4861825",
+ *               "username": "farouq12",
+ *               "avatar": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713826823/uploads/avatar-1713826815124.png.png"
+ *           }
+ *       ],
  *       "allowFollow": true
  *     }
  *

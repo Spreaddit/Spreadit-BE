@@ -75,15 +75,23 @@ exports.deleteAccount = async (req, res) => {
     }
 };
 
+
+
 exports.getBlockingSetting = async (req, res) => {
     try {
         const userId = req.user._id;
-        const blockingSetting = await User.findOne({ _id: userId }).select('blockedUsers allowFollow');
+        const blockingSetting = await User.findOne({ _id: userId })
+            .select('blockedUsers allowFollow')
+            .populate({
+                path: 'blockedUsers',
+                select: '_id username avatar'
+            });
         res.status(200).json(blockingSetting);
     } catch (err) {
-        res.status(500).json({ err: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 exports.modifyBlockingSetting = async (req, res) => {
     try {
