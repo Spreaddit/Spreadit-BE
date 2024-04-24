@@ -10,15 +10,12 @@ const Notification = require("../models/notification");
 const mongoose = require("mongoose");
 const NotificationType = require("./../../seed-data/constants/notificationType");
 
-
-
-
-
+//node schedule schedule job time given 
 router.post("/dashboard/ban", auth.authentication, async (req, res) => {
     const banuser = new banUser(req.body);
     const updates = Object.keys(req.body);
     const allowedUpdates = [
-      "userId",
+      "username",
       "isBanned",
       "banDuration",
       "reason",
@@ -35,10 +32,10 @@ router.post("/dashboard/ban", auth.authentication, async (req, res) => {
       const adminId = await UserRole.find({
         name: "Admin",
       }).select("_id");
-  
+      const userToBeBanned = await User.getUserByEmailOrUsername(req.body.username);
       if (adminId[0]._id.equals(req.user.roleId)) {
         const user = await User.findByIdAndUpdate(
-          req.body.userId,
+          userToBeBanned._id,
           { isBanned: true },
           { new: true, runValidators: true }
         );
@@ -46,7 +43,7 @@ router.post("/dashboard/ban", auth.authentication, async (req, res) => {
         if (!user) {
           return res.status(404).send({ message: "User is not found" });
         }
-  
+        banuser.userId = userToBeBanned._id;
         banuser.save();
         const message = req.body.isPermanent
           ? `This account has been banned permanently from posting. \n Reason: ${req.body.reason}`
@@ -77,7 +74,7 @@ router.post("/dashboard/ban", auth.authentication, async (req, res) => {
 });
 router.post("/dashboard/unban", auth.authentication, async (req, res) => {
     const updates = Object.keys(req.body);
-    const allowedUpdates = ["userId", "isBanned", "accessToken"];
+    const allowedUpdates = ["username", "isBanned", "accessToken"];
     const isValidOperation = updates.every((update) =>
       allowedUpdates.includes(update)
     );
@@ -88,13 +85,14 @@ router.post("/dashboard/unban", auth.authentication, async (req, res) => {
       const adminId = await UserRole.find({
         name: "Admin",
       }).select("_id");
+      const userToBeUnbanned = await User.getUserByEmailOrUsername(req.body.username);
       if (adminId[0]._id.equals(req.user.roleId)) {
         const user = await User.findByIdAndUpdate(
-          req.body.userId,
+          userToBeUnbanned._id,
           { isBanned: false },
           { new: true, runValidators: true }
         );
-        const banuser = await banUser.deleteOne({ userId: req.body.userId });
+        const banuser = await banUser.deleteOne({ userId: userToBeUnbanned._id });
   
         if (!user) {
           return res.status(404).send({ message: "User is not found" });

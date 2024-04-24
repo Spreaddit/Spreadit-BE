@@ -371,7 +371,7 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
-UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
+UserSchema.method.getUserByEmailOrUsername = async function (usernameOremail) {
   const user = await User.find({
     $or: [{ email: usernameOremail }, { username: usernameOremail }],
   });
