@@ -448,6 +448,8 @@ UserSchema.statics.verifyCredentials = async function (
 
 UserSchema.statics.generateUserObject = async function (user) {
   try {
+
+    //const banInfo = await banUserModel.findOne({ userId: user._id });
     const userObj = {
       id: user._id,
       name: user.name,
@@ -481,6 +483,20 @@ UserSchema.statics.generateUserObject = async function (user) {
       selectedPollOption: user.selectedPollOption,
       allowFollow: user.allowFollow,
     };
+
+    const subscribedCommunitiesNames = [];
+    for (const communityId of user.subscribedCommunities) {
+      const community = await Community.findById(communityId);
+      if (community) {
+        subscribedCommunitiesNames.push(community.name);
+      }
+    }
+    userObj.subscribedCommunities = subscribedCommunitiesNames;
+
+    // if (banInfo) {
+    //   userObj.banDuration = banInfo.banDuration;
+    //   userObj.permanentBan = banInfo.isPermanent;
+    // }
 
     return userObj;
   } catch (err) {
