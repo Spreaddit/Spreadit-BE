@@ -310,7 +310,14 @@ exports.modifyProfileSettings = async (req, res) => {
 exports.getSafetyAndPrivacySettings = async (req, res) => {
     try {
         const userId = req.user._id;
-        const safetyAndPrivacySettings = await User.findOne({ _id: userId }).select('blockedUsers mutedCommunities');
+        const safetyAndPrivacySettings = await User.findOne({ _id: userId }).select('blockedUsers mutedCommunities').populate({
+            path: 'blockedUsers',
+            select: '_id username avatar'
+        })
+            .populate({
+                path: 'mutedCommunities',
+                select: '_id name image'
+            });
         res.status(200).json(safetyAndPrivacySettings);
     } catch (err) {
         console.log(err)

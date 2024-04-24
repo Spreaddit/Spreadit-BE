@@ -67,12 +67,6 @@ const UserSchema = new Schema(
         type: String,
       },
     ],
-    bio: {
-      type: String,
-      trim: true,
-      maxLength: 160,
-      default: "",
-    },
     followers: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
     followings: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
     reportedUsers: [
@@ -219,7 +213,7 @@ const UserSchema = new Schema(
     avatar: {
       type: String,
       trim: true,
-      default: "",
+      default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     },
     banner: {
       type: String,
@@ -372,7 +366,7 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
-UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
+UserSchema.method.getUserByEmailOrUsername = async function (usernameOremail) {
   const user = await User.find({
     $or: [{ email: usernameOremail }, { username: usernameOremail }],
   });
@@ -443,6 +437,8 @@ UserSchema.statics.verifyCredentials = async function (
 
 UserSchema.statics.generateUserObject = async function (user) {
   try {
+
+    //const banInfo = await banUserModel.findOne({ userId: user._id });
     const userObj = {
       id: user._id,
       name: user.name,
@@ -453,7 +449,6 @@ UserSchema.statics.generateUserObject = async function (user) {
       phone: user.phone_number,
       avatar_url: user.avatar,
       location: user.location,
-      bio: user.bio,
       followers_count: user.followers.length,
       following_count: user.followings.length,
       created_at: user.createdAt,
@@ -464,7 +459,7 @@ UserSchema.statics.generateUserObject = async function (user) {
       isVisible: user.isVisible,
       isActive: user.isActive,
       displayName: user.displayName,
-      about: user.about,
+      bio: user.about,
       cakeDay: user.cakeDay,
       subscribedCommunities: user.subscribedCommunities,
       favouriteCommunities: user.favouriteCommunities,
@@ -475,6 +470,20 @@ UserSchema.statics.generateUserObject = async function (user) {
       selectedPollOption: user.selectedPollOption,
       allowFollow: user.allowFollow,
     };
+
+    const subscribedCommunitiesNames = [];
+    for (const communityId of user.subscribedCommunities) {
+      const community = await Community.findById(communityId);
+      if (community) {
+        subscribedCommunitiesNames.push(community.name);
+      }
+    }
+    userObj.subscribedCommunities = subscribedCommunitiesNames;
+
+    // if (banInfo) {
+    //   userObj.banDuration = banInfo.banDuration;
+    //   userObj.permanentBan = banInfo.isPermanent;
+    // }
 
     return userObj;
   } catch (err) {

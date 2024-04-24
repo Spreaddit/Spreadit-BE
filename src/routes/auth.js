@@ -24,9 +24,7 @@ router.use(cookieParser("spreaditsecret"));
 router.post("/signup", async (req, res) => {
   try {
     const user = new User(req.body);
-    const { isCross } = req.body.isCross;
-    const userAvatar = "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png";
-    user.avatar = userAvatar;
+    const isCross = req.body.is_cross;
     if (!(await User.checkExistence(user.email, user.username))) {
       const savedUser = await user.save();
       if (!savedUser) {
@@ -41,8 +39,7 @@ router.post("/signup", async (req, res) => {
       } else {
         emailContent = `To confirm your email, click the link below: www.spreadit.me/verify-email/${emailToken}`;
       }
-      //await sendEmail(savedUser.email, 'Please Confirm Your Email', emailContent);
-      
+      await sendEmail(savedUser.email, 'Please Confirm Your Email', emailContent);
 
       const userObj = await User.generateUserObject(savedUser);
 
@@ -154,9 +151,6 @@ router.post("/google/oauth", auth.verifyGoogleToken, async (req, res) => {
         username: newUsername,
         isVerified: true,
       });
-      const userAvatar =
-        "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png";
-      newUser.avatar = userAvatar;
 
       const savedUser = await newUser.save();
       const token = await savedUser.generateToken();
@@ -211,7 +205,35 @@ router.post("/google/connected-accounts", auth.verifyGoogleToken, auth.authentic
   }
 });
 
-router.post("/add-password", auth.authentication, async (req, res) => {
+router.post("/settings/add-password/email", auth.authentication, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    let user = await User.findById(userId);
+    const isCross = req.body.is_cross;
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    
+
+    if (user && user.googleId !== " ") {
+      const emailToken = await user.generateEmailToken();
+    let emailContent;
+    if (isCross) {
+      emailContent = `To confirm your email, click the link below: app.spreadit.me/verify-email/${emailToken}`;
+    } else {
+      emailContent = `To confirm your email, click the link below: www.spreadit.me/verify-email/${emailToken}`;
+    }
+    await sendEmail(user.email, 'Please Confirm Your Email', emailContent);
+
+      res.status(200).send({ message: "email for adding the passowrd is sent successfully" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+router.post("/settings/add-password", auth.authentication, async (req, res) => {
   try {
     const userId = req.user._id;
     let user = await User.findById(userId);
@@ -246,7 +268,7 @@ router.post("/forgot-password", async (req, res) => {
     }
     const resetToken = await user.generateResetToken();
     const emailContent = `www.spreadit.me/reset-password-by-token?token=${resetToken}`;
-    //await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
+    await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
     res.status(200).send({ message: "Password reset link sent successfully" });
   } catch (err) {
     console.log(err);
@@ -270,7 +292,7 @@ router.post("/app/forgot-password", async (req, res) => {
     const resetToken = await user.generateResetToken();
 
     const emailContent = `app.spreadit.me/reset-password-by-token?token=${resetToken}`;
-    //await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
+    await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
 
     res.status(200).send({ message: "Password reset link sent successfully" });
   } catch (err) {
@@ -381,15 +403,18 @@ router.post("/forgot-username", async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.getUserByEmailOrUsername(email);
+    const isCross = req.body.is_cross;
 
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-
-    const loginLink = `Your username is ${user.username} you can login now: /login`;
-
-    //await sendEmail(user.email, 'So you wanna know your username, huh?', loginLink);
-
+    let emailContent;
+      if (isCross) {
+        emailContent = `Your username is ${user.username} you can login now: app.spreadit.me/login`;
+      } else {
+        emailContent = `Your username is ${user.username} you can login now: www.spreadit.me/login`;
+      }
+      await sendEmail(savedUser.email, 'So you wanna know your username, huh?', emailContent);
     res.status(200).send({ message: "Username sent successfully" });
   } catch (err) {
     console.error(err);
@@ -417,7 +442,7 @@ router.get("/user/profile-info/:username", async (req, res) => {
       name: user.name,
       avatar: user.avatar,
       banner: user.banner,
-      about: user.bio,
+      about: user.about,
       createdAt: user.createdAt,
       subscribedCommunities: user.subscribedCommunities,
       isVisible: user.isVisible,
@@ -442,7 +467,6 @@ router.put(
       const userId = req.user._id;
       const { name, about, socialLinks, username, isVisible, isActive, fileType } = req.body;
       let { avatar, banner } = req.files;
-      const bio = about;
       let avatarUrl, bannerUrl;
       if (avatar && banner) {
         const avatarResult = await uploadMedia(avatar[0], fileType);
@@ -454,7 +478,7 @@ router.put(
         name,
         avatar: avatarUrl,
         banner: bannerUrl,
-        bio,
+        about,
         socialLinks,
         username,
         isVisible,
@@ -480,7 +504,7 @@ router.put(
         name: updatedUser.name,
         avatar: updatedUser.avatar,
         banner: updatedUser.banner,
-        about: updatedUser.bio,
+        about: updatedUser.about,
         createdAt: updatedUser.createdAt,
         subscribedCommunities: updatedUser.subscribedCommunities,
         isVisible: updatedUser.isVisible,

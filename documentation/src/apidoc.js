@@ -17,7 +17,7 @@
  * @apiParam {String} email Email of the user
  * @apiParam {String} username Username of the user
  * @apiParam {String} password password of the user
- * @apiParam {Boolean} isCross Indicates whether the user is from cross platform or not
+ * @apiParam {Boolean} is_cross Indicates whether the user is from cross platform or not
  * @apiParamExample {json} Request-Example:
  * {
  *      "email": "amiraelgarf99@gmail.com",
@@ -1432,7 +1432,7 @@
  *
  * @apiParam {String} commentId ID of the comment to be reported.
  * @apiParam {String} reason Reason for reporting the comment.
- * @apiParam {String} sureason Specific reason for reporting the comment.
+ * @apiParam {String} subreason Specific reason for reporting the comment.
  *
  * @apiSuccess {String} message Confirmation message indicating that the comment has been reported successfully.
  *
@@ -2430,7 +2430,7 @@
  *
  * @apiHeader {String} Authorization User's authentication token.
  *
- * @apiParam {String} [name] Name of the user. 
+ * @apiParam {String} [name] Name of the user.
  * @apiParam {File} [banner] user banner (if applicable).
  * @apiParam {File} [avatar] user avatar (if applicable).
  * @apiParam {String} [fileType] Type of images (if applicable).
@@ -2787,79 +2787,36 @@
  *     {
  *       "posts": [
  *            {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *       ],
  *       "totalPages": 5,
  *       "currentPage": 1
@@ -2947,79 +2904,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3063,79 +2977,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3179,79 +3050,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3295,79 +3123,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3409,79 +3194,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3522,80 +3264,37 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     [
- *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *         {
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3637,79 +3336,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3751,79 +3407,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3867,79 +3480,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -3982,80 +3552,37 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     [
- *         {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *        {
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -4100,79 +3627,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -4216,79 +3700,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -4330,79 +3771,36 @@
  *     HTTP/1.1 200 OK
  *     [
  *          {
-            "_id": "661b361e41fcced1c04cf20b",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 40,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.789Z",
-            "createdAt": "2024-04-14T01:49:18.789Z",
-            "updatedAt": "2024-04-14T19:02:13.078Z",
-            "__v": 0
-        },
-        {
-            "_id": "661b361e41fcced1c04cf1f4",
-            "userId": "624a52d75ff69df002d25035",
-            "username": "mahmoudabbas",
-            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-            "upVotes": [],
-            "downVotes": [],
-            "votesUpCount": 0,
-            "votesDownCount": 0,
-            "sharesCount": 0,
-            "commentsCount": 0,
-            "numberOfViews": 39,
-            "title": "jkjkjkjkjkj",
-            "content": [
-                ""
-            ],
-            "community": "Gaming",
-            "type": "Link",
-            "pollOptions": [],
-            "pollExpiration": null,
-            "isPollEnabled": false,
-            "pollVotingLength": "3 Days",
-            "votedUsers": [],
-            "link": "https://help.liferay.com/hc/en-us/articles/360018180231-Rendering-Web-Content-in-Your-Android-App",
-            "attachments": [],
-            "isSpoiler": false,
-            "isNsfw": false,
-            "sendPostReplyNotification": true,
-            "isCommentsLocked": false,
-            "isSaved": false,
-            "hiddenBy": [],
-            "comments": [],
-            "date": "2024-04-14T01:49:18.625Z",
-            "createdAt": "2024-04-14T01:49:18.625Z",
-            "updatedAt": "2024-04-14T04:07:09.555Z",
-            "__v": 0
-        },
+ *            "_id": "1234567890",
+ *           "userId": "0987654321",
+ *           "username": "example_user",
+ *           "userProfilePic": "http://example.com/avatar.jpg",
+ *           "hasUpvoted": false,
+ *           "hasDownvoted": false,
+ *           "hasVotedOnPoll": false,
+ *           "selectedPollOption": null,
+ *           "numberOfViews": 1080,
+ *           "votesUpCount": 10,
+ *           "votesDownCount": 2,
+ *           "sharesCount": 5,
+ *           "commentsCount": 15,
+ *           "title": "Sample Title",
+ *           "content": "Sample Content",
+ *           "community": "Sample Community",
+ *           "type": "Post",
+ *           "link": "http://example.com",
+ *           "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *           "isPollEnabled": true,
+ *           "pollVotingLength": "7 days",
+ *           "isSpoiler": false,
+ *           "isNsfw": false,
+ *           "sendPostReplyNotification": true,
+ *           "isCommentsLocked": false,
+ *           "isSaved": true,
+ *           "date": "2024-04-16T10:00:00.000Z",
+ *           "pollOptions": [],
+ *           "attachments": []
+ *       }
  *     ]
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -4572,6 +3970,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -4722,6 +4121,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -5083,6 +4483,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -5145,6 +4546,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -5294,6 +4696,7 @@
  *           "content": "Sample Content",
  *           "community": "Sample Community",
  *           "type": "Post",
+ *           "link": "http://example.com",
  *           "pollExpiration": "2024-04-16T12:00:00.000Z",
  *           "isPollEnabled": true,
  *           "pollVotingLength": "7 days",
@@ -5520,6 +4923,7 @@
  *       "content": "Post Content",
  *       "community": "Community",
  *       "type": "Post",
+ *       "link": "http://example.com",
  *       "pollExpiration": "2024-12-31T00:00:00.000Z",
  *       "isPollEnabled": true,
  *       "pollVotingLength": 7,
@@ -5584,6 +4988,7 @@
  *         "content": "Post Content",
  *         "community": "Community",
  *         "type": "Post",
+ *         "link": "http://example.com",
  *         "pollExpiration": "2024-12-31T00:00:00.000Z",
  *         "isPollEnabled": true,
  *         "pollVotingLength": 7,
@@ -5703,6 +5108,121 @@
  *     HTTP/1.1 500 Internal Server Error
  *     {
  *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /google/connected-accounts Add Connected Google Accounts
+ * @apiName AddConnectedGoogleAccounts
+ * @apiGroup settings
+ * @apiDescription Adds connected Google accounts to the user profile.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiSuccess {Object} user User object with updated connected accounts.
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "user": {
+ *         // User object
+ *       },
+ *       "message": "Connected Accounts has been added successfully"
+ *     }
+ *
+ * @apiError InvalidUser Invalid user data.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid User data"
+ *     }
+ *
+ * @apiError InternalServerError Internal server error.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /settings/add-password/email Request Email for Adding Password
+ * @apiName RequestEmailForAddingPassword
+ * @apiGroup Settings
+ * @apiDescription Requests an email to add a password for the user account.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiSuccess {String} message Success message.
+ * @apiParam {Boolean} is_cross Indicates whether the user is from cross platform or not
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "is_cross": true
+ * }
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "email for adding the password is sent successfully"
+ *     }
+ *
+ * @apiError UserNotFound User not found.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiError InternalServerError Internal server error.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /settings/add-password Add Password via Email Confirmation
+ * @apiName AddPasswordViaEmailConfirmation
+ * @apiGroup Settings
+ * @apiDescription Adds password to the user account via email confirmation.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} password User's new password.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "password": "myPassword123",
+ * }
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Password added successfully"
+ *     }
+ *
+ * @apiError UserNotFound User not found.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiError InternalServerError Internal server error.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
  *     }
  */
 
@@ -6172,10 +5692,18 @@
  *     {
  *       "displayName": "John Doe",
  *       "about": "Lorem ipsum dolor sit amet...",
- *       "socialLinks": {
- *          "twitter": "https://twitter.com/johndoe",
- *          "facebook": "https://facebook.com/johndoe"
- *       },
+ *       "socialLinks": [
+ *      {
+ *          "platform": "facebook",
+ *          "url": "https://www.facebook.com/sample_user",
+ *          "displayName": "FacebookGroup"
+ *      },
+ *      {
+ *          "platform": "twitter",
+ *          "url": "https://twitter.com/sample_user",
+ *          "displayName": "TwitterProfile"
+ *      }
+ *      ],
  *       "avatar": "http://example.com/profile.jpg",
  *       "banner": "http://example.com/banner.jpg",
  *       "nsfw": false,
@@ -6217,10 +5745,18 @@
  * {
  *    "displayName": "John Doe",
  *    "about": "Updated about section...",
- *    "socialLinks": {
- *        "twitter": "https://twitter.com/johndoe",
- *        "facebook": "https://facebook.com/johndoe"
- *    },
+ *    "socialLinks": [
+ *      {
+ *          "platform": "facebook",
+ *          "url": "https://www.facebook.com/sample_user",
+ *          "displayName": "FacebookGroup"
+ *      },
+ *      {
+ *          "platform": "twitter",
+ *          "url": "https://twitter.com/sample_user",
+ *          "displayName": "TwitterProfile"
+ *      }
+ *      ],
  *    "avatar": "http://example.com/profile_updated.jpg",
  *    "banner": "http://example.com/banner_updated.jpg",
  *    "nsfw": true,
@@ -6269,8 +5805,25 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "blockedUsers": ["6622dd82f5dae2fd48618252", "6622dd82f5dae2fd48618257"],
- *       "mutedCommunities": ["6622dd82f5dae2fd48618267", "6622dd82f5dae2fd48618272"]
+ *       "blockedUsers": [
+ *           {
+ *               "_id": "606622dd82f5dae2fd4861825",
+ *               "username": "farouq12",
+ *               "avatar": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713826823/uploads/avatar-1713826815124.png.png"
+ *           }
+ *       ],
+ *       "mutedCommunities": [
+ *           {
+ *               "_id": "6622dd82f5dae2fd48618267",
+ *               "name": "GourmetAdventures",
+ *               "image": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png"
+ *           },
+ *           {
+ *               "_id": "6622dd82f5dae2fd48618272",
+ *               "name": "TravelEnthusiasts",
+ *               "image": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png"
+ *           }
+ *       ]
  *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
@@ -6469,7 +6022,13 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "blockedUsers": ["6622dd82f5dae2fd48618252", "6622dd82f5dae2fd48618256"],
+ *       "blockedUsers": [
+ *           {
+ *               "_id": "606622dd82f5dae2fd4861825",
+ *               "username": "farouq12",
+ *               "avatar": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713826823/uploads/avatar-1713826815124.png.png"
+ *           }
+ *       ],
  *       "allowFollow": true
  *     }
  *
