@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+require("./user");
+require("./post");
 const commentSchema = require('../models/comment')
 
 const PostSchema = new Schema(
@@ -113,6 +115,60 @@ const PostSchema = new Schema(
   }
 );
 
+PostSchema.statics.getPostObject = async function (post, userId, includeHidden = false) {
+  const User = mongoose.model("user");
+  const loginUser = await User.findById(userId);
+  const postUser = await User.findById(post.userId);
+  const hasUpvoted = post.upVotes.includes(userId);
+  const hasDownvoted = post.downVotes.includes(userId);
+  const savedPostIds = postUser.savedPosts || [];
+  let hasVotedOnPoll = false;
+  let userSelectedOption = null;
+  if (post.pollOptions.length > 0 && loginUser.selectedPollOption) {
+    userSelectedOption = loginUser.selectedPollOption;
+    hasVotedOnPoll = userSelectedOption !== null;
+  }
+
+  const isHiddenByUser = post.hiddenBy.includes(userId);
+  if (isHiddenByUser && !includeHidden) {
+    return null;
+  }
+
+  post.numberOfViews++;
+  await post.save();
+
+  return {
+    _id: post._id,
+    userId: userId,
+    username: postUser.username,
+    userProfilePic: postUser.avatar,
+    hasUpvoted: hasUpvoted,
+    hasDownvoted: hasDownvoted,
+    hasVotedOnPoll: hasVotedOnPoll,
+    selectedPollOption: userSelectedOption,
+    numberOfViews: post.numberOfViews,
+    votesUpCount: post.upVotes ? post.upVotes.length : 0,
+    votesDownCount: post.downVotes ? post.downVotes.length : 0,
+    sharesCount: post.sharesCount,
+    commentsCount: post.commentsCount,
+    title: post.title,
+    content: post.content,
+    community: post.community,
+    type: post.type,
+    link: post.link,
+    pollExpiration: post.pollExpiration,
+    isPollEnabled: post.isPollEnabled,
+    pollVotingLength: post.pollVotingLength,
+    isSpoiler: post.isSpoiler,
+    isNsfw: post.isNsfw,
+    sendPostReplyNotification: post.sendPostReplyNotification,
+    isCommentsLocked: post.isCommentsLocked,
+    isSaved: savedPostIds.includes(post._id.toString()),
+    date: post.date,
+    pollOptions: post.pollOptions,
+    attachments: post.attachments,
+  };
+};
 
 const Post = mongoose.model('post', PostSchema);
 

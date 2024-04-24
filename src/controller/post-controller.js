@@ -9,23 +9,7 @@ const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
 
-exports.getAllPosts = async (req, res) => {
-  try {
-    const posts = await Post.find();
-    if (posts.length === 0) {
-      return res.status(404).json({ error: "Posts not found" });
-    }
-    for (let post of posts) {
-      post = await Post.findById(post._id);
-      post.numberOfViews++;
-      await post.save();
-    }
-    res.status(200).json(posts);
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+
 
 exports.getPostById = async (req, res) => {
   try {
@@ -111,63 +95,22 @@ exports.getAllUserPosts = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
     const userId = user._id;
+
     const posts = await Post.find({ userId });
+
     if (!posts || posts.length === 0) {
       return res.status(404).json({ error: "User has no posts" });
     }
 
-    const savedPostIds = user.savedPosts || [];
-
     const postInfoArray = await Promise.all(
       posts.map(async (post) => {
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
+        const postObject = await Post.getPostObject(post, userId);
 
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        post.numberOfViews++;
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: savedPostIds.includes(post._id.toString()),
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+        return postObject;
       })
     );
-
-    res.status(200).json(postInfoArray);
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+    res.status(200).json(filteredPostInfoArray);
   } catch (err) {
     console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -326,19 +269,21 @@ exports.createPost = async (req, res) => {
 exports.getAllPostsInCommunity = async (req, res) => {
   try {
     const username = req.user.username;
-
     const user = await User.findOne({ username });
+
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    const userId = user._id;
 
+    const userId = user._id;
     const community = req.params.community;
+
     if (!community) {
       return res.status(400).json({ error: "Community name is required" });
     }
 
     const communityExists = await Community.findOne({ name: community });
+
     if (!communityExists) {
       return res.status(404).json({ message: "Community not found" });
     }
@@ -346,63 +291,17 @@ exports.getAllPostsInCommunity = async (req, res) => {
     const posts = await Post.find({ community });
 
     if (!posts || posts.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "Posts not found in the specified community" });
+      return res.status(404).json({ error: "Posts not found in the specified community" });
     }
-
-    const savedPostIds = user.savedPosts || [];
 
     const postInfoArray = await Promise.all(
       posts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          console.log(req.user.selectedPollOption);
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes.length,
-          votesDownCount: post.downVotes.length,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: savedPostIds.includes(post._id.toString()),
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-
-    res.status(200).json(postInfoArray);
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+    res.status(200).json(filteredPostInfoArray);
   } catch (err) {
     console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -470,53 +369,12 @@ exports.getSavedPosts = async (req, res) => {
 
     const postInfoArray = await Promise.all(
       savedPosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: savedPostIds.includes(post._id.toString()),
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-
-    res.status(200).json(postInfoArray);
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+    res.status(200).json(filteredPostInfoArray);
   } catch (err) {
     console.error("Error fetching saved posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -802,58 +660,16 @@ exports.getUpvotedPosts = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const visiblePosts = posts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+      posts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
 
-    res.status(200).json(postInfoArray);
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json(filteredPostInfoArray);
   } catch (err) {
     console.error("Error fetching upvoted posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -874,58 +690,16 @@ exports.getDownvotedPosts = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const visiblePosts = posts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+      posts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
 
-    res.status(200).json(postInfoArray);
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json(filteredPostInfoArray);
   } catch (err) {
     console.error("Error fetching downvoted posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -1049,49 +823,8 @@ exports.getHiddenPosts = async (req, res) => {
     const hiddenPosts = user.hiddenPosts;
     const postInfoArray = await Promise.all(
       hiddenPosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()),
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+        const postObject = await Post.getPostObject(post, userId, true); // Include hidden posts
+        return postObject;
       })
     );
 
