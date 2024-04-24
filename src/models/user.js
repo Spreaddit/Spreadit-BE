@@ -82,11 +82,6 @@ const UserSchema = new Schema(
         index: true,
       },
     ],
-    background_picture: {
-      type: String,
-      trim: true,
-      default: "",
-    },
     roleId: {
       type: Schema.Types.ObjectId,
       ref: "userRole",
@@ -457,7 +452,6 @@ UserSchema.statics.generateUserObject = async function (user) {
       birth_date: user.birth_date,
       phone: user.phone_number,
       avatar_url: user.avatar,
-      background_picture_url: user.background_picture,
       location: user.location,
       bio: user.bio,
       followers_count: user.followers.length,
