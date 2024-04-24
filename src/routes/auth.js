@@ -442,7 +442,7 @@ router.get("/user/profile-info/:username", async (req, res) => {
       name: user.name,
       avatar: user.avatar,
       banner: user.banner,
-      about: user.bio,
+      about: user.about,
       createdAt: user.createdAt,
       subscribedCommunities: user.subscribedCommunities,
       isVisible: user.isVisible,
@@ -467,7 +467,6 @@ router.put(
       const userId = req.user._id;
       const { name, about, socialLinks, username, isVisible, isActive, fileType } = req.body;
       let { avatar, banner } = req.files;
-      const bio = about;
       let avatarUrl, bannerUrl;
       if (avatar && banner) {
         const avatarResult = await uploadMedia(avatar[0], fileType);
@@ -479,7 +478,7 @@ router.put(
         name,
         avatar: avatarUrl,
         banner: bannerUrl,
-        bio,
+        about,
         socialLinks,
         username,
         isVisible,
@@ -505,7 +504,7 @@ router.put(
         name: updatedUser.name,
         avatar: updatedUser.avatar,
         banner: updatedUser.banner,
-        about: updatedUser.bio,
+        about: updatedUser.about,
         createdAt: updatedUser.createdAt,
         subscribedCommunities: updatedUser.subscribedCommunities,
         isVisible: updatedUser.isVisible,
