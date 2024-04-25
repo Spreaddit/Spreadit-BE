@@ -8,6 +8,34 @@ const listingController = require("../controller/listing-controller");
 
 const jwt = require("jsonwebtoken");
 
+
+
+const calculateTrendingScore = (post) => {
+    const weightViews = 0.3;
+    const weightComments = 0.4;
+    const weightUpvotes = 0.3;
+
+    const ageInHours = (Date.now() - post.date.getTime()) / (1000 * 3600);
+
+    const engagementMetric = (post.numberOfViews * weightViews) +
+        (post.commentsCount * weightComments) +
+        (post.upVotes.length * weightUpvotes);
+    const trendingScore = engagementMetric / Math.log10(ageInHours + 2);
+
+    return trendingScore;
+};
+
+const getTopTrendingPosts = async (posts) => {
+    const postsWithScores = posts.map((post) => ({
+        ...post.toObject(),
+        trendingScore: calculateTrendingScore(post),
+    }));
+
+    const sortedPosts = postsWithScores.sort((a, b) => b.trendingScore - a.trendingScore);
+
+    return sortedPosts.slice(0, 5);
+};
+
 function calculateHotnessScore(post) {
     const ageInHours = post.date.getTime() / (1000 * 3600);
     const upvotes = post.upVotes.length;
@@ -298,6 +326,19 @@ exports.getSearchSuggestions = async (req, res) => {
         });
     } catch (err) {
         console.error('Error occurred while retrieving search suggestions:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.getTrendingPosts = async (req, res) => {
+    try {
+        const allPosts = await Post.find();
+
+        const topTrendingPosts = await getTopTrendingPosts(allPosts);
+
+        res.status(200).json({ trendingPosts: topTrendingPosts });
+    } catch (err) {
+        console.error('Error occurred while getting trending posts:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };

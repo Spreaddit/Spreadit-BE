@@ -16,4 +16,8 @@ router
     .route("/suggestions")
     .get(auth.authentication, searchController.getSearchSuggestions);
 
+router
+    .route("/trending")
+    .get(auth.authentication, searchController.getTrendingPosts);
+
 module.exports = router;
