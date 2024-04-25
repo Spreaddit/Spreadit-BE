@@ -11,6 +11,20 @@ router
   .post(auth.authentication, messageController.replyMessage);
 
 router
+  .route("/message/readmsg/:messageId")
+  .post(auth.authentication, messageController.readMessage);
+router
+  .route("/message/unreadmsg/:messageId")
+  .post(auth.authentication, messageController.unreadMessage);
+router
+  .route("/message/readallmessages/")
+  .post(auth.authentication, messageController.markAllAsRead);
+
+router
+  .route("/message/unread/")
+  .get(auth.authentication, messageController.getUnreadMessages);
+
+router
   .route("/message/inbox/")
   .get(auth.authentication, messageController.getInboxMessages);
 
