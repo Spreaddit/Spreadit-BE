@@ -28,5 +28,8 @@ router
 router
   .route("/isfollowed/:username")
   .get(auth.authentication, followUserController.isFollowed);
+router
+  .route("/getfollowers")
+  .get(auth.authentication, followUserController.getFollowers);
 
 module.exports = router;
