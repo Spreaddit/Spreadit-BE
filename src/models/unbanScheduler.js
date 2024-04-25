@@ -1,6 +1,6 @@
 const cron = require('node-cron');
-const BanUser = require('./models/BanUser');
-const User = require('./models/User');
+const BanUser = require('./banUser');
+const User = require('./user');
 
 async function performAutomaticUnbanning() {
     try {
