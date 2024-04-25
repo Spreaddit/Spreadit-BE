@@ -44,27 +44,34 @@ router.post('/test-notification', async (req, res) => {
 });
 
 //n put it with el login?? check with cross and front
-router.post("/notifications/subscribe", auth, async (req, res) => {
+router.post("/notifications/subscribe", auth.authentication, async (req, res) => {
   try {
     const userId = req.user._id;
     const key = req.body.fcm;
 
-    const subscription = await NotificationSubscription({fcmToken: key})
+    const subscription = await NotificationSubscription.find({fcmToken: key})
 
-    const userSub = new NotificationSubscription({
-      userId: userId,
-      fcmToken: key,
-    });
-    console.log(userSub);
-    const saved = await userSub.save();
-    if (saved) {
+    if(!subscription){
+      const userSub = new NotificationSubscription({
+        userId: userId,
+        fcmToken: key,
+      });
+      //console.log(userSub);
+      const saved = await userSub.save();
+      if (saved) {
+        return res
+          .status(200)
+          .send({ message: "Subscription added successfully" });
+      } else {
+        return res
+          .status(500)
+          .send({ message: "Subscription could not be added" });
+      }
+
+    }else{
       return res
-        .status(200)
-        .send({ message: "Subscription added successfully" });
-    } else {
-      return res
-        .status(500)
-        .send({ message: "Subscription could not be added" });
+          .status(400)
+          .send({ message: "Subscription already there" });
     }
   } catch (error) {
     res.status(500).send(error.toString());
@@ -72,11 +79,7 @@ router.post("/notifications/subscribe", auth, async (req, res) => {
 });
 
 
-router.get(
-  "/notifications",
-
-  auth,
-  async (req, res) => {
+router.get( "/notifications", auth.authentication, async (req, res) => {
     try {
       const user = req.user;
       const result = await Notification.find({ userId: user._id })
@@ -115,7 +118,7 @@ router.get(
   }
 );
 
-router.put("/read-notification", auth, async (req, res) => {
+router.put("/read-notification", auth.authentication, async (req, res) => {
   try {
     const userId = req.user._id;
     const notificationId = req.body.notificationId;

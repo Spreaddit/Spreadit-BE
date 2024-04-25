@@ -11,7 +11,6 @@ const config = require("./../configuration");
 const Report = require("../models/report");
 const Notification = require("./../models/notification");
 const NotificationType = require("./../../seed-data/constants/notificationType");
-const NotificationSubscription = require("../models/notificationsSub");
 require("./../models/constants/notificationType");
 const router = express.Router();
 
@@ -384,7 +383,7 @@ router.post(
         });
         await notification.save();
       }
-      
+
       res.status(201).send({
         reply: replyObj,
         message: "Reply has been added successfully",
