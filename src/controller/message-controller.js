@@ -4,6 +4,7 @@ const Comment = require("../models/comment");
 const Message = require("../models/message");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const Conversation = require("../models/conversation");
 
 exports.sendMessage = async (req, res) => {
   try {
@@ -22,16 +23,63 @@ exports.sendMessage = async (req, res) => {
       return res.status(400).json({ error: "message content is required" });
     }
     const recieverUser = await User.getUserByEmailOrUsername(recieverUsername);
-    recieverId = recieverUser._id;
-
+    const recieverId = recieverUser._id;
+    if (recieverId === userId)
+      return res.status(400).json({ error: "user cannot message himself" });
+    const newConversation = new Conversation({
+      subject,
+    });
+    await newConversation.save();
     const newMessage = new Message({
+      conversationId: newConversation._id,
       senderId: userId,
       recieverId,
-      subject,
       contentType: "text",
       content,
     });
     await newMessage.save();
+    await Conversation.findByIdAndUpdate(newConversation._id, {
+      $addToSet: { messages: newMessage._id },
+    });
+
+    res.status(200).json({ message: "Message sent successfully" });
+  } catch (error) {
+    console.error("Error send message :", error);
+    return res.status(500).json({ error: "internal server error" });
+  }
+};
+
+exports.replyMessage = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const senderUser = await User.findById(userId);
+    const messageId = req.params.messageId;
+    const messageToReply = await Message.findById(messageId);
+    if (!messageToReply)
+      return res.status(404).json({ error: "message not found" });
+    const recieverId = messageToReply.senderId;
+
+    const content = req.body.content;
+    if (!content) {
+      return res.status(400).json({ error: "message content is required" });
+    }
+    if (recieverId === userId)
+      return res.status(400).json({ error: "user cannot reply on himself" });
+
+    const conversationId = messageToReply.conversationId;
+    const newReply = new Message({
+      conversationId: conversationId,
+      senderId: userId,
+      recieverId,
+      contentType: "text",
+      content,
+    });
+    await newReply.save();
+    newReply.parentMesssageId = messageId;
+    await Conversation.findByIdAndUpdate(conversationId, {
+      $addToSet: { messages: newReply._id },
+    });
+
     res.status(200).json({ message: "Message sent successfully" });
   } catch (error) {
     console.error("Error send message :", error);

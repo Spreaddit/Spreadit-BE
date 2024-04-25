@@ -3,6 +3,11 @@ const Schema = mongoose.Schema;
 
 const MessageSchema = new Schema(
   {
+    conversationId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "conversation",
+    },
     senderId: {
       type: Schema.Types.ObjectId,
       required: true,
@@ -13,13 +18,17 @@ const MessageSchema = new Schema(
       required: true,
       ref: "user",
     },
-    subject: {
-      type: String,
-      required: true,
+
+    parentMesssageId: {
+      // If it's null, then this means that the message itself is a parent message
+      type: Schema.Types.ObjectId,
+      index: true,
+      ref: "message",
+      default: null,
     },
     contentType: {
       type: String,
-      enum: ["text", "comment"], // Enum for different content types
+      enum: ["text", "comment", "mention"], // Enum for different content types
       required: true,
     },
     content: {
