@@ -201,3 +201,61 @@ exports.getSearch = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+exports.getProfileSearch = async (req, res) => {
+    try {
+        const { username, communityname, q, type, sort } = req.query;
+        let query = {};
+        if (username) {
+
+            const user = await User.findOne({ username });
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            query = { userId: user._id };
+        } else if (communityname) {
+
+            query = { community: communityname };
+        } else {
+            return res.status(400).json({ error: 'Invalid search: You must provide either username or communityname' });
+        }
+
+        if (!q || !type) {
+            return res.status(400).json({ error: 'Invalid search query or type' });
+        }
+        if (type === 'posts') {
+            let posts = await Post.find({ ...query, title: { $regex: q, $options: 'i' } });
+            const sortedPosts = filterPosts(posts, q);
+            if (sort === 'hot') {
+                posts = await sortPostHot(sortedPosts);
+            } else if (sort === 'new') {
+                posts = await sortPostNew(sortedPosts);
+            } else if (sort === 'top') {
+                posts = await sortPostTop(sortedPosts);
+            } else if (sort === 'comment') {
+                posts = await sortPostComment(sortedPosts);
+            } else {
+                posts = sortedPosts;
+            }
+            return res.status(200).json({ results: posts });
+        } else if (type === 'comments') {
+            let comments = await Comment.find({ ...query, content: { $regex: q, $options: 'i' } });
+            const sortedComments = filterComments(comments, q);
+            if (sort === 'new') {
+                comments = await sortCommentsNew(sortedComments);
+            } else if (sort === 'top') {
+                comments = await sortCommentsTop(sortedComments);
+            } else {
+                comments = sortedComments;
+            }
+            return res.status(200).json({ results: comments });
+        } else {
+            return res.status(400).json({ error: 'Invalid search type' });
+        }
+
+    } catch (err) {
+        console.error('Error occurred during search:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+

@@ -8,4 +8,8 @@ router
     .route("/")
     .get(auth.authentication, searchController.getSearch);
 
+router
+    .route("/user-profile")
+    .get(auth.authentication, searchController.getProfileSearch);
+
 module.exports = router;
