@@ -24,7 +24,7 @@ exports.sendMessage = async (req, res) => {
     }
     const recieverUser = await User.getUserByEmailOrUsername(recieverUsername);
     const recieverId = recieverUser._id;
-    if (recieverId === userId)
+    if (recieverId.toString() === userId.toString())
       return res.status(400).json({ error: "user cannot message himself" });
     const newConversation = new Conversation({
       subject,
@@ -58,12 +58,18 @@ exports.replyMessage = async (req, res) => {
     if (!messageToReply)
       return res.status(404).json({ error: "message not found" });
     const recieverId = messageToReply.senderId;
+    const senderId = messageToReply.recieverId;
+    if (senderId.toString() !== userId.toString()) {
+      return res
+        .status(400)
+        .json({ error: "you cannot reply on this message " });
+    }
 
     const content = req.body.content;
     if (!content) {
       return res.status(400).json({ error: "message content is required" });
     }
-    if (recieverId === userId)
+    if (recieverId.toString() === userId.toString())
       return res.status(400).json({ error: "user cannot reply on himself" });
 
     const conversationId = messageToReply.conversationId;

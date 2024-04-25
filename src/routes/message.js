@@ -7,6 +7,10 @@ router
   .post(auth.authentication, messageController.sendMessage);
 
 router
+  .route("/message/reply/:messageId")
+  .post(auth.authentication, messageController.replyMessage);
+
+router
   .route("/message/inbox/")
   .get(auth.authentication, messageController.getInboxMessages);
 
