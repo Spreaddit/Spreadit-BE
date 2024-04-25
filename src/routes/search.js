@@ -26,6 +26,8 @@ router
 
 router
     .route("/history")
-    .get(auth.authentication, searchController.getSearchHistory);
+    .get(auth.authentication, searchController.getSearchHistory)
+    .delete(auth.authentication, searchController.deleteSearchHistory);
+
 
 module.exports = router;
