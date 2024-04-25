@@ -48,6 +48,21 @@ const sortPostComment = async (posts) => {
     return posts.sort((a, b) => b.commentsCount - a.commentsCount);
 };
 
+const sortCommentsNew = async (comments) => {
+    return comments.sort((a, b) => b.timestamps - a.timestamps);
+};
+
+const sortCommentsTop = async (comments) => {
+    return comments.sort((a, b) => {
+        return (
+            b.upVotes.length -
+            b.downVotes.length -
+            (a.upVotes.length - a.downVotes.length)
+        );
+    });
+};
+
+
 const filterUsers = (users, query) => {
     const exactMatch = [];
     const startsWithQuery = [];
@@ -71,6 +86,8 @@ const filterPosts = (posts, query) => {
     const contains = [];
 
     posts.forEach(post => {
+        post.numberOfViews++;
+        post.save();
         if (post.title.toLowerCase() === query.toLowerCase()) {
             exactMatch.push(post);
         } else if (post.title.toLowerCase().startsWith(query.toLowerCase())) {
@@ -129,7 +146,7 @@ exports.getSearch = async (req, res) => {
         if (!q || !type) {
             return res.status(400).json({ error: 'Invalid search query or type' });
         }
-        if (type === 'users') {
+        if (type === 'people') {
             const users = await User.find({
                 $or: [
                     { username: q },
@@ -152,11 +169,22 @@ exports.getSearch = async (req, res) => {
             } else if (sort === 'comment') {
                 posts = await sortPostComment(sortedPosts);
             }
+            else {
+                posts = sortedPosts;
+            }
             return res.status(200).json({ results: posts });
         } else if (type === 'comments') {
-            const comments = await Comment.find({ content: { $regex: q, $options: 'i' } });
+            let comments = await Comment.find({ content: { $regex: q, $options: 'i' } });
             const sortedComments = filterComments(comments, q);
-            return res.status(200).json({ results: sortedComments });
+            if (sort === 'new') {
+                comments = await sortCommentsNew(sortedComments);
+            } else if (sort === 'top') {
+                comments = await sortCommentsTop(sortedComments);
+            }
+            else {
+                comments = sortedComments;
+            }
+            return res.status(200).json({ results: comments });
         } else if (type === 'communities') {
             const communities = await Community.find({ name: { $regex: q, $options: 'i' } });
             const sortedCommunities = filterCommunities(communities, q);
