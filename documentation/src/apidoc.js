@@ -421,11 +421,12 @@
  * @apiParam {String} emailToken Email verification token.
  *
  * @apiSuccess {String} message Success message indicating email verification success.
- *
+ * @apiSuccess {String} accessToken Generated user token.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "message": "Email verified successfully"
+ *       "accessToken": "AAAA%2FAAA%3DAAAAAAAAxxxxxx"
  *     }
  *
  * @apiError (401) Unauthorized Token is required.
