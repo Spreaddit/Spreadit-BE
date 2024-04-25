@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+require("./conversation");
+require("./user");
 
 const MessageSchema = new Schema(
   {
@@ -8,7 +10,15 @@ const MessageSchema = new Schema(
       required: true,
       ref: "conversation",
     },
-
+    conversationSubject: {
+      type: String,
+      required: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     senderId: {
       type: Schema.Types.ObjectId,
       required: true,
@@ -20,7 +30,7 @@ const MessageSchema = new Schema(
       ref: "user",
     },
 
-    parentMesssageId: {
+    parentMessageId: {
       // If it's null, then this means that the message itself is a parent message
       type: Schema.Types.ObjectId,
       index: true,

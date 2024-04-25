@@ -53,6 +53,10 @@ const CommentSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        repliesCount: {
+            type: Number,
+            default: 0
+        },
         attachments: [
             {
                 type: {
@@ -67,11 +71,11 @@ const CommentSchema = new Schema(
         ],
         hiddenBy: [{
             type: Schema.Types.ObjectId,
-            ref: 'User'
+            ref: 'user'
         }],
         savedBy: [{
             type: Schema.Types.ObjectId,
-            ref: 'User'
+            ref: 'user'
         }],
 
     },
