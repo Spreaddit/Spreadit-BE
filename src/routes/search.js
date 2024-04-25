@@ -20,4 +20,8 @@ router
     .route("/trending")
     .get(auth.authentication, searchController.getTrendingPosts);
 
+router
+    .route("/log")
+    .post(auth.authentication, searchController.logSearchActivity);
+
 module.exports = router;

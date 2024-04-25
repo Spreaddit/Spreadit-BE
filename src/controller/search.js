@@ -5,6 +5,7 @@ const Report = require("../models/report.js");
 const Community = require("../models/community.js");
 const mongoose = require("mongoose");
 const listingController = require("../controller/listing-controller");
+const SearchLog = require("../models/SearchLog.js");
 
 const jwt = require("jsonwebtoken");
 
@@ -339,6 +340,40 @@ exports.getTrendingPosts = async (req, res) => {
         res.status(200).json({ trendingPosts: topTrendingPosts });
     } catch (err) {
         console.error('Error occurred while getting trending posts:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.logSearchActivity = async (req, res) => {
+    try {
+        const { query, type, communityName, username, isInProfile } = req.body;
+
+        if (!query || !type || !['normal', 'community', 'user'].includes(type)) {
+            return res.status(400).json({ error: 'Invalid request body' });
+        }
+        const communityId = await Community.findOne({ name: communityName });
+        const userId = await User.findOne({ username });
+        let searchLog;
+        if (type === 'community' && !communityId) {
+            return res.status(400).json({ error: 'Community name is required for community search' });
+        } else if (type === 'user' && !userId) {
+            return res.status(400).json({ error: 'Username is required for user search' });
+        }
+        else {
+            searchLog = new SearchLog({
+                query,
+                type,
+                communityId: type === 'community' ? communityId : null,
+                userId: type === 'user' ? userId : null,
+                isInProfile: Boolean(isInProfile)
+            });
+        }
+
+        await searchLog.save();
+
+        return res.status(200).json({ message: 'Search activity logged successfully' });
+    } catch (err) {
+        console.error('Error occurred while logging search activity:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
