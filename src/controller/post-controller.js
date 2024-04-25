@@ -9,10 +9,9 @@ const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
 
-
-
 exports.getPostById = async (req, res) => {
   try {
+    const userId = req.user._id;
     const postId = req.params.postId;
     if (!postId || postId.length !== 24) {
       return res.status(404).json({ message: "Post not found" });
@@ -24,64 +23,50 @@ exports.getPostById = async (req, res) => {
     }
 
     const user = await User.findById(post.userId); // Fetch user who made the post
-    const savedPostIds = user ? user.savedPosts : [];
-
-    post.numberOfViews++;
-    const upVotesCount = post.upVotes ? post.upVotes.length : 0;
-    const downVotesCount = post.downVotes ? post.downVotes.length : 0;
-
-    let hasVotedOnPoll = false;
-    let userSelectedOption = null;
-    if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-      userSelectedOption = req.user.selectedPollOption;
-      hasVotedOnPoll = userSelectedOption !== null;
-    }
-
-    const isHidden = post.hiddenBy.includes(req.user._id);
 
     await User.findByIdAndUpdate(
-      req.user._id,
+      userId,
       { $addToSet: { recentPosts: postId } },
       { new: true }
     );
+    const postObject = await Post.getPostObject(post, userId);
+    const isHidden = postObject === null;
+    postObject.isHidden = isHidden;
 
-    await post.save();
-
-    const postInfo = {
-      _id: post._id,
-      userId: post.userId,
-      username: user.username,
-      userProfilePic: user.avatar,
-      hasUpvoted: post.upVotes.includes(req.user._id),
-      hasDownvoted: post.downVotes.includes(req.user._id),
-      hasVotedOnPoll: hasVotedOnPoll,
-      selectedPollOption: userSelectedOption,
-      isHidden: isHidden,
-      numberOfViews: post.numberOfViews,
-      votesUpCount: upVotesCount,
-      votesDownCount: downVotesCount,
-      sharesCount: post.sharesCount,
-      commentsCount: post.commentsCount,
-      title: post.title,
-      content: post.content,
-      community: post.community,
-      type: post.type,
-      link: post.link,
-      pollExpiration: post.pollExpiration,
-      isPollEnabled: post.isPollEnabled,
-      pollVotingLength: post.pollVotingLength,
-      isSpoiler: post.isSpoiler,
-      isNsfw: post.isNsfw,
-      sendPostReplyNotification: post.sendPostReplyNotification,
-      isCommentsLocked: post.isCommentsLocked,
-      isSaved: savedPostIds.includes(post._id.toString()),
-      date: post.date,
-      pollOptions: post.pollOptions,
-      attachments: post.attachments,
-    };
-    res.status(200).json(postInfo);
+    res.status(200).json(postObject);
   } catch (err) {
     console.error("Error fetching post:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.getAllUserPosts = async (req, res) => {
+  try {
+    const username = req.params.username;
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const userId = user._id;
+
+    const posts = await Post.find({ userId });
+
+    if (!posts || posts.length === 0) {
+      return res.status(404).json({ error: "User has no posts" });
+    }
+
+    const postInfoArray = await Promise.all(
+      posts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+
+        return postObject;
+      })
+    );
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+    res.status(200).json(filteredPostInfoArray);
+  } catch (err) {
+    console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -114,7 +99,20 @@ exports.getAllUserPosts = async (req, res) => {
     currentDate.setMinutes(currentDate.getMinutes() + 3);
 
     // Format the date and time to match the expected input format
-    const scheduledDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')} ${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}`;
+    const scheduledDate = `${currentDate.getFullYear()}-${(
+      currentDate.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}-${currentDate
+      .getDate()
+      .toString()
+      .padStart(2, "0")} ${currentDate
+      .getHours()
+      .toString()
+      .padStart(2, "0")}:${currentDate
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
     res.status(200).json(filteredPostInfoArray);
   } catch (err) {
@@ -124,9 +122,9 @@ exports.getAllUserPosts = async (req, res) => {
 };
 function scheduleScheduledPost(post, scheduledDate) {
   // Parse scheduledDate to extract date and time components
-  const [date, time] = scheduledDate.split(' ');
-  const [year, month, day] = date.split('-');
-  const [hour, minute] = time.split(':');
+  const [date, time] = scheduledDate.split(" ");
+  const [year, month, day] = date.split("-");
+  const [hour, minute] = time.split(":");
 
   // Create a Date object for the scheduled date and time
   const scheduledDateTime = new Date(year, month - 1, day, hour, minute);
@@ -328,7 +326,9 @@ exports.getAllPostsInCommunity = async (req, res) => {
     const posts = await Post.find({ community });
 
     if (!posts || posts.length === 0) {
-      return res.status(404).json({ error: "Posts not found in the specified community" });
+      return res
+        .status(404)
+        .json({ error: "Posts not found in the specified community" });
     }
 
     const postInfoArray = await Promise.all(
