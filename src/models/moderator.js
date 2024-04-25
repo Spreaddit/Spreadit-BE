@@ -6,19 +6,30 @@ require("./post");
 require("./community");
 const ModeratorSchema = new Schema(
   {
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
+    username: {
+        type: string,
         ref: 'user',
         required: true,
         unique: true,
     },
-    communityId: {
-        type: mongoose.Schema.Types.ObjectId,
+    communityName: {
+        type: string,
         ref: 'community',
         required: true,
         unique: true,
     },
-
+    managePostsAndComments: {
+        type: booleam,
+        default: "true",
+    },
+    manageUsers: {
+        type: booleam,
+        default: "true",
+    },
+    manageSettings: {
+        type: booleam,
+        default: "true",
+    }
   },
   {
     timestamps: true,

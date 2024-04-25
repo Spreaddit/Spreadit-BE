@@ -44,10 +44,12 @@ router.post('/test-notification', async (req, res) => {
 });
 
 //n put it with el login?? check with cross and front
-router.post("/add-subscription", auth, async (req, res) => {
+router.post("/notifications/subscribe", auth, async (req, res) => {
   try {
     const userId = req.user._id;
     const key = req.body.fcm;
+
+    const subscription = await NotificationSubscription({fcmToken: key})
 
     const userSub = new NotificationSubscription({
       userId: userId,
@@ -145,5 +147,6 @@ router.put("/read-notification", auth, async (req, res) => {
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
+
 
 module.exports = router;
