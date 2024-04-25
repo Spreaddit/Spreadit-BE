@@ -16,14 +16,14 @@ const SearchLogSchema = new mongoose.Schema({
     },
     communityId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Community',
+        ref: 'community',
         required: function () {
             return this.type === 'community';
         }
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'user',
         required: function () {
             return this.type === 'user';
         }

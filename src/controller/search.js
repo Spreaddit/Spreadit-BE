@@ -377,3 +377,29 @@ exports.logSearchActivity = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.getSearchHistory = async (req, res) => {
+    try {
+        const searchHistory = await SearchLog.find()
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .populate('communityId', 'name image')
+            .populate('userId', 'username avatar');
+
+        const formattedHistory = searchHistory.map(history => ({
+            query: history.query,
+            type: history.type,
+            communityId: history.communityId ? history.communityId._id.toString() : null,
+            communityName: history.communityId ? history.communityId.name : null,
+            communityProfilePic: history.communityId ? history.communityId.image : null,
+            userId: history.userId ? history.userId._id.toString() : null,
+            userName: history.userId ? history.userId.username : null,
+            userProfilePic: history.userId ? history.userId.avatar : null,
+        }));
+
+        return res.status(200).json(formattedHistory);
+    } catch (err) {
+        console.error('Error occurred while retrieving search history:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
