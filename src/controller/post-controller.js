@@ -109,6 +109,12 @@ exports.getAllUserPosts = async (req, res) => {
         return postObject;
       })
     );
+    const currentDate = new Date();
+    // Add 10 minutes to the current date
+    currentDate.setMinutes(currentDate.getMinutes() + 3);
+
+    // Format the date and time to match the expected input format
+    const scheduledDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')} ${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}`;
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
     res.status(200).json(filteredPostInfoArray);
   } catch (err) {
@@ -116,6 +122,28 @@ exports.getAllUserPosts = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+function scheduleScheduledPost(post, scheduledDate) {
+  // Parse scheduledDate to extract date and time components
+  const [date, time] = scheduledDate.split(' ');
+  const [year, month, day] = date.split('-');
+  const [hour, minute] = time.split(':');
+
+  // Create a Date object for the scheduled date and time
+  const scheduledDateTime = new Date(year, month - 1, day, hour, minute);
+
+  // Schedule the post using node-schedule
+  const job = schedule.scheduleJob(scheduledDateTime, async () => {
+    try {
+      await post.save();
+      console.log(`Scheduled post ${post._id} has been published.`);
+    } catch (error) {
+      console.error(`Error scheduling post ${post._id}:`, error);
+    }
+  });
+
+  // Optionally, you can return the job object for further manipulation or tracking
+  return job;
+}
 
 exports.createPost = async (req, res) => {
   try {
@@ -136,6 +164,7 @@ exports.createPost = async (req, res) => {
       isSpoiler,
       isNsfw,
       sendPostReplyNotification,
+      scheduledDate,
     } = req.body;
     let pollExpiration, isPollEnabled;
     if (!title || !community) {
@@ -160,6 +189,12 @@ exports.createPost = async (req, res) => {
           const expirationDate = new Date();
           expirationDate.setDate(expirationDate.getDate() + days);
           pollExpiration = expirationDate;
+
+          // Schedule the post to disable poll after expiration
+          schedule.scheduleJob(pollExpiration, async () => {
+            newPost.isPollEnabled = false;
+            await newPost.save();
+          });
         }
       }
       isPollEnabled = 1;
@@ -248,18 +283,20 @@ exports.createPost = async (req, res) => {
       isNsfw,
       sendPostReplyNotification,
     });
-
-    await newPost.save();
-    if (type === "Poll" && pollExpiration) {
-      schedule.scheduleJob(pollExpiration, async () => {
-        newPost.isPollEnabled = false;
-        await newPost.save();
+    if (scheduledDate) {
+      const job = scheduleScheduledPost(newPost, scheduledDate);
+      newPost.scheduledJobId = job.id;
+      return res.status(201).json({
+        message: "Post scheduled successfully",
+        postId: newPost._id,
+      });
+    } else {
+      await newPost.save();
+      return res.status(201).json({
+        message: "Post created successfully",
+        postId: newPost._id,
       });
     }
-    return res.status(201).json({
-      message: "Post created successfully",
-      postId: newPost._id,
-    });
   } catch (err) {
     console.error("Error creating post:", err);
     return res.status(500).json({ error: "Internal server error" });
