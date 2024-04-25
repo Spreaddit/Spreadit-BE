@@ -119,7 +119,6 @@
  *           "birth_date": "1990-01-01",
  *           "phone": "123456789",
  *           "avatar_url": "https://example.com/avatar.jpg",
- *           "background_picture_url": "https://example.com/background.jpg",
  *           "location": "City, Country",
  *           "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
  *           "followers_count": 100,
@@ -563,7 +562,6 @@
  * @apiSuccess {String} comment.user.birth_date Birth date of the user who posted the comment.
  * @apiSuccess {String} comment.user.phone Phone number of the user who posted the comment.
  * @apiSuccess {String} comment.user.avatar_url URL of the user's avatar.
- * @apiSuccess {String} comment.user.background_picture_url URL of the user's background picture.
  * @apiSuccess {String} comment.user.location Location of the user who posted the comment.
  * @apiSuccess {String} comment.user.bio Bio of the user who posted the comment.
  * @apiSuccess {Number} comment.user.followers_count Number of followers of the user who posted the comment.
@@ -1092,7 +1090,6 @@
  * @apiSuccess {String} reply.user.birth_date Birth date of the user who posted the reply.
  * @apiSuccess {String} reply.user.phone Phone number of the user who posted the reply.
  * @apiSuccess {String} reply.user.avatar_url URL of the user's avatar.
- * @apiSuccess {String} reply.user.background_picture_url URL of the user's background picture.
  * @apiSuccess {String} reply.user.location Location of the user who posted the reply.
  * @apiSuccess {String} reply.user.bio Bio of the user who posted the reply.
  * @apiSuccess {Number} reply.user.followers_count Number of followers of the user who posted the reply.

@@ -76,11 +76,6 @@ const UserSchema = new Schema(
         index: true,
       },
     ],
-    background_picture: {
-      type: String,
-      trim: true,
-      default: "",
-    },
     roleId: {
       type: Schema.Types.ObjectId,
       ref: "userRole",
@@ -371,7 +366,7 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
-UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
+UserSchema.method.getUserByEmailOrUsername = async function (usernameOremail) {
   const user = await User.find({
     $or: [{ email: usernameOremail }, { username: usernameOremail }],
   });
@@ -453,7 +448,6 @@ UserSchema.statics.generateUserObject = async function (user) {
       birth_date: user.birth_date,
       phone: user.phone_number,
       avatar_url: user.avatar,
-      background_picture_url: user.background_picture,
       location: user.location,
       followers_count: user.followers.length,
       following_count: user.followings.length,
