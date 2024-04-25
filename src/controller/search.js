@@ -351,25 +351,41 @@ exports.logSearchActivity = async (req, res) => {
         if (!query || !type || !['normal', 'community', 'user'].includes(type)) {
             return res.status(400).json({ error: 'Invalid request body' });
         }
+
         const communityId = await Community.findOne({ name: communityName });
         const userId = await User.findOne({ username });
-        let searchLog;
+
         if (type === 'community' && !communityId) {
             return res.status(400).json({ error: 'Community name is required for community search' });
         } else if (type === 'user' && !userId) {
             return res.status(400).json({ error: 'Username is required for user search' });
         }
-        else {
-            searchLog = new SearchLog({
+        let existingSearchLog = await SearchLog.findOne({ query, type });
+
+        if (existingSearchLog) {
+            existingSearchLog.communityId = type === 'community' ? communityId : null;
+            existingSearchLog.userId = type === 'user' ? userId : null;
+            existingSearchLog.isInProfile = Boolean(isInProfile);
+            existingSearchLog.updatedAt = Date.now();
+            await existingSearchLog.save();
+        } else {
+            const searchLog = new SearchLog({
                 query,
                 type,
                 communityId: type === 'community' ? communityId : null,
                 userId: type === 'user' ? userId : null,
                 isInProfile: Boolean(isInProfile)
             });
-        }
 
-        await searchLog.save();
+            const count = await SearchLog.countDocuments();
+
+            if (count >= 5) {
+                const oldestSearchLog = await SearchLog.findOne().sort({ updateddAt: 1 });
+                await oldestSearchLog.deleteOne();
+            }
+
+            await searchLog.save();
+        }
 
         return res.status(200).json({ message: 'Search activity logged successfully' });
     } catch (err) {
@@ -378,10 +394,12 @@ exports.logSearchActivity = async (req, res) => {
     }
 };
 
+
+
 exports.getSearchHistory = async (req, res) => {
     try {
         const searchHistory = await SearchLog.find()
-            .sort({ createdAt: -1 })
+            .sort({ updatedAt: -1 })
             .limit(5)
             .populate('communityId', 'name image')
             .populate('userId', 'username avatar');
@@ -400,6 +418,20 @@ exports.getSearchHistory = async (req, res) => {
         return res.status(200).json(formattedHistory);
     } catch (err) {
         console.error('Error occurred while retrieving search history:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.deleteSearchHistory = async (req, res) => {
+    try {
+        const query = req.query.query;
+        const deletedSearchLog = await SearchLog.findOneAndDelete({ query });
+        if (!deletedSearchLog) {
+            return res.status(404).json({ error: 'Search history record not found' });
+        }
+        return res.status(200).json({ message: 'Search history record deleted successfully' });
+    } catch (err) {
+        console.error('Error occurred while deleting search history record:', err);
         return res.status(500).json({ error: 'Internal server error' });
     }
 };

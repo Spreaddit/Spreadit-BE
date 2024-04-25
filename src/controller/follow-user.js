@@ -1,3 +1,4 @@
+const User = require("../models/user");
 const FollowUser = require("../models/user");
 const jwt = require("jsonwebtoken");
 
@@ -72,6 +73,29 @@ exports.isFollowed = async (req, res) => {
     }
     const isFollowed = user.followers.includes(followerID);
     res.status(200).json({ isFollowed: isFollowed });
+  } catch (err) {
+    console.error("Internal server error", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.getFollowers = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId).populate("followers");
+    if (!user || !user.followers) {
+      return res
+        .status(404)
+        .json({ error: "User not found or has no followers" });
+    }
+    const followers = user.followers.map((follower) => ({
+      isFollowed: follower.followers.includes(userId),
+      username: follower.username,
+      avatar: follower.avatar,
+    }));
+
+    // Send the followers data in the response
+    res.status(200).json({ followers });
   } catch (err) {
     console.error("Internal server error", err);
     res.status(500).json({ error: "Internal server error" });
