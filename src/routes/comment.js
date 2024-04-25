@@ -9,6 +9,9 @@ const upload = require("../service/fileUpload");
 const { uploadMedia } = require("../service/cloudinary");
 const config = require("./../configuration");
 const Report = require("../models/report");
+const Notification = require("./../models/notification");
+const NotificationType = require("./../../seed-data/constants/notificationType");
+require("./../models/constants/notificationType");
 const router = express.Router();
 
 router.post(
@@ -72,6 +75,24 @@ router.post(
       //console.log(userId);
       const commentObj = await Comment.getCommentObject(newComment, userId);
       //console.log(commentObj);
+
+      //notification
+      userWhoCreatedPost = await User.findById(post.userId);
+      if (!post.userId.equals(req.user._id) && userWhoCreatedPost.posts == true) {
+        await Notification.sendNotification(
+          post.userId,
+          "You have recieved a new notification",
+          `${req.user.username} commented your post`
+        );
+        const notification = new Notification({
+          userId: post.userId,
+          content: `${req.user.username} commented your post`,
+          relatedUserId: req.user._id,
+          notificationTypeId: NotificationType.comment._id,
+          postId: post._id,
+        });
+        await notification.save();
+      }
       res.status(201).send({
         comment: commentObj,
         message: "Comment has been added successfully",
@@ -345,6 +366,24 @@ router.post(
       });
       const replyObj = await Comment.getCommentObject(newReply, userId);
 
+      //notification
+      userWhoCreatedComment = await User.findById(existingComment.userId);
+      if (!existingComment.userId.equals(req.user._id) && userWhoCreatedComment.comments == true) {
+        await Notification.sendNotification(
+          post.userId,
+          "You have recieved a new notification",
+          `${req.user.username} replied on your comment`
+        );
+        const notification = new Notification({
+          userId: post.userId,
+          content: `${req.user.username} replied on your comment`,
+          relatedUserId: req.user._id,
+          notificationTypeId: NotificationType.commentReply._id,
+          commentId: existingComment._id,
+        });
+        await notification.save();
+      }
+
       res.status(201).send({
         reply: replyObj,
         message: "Reply has been added successfully",
@@ -482,8 +521,23 @@ router.post(
 
       comment.upVotes.push(userId);
       await comment.save();
-
       netVotes = netVotes + 1;
+      userWhoCreatedComment = await User.findById(comment.userId);
+      if (!comment.userId.equals(req.user._id) && userWhoCreatedComment.upvoteComments == true) {
+        await Notification.sendNotification(
+          comment.userId,
+          "You have recieved a new notification",
+          `${req.user.username} upvoted your comment`
+        );
+        const notification = new Notification({
+          userId: comment.userId,
+          content: `${req.user.username} upvoted your comment`,
+          relatedUserId: req.user._id,
+          notificationTypeId: NotificationType.upvoteComments._id,
+          commentId: comment._id,
+        });
+        await notification.save();
+      }
       //console.log(netVotes)
 
       res.status(200).send({

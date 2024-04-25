@@ -13,28 +13,6 @@ const { uploadMedia } = require("../service/cloudinary");
 const config = require("./../configuration");
 require("./../models/constants/notificationType");
 
-
-
-//when the user changes his username it should be updated in the posts as well 
-
-router.get("/vapid-key", auth.authentication, async (req, res) => {
-  try {
-    const vapidKeys = webPush.generateVAPIDKeys();
-    if (vapidKeys) {
-      return res.status(200).send({
-        publicKey: vapidKeys.publicKey,
-        privateKey: vapidKeys.privateKey,
-      });
-    } else {
-      return res.status(500).send({
-        message: "Vapid keys could not be generated",
-      });
-    }
-  } catch (error) {
-    res.status(500).send(error.toString());
-  }
-});
-
 router.post('/test-notification', async (req, res) => {
   try {
     const { userId, title, body, key } = req.body;
@@ -65,38 +43,113 @@ router.post('/test-notification', async (req, res) => {
   }
 });
 
-/* router.post("/add-subscription", auth.authentication, async (req, res) => {
+//n put it with el login?? check with cross and front
+router.post("/notifications/subscribe", auth.authentication, async (req, res) => {
   try {
     const userId = req.user._id;
-    const subscription = req.body.subscription;
-    const publicKey = req.body.publicKey;
-    const privateKey = req.body.privateKey;
-    const key = "BJ4sgG7sC8iKNkb_Sj3XgLZjJ0DnBmRkFk1QjKu0GbbO3eDeD2Cjx4y0TS78EduHm1zdKqWNLLaUleaglEtuIOU";
+    const key = req.body.fcm;
 
-    const userSub = new NotificationSubscription({
-      userId: userId,
-      fcmToken: key,
-    });
-    console.log(userSub);
-    const saved = await userSub.save();
-    const notification = await Notification.sendNotification(userId, "tt",
-      "hello amira"
-    )
-    if (notification) {
-      console.log("heeee");
-    }
-    if (saved) {
+    const subscription = await NotificationSubscription.find({fcmToken: key})
+
+    if(!subscription){
+      const userSub = new NotificationSubscription({
+        userId: userId,
+        fcmToken: key,
+      });
+      //console.log(userSub);
+      const saved = await userSub.save();
+      if (saved) {
+        return res
+          .status(200)
+          .send({ message: "Subscription added successfully" });
+      } else {
+        return res
+          .status(500)
+          .send({ message: "Subscription could not be added" });
+      }
+
+    }else{
       return res
-        .status(200)
-        .send({ message: "Subscription added successfully" });
-    } else {
-      return res
-        .status(500)
-        .send({ message: "Subscription could not be added" });
+          .status(400)
+          .send({ message: "Subscription already there" });
     }
   } catch (error) {
     res.status(500).send(error.toString());
   }
 });
- */
+
+
+router.get( "/notifications", auth.authentication, async (req, res) => {
+    try {
+      const user = req.user;
+      const result = await Notification.find({ userId: user._id })
+        .sort({ createdAt: -1 })
+        .populate({
+          path: "relatedUserId",
+        })
+        .populate({
+          path: "notificationTypeId",
+        })
+        .populate({
+          path: "commentId",
+        })
+        .populate({
+          path: "postId",
+        })
+        .populate({
+          path: "userId",
+        });
+
+      if (!result) {
+        res.status(404).send({ error_message: "Notifications not found" });
+      }
+
+      const notifications = [];
+      for (let i = 0; i < result.length; i++) {
+        const notificationObject = await Notification.getNotificationObject(
+          result[i]
+        );
+        notifications.push(notificationObject);
+      }
+      res.status(200).send({ notifications: notifications });
+    } catch (err) {
+      res.status(500).send(err.toString());
+    }
+  }
+);
+
+router.put("/read-notification", auth.authentication, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const notificationId = req.body.notificationId;
+    const notification = await Notification.findOne({
+      _id: notificationId,
+      userId: userId,
+    });
+    if (!notification) {
+      return res.status(404).send({ message: "Notifiction is not found" });
+    }
+    const notificationRead = await Notification.findByIdAndUpdate(
+      notificationId,
+      {
+        isRead: true,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    const notificationObject = await Notification.getNotificationObject(
+      notificationRead
+    );
+    res.status(200).send({
+      message: "Notification has been read successfully",
+      notification: notificationObject,
+    });
+  } catch (error) {
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+
 module.exports = router;
