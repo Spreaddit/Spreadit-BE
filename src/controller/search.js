@@ -259,3 +259,45 @@ exports.getProfileSearch = async (req, res) => {
     }
 }
 
+
+exports.getSearchSuggestions = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q) {
+            return res.status(400).json({ error: 'Invalid search query' });
+        }
+
+        const exactUserMatch = await User.find({ username: q });
+
+        const exactCommunityMatch = await Community.find({ name: q });
+
+        const startsWithUser = await User.find({ username: { $regex: `^${q}`, $options: 'i' } });
+        const startsWithCommunity = await Community.find({ name: { $regex: `^${q}`, $options: 'i' } });
+
+        const containsUser = await User.find({ username: { $regex: q, $options: 'i' } });
+        const containsCommunity = await Community.find({ name: { $regex: q, $options: 'i' } });
+
+        const users = [
+            ...exactUserMatch,
+            ...startsWithUser.filter(user => !exactUserMatch.find(u => u._id.equals(user._id))),
+            ...containsUser.filter(user => !startsWithUser.find(u => u._id.equals(user._id))),
+        ];
+
+        const communities = [
+            ...exactCommunityMatch,
+            ...startsWithCommunity.filter(community => !exactCommunityMatch.find(c => c._id.equals(community._id))),
+            ...containsCommunity.filter(community => !startsWithCommunity.find(c => c._id.equals(community._id))),
+        ];
+
+        const suggestedUsers = users.slice(0, 5);
+        const suggestedCommunities = communities.slice(0, 5);
+
+        return res.status(200).json({
+            communities: suggestedCommunities,
+            users: suggestedUsers
+        });
+    } catch (err) {
+        console.error('Error occurred while retrieving search suggestions:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};

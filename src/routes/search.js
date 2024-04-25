@@ -9,7 +9,11 @@ router
     .get(auth.authentication, searchController.getSearch);
 
 router
-    .route("/user-profile")
+    .route("/profile")
     .get(auth.authentication, searchController.getProfileSearch);
+
+router
+    .route("/suggestions")
+    .get(auth.authentication, searchController.getSearchSuggestions);
 
 module.exports = router;
