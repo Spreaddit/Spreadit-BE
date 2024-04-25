@@ -213,7 +213,8 @@ const UserSchema = new Schema(
     avatar: {
       type: String,
       trim: true,
-      default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+      default:
+        "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     },
     banner: {
       type: String,
@@ -366,7 +367,7 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
-UserSchema.method.getUserByEmailOrUsername = async function (usernameOremail) {
+UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
   const user = await User.find({
     $or: [{ email: usernameOremail }, { username: usernameOremail }],
   });
@@ -437,7 +438,6 @@ UserSchema.statics.verifyCredentials = async function (
 
 UserSchema.statics.generateUserObject = async function (user) {
   try {
-
     //const banInfo = await banUserModel.findOne({ userId: user._id });
     const userObj = {
       id: user._id,
