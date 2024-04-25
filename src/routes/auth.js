@@ -368,7 +368,6 @@ router.post("/verify-email/:emailToken", async (req, res) => {
     if (!emailToken) {
       return res.status(401).json({ message: "Token is required" });
     }
-
     const decodedToken = jwt.jwtDecode(emailToken);
     const email = decodedToken.email;
     const user = await User.getUserByEmailOrUsername(email);
@@ -376,9 +375,10 @@ router.post("/verify-email/:emailToken", async (req, res) => {
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
+    const accessToken = await user.generateToken();
     user.isVerified = 1;
     await user.save();
-    res.status(200).send({ message: "Email verified successfully" });
+    res.status(200).send({ message: "Email verified successfully", accessToken: accessToken });
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Internal server error" });
