@@ -15,6 +15,7 @@ const communityRoutes = require("./routes/community");
 const commentRoutes = require("./routes/comment");
 const listingRoutes = require("./routes/listing");
 const messageRoutes = require("./routes/message");
+const startUnbanScheduler = require('./models/unbanScheduler');
 
 //seeding
 const UserRoleSeeder = require("../seeders/user-role.seeder");
@@ -40,6 +41,7 @@ app.use(
     origin: "*",
   })
 );
+startUnbanScheduler();
 app.use("/api", userRoutes);
 app.use("/api", authRoutes);
 app.use("/api/settings", settingsRoutes);
