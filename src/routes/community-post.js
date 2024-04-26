@@ -12,4 +12,8 @@ router
     .route("/community/moderation/:communityName/get-spam-posts")
     .get(auth.authentication, communityPostController.getSpamPosts);
 
+router
+    .route("/community/moderation/:communityName/get-edited-posts")
+    .get(auth.authentication, communityPostController.getEdititedPostsHistory);
+
 module.exports = router;

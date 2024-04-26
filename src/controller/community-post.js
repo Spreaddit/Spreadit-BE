@@ -76,3 +76,30 @@ exports.getSpamPosts = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+exports.getEdititedPostsHistory = async (req, res) => {
+    try {
+        const { communityName } = req.params;
+        const community = await Community.findOne({ name: communityName });
+        if (!community) {
+            return res.status(404).json({ error: 'Community not found' });
+        }
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+        const editedPosts = await Post.find({
+            community: communityName,
+            'content.1': { $exists: true }
+        });
+
+        if (editedPosts.length === 0) {
+            return res.status(404).json({ error: 'Edited posts not found' });
+        }
+
+        return res.status(200).json(editedPosts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
