@@ -4,10 +4,38 @@ const User = require("../models/user");
 const Report = require("../models/report.js");
 const Community = require("../models/community.js");
 const mongoose = require("mongoose");
+const Moderator = require("../models/moderator.js");
 
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
+
+async function isModeratorOrCreator(userId, communityName) {
+  const community = await Community.findOne({ name: communityName });
+  if (!community) {
+    return false;
+  }
+  if (community.creator.equals(userId)) {
+    return true;
+  }
+  const isModerator = community.moderators.some(moderatorId => moderatorId.equals(userId));
+  if (isModerator) {
+    return true;
+  }
+
+  return false;
+}
+
+
+async function checkPermission(username, communityName) {
+  const moderator = await Moderator.findOne({ username, communityName });
+  console.log(moderator);
+  if (!moderator) {
+    return false;
+  }
+
+  return moderator.managePostsAndComments === true;
+}
 
 exports.getPostById = async (req, res) => {
   try {
@@ -517,19 +545,29 @@ exports.editPost = async (req, res) => {
 exports.spoilerPostContent = async (req, res) => {
   try {
     const { postId } = req.params;
+    const userId = req.user._id;
+
     if (!postId || postId.length !== 24) {
       return res.status(404).json({ message: "Post not found" });
     }
+
     const post = await Post.findById(postId);
 
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
+
+    const isModerator = await isModeratorOrCreator(userId, post.community);
+    if (!isModerator) {
+      return res.status(402).json({ message: "Not a moderator" });
+    }
+    const hasPermission = await checkPermission(req.user.username, post.community);
+    if (!hasPermission) {
+      return res.status(406).json({ message: "Moderator doesn't have permission" });
+    }
     post.isSpoiler = true;
     await post.save();
-    return res
-      .status(200)
-      .json({ message: "Post content blurred successfully" });
+    return res.status(200).json({ message: "Post content blurred successfully" });
   } catch (error) {
     console.error("Error spoiling post content:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -539,43 +577,65 @@ exports.spoilerPostContent = async (req, res) => {
 exports.unspoilerPostContent = async (req, res) => {
   try {
     const { postId } = req.params;
+    const userId = req.user._id;
+
     if (!postId || postId.length !== 24) {
       return res.status(404).json({ message: "Post not found" });
     }
+
     const post = await Post.findById(postId);
 
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    post.isSpoiler = false;
+    const isModerator = await isModeratorOrCreator(userId, post.community);
+    if (!isModerator) {
+      return res.status(402).json({ message: "Not a moderator" });
+    }
+    const hasPermission = await checkPermission(req.user.username, post.community);
+    if (!hasPermission) {
+      return res.status(406).json({ message: "Moderator doesn't have permission" });
+    }
 
+    post.isSpoiler = false;
     await post.save();
-    return res
-      .status(200)
-      .json({ message: "Post content unblurred successfully" });
+    return res.status(200).json({ message: "Post content unblurred successfully" });
   } catch (error) {
     console.error("Error unspoiling post content:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
 
+
 exports.lockPostComments = async (req, res) => {
   try {
     const { postId } = req.params;
+    const userId = req.user._id;
+
     if (!postId || postId.length !== 24) {
       return res.status(404).json({ message: "Post not found" });
     }
+
     const post = await Post.findById(postId);
 
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
+
+    const isModerator = await isModeratorOrCreator(userId, post.community);
+    if (!isModerator) {
+      return res.status(402).json({ message: "Not a moderator" });
+    }
+
+    const hasPermission = await checkPermission(req.user.username, post.community);
+    if (!hasPermission) {
+      return res.status(406).json({ message: "Moderator doesn't have permission" });
+    }
+
     post.isCommentsLocked = true;
     await post.save();
-    return res
-      .status(200)
-      .json({ message: "Post comments locked successfully" });
+    return res.status(200).json({ message: "Post comments locked successfully" });
   } catch (error) {
     console.error("Error locking post comments:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -585,25 +645,37 @@ exports.lockPostComments = async (req, res) => {
 exports.unlockPostComments = async (req, res) => {
   try {
     const { postId } = req.params;
+    const userId = req.user._id;
+
     if (!postId || postId.length !== 24) {
       return res.status(404).json({ message: "Post not found" });
     }
+
     const post = await Post.findById(postId);
 
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
 
+    const isModerator = await isModeratorOrCreator(userId, post.community);
+    if (!isModerator) {
+      return res.status(402).json({ message: "Not a moderator" });
+    }
+
+    const hasPermission = await checkPermission(req.user.username, post.community);
+    if (!hasPermission) {
+      return res.status(406).json({ message: "Moderator doesn't have permission" });
+    }
+
     post.isCommentsLocked = false;
     await post.save();
-    return res
-      .status(200)
-      .json({ message: "Post comments unlocked successfully" });
+    return res.status(200).json({ message: "Post comments unlocked successfully" });
   } catch (error) {
     console.error("Error unlocking post comments:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 exports.upvotePost = async (req, res) => {
   try {
@@ -881,13 +953,28 @@ exports.getHiddenPosts = async (req, res) => {
 exports.markPostAsNsfw = async (req, res) => {
   try {
     const postId = req.params.postId;
+    const userId = req.user._id;
+
     if (!postId || postId.length !== 24) {
       return res.status(404).json({ message: "Post not found" });
     }
-    const post = await Post.findByIdAndUpdate(postId, { isNsfw: true });
+
+    const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+
+    const isModerator = await isModeratorOrCreator(userId, post.community);
+    if (!isModerator) {
+      return res.status(402).json({ message: "Not a moderator" });
+    }
+
+    const hasPermission = await checkPermission(req.user.username, post.community);
+    if (!hasPermission) {
+      return res.status(406).json({ message: "Moderator doesn't have permission" });
+    }
+
+    await Post.findByIdAndUpdate(postId, { isNsfw: true });
     res.status(200).json({ message: "Post updated successfully" });
   } catch (error) {
     console.error(error);
@@ -897,14 +984,29 @@ exports.markPostAsNsfw = async (req, res) => {
 
 exports.markPostAsNotNsfw = async (req, res) => {
   const postId = req.params.postId;
+  const userId = req.user._id;
+
   if (!postId || postId.length !== 24) {
     return res.status(404).json({ message: "Post not found" });
   }
+
   try {
-    const post = await Post.findByIdAndUpdate(postId, { isNsfw: false });
+    const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+
+    const isModerator = await isModeratorOrCreator(userId, post.community);
+    if (!isModerator) {
+      return res.status(402).json({ message: "Not a moderator" });
+    }
+
+    const hasPermission = await checkPermission(req.user.username, post.community);
+    if (!hasPermission) {
+      return res.status(406).json({ message: "Moderator doesn't have permission" });
+    }
+
+    await Post.findByIdAndUpdate(postId, { isNsfw: false });
     res.status(200).json({ message: "Post updated successfully" });
   } catch (error) {
     console.error(error);
@@ -1040,3 +1142,31 @@ exports.deleteRecentPost = async (req, res) => {
   }
 };
 
+exports.getReportedPostsInCommunity = async (req, res) => {
+  try {
+    const { communityName } = req.params;
+    const userId = req.user._id;
+
+    const isModerator = await isModeratorOrCreator(userId, communityName);
+    if (!isModerator) {
+      return res.status(402).json({ message: "Not a moderator" });
+    }
+
+    const hasPermission = await checkPermission(req.user.username, communityName);
+    if (!hasPermission) {
+      return res.status(406).json({ message: "Moderator doesn't have permission" });
+    }
+
+    const reportedPosts = await Report.find({ postId: { $exists: true } })
+      .populate('postId')
+
+    if (!reportedPosts || reportedPosts.length === 0) {
+      return res.status(404).json({ message: "No reported posts found in the community" });
+    }
+
+    res.status(200).json({ reportedPosts });
+  } catch (error) {
+    console.error("Error fetching reported posts:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
