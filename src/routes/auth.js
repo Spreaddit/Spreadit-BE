@@ -35,9 +35,10 @@ router.post("/signup", async (req, res) => {
       const emailToken = await savedUser.generateEmailToken();
       let emailContent;
       if (isCross) {
-        emailContent = `To confirm your email, click the link below: app.spreadit.me/verify-email/${emailToken}`;
+        //emailContent = `To confirm your email, click the link below: app.spreadit.me/#/home/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: https://www.localhost:8000/#/home/${emailToken}`;
       } else {
-        emailContent = `To confirm your email, click the link below: www.spreadit.me/verify-email/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: www.spreadit.me/home/${emailToken}`;
       }
       await sendEmail(savedUser.email, 'Please Confirm Your Email', emailContent);
 
@@ -291,7 +292,7 @@ router.post("/app/forgot-password", async (req, res) => {
 
     const resetToken = await user.generateResetToken();
 
-    const emailContent = `app.spreadit.me/reset-password-by-token?token=${resetToken}`;
+    const emailContent = `app.spreadit.me/#/forgetpassword/reset-password-by-token?token=${resetToken}`;
     await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
 
     res.status(200).send({ message: "Password reset link sent successfully" });
