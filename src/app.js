@@ -26,6 +26,7 @@ const CommentSeeder = require("../seeders/comment.seeder");
 const CommunitySeeder = require("../seeders/community.seeder");
 const UserSeeder = require("../seeders/user.seeder");
 const RuleSeeder = require("../seeders/rule.seeder");
+const ModeratorSeeder = require("../seeders/moderator.seeder");
 
 const app = express();
 const port = 80;
@@ -73,6 +74,7 @@ mongoose
       new RuleSeeder(),
       new PostSeeder(),
       new CommentSeeder(),
+      new ModeratorSeeder(),
     ];
     for (const seeder of seeders) {
       const shouldRun = await seeder.shouldRun();

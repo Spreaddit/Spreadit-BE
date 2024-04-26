@@ -1,41 +1,41 @@
 const mongoose = require("mongoose");
-const { boolean } = require("yargs");
 const Schema = mongoose.Schema;
 
 require("./user");
 require("./post");
 require("./community");
+
 const ModeratorSchema = new Schema(
   {
     username: {
       type: String,
       ref: 'user',
       required: true,
-      unique: true,
     },
     communityName: {
       type: String,
       ref: 'community',
       required: true,
-      unique: true,
     },
     managePostsAndComments: {
       type: Boolean,
-      default: "true",
+      default: true,
     },
     manageUsers: {
       type: Boolean,
-      default: "true",
+      default: true,
     },
     manageSettings: {
       type: Boolean,
-      default: "true",
+      default: true,
     }
   },
   {
     timestamps: true,
   }
 );
+
+ModeratorSchema.index({ username: 1, communityName: 1 }, { unique: true });
 
 const Moderator = mongoose.model("moderator", ModeratorSchema);
 

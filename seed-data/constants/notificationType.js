@@ -63,5 +63,5 @@ exports.follow = follow;
 exports.commentReply = commentReply;
 exports.comment = comment;
 exports.upvotePsts = upvotePsts;
-exports.moderatorInvitation = moderatorInvitation;
+exports.accountUpdate = accountUpdate;
 exports.message = message;
