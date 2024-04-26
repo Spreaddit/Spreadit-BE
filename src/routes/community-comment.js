@@ -5,11 +5,11 @@ const upload = require("../service/fileUpload");
 const auth = require("../middleware/authentication");
 
 router
-    .route("/community/moderation/:communityName/spam-post/:postId")
+    .route("/community/moderation/:communityName/spam-comment/:postId/:commentId")
     .post(auth.authentication, communityCommentController.spamComment);
 
 router
-    .route("/community/moderation/:communityName/get-spam-posts")
+    .route("/community/moderation/:communityName/get-spam-comments")
     .get(auth.authentication, communityCommentController.getSpamComments);
 
 module.exports = router;
