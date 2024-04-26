@@ -62,7 +62,7 @@ const CommentSchema = new Schema(
             default: false,
         },
         lastEdit: {
-            type: string,
+            type: String,
             default: "",
         },
         repliesCount: {
@@ -73,11 +73,11 @@ const CommentSchema = new Schema(
             {
                 type: {
                     type: String,
-                    default: '' 
+                    default: ''
                 },
                 link: {
                     type: String,
-                    default: '' 
+                    default: ''
                 }
             }
         ],
@@ -101,7 +101,7 @@ CommentSchema.statics.getCommentObject = async function (
     comment,
     userid,
     withUserInfo = true
-  ) {
+) {
     //console.log(comment.username);
     const likesCount = comment.upVotes.length - comment.downVotes.length;
     const repliesCount = await Comment.countDocuments({
@@ -109,29 +109,29 @@ CommentSchema.statics.getCommentObject = async function (
     });
     //console.log(userid);
     let userObject = {};
-    
-    if (withUserInfo) {
-      const User = mongoose.model("user");
-      if(userid === comment.userId ){
-      const user = await User.findOne({ _id: comment.userId });
-      //console.log(user);
-      userObject = await User.generateUserObject(user, userid);
-      //console.log(userObject);
-      }
-      else{
-        const user = await User.findOne({ _id: comment.userId });
-        userObject = await User.generateUserObject(user, userid);
 
-      }
+    if (withUserInfo) {
+        const User = mongoose.model("user");
+        if (userid === comment.userId) {
+            const user = await User.findOne({ _id: comment.userId });
+            //console.log(user);
+            userObject = await User.generateUserObject(user, userid);
+            //console.log(userObject);
+        }
+        else {
+            const user = await User.findOne({ _id: comment.userId });
+            userObject = await User.generateUserObject(user, userid);
+
+        }
     }
     const Post = mongoose.model("post");
     const isHidden = comment.hiddenBy.includes(userid);
     const isSaved = comment.savedBy.includes(userid);
     const isUpvoted = comment.upVotes.includes(userid);
     const isDownVoted = comment.downVotes.includes(userid);
-    let postTitle; 
+    let postTitle;
     let subredditTitle;
-    if(comment.parentCommentId === null){
+    if (comment.parentCommentId === null) {
         const post = await Post.findOne({ _id: comment.postId });
         if (post) {
             postTitle = post.title;
@@ -147,7 +147,7 @@ CommentSchema.statics.getCommentObject = async function (
         if (post) {
             postTitle = post.title;
             subredditTitle = post.community;
-        }     
+        }
     }
 
 
@@ -173,7 +173,7 @@ CommentSchema.statics.getCommentObject = async function (
       is_locked: comment.isLocked,
       replies: [],
     };
-    
+
     return commentInfo;
 };
 
