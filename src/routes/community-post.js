@@ -16,9 +16,6 @@ router
     .route("/community/moderation/:communityName/get-edited-posts")
     .get(auth.authentication, communityPostController.getEdititedPostsHistory);
 
-router
-    .route("/community/moderation/:communityName/spam-post/:postId/add-removal-reason")
-    .get(auth.authentication, communityPostController.addRemovalReasonPosts);
 
 router
     .route("/community/moderation/:communityName/:postId/lock-post")

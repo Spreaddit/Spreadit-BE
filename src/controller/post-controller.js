@@ -223,17 +223,6 @@ exports.createPost = async (req, res) => {
         });
       }
     }
-    /*  const communityObject = await Community.findOne({ name: community });
-         if (!communityObject) {
-             return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
-         }
-         const communityObjectID = communityObject._id;
-         if (!user.subscribedCommunities.some(id => id.equals(communityObjectID)) && user.username != community) {
-             return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
-         } */
-    /*         if (!user.communities.includes(community)) {
-                    return res.status(400).json({ error: 'You can only choose communities that you have already joined' });
-                } */
     if (
       type != "Post" &&
       type != "Images & Video" &&
@@ -315,10 +304,16 @@ exports.getAllPostsInCommunity = async (req, res) => {
 
     const postInfoArray = await Promise.all(
       posts.map(async (post) => {
+        // Check if the post is removed or marked as spam
+        if (post.isRemoved || post.isSpam) {
+          return null; // Skip this post
+        }
+
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
     res.status(200).json(filteredPostInfoArray);
   } catch (err) {

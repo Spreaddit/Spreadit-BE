@@ -97,6 +97,10 @@ const PostSchema = new Schema(
       type: Boolean,
       default: false
     },
+    isRemoved: {
+      type: Boolean,
+      default: false
+    },
     removalReason: {
       type: String
     },
@@ -140,9 +144,7 @@ PostSchema.statics.getPostObject = async function (post, userId, includeHidden =
   if (isHiddenByUser && !includeHidden) {
     return null;
   }
-  if (post.isSpam) {
-    return null;
-  }
+
   post.numberOfViews++;
   await post.save();
 
@@ -173,6 +175,7 @@ PostSchema.statics.getPostObject = async function (post, userId, includeHidden =
     sendPostReplyNotification: post.sendPostReplyNotification,
     isCommentsLocked: post.isCommentsLocked,
     isSaved: savedPostIds.includes(post._id.toString()),
+    isRemoved: post.isRemoved,
     date: post.date,
     pollOptions: post.pollOptions,
     attachments: post.attachments,
