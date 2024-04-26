@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { boolean } = require("yargs");
 const Schema = mongoose.Schema;
 
 require("./user");
@@ -7,28 +8,28 @@ require("./community");
 const ModeratorSchema = new Schema(
   {
     username: {
-        type: string,
-        ref: 'user',
-        required: true,
-        unique: true,
+      type: String,
+      ref: 'user',
+      required: true,
+      unique: true,
     },
     communityName: {
-        type: string,
-        ref: 'community',
-        required: true,
-        unique: true,
+      type: String,
+      ref: 'community',
+      required: true,
+      unique: true,
     },
     managePostsAndComments: {
-        type: booleam,
-        default: "true",
+      type: Boolean,
+      default: "true",
     },
     manageUsers: {
-        type: booleam,
-        default: "true",
+      type: Boolean,
+      default: "true",
     },
     manageSettings: {
-        type: booleam,
-        default: "true",
+      type: Boolean,
+      default: "true",
     }
   },
   {

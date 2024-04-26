@@ -104,15 +104,15 @@ exports.getAllUserPosts = async (req, res) => {
     )
       .toString()
       .padStart(2, "0")}-${currentDate
-      .getDate()
-      .toString()
-      .padStart(2, "0")} ${currentDate
-      .getHours()
-      .toString()
-      .padStart(2, "0")}:${currentDate
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
+        .getDate()
+        .toString()
+        .padStart(2, "0")} ${currentDate
+          .getHours()
+          .toString()
+          .padStart(2, "0")}:${currentDate
+            .getMinutes()
+            .toString()
+            .padStart(2, "0")}`;
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
     res.status(200).json(filteredPostInfoArray);
   } catch (err) {
@@ -1033,3 +1033,4 @@ exports.deleteRecentPost = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
