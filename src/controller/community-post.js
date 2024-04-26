@@ -16,9 +16,6 @@ exports.spamPost = async (req, res) => {
         const postId = req.params.postId;
         const moderatorId = req.user._id;
 
-        if (!moderatorId) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
         const isModerator = await isModeratorOrCreator(moderatorId, communityName);
         if (!isModerator) {
             return res.status(402).json({ message: "Not a moderator" });
@@ -57,7 +54,7 @@ async function isModeratorOrCreator(userId, communityName) {
 
 async function checkPermission(username, communityName) {
     const moderator = await Moderator.findOne({ username, communityName });
-
+    console.log(moderator);
     if (!moderator) {
         return false;
     }
@@ -68,9 +65,6 @@ async function checkPermission(username, communityName) {
 exports.getSpamPosts = async (req, res) => {
     try {
         const { communityName } = req.params;
-        if (!req.user) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
         const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
         if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
             return res.status(402).json({ message: "Not a moderator or does not have permission" });

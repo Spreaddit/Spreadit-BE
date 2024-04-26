@@ -37,6 +37,6 @@ const ModeratorSchema = new Schema(
   }
 );
 
-const Message = mongoose.model("moderator", ModeratorSchema);
+const Moderator = mongoose.model("moderator", ModeratorSchema);
 
-module.exports = Message;
+module.exports = Moderator;

@@ -94,25 +94,7 @@ exports.getAllUserPosts = async (req, res) => {
         return postObject;
       })
     );
-    const currentDate = new Date();
-    // Add 10 minutes to the current date
-    currentDate.setMinutes(currentDate.getMinutes() + 3);
 
-    // Format the date and time to match the expected input format
-    const scheduledDate = `${currentDate.getFullYear()}-${(
-      currentDate.getMonth() + 1
-    )
-      .toString()
-      .padStart(2, "0")}-${currentDate
-        .getDate()
-        .toString()
-        .padStart(2, "0")} ${currentDate
-          .getHours()
-          .toString()
-          .padStart(2, "0")}:${currentDate
-            .getMinutes()
-            .toString()
-            .padStart(2, "0")}`;
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
     res.status(200).json(filteredPostInfoArray);
   } catch (err) {
