@@ -93,6 +93,10 @@ const PostSchema = new Schema(
       type: Boolean,
       default: false
     },
+    isSpam: {
+      type: Boolean,
+      default: false
+    },
     sendPostReplyNotification: {
       type: Boolean,
       default: true
@@ -133,7 +137,9 @@ PostSchema.statics.getPostObject = async function (post, userId, includeHidden =
   if (isHiddenByUser && !includeHidden) {
     return null;
   }
-
+  if (post.isSpam) {
+    return null;
+  }
   post.numberOfViews++;
   await post.save();
 
