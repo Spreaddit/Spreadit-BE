@@ -209,10 +209,10 @@ exports.getEdititedCommentsHistory = async (req, res) => {
             return res.status(402).json({ message: "Not a moderator or does not have permission" });
         }
 
-        const posts = await Post.find({community: communityName}, '_id');
+        const posts = await Post.find({ community: communityName }, '_id');
         const postIds = posts.map(post => post._id);
         const editedComments = await Comment.find({
-            postId: {$in: postIds},
+            postId: { $in: postIds },
             isEdited: true
         });
 
