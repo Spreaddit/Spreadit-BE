@@ -114,6 +114,7 @@ function scheduleScheduledPost(post, scheduledDate) {
   // Schedule the post using node-schedule
   const job = schedule.scheduleJob(scheduledDateTime, async () => {
     try {
+      post.isScheduled = true;
       await post.save();
       console.log(`Scheduled post ${post._id} has been published.`);
     } catch (error) {
@@ -233,7 +234,27 @@ exports.createPost = async (req, res) => {
         .status(400)
         .json({ error: "Invalid post data. Please provide real post type" });
     }
+    //*****************************************************************
+    // commented until farouq make approvedUsers
+    //****************************************************************
+    /* const communityExists = await Community.findOne({ name: community });
+    if (!communityExists) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    let isApproved = false;
 
+    if (communityExists.communityType === "Public") {
+      isApproved = true; 
+    } else {
+      if (!communityExists.approvedUsers.includes(userId)) {
+        return res.status(403).json({
+          error: "User is not authorized to create posts in this community",
+        });
+      }
+      else {
+        isApproved = false;
+      }
+    } */
     const newPost = new Post({
       userId,
       username: user.username,
@@ -251,6 +272,7 @@ exports.createPost = async (req, res) => {
       isSpoiler,
       isNsfw,
       sendPostReplyNotification,
+      // isApproved,  // commented until farouq make approvedUsers
     });
     if (scheduledDate) {
       const job = scheduleScheduledPost(newPost, scheduledDate);
@@ -294,7 +316,15 @@ exports.getAllPostsInCommunity = async (req, res) => {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    const posts = await Post.find({ community });
+    let posts;
+
+    const isModeratorOrCreator = communityExists.moderators.includes(userId) || userId.equals(communityExists.creator);
+
+    if (isModeratorOrCreator) {
+      posts = await Post.find({ community });
+    } else {
+      posts = await Post.find({ community, isApproved: true });
+    }
 
     if (!posts || posts.length === 0) {
       return res
@@ -304,9 +334,8 @@ exports.getAllPostsInCommunity = async (req, res) => {
 
     const postInfoArray = await Promise.all(
       posts.map(async (post) => {
-        // Check if the post is removed or marked as spam
         if (post.isRemoved || post.isSpam) {
-          return null; // Skip this post
+          return null;
         }
 
         const postObject = await Post.getPostObject(post, userId);

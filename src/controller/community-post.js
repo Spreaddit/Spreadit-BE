@@ -198,6 +198,7 @@ exports.removePost = async (req, res) => {
         });
         await removalComment.save();
         post.comments.push(removalComment._id);
+        post.commentsCount = (post.commentsCount) + 1;
         await post.save();
         return res.status(200).json({ message: "Post removed successfully" });
     } catch (error) {
@@ -205,3 +206,64 @@ exports.removePost = async (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 };
+
+exports.getUnmoderatedPosts = async (req, res) => {
+    try {
+        const { communityName } = req.params;
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+        const unmoderatedPosts = await Post.find({ community: communityName, isApproved: false });
+
+        if (!unmoderatedPosts || unmoderatedPosts.length === 0) {
+            return res.status(404).json({ message: "No unmoderated posts found" });
+        }
+        res.status(200).json({ unmoderatedPosts });
+    } catch (error) {
+        console.error("Error retrieving unmoderated posts:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.getScheduledPosts = async (req, res) => {
+    try {
+        const { communityName } = req.params;
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+
+        const scheduledPosts = await Post.find({ community: communityName, isScheduled: true });
+
+        if (!scheduledPosts || scheduledPosts.length === 0) {
+            return res.status(404).json({ message: "No scheduled posts found" });
+        }
+        res.status(200).json({ scheduledPosts });
+    } catch (error) {
+        console.error("Error retrieving scheduled posts:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.approvePost = async (req, res) => {
+    try {
+        const { communityName, postId } = req.params;
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+        const post = await Post.findOne({ _id: postId, community: communityName });
+        if (!post) {
+            return res.status(404).json({ message: "Post or community not found" });
+        }
+        post.isApproved = true;
+        await post.save();
+
+        return res.status(200).json({ message: "Post approved successfully" });
+    } catch (error) {
+        console.error("Error approving post:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
