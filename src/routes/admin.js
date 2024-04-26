@@ -50,13 +50,13 @@ router.post("/dashboard/ban", auth.authentication, async (req, res) => {
           : `This account has been banned from posting until ${new Date(req.body.banDuration).toDateString()}.\n Reason: ${req.body.reason}`;
   
         await Notification.sendNotification(
-          req.body.userId,
+          userToBeBanned._id,
           "You have recieved a new notification",
           message
         );
   
         const notification = new Notification({
-          userId: req.body.userId,
+          userId: userToBeBanned._id,
           content: message,
           notificationTypeId: NotificationType.accountUpdate._id,
         });

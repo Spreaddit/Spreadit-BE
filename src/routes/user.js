@@ -51,7 +51,7 @@ router.post("/notifications/subscribe", auth.authentication, async (req, res) =>
 
     const subscription = await NotificationSubscription.find({fcmToken: key})
 
-    if(!subscription.includes({userId: req.user._id})){
+    if(!subscription.includes({fcmToken: key})){
       const userSub = new NotificationSubscription({
         userId: userId,
         fcmToken: key,

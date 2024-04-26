@@ -37,9 +37,9 @@ const upvotePsts = {
     name: "Upvote Posts",
 };
   
-const moderatorInvitation = {
+const accountUpdate = {
     _id: "6240cf6f53dab85c8756307f",
-    name: "Moderator Invitation",
+    name: "Account Update",
 };
 
 const message = {
@@ -53,7 +53,7 @@ const notificationTypes = [
     follow,
     comment,
     upvotePsts,
-    moderatorInvitation,
+    accountUpdate,
     message,
 ];
   
