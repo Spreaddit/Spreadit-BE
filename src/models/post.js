@@ -97,6 +97,9 @@ const PostSchema = new Schema(
       type: Boolean,
       default: false
     },
+    removalReason: {
+      type: String
+    },
     sendPostReplyNotification: {
       type: Boolean,
       default: true

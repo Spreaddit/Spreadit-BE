@@ -9,6 +9,7 @@ const Moderator = require("../models/moderator.js");
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
+const { post } = require("../routes/community-post.js");
 
 exports.spamPost = async (req, res) => {
     try {
@@ -77,6 +78,31 @@ exports.getSpamPosts = async (req, res) => {
     }
 };
 
+exports.addRemovalReasonPosts = async (req, res) => {
+    try {
+        const { communityName, postId } = req.params;
+
+        const spamPost = await Post.findOne({ _id: postId, community: communityName, isSpam: true });
+        if (!spamPost) {
+            return res.status(404).json({ message: "Post not found or not marked as spam" });
+        }
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+        const { removalReason } = req.body;
+        if (!removalReason) {
+            return res.status(400).json({ message: "must enter removal reason" });
+        }
+        spamPost.removalReason = removalReason;
+        await spamPost.save();
+        res.status(200).json({ message: "Removal reason added successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 exports.getEdititedPostsHistory = async (req, res) => {
     try {
         const { communityName } = req.params;
@@ -103,3 +129,88 @@ exports.getEdititedPostsHistory = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
+
+exports.lockPost = async (req, res) => {
+    try {
+        const { communityName, postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+
+        if (post.isCommentsLocked) {
+            return res.status(403).json({ message: "Post is already locked" });
+        }
+
+        post.isCommentsLocked = true;
+        await post.save();
+        return res.status(200).json({ message: "Post locked successfully" });
+    } catch (error) {
+        console.error("Error locking post:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.unlockPost = async (req, res) => {
+    try {
+        const { communityName, postId } = req.params;
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+
+        if (!post.isCommentsLocked) {
+            return res.status(403).json({ message: "Post is not locked" });
+        }
+
+        post.isCommentsLocked = false;
+        await post.save();
+        return res.status(200).json({ message: "Post unlocked successfully" });
+    } catch (error) {
+        console.error("Error unlocking post:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.removePost = async (req, res) => {
+    try {
+        const { communityName, postId } = req.params;
+
+        if (!postId || postId.length !== 24) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+        await post.delete();
+        return res.status(200).json({ message: "Post removed successfully" });
+    } catch (error) {
+        console.error("Error removing post:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
