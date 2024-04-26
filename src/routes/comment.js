@@ -307,8 +307,9 @@ router.post(
         });
       }
 
+      comment.lastEdit = comment.content;
       comment.content = content;
-
+      comment.isEdited = true;
       await comment.save();
       res.status(200).send({
         message: "Comment has been updated successfully",
@@ -340,6 +341,11 @@ router.post(
       if (!existingComment) {
         return res.status(404).send({
           message: "Comment not found",
+        });
+      }
+      if(existingComment.isLocked){
+        return res.status(400).send({
+          message: "Comment is Locked",
         });
       }
 

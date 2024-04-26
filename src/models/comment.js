@@ -53,6 +53,14 @@ const CommentSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        isRemoved: {
+            type: Boolean,
+            default: false,
+        },
+        lastEdit: {
+            type: string,
+            default: "",
+        },
         repliesCount: {
             type: Number,
             default: 0
@@ -155,6 +163,7 @@ CommentSchema.statics.getCommentObject = async function (
       is_upvoted: isUpvoted,
       is_downvoted: isDownVoted,
       postId: comment.postId,
+      lastEdit: comment.lastEdit,
       replies: [],
     };
     

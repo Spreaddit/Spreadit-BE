@@ -9,7 +9,6 @@ const Moderator = require("../models/moderator.js");
 exports.spamComment = async (req, res) => {
     try {
         const communityName = req.params.communityName;
-        const postId = req.params.postId;
         const moderatorId = req.user._id;
         const commentId = req.params.commentId;
 
@@ -17,7 +16,7 @@ exports.spamComment = async (req, res) => {
         if (!isModerator) {
             return res.status(402).json({ message: "Not a moderator" });
         }
-        const hasPermission = await checkPermission(moderatorId, postId);
+        const hasPermission = await checkPermission(req.user.username, communityName);
         if (!hasPermission) {
             return res.status(406).json({ message: "Moderator doesn't have permission" });
         }
@@ -79,4 +78,132 @@ exports.getSpamComments = async (req, res) => {
     }
 };
 
+exports.lockComment = async (req, res) => {
+    try {
+        const { communityName, commentId } = req.params;
+        if (!commentId) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        const comment = await Comment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).json({ error: "Comment not found" });
+        }
+
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+
+        if (comment.isLocked) {
+            return res.status(403).json({ message: "Comment is already locked" });
+        }
+
+        comment.isLocked = true;
+        await comment.save();
+        return res.status(200).json({ message: "Comment locked successfully" });
+    } catch (error) {
+        console.error("Error locking comment:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.unlockComment = async (req, res) => {
+    try {
+        const { communityName, commentId } = req.params;
+        if (!commentId) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        const comment = await Comment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).json({ error: "Comment not found" });
+        }
+
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+
+        if (!comment.isLocked) {
+            return res.status(403).json({ message: "Post is not locked" });
+        }
+
+        comment.isLocked = false;
+        await comment.save();
+        return res.status(200).json({ message: "Comment unlocked successfully" });
+    } catch (error) {
+        console.error("Error unlocking comment:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.removeComment = async (req, res) => {
+    try {
+        const { communityName, commentId } = req.params;
+        const removalReason = req.body;
+
+        if (!commentId) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+        if (!removalReason) {
+            return res.status(400).json({ message: "Must has a removal reason" });
+        }
+
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.status(404).json({ error: "Comment not found" });
+        }
+        comment.isRemoved = true;
+        await comment.save();
+
+        //a3mel add new comment with the removal reason
+        return res.status(200).json({ message: "Comment removed successfully" });
+    } catch (error) {
+        console.error("Error removing post:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.getEdititedCommentsHistory = async (req, res) => {
+    try {
+        const { communityName } = req.params;
+        const community = await Community.findOne({ name: communityName });
+        if (!community) {
+            return res.status(404).json({ error: 'Community not found' });
+        }
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+
+        const posts = await Post.find({community: communityName}, '_id');
+        const postIds = posts.map(post => post._id);
+        const editedComments = await Comment.find({
+            postId: {$in: postIds},
+            isEdited: true
+        });
+
+        if (editedComments.length === 0) {
+            return res.status(404).json({ error: 'Edited comments not found' });
+        }
+
+        const commentObjects = [];
+        for (const comment of editedComments) {
+            const commentObject = await Comment.getCommentObject(comment, req.user._id);
+            commentObjects.push(commentObject);
+        }
+
+        return res.status(200).json(commentObjects);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
 
