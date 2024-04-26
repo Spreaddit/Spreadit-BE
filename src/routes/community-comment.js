@@ -15,12 +15,19 @@ router
 router
     .route("/community/moderation/:communityName/:commentId/lock-comment ")
     .get(auth.authentication, communityCommentController.lockComment)
+
 router
     .route("/community/moderation/:communityName/:commentId/unlock-comment:")
     .get(auth.authentication, communityCommentController.unlockComment)
+
+router
+    .route("/community/moderation/:communityName/:commentId/approve-comment")
+    .get(auth.authentication, communityCommentController.approveComment)
+
 router
     .route("/community/moderation/:communityName/:commentId/remove-comment")
     .get(auth.authentication, communityCommentController.removeComment)
+
 router
     .route("/community/moderation/communityName/get-edited-comments")
     .get(auth.authentication, communityCommentController.getEdititedCommentsHistory)

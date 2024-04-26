@@ -171,6 +171,32 @@ exports.removeComment = async (req, res) => {
     }
 };
 
+exports.approveComment = async (req, res) => {
+    try {
+        const { communityName, commentId } = req.params;
+
+        if (!commentId) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.status(404).json({ error: "Comment not found" });
+        }
+        comment.isApproved = true;
+        await comment.save();
+
+        return res.status(200).json({ message: "Comment approved successfully" });
+    } catch (error) {
+        console.error("Error removing post:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 exports.getEdititedCommentsHistory = async (req, res) => {
     try {
         const { communityName } = req.params;

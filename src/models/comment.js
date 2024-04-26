@@ -57,6 +57,10 @@ const CommentSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        isApproved: {
+            type: Boolean,
+            default: false,
+        },
         lastEdit: {
             type: string,
             default: "",
@@ -163,7 +167,10 @@ CommentSchema.statics.getCommentObject = async function (
       is_upvoted: isUpvoted,
       is_downvoted: isDownVoted,
       postId: comment.postId,
-      lastEdit: comment.lastEdit,
+      last_edit: comment.lastEdit,
+      is_removed: comment.isRemoved,
+      is_approved: comment.isApproved,
+      is_locked: comment.isLocked,
       replies: [],
     };
     
