@@ -201,7 +201,6 @@ CommentSchema.statics.getCommentRepliesss = async function (comment, userId) {
         parentCommentId: comment.id,
     });
 
-    // Initialize replies as an empty array
     comment.replies = [];
 
     for (let i = 0; i < replyComments.length; i++) {
@@ -212,7 +211,7 @@ CommentSchema.statics.getCommentRepliesss = async function (comment, userId) {
         comment.replies.push(replyObject);
     }
 
-    return comment.replies; // Return the array of replies
+    return comment.replies;
 };
 
 

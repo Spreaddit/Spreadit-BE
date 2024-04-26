@@ -10,7 +10,7 @@ const Notification = require("../models/notification");
 const mongoose = require("mongoose");
 const NotificationType = require("./../../seed-data/constants/notificationType");
 
-//node schedule schedule job time given 
+
 router.post("/dashboard/ban", auth.authentication, async (req, res) => {
     const banuser = new banUser(req.body);
     const updates = Object.keys(req.body);
@@ -189,5 +189,7 @@ router.post("/dashboard/users", auth, async (req, res) => {
       res.status(500).send({ message: "Internal server error" });
     }
 });
+
+
 
 module.exports = router;
