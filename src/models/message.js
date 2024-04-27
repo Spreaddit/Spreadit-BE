@@ -7,7 +7,6 @@ const MessageSchema = new Schema(
   {
     conversationId: {
       type: Schema.Types.ObjectId,
-      required: true,
       ref: "conversation",
     },
     conversationSubject: {
@@ -16,7 +15,6 @@ const MessageSchema = new Schema(
     },
     isDeleted: {
       type: Boolean,
-      required: true,
       default: false,
     },
     senderId: {
@@ -59,6 +57,37 @@ const MessageSchema = new Schema(
     timestamps: true,
   }
 );
+
+MessageSchema.statics.getMessageObject = async function (message, userId) {
+  const User = mongoose.model("user");
+
+  let relatedUser;
+  let direction;
+
+  // Check if the user is the sender or receiver of the message
+  if (message.senderId.equals(userId)) {
+    relatedUser = await User.findById(message.recieverId);
+    direction = "outgoing";
+  } else if (message.recieverId.equals(userId)) {
+    relatedUser = await User.findById(message.senderId);
+    direction = "incoming";
+  }
+  const username = relatedUser ? relatedUser.username : null;
+  const type = message.contentType;
+
+  return {
+    _id: message._id,
+    conversationId: message.conversationId,
+    relatedUser: username,
+    type: type,
+    content: message.content,
+    time: message.sentTime,
+    direction: direction,
+    isRead: message.isRead,
+    isDeleted: message.isDeleted,
+    subject: message.conversationSubject,
+  };
+};
 
 const Message = mongoose.model("message", MessageSchema);
 

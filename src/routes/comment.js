@@ -63,10 +63,11 @@ router.post(
         const newMessage = new Message({
           senderId: userId,
           recieverId: recieverId,
-          subject: `post reply : ${post.title}`,
+          conversationSubject: `post reply : ${post.title}`,
           contentType: "comment",
           content: newComment,
         });
+
         await newMessage.save();
         console.log(newMessage.content.userId);
       }
@@ -78,7 +79,10 @@ router.post(
 
       //notification
       userWhoCreatedPost = await User.findById(post.userId);
-      if (!post.userId.equals(req.user._id) && userWhoCreatedPost.posts == true) {
+      if (
+        !post.userId.equals(req.user._id) &&
+        userWhoCreatedPost.posts == true
+      ) {
         await Notification.sendNotification(
           post.userId,
           "You have recieved a new notification",
@@ -343,7 +347,7 @@ router.post(
           message: "Comment not found",
         });
       }
-      if(existingComment.isLocked){
+      if (existingComment.isLocked) {
         return res.status(400).send({
           message: "Comment is Locked",
         });
@@ -374,7 +378,10 @@ router.post(
 
       //notification
       userWhoCreatedComment = await User.findById(existingComment.userId);
-      if (!existingComment.userId.equals(req.user._id) && userWhoCreatedComment.comments == true) {
+      if (
+        !existingComment.userId.equals(req.user._id) &&
+        userWhoCreatedComment.comments == true
+      ) {
         await Notification.sendNotification(
           post.userId,
           "You have recieved a new notification",
@@ -529,7 +536,10 @@ router.post(
       await comment.save();
       netVotes = netVotes + 1;
       userWhoCreatedComment = await User.findById(comment.userId);
-      if (!comment.userId.equals(req.user._id) && userWhoCreatedComment.upvoteComments == true) {
+      if (
+        !comment.userId.equals(req.user._id) &&
+        userWhoCreatedComment.upvoteComments == true
+      ) {
         await Notification.sendNotification(
           comment.userId,
           "You have recieved a new notification",

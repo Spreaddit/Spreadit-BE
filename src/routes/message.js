@@ -44,4 +44,8 @@ router
   .route("/message/deletemsg/:messageId")
   .delete(auth.authentication, messageController.deleteMessage);
 
+router
+  .route("/message/unreadcount/")
+  .get(auth.authentication, messageController.getUnreadMessageCount);
+
 module.exports = router;
