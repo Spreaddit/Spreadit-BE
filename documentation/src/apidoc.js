@@ -2764,6 +2764,60 @@
  *       "error": "Internal server error"
  *     }
  */
+/**
+ * @api {get} users/getfollowers Get Followers
+ * @apiVersion 0.1.0
+ * @apiName GetFollowers
+ * @apiGroup User
+ * @apiDescription Retrieves the list of followers for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} followers List of followers.
+ * @apiSuccess {Boolean} isFollowed Indicates whether the authenticated user is followed by the follower.
+ * @apiSuccess {String} username Username of the follower.
+ * @apiSuccess {String} avatar Avatar URL of the follower.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "followers": [
+ *            {
+ *            "isFollowed": true,
+ *            "username": "follower1",
+ *            "avatar": "http://example.com/avatar1.jpg"
+ *        },
+ *        {
+ *            "isFollowed": false,
+ *            "username": "follower2",
+ *            "avatar": "http://example.com/avatar2.jpg"
+ *        }
+ *       ]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found or has no followers.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found or has no followers"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
 
 //#endregion Useraction
 
