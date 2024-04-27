@@ -32,7 +32,7 @@ const comment = {
     name: "Comment",
 };
   
-const upvotePsts = {
+const upvotePosts = {
     _id: "6240cddde4571e2cf49463f4",
     name: "Upvote Posts",
 };
@@ -52,7 +52,7 @@ const notificationTypes = [
     commentReply,
     follow,
     comment,
-    upvotePsts,
+    upvotePosts,
     accountUpdate,
     message,
 ];
@@ -62,6 +62,6 @@ exports.upvoteComments = upvoteComments;
 exports.follow = follow;
 exports.commentReply = commentReply;
 exports.comment = comment;
-exports.upvotePsts = upvotePsts;
+exports.upvotePosts = upvotePosts;
 exports.accountUpdate = accountUpdate;
 exports.message = message;
