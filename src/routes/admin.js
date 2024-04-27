@@ -112,7 +112,7 @@ router.post("/dashboard/unban", auth.authentication, async (req, res) => {
     }
 });
 
-router.post("/dashboard/users", auth, async (req, res) => {
+router.post("/dashboard/users", auth.authentication, async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ["location", "gender", "accessToken", "count", "page"];
     const isValidOperation = updates.every((update) =>
@@ -190,6 +190,67 @@ router.post("/dashboard/users", auth, async (req, res) => {
     }
 });
 
+
+router.get("/dashboard/posts", auth.authentication, async (req, res) => {
+  try{
+    const adminId = await UserRole.find({
+      name: "Admin",
+    }).select("_id");
+    if (adminId[0]._id.equals(req.user.roleId)) {
+
+      const reportedPosts = [];
+      const posts = await Post.find();
+      for (const post of posts) {
+          const report = await Report.findOne({ postId: post._id, reason: reportedReason });
+          if (report) {
+              const postObject = await Post.getPostObject(post);
+              postObject.reason = report.reason;
+              postObject.subreason = report.subreason;
+              reportedPosts.push(postObject);
+          }
+      }
+  
+    }
+    res.status(200).send({
+      reportedPosts: reportedPosts,
+      message: "Users have been retrived successfully",
+    });
+  } catch (e) {
+    res.status(500).send({ message: "Internal server error" });
+  }
+  
+
+});
+router.get("/dashboard/comments", auth.authentication, async (req, res) => {
+  try{
+    const adminId = await UserRole.find({
+      name: "Admin",
+    }).select("_id");
+    if (adminId[0]._id.equals(req.user.roleId)) {
+
+      const reportedComments = [];
+      const comments = await Comment.find({ isRemoved: false }).populate('userId');
+      for (const comment of comments) {
+          const report = await Report.findOne({ commentId: comment._id, reason: reportedReason });
+          if (report) {
+              const commentObject = await Comment.getCommentObject(comment);
+              commentObject.reason = report.reason;
+              commentObject.subreason = report.subreason;
+              reportedComments.push(commentObject);
+          }
+      }
+  
+    }
+    res.status(200).send({
+      reportedComments: reportedComments,
+      message: "Comments have been retrived successfully",
+    });
+  } catch (e) {
+    res.status(500).send({ message: "Internal server error" });
+  }
+  
+
+});
 
 
 module.exports = router;
