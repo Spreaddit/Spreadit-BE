@@ -87,6 +87,11 @@ router
   .post(auth.authentication, postController.reportPost);
 
 router
+  .route("/:communityName/report")
+  .get(auth.authentication, postController.getReportedPostsInCommunity);
+
+
+router
   .route("/:postId/poll/vote")
   .post(auth.authentication, postController.voteInPoll);
 
@@ -99,6 +104,7 @@ router.route("/:postId").get(auth.authentication, postController.getPostById);
 router
   .route("/deleterecent/:postId")
   .delete(auth.authentication, postController.deleteRecentPost);
+
 
 
 
