@@ -233,3 +233,37 @@ exports.getEdititedCommentsHistory = async (req, res) => {
     }
 }
 
+exports.getReportedComments = async (req, res) => {
+    try{
+        const { communityName } = req.params;
+        const community = await Community.findOne({ name: communityName });
+        if (!community) {
+            return res.status(404).json({ error: 'Community not found' });
+        }
+        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
+        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
+            return res.status(402).json({ message: "Not a moderator or does not have permission" });
+        }
+        const posts = await Post.find({ community: communityName });
+        const reportedComments = [];
+        for (const post of posts) {
+            const comments = await Comment.find({ postId: post._id, isRemoved: false }).populate('userId');
+            for (const comment of comments) {
+                const commentObject = await Comment.getCommentObject(comment);
+                const report = await Report.findOne({ commentId: comment._id });
+                if (report) {
+                    const { reason, subreason } = report;
+                    commentObject.reason = reason;
+                    commentObject.subreason = subreason;
+                }
+                reportedComments.push(commentObject);
+            }
+        }
+        return res.status(200).json(commentObjects);
+
+    }catch(error){
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+    
+}

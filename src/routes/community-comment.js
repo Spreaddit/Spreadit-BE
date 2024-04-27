@@ -6,8 +6,6 @@ const auth = require("../middleware/authentication");
 
 //I need to check ek approved users dah while creating a comment or a reply to a comment
 //I need to check mawdo3 el settings while creating comments bardo
-//I need to create a new API for getting the reported comments for the community moderator 
-//I need to create two APIs for the admin dashboard to get reported posts/comments that violate a certain rules
 
 router
     .route("/community/moderation/:communityName/spam-comment/:commentId")
