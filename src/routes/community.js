@@ -14,7 +14,6 @@ const auth = require("../middleware/authentication");
 //TODO: handling restricted and private communities
 //TODO: delete community
 //TODO: Handling user community
-//TODO: auth for all routes
 router.post("/rule/add", auth.authentication, async (req, res) => {
   try {
     const { title, description, reportReason, communityName } = req.body;

@@ -388,8 +388,8 @@ router.post("/verify-email/:emailToken", async (req, res) => {
 
 router.post("/check-username", async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    const exists = await User.getUserByEmailOrUsername(newUser.username);
+    const {username} = req.body;
+    const exists = await User.getUserByEmailOrUsername(username);
 
     if (exists) {
       res.status(200).send({ available: false });
