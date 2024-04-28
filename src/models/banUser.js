@@ -22,6 +22,18 @@ const BanUserSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    communityName: {
+      type: String,
+      trim: true,
+    },
+    banMessage: {
+      type: String,
+      trim: true,
+    },
+    modNote: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,

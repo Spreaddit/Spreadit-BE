@@ -172,7 +172,7 @@ exports.deleteMessage = async (req, res) => {
     if (existMessage.parentMessageId != null) {
       const parent = await Message.findById(existMessage._id);
       parent.isDeleted = true;
-      parent.save();
+      await parent.save();
 
       // Save the updated conversation
       await conversation.save();
@@ -186,7 +186,7 @@ exports.deleteMessage = async (req, res) => {
       for (const childMessage of childrenMessages) {
         const deletedMessage = await Message.findById(childMessage._id);
         deletedMessage.isDeleted = true;
-        deletedMessage.save();
+        await deletedMessage.save();
       }
       // Save the updated conversation
       await conversation.save();
