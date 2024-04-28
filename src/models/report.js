@@ -22,6 +22,10 @@ const ReportSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "comment",
     },
+    messageId: {
+      type: Schema.Types.ObjectId,
+      ref: "message",
+    },
     reason: {
       type: String,
       trim: true,

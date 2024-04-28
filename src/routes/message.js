@@ -48,4 +48,8 @@ router
   .route("/message/unreadcount/")
   .get(auth.authentication, messageController.getUnreadMessageCount);
 
+router
+  .route("/message/reportmsg/:messageId")
+  .post(auth.authentication, messageController.reportMessage);
+
 module.exports = router;

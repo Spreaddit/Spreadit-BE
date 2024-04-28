@@ -1,6 +1,7 @@
 const Community = require("../models/community");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
+const Report = require("../models/report.js");
 const Message = require("../models/message");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
@@ -402,5 +403,55 @@ exports.getUnreadMessageCount = async (req, res) => {
   } catch (err) {
     console.error("Internal server error", err);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.reportMessage = async (req, res) => {
+  try {
+    const messageId = req.params.messageId;
+    const userId = req.user._id;
+
+    if (!messageId || messageId.length !== 24) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+    const { reason, subreason } = req.body;
+
+    const message = await Message.findById(messageId);
+    if (!message) {
+      return res.status(404).send({
+        message: "message not found",
+      });
+    }
+    if (!userId.equals(message.recieverId)) {
+      console.log(userId);
+      console.log(message.recieverId);
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to report this message" });
+    }
+
+    if (!reason) {
+      return res.status(400).send({
+        message: "invalid report data must send reason",
+      });
+    }
+
+    const report = new Report({
+      userId: userId,
+      messageId: messageId,
+      reason: reason,
+      subreason: subreason,
+    });
+
+    await report.save();
+
+    res.status(200).send({
+      message: "Message reported successfully",
+    });
+  } catch (error) {
+    console.error("Error reporting message:", error);
+    res.status(500).send({
+      error: "An error occurred while reporting the message",
+    });
   }
 };
