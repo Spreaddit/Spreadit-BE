@@ -256,7 +256,7 @@ const postSeedData = [
     _id: "624a6a677c8d9c9f5fd5eb53",
     title: "Journey to the Edge of the Universe",
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Space&AstronomyLovers", // Space&AstronomyLovers
+    community: "SpaceAndAstronomyLovers", // Space&AstronomyLovers
     comments: ["624a6a677c8d9c9f5fd5efb0", "624a6a677c8d9c9f5fd5eca1"],
     commentsCount: 2,
     type: "Images & Video",
@@ -271,7 +271,7 @@ const postSeedData = [
     title: "The Search for Extraterrestrial Life",
     content: ["Join the quest for life beyond Earth, from the exploration of Mars and Europa to the study of exoplanets and SETI initiatives."],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Space&AstronomyLovers", // Space&AstronomyLovers
+    community: "SpaceAndAstronomyLovers", // Space&AstronomyLovers
     comments: ["624a6a677c8d9c9f5fd5ecb0", "624a6a677c8d9c9f5fd5eca5"],
     commentsCount: 2,
     type: "Post",
@@ -281,7 +281,7 @@ const postSeedData = [
     _id: "624a6a677c8d9c9f5fd5eb55",
     title: "The Beauty of Celestial Phenomena",
     userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    community: "Space&AstronomyLovers", // Space&AstronomyLovers
+    community: "SpaceAndAstronomyLovers", // Space&AstronomyLovers
     comments: ["624a6a677c8d9c9f5fd5efb3", "624a6a677c8d9c9f5fd5efb4"],
     commentsCount: 2,
     type: "Images & Video",
@@ -296,7 +296,7 @@ const postSeedData = [
     title: "Most Interesting Moon of Jupiter",
     content: ["Which moon of Jupiter do you find the most fascinating?"],
     userId: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    community: "Space&AstronomyLovers", // Space&AstronomyLovers
+    community: "SpaceAndAstronomyLovers", // Space&AstronomyLovers
     comments: ["624a6a677c8d9c9f5fd5ece0", "624a6a677c8d9c9f5fd5efb5"],
     commentsCount: 2,
     type: "Poll",
@@ -314,7 +314,7 @@ const postSeedData = [
     title: "Stargazing Tips and Tricks",
     content: ["Learn essential tips for stargazing, including choosing the right telescope, identifying constellations, and observing celestial events."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Space&AstronomyLovers", // Space&AstronomyLovers
+    community: "SpaceAndAstronomyLovers", // Space&AstronomyLovers
     comments: ["624a6a677c8d9c9f5fd5ece5", "624a6a677c8d9c9f5fd5ece7"],
     commentsCount: 2,
     type: "Post",
@@ -548,7 +548,7 @@ const postSeedData = [
     title: "Guided Meditation Session: Cultivating Inner Peace",
     content: ["Join us for a guided meditation session focused on cultivating inner peace, mindfulness, and serenity amidst the hustle and bustle of daily life."],
     userId: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    community: "Mindfulness&Meditation", // Mindfulness&Meditation Community
+    community: "MindfulnessAndMeditation", // Mindfulness&Meditation Community
     comments: [],
     type: "Post",
     isNsfw: false,
@@ -558,7 +558,7 @@ const postSeedData = [
     title: "Mindfulness in Motion: Embracing the Present Moment",
     content: ["Explore the practice of mindfulness in motion, embracing the present moment with awareness and intention in every step, breath, and movement."],
     userId: "624a6a677c8d9c9f5fd5eb0d", // Basem
-    community: "Mindfulness&Meditation", // Mindfulness&Meditation Community
+    community: "MindfulnessAndMeditation", // Mindfulness&Meditation Community
     comments: ["624a6a677c8d9c9f5fd5eb70", "624a6a677c8d9c9f5fd5ebf7"],
     commentsCount: 2,
     type: "Post",
@@ -569,7 +569,7 @@ const postSeedData = [
     title: "Mindful Living: Nurturing the Mind, Body & Spirit",
     content: ["Embark on the journey of mindful living, nurturing the mind, body, and spirit through practices that promote self-awareness, compassion, and well-being."],
     userId: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    community: "Mindfulness&Meditation", // Mindfulness&Meditation Community
+    community: "MindfulnessAndMeditation", // Mindfulness&Meditation Community
     comments: ["624a6a677c8d9c9f5fd5ebf8", "624a6a677c8d9c9f5fd5ec73"],
     commentsCount: 2,
     type: "Post",
@@ -580,7 +580,7 @@ const postSeedData = [
     title: "Stress Management Techniques: Finding Calm in Chaos",
     content: ["Discover stress management techniques to find calm in chaos, empowering yourself to navigate life's challenges with resilience, balance, and inner strength."],
     userId: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    community: "Mindfulness&Meditation", // Mindfulness&Meditation Community
+    community: "MindfulnessAndMeditation", // Mindfulness&Meditation Community
     comments: ["624a6a677c8d9c9f5fd5ec77", "624a6a677c8d9c9f5fd5ecc7"],
     commentsCount: 2,
     type: "Post",
@@ -591,7 +591,7 @@ const postSeedData = [
     title: "Mindful Breathing Exercises: Anchoring in the Present",
     content: ["Practice mindful breathing exercises to anchor yourself in the present moment, cultivating a sense of calm, clarity, and presence in your daily life."],
     userId: "624a6a677c8d9c9f5fd5eb13", // Galal
-    community: "Mindfulness&Meditation", // Mindfulness&Meditation Community
+    community: "MindfulnessAndMeditation", // Mindfulness&Meditation Community
     comments: [],
     type: "Post",
     isNsfw: false,
