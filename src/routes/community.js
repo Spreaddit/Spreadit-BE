@@ -9,94 +9,6 @@ router.use(passport.initialize());
 router.use(cookieParser("spreaditsecret"));
 const auth = require("../middleware/authentication");
 
-//TODO: Get rules
-//TODO: handling if user is moderator
-//TODO: handling restricted and private communities
-//TODO: delete community
-//TODO: Handling user community
-router.post("/rule/add", auth.authentication, async (req, res) => {
-  try {
-    const { title, description, reportReason, communityName } = req.body;
-
-    if (!title || !communityName) {
-      return res.status(400).json({ message: "Invalid rule data" });
-    }
-    let existingRule = await Rule.findOne({
-      title: title,
-      communityName: communityName,
-    });
-    if (existingRule) {
-      return res.status(403).json({ message: "Title already used" });
-    }
-    const ruleReportReason = reportReason || title;
-
-    existingRule = new Rule({
-      title: title,
-      description: description || "",
-      reportReason: ruleReportReason,
-      communityName: communityName,
-    });
-
-    const userId = req.user._id;
-    const user = await User.findById(userId);
-    const community = await Community.findOne({ name: communityName });
-    if (!community) {
-      return res.status(404).json({ message: "Community not found" });
-    }
-    if (!community.moderators.includes(user._id)) {
-      return res.status(402).json({ message: "You are not a moderator of this community" });
-    }
-    await existingRule.save();
-    community.rules.push(existingRule._id);
-    await community.save();
-    res.status(200).json({ message: "Rule added successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.post("/rule/remove", auth.authentication, async (req, res) => {
-  try {
-    const { communityName, title } = req.body;
-
-    if (!communityName || !title) {
-      return res.status(400).json({ message: "Invalid request parameters" });
-    }
-
-    const userId = req.user._id;
-    const user = await User.findById(userId);
-    const community = await Community.findOne({ name: communityName });
-
-    if (!community) {
-      return res.status(404).json({ message: "Community not found" });
-    }
-
-    if (!community.moderators.includes(user._id)) {
-      return res.status(402).json({ message: "Not a moderator" });
-    }
-
-    const rule = await Rule.findOne({ title: title });
-
-    if (!rule) {
-      return res.status(404).json({ message: "Rule not found" });
-    }
-
-    const index = community.rules.indexOf(rule._id);
-    if (index == -1) {
-      return res.status(404).json({ message: "Rule not found" });
-    }
-
-    community.rules.splice(index, 1);
-    await community.save();
-    await Rule.findByIdAndDelete(rule._id);
-    res.status(200).json({ message: "Rule removed successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
 router.post("/community/add-to-favourites", auth.authentication, async (req, res) => {
   try {
     const { communityName } = req.body;
@@ -505,29 +417,6 @@ router.get("/community/get-specific-category", async (req, res) => {
     }
 
     res.status(200).json(communities);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.get("/community/get-info", async (req, res) => {
-  try {
-    const communityName = req.query.communityName;
-
-    if (!communityName) {
-      return res.status(400).json({ message: "Invalid request parameters" });
-    }
-
-    const community = await Community.findOne({ name: communityName })
-      .select("name category communityType description image membersCount rules dateCreated communityBanner")
-      .populate("rules", "title description reportReason");
-
-    if (!community) {
-      return res.status(404).json({ message: "Community not found" });
-    }
-
-    res.status(200).json(community);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

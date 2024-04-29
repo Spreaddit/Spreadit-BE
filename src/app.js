@@ -12,10 +12,11 @@ const uploadRoutes = require("./routes/upload-test");
 const settingsRoutes = require("./routes/settings");
 const mobileSettingsRoutes = require("./routes/mobile-settings");
 const communityRoutes = require("./routes/community");
+const moderatorRoutes = require("./routes/moderator");
 const commentRoutes = require("./routes/comment");
 const listingRoutes = require("./routes/listing");
 const messageRoutes = require("./routes/message");
-const startUnbanScheduler = require('./models/unbanScheduler');
+const startUnbanScheduler = require("./models/unbanScheduler");
 const searchRoutes = require("./routes/search");
 const communitiespostsRoutes = require("./routes/community-post");
 
@@ -58,6 +59,7 @@ app.use("/api", commentRoutes);
 app.use("/api", messageRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api", communitiespostsRoutes);
+app.use("/api", moderatorRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
@@ -83,9 +85,7 @@ mongoose
         await seeder.run();
         console.log(`${seeder.constructor.name} Seeder executed successfully`);
       } else {
-        console.log(
-          `${seeder.constructor.name} Seeder already executed, skipping...`
-        ); // Use backticks instead of single quotes
+        console.log(`${seeder.constructor.name} Seeder already executed, skipping...`); // Use backticks instead of single quotes
       }
     }
 

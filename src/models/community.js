@@ -19,6 +19,13 @@ const CommunitySchema = new Schema({
     type: [Schema.Types.ObjectId],
     ref: "rule",
     index: true,
+    maxlength: 15,
+  },
+  removalReasons: {
+    type: [Schema.Types.ObjectId],
+    ref: "removalreason",
+    index: true,
+    maxlength: 50,
   },
   dateCreated: {
     type: Date,
@@ -28,13 +35,15 @@ const CommunitySchema = new Schema({
     type: String,
     format: "url",
     description: "Link to the banner of the community",
-    default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713046574/uploads/WhatsApp_Image_2024-04-13_at_5.22.35_PM_f0yaln.jpg",
+    default:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713046574/uploads/WhatsApp_Image_2024-04-13_at_5.22.35_PM_f0yaln.jpg",
   },
   image: {
     type: String,
     format: "url",
     description: "Link to the image of the community",
-    default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+    default:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
   },
   description: {
     type: String,
@@ -70,21 +79,66 @@ const CommunitySchema = new Schema({
     ref: "user",
     index: true,
   },
-  // Note: I didn't make it required for the community to have at least one moderator as the creator is the first moderator of the community. Moderators are supposed to have less privileges than creator of the community
   moderators: {
     type: [Schema.Types.ObjectId],
     ref: "user",
+    index: true,
+  },
+  moderatorPermissions: {
+    type: [Schema.Types.ObjectId],
+    ref: "moderator",
     index: true,
   },
   membersCount: {
     type: Number,
     default: 1,
   },
-
-  //TODO: add the community settings attributes
-  //TODO: Handling moderators and creator
-  //TODO: Community members
-  //TODO: helper function verfiying that the community
+  membersNickname: {
+    type: String,
+    default: "Members",
+    maxlength: 30,
+  },
+  moderators: {
+    type: [Schema.Types.ObjectId],
+    ref: "user",
+    index: true,
+  },
+  contributors: {
+    type: [Schema.Types.ObjectId],
+    ref: "user",
+    index: true,
+  },
+  settings: {
+    type: {
+      postTypeOptions: {
+        type: String,
+        enum: ["any", "links only", "text posts only"],
+        default: "any",
+      },
+      spoilerEnabled: {
+        type: Boolean,
+        default: true,
+      },
+      multipleImagesPerPostAllowed: {
+        type: Boolean,
+        default: true,
+      },
+      pollsAllowed: {
+        type: Boolean,
+        default: true,
+      },
+      commentSettings: {
+        type: {
+          mediaInCommentsAllowed: {
+            type: Boolean,
+            default: true,
+          },
+        },
+        default: {},
+      },
+    },
+    default: {},
+  },
 });
 
 const Community = mongoose.model("community", CommunitySchema);

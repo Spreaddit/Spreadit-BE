@@ -213,8 +213,7 @@ const UserSchema = new Schema(
     avatar: {
       type: String,
       trim: true,
-      default:
-        "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+      default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     },
     banner: {
       type: String,
@@ -334,6 +333,12 @@ const UserSchema = new Schema(
         ref: "Community",
       },
     ],
+    moderatedCommunities: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: Community,
+      },
+    ],
     tokens: [
       {
         token: {
@@ -413,10 +418,7 @@ UserSchema.statics.checkExistence = async function (email) {
   }
 };
 
-UserSchema.statics.verifyCredentials = async function (
-  usernameOremail,
-  password
-) {
+UserSchema.statics.verifyCredentials = async function (usernameOremail, password) {
   const userByEmail = await User.findOne({
     email: usernameOremail,
   }).populate("roleId");
@@ -534,9 +536,7 @@ UserSchema.methods.generateRandomString = function () {
   let randomString = "";
 
   for (let i = 0; i < length; i++) {
-    randomString += characters.charAt(
-      Math.floor(Math.random() * characters.length)
-    );
+    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
   }
 
   return randomString;
