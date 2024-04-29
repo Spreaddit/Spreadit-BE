@@ -54,6 +54,10 @@ const NotificationSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        isHidden: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,
@@ -96,6 +100,7 @@ NotificationSchema.statics.getNotificationObject = async function (
         post: post,
         comment: comment,
         is_read: notification.isRead,
+        is_hidden: notification.isHidden,
         created_at: notification.createdAt,
     };
     return notificationObject;
