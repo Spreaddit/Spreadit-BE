@@ -6292,6 +6292,7 @@
 //#region Moderation
 /**
  * @api {post} /community/moderation/:communityName/spam-comment/:commentId Mark Comment as Spam
+ * @apiVersion 0.1.0
  * @apiName MarkCommentAsSpam
  * @apiGroup Moderation
  *
@@ -6343,6 +6344,7 @@
 
 /**
  * @api {get} /community/moderation/:communityName/get-spam-comments Get Spam Comments
+ * @apiVersion 0.1.0
  * @apiName GetSpamComments
  * @apiGroup Moderation
  *
@@ -6457,6 +6459,7 @@
 
 /**
  * @api {post} /community/moderation/:communityName/:commentId/lock-comment Lock Comment
+ * @apiVersion 0.1.0
  * @apiName LockComment
  * @apiGroup Moderation
  *
@@ -6509,6 +6512,7 @@
 
 /**
  * @api {post} /community/moderation/:communityName/:commentId/unlock-comment Unlock Comment
+ * @apiVersion 0.1.0
  * @apiName UnlockComment
  * @apiGroup Moderation
  *
@@ -6560,6 +6564,7 @@
 
 /**
  * @api {post} /community/moderation/:communityName/:commentId/remove-comment Remove Comment
+ * @apiVersion 0.1.0
  * @apiName RemoveComment
  * @apiGroup Moderation
  *
@@ -6612,6 +6617,7 @@
 
 /**
  * @api {post} /community/moderation/:communityName/:commentId/approve-comment Approve Comment
+ * @apiVersion 0.1.0
  * @apiName ApproveComment
  * @apiGroup Moderation
  *
@@ -6656,6 +6662,7 @@
 
 /**
  * @api {get} /community/moderation/:communityName/get-edited-comments Get Edited Comments History
+ * @apiVersion 0.1.0
  * @apiName GetEditedCommentsHistory
  * @apiGroup Moderation
  *
@@ -6782,6 +6789,7 @@
 
 /**
  * @api {get} /community/moderation/:communityName/get-reported-comments Get Reported Comments
+ * @apiVersion 0.1.0
  * @apiName GetReportedComments
  * @apiGroup Moderation
  *
@@ -6909,6 +6917,7 @@
 
 /**
  * @api {post} /dashboard/ban Ban User
+ * @apiVersion 0.1.0
  * @apiName BanUser
  * @apiGroup Admin Dashboard
  *
@@ -6983,6 +6992,7 @@
 
 /**
  * @api {post} /dashboard/unban Unban User
+ * @apiVersion 0.1.0
  * @apiName UnbanUser
  * @apiGroup Admin Dashboard
  *
@@ -7062,6 +7072,7 @@
 
 /**
  * @api {get} /dashboard/comments Get Reported Comments
+ * @apiVersion 0.1.0
  * @apiName GetComments
  * @apiGroup Admin Dashboard
  *
@@ -7177,6 +7188,7 @@
 
 /**
  * @api {get} /dashboard/posts Get Reported Posts
+ * @apiVersion 0.1.0
  * @apiName GetReportedPosts
  * @apiGroup Admin Dashboard
  *
@@ -7220,7 +7232,9 @@
  *              "isSaved": false,
  *              "date": "2024-04-16T10:00:00.000Z",
  *              "pollOptions": [],
- *              "attachments": []
+ *              "attachments": [],
+ *              "reason": "Spam",
+ *              "subreason": "Irrelevant content"
  *          }
  *      ],
  *      "message": "Posts have been retrieved successfully"
