@@ -203,7 +203,7 @@ router.get("/dashboard/posts", auth.authentication, async (req, res) => {
       for (const post of posts) {
           const report = await Report.findOne({ postId: post._id, reason: reportedReason });
           if (report) {
-              const postObject = await Post.getPostObject(post);
+              const postObject = await Post.getPostObject(post, adminId);
               postObject.reason = report.reason;
               postObject.subreason = report.subreason;
               reportedPosts.push(postObject);
