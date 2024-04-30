@@ -71,7 +71,7 @@ exports.getSpamComments = async (req, res) => {
             const generatedComment = await Comment.getCommentObject(spamComment, req.user._id, true);
             generatedComments.push(generatedComment);
         }
-        res.status(200).json({ generatedComments });
+        res.status(200).json({ SpammedComments: generatedComments });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
@@ -226,7 +226,7 @@ exports.getEdititedCommentsHistory = async (req, res) => {
             commentObjects.push(commentObject);
         }
 
-        return res.status(200).json(commentObjects);
+        return res.status(200).json({editedComment: commentObjects});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
@@ -259,7 +259,7 @@ exports.getReportedComments = async (req, res) => {
                 reportedComments.push(commentObject);
             }
         }
-        return res.status(200).json(commentObjects);
+        return res.status(200).json({reportedComments: commentObjects});
 
     }catch(error){
         console.error(error);

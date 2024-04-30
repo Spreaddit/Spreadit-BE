@@ -101,9 +101,9 @@ router.post("/dashboard/unban", auth.authentication, async (req, res) => {
         if (!banuser) {
           return res.status(404).send({ message: "User is not banned" });
         }
-  
+        const userObj = await User.generateUserObject(user);
         res.status(200).send({
-          user: user,
+          user: userObj,
           message: "User was unbanned successfully",
         });
       } else return res.status(401).send({ message: "You are not authorized" });

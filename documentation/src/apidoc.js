@@ -6352,30 +6352,91 @@
  *
  * @apiParam {String} communityName Name of the community.
  *
- * @apiSuccess {Object[]} generatedComments List of generated comments.
- * @apiSuccess {String} generatedComments._id ID of the generated comment.
- * @apiSuccess {String} generatedComments.text Text content of the generated comment.
- * @apiSuccess {String} generatedComments.author Author of the generated comment.
- * @apiSuccess {String} generatedComments.createdAt Timestamp when the comment was created.
+ * @apiSuccess {Object} SpammedComments Object representing the Spammed comment.
+ * @apiSuccess {String} SpammedComments._id ID of the comment.
+ * @apiSuccess {String} SpammedComments.content Content of the comment.
+ * @apiSuccess {Object} SpammedComments.user User object representing the author of the comment.
+ * @apiSuccess {String} SpammedComments.user.id ID of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.name Name of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.username Username of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.email Email of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.googleId Google ID of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.birth_date Birth date of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.phone Phone number of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} SpammedComments.user.location Location of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.bio Bio of the user who posted the comment.
+ * @apiSuccess {Number} SpammedComments.user.followers_count Number of followers of the user who posted the comment.
+ * @apiSuccess {Number} SpammedComments.user.following_count Number of users followed by the user who posted the comment.
+ * @apiSuccess {Date} SpammedComments.user.created_at Date when the user who posted the comment was created.
+ * @apiSuccess {String} SpammedComments.user.role Role of the user who posted the comment.
+ * @apiSuccess {Boolean} SpammedComments.user.nsfw Flag indicating if the user who posted the comment has NSFW content.
+ * @apiSuccess {Boolean} SpammedComments.user.activeInCommunityVisibility Flag indicating if the user who posted the comment is active in community visibility.
+ * @apiSuccess {Boolean} SpammedComments.user.isVerified Flag indicating if the user who posted the comment is verified.
+ * @apiSuccess {String} SpammedComments.user.displayName Display name of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.about About information of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.cakeDay Cake day of the user who posted the comment.
+ * @apiSuccess {String[]} SpammedComments.user.subscribedCommunities List of communities subscribed by the user who posted the comment.
+ * @apiSuccess {Number} SpammedComments.likes_count Number of likes received by the comment.
+ * @apiSuccess {Number} SpammedComments.replies_count Number of replies to the comment.
+ * @apiSuccess {Boolean} SpammedComments.is_reply Indicates if the comment is a reply to another comment.
+ * @apiSuccess {String[]} SpammedComments.media Array of URLs of attached media files.
+ * @apiSuccess {Date} SpammedComments.created_at Date and time when the comment was created.
+ * @apiSuccess {Boolean} SpammedComments.is_hidden Indicates if the comment is hidden.
+ * @apiSuccess {Boolean} SpammedComments.is_saved Indicates if the comment is saved.
+ * @apiSuccess {String} SpammedComments.post_title Title of the post to which the comment belongs.
+ * @apiSuccess {String} SpammedComments.community_title Title of the community where the post belongs.
+ * @apiSuccess {Boolean} SpammedComments.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} SpammedComments.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} SpammedComments.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} SpammedComments.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} SpammedComments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {SpammedCommentsObject[]} SpammedComments.replies if the comment has a reply by default empty array
  *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
  *     {
- *       "generatedComments": [
- *         {
- *           "_id": "609d94e920d0f11550a9a0a0",
- *           "text": "This is a spam comment",
- *           "author": "example_user",
- *           "createdAt": "2024-04-05T12:30:45Z"
- *         },
- *         {
- *           "_id": "609d94e920d0f11550a9a0a1",
- *           "text": "Another spam comment",
- *           "author": "another_user",
- *           "createdAt": "2024-04-06T08:45:20Z"
- *         }
- *       ]
+ *       "SpammedComments": {
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
+ *               "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "isVerified": true,
+ *               "displayName": "Amiraelgarf123",
+ *               "about": "Lorem ipsum dolor sit amet",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
+ *           ],
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
+ *           "replies": []
+ *       },
  *     }
+ *
  *
  * @apiError NotAuthorized The user is not authorized to perform this action.
  * @apiError NotModerator User is not a moderator of the community or does not have permission.
@@ -6394,4 +6455,794 @@
  *     }
  */
 
+/**
+ * @api {post} /community/moderation/:communityName/:commentId/lock-comment Lock Comment
+ * @apiName LockComment
+ * @apiGroup Moderation
+ *
+ * @apiDescription Locks a comment in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} commentId ID of the comment to be locked.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Comment locked successfully"
+ *     }
+ *
+ * @apiError CommentNotFound The specified comment does not exist.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError CommentAlreadyLocked The comment is already locked.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Comment not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "Comment is already locked"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+
+/**
+ * @api {post} /community/moderation/:communityName/:commentId/unlock-comment Unlock Comment
+ * @apiName UnlockComment
+ * @apiGroup Moderation
+ *
+ * @apiDescription Unlocks a previously locked comment in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} commentId ID of the comment to be unlocked.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Comment unlocked successfully"
+ *     }
+ *
+ * @apiError CommentNotFound The specified comment does not exist.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError CommentNotLocked The comment is not locked.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Comment not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "Post is not locked"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:commentId/remove-comment Remove Comment
+ * @apiName RemoveComment
+ * @apiGroup Moderation
+ *
+ * @apiDescription Removes a comment from a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} commentId ID of the comment to be removed.
+ * @apiParam {Object} removalReason The reason for removing the comment.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Comment removed successfully"
+ *     }
+ *
+ * @apiError CommentNotFound The specified comment does not exist.
+ * @apiError BadRequest Missing removal reason.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Comment not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Must have a removal reason"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:commentId/approve-comment Approve Comment
+ * @apiName ApproveComment
+ * @apiGroup Moderation
+ *
+ * @apiDescription Approves a comment in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} commentId ID of the comment to be approved.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Comment approved successfully"
+ *     }
+ *
+ * @apiError CommentNotFound The specified comment does not exist.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Comment not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/get-edited-comments Get Edited Comments History
+ * @apiName GetEditedCommentsHistory
+ * @apiGroup Moderation
+ *
+ * @apiDescription Retrieves the history of edited comments in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object} editedComment Object representing the edited comment.
+ * @apiSuccess {String} editedComment._id ID of the comment.
+ * @apiSuccess {String} editedComment.content Content of the comment.
+ * @apiSuccess {Object} editedComment.user User object representing the author of the comment.
+ * @apiSuccess {String} editedComment.user.id ID of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.name Name of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.username Username of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.email Email of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.googleId Google ID of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.birth_date Birth date of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.phone Phone number of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} editedComment.user.location Location of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.bio Bio of the user who posted the comment.
+ * @apiSuccess {Number} editedComment.user.followers_count Number of followers of the user who posted the comment.
+ * @apiSuccess {Number} editedComment.user.following_count Number of users followed by the user who posted the comment.
+ * @apiSuccess {Date} editedComment.user.created_at Date when the user who posted the comment was created.
+ * @apiSuccess {String} editedComment.user.role Role of the user who posted the comment.
+ * @apiSuccess {Boolean} editedComment.user.nsfw Flag indicating if the user who posted the comment has NSFW content.
+ * @apiSuccess {Boolean} editedComment.user.activeInCommunityVisibility Flag indicating if the user who posted the comment is active in community visibility.
+ * @apiSuccess {Boolean} editedComment.user.isVerified Flag indicating if the user who posted the comment is verified.
+ * @apiSuccess {String} editedComment.user.displayName Display name of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.about About information of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.cakeDay Cake day of the user who posted the comment.
+ * @apiSuccess {String[]} editedComment.user.subscribedCommunities List of communities subscribed by the user who posted the comment.
+ * @apiSuccess {Number} editedComment.likes_count Number of likes received by the comment.
+ * @apiSuccess {Number} editedComment.replies_count Number of replies to the comment.
+ * @apiSuccess {Boolean} editedComment.is_reply Indicates if the comment is a reply to another comment.
+ * @apiSuccess {String[]} editedComment.media Array of URLs of attached media files.
+ * @apiSuccess {Date} editedComment.created_at Date and time when the comment was created.
+ * @apiSuccess {Boolean} editedComment.is_hidden Indicates if the comment is hidden.
+ * @apiSuccess {Boolean} editedComment.is_saved Indicates if the comment is saved.
+ * @apiSuccess {String} editedComment.post_title Title of the post to which the comment belongs.
+ * @apiSuccess {String} editedComment.community_title Title of the community where the post belongs.
+ * @apiSuccess {Boolean} editedComment.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} editedComment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} editedComment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} editedComment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} editedComment.is_locked if the comment is locked by the moderator
+ * @apiSuccess {editedCommentObject[]} editedComment.replies if the comment has a reply by default empty array
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "editedComment": {
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
+ *               "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "isVerified": true,
+ *               "displayName": "Amiraelgarf123",
+ *               "about": "Lorem ipsum dolor sit amet",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
+ *           ],
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
+ *           "replies": []
+ *       },
+ *     }
+ * @apiError CommunityNotFound The specified community does not exist.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError EditedCommentsNotFound No edited comments found in the community.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Community not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Edited comments not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/get-reported-comments Get Reported Comments
+ * @apiName GetReportedComments
+ * @apiGroup Moderation
+ *
+ * @apiDescription Retrieves reported comments in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object} reportedComments Object representing the reported comment.
+ * @apiSuccess {String} reportedComments._id ID of the comment.
+ * @apiSuccess {String} reportedComments.content Content of the comment.
+ * @apiSuccess {Object} reportedComments.user User object representing the author of the comment.
+ * @apiSuccess {String} reportedComments.user.id ID of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.name Name of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.username Username of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.email Email of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.googleId Google ID of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.birth_date Birth date of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.phone Phone number of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} reportedComments.user.location Location of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.bio Bio of the user who posted the comment.
+ * @apiSuccess {Number} reportedComments.user.followers_count Number of followers of the user who posted the comment.
+ * @apiSuccess {Number} reportedComments.user.following_count Number of users followed by the user who posted the comment.
+ * @apiSuccess {Date} reportedComments.user.created_at Date when the user who posted the comment was created.
+ * @apiSuccess {String} reportedComments.user.role Role of the user who posted the comment.
+ * @apiSuccess {Boolean} reportedComments.user.nsfw Flag indicating if the user who posted the comment has NSFW content.
+ * @apiSuccess {Boolean} reportedComments.user.activeInCommunityVisibility Flag indicating if the user who posted the comment is active in community visibility.
+ * @apiSuccess {Boolean} reportedComments.user.isVerified Flag indicating if the user who posted the comment is verified.
+ * @apiSuccess {String} reportedComments.user.displayName Display name of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.about About information of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.cakeDay Cake day of the user who posted the comment.
+ * @apiSuccess {String[]} reportedComments.user.subscribedCommunities List of communities subscribed by the user who posted the comment.
+ * @apiSuccess {Number} reportedComments.likes_count Number of likes received by the comment.
+ * @apiSuccess {Number} reportedComments.replies_count Number of replies to the comment.
+ * @apiSuccess {Boolean} reportedComments.is_reply Indicates if the comment is a reply to another comment.
+ * @apiSuccess {String[]} reportedComments.media Array of URLs of attached media files.
+ * @apiSuccess {Date} reportedComments.created_at Date and time when the comment was created.
+ * @apiSuccess {Boolean} reportedComments.is_hidden Indicates if the comment is hidden.
+ * @apiSuccess {Boolean} reportedComments.is_saved Indicates if the comment is saved.
+ * @apiSuccess {String} reportedComments.post_title Title of the post to which the comment belongs.
+ * @apiSuccess {String} reportedComments.community_title Title of the community where the post belongs.
+ * @apiSuccess {Boolean} reportedComments.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} reportedComments.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} reportedComments.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} reportedComments.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} reportedComments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {reportedCommentsObject[]} reportedComments.replies if the comment has a reply by default empty array
+ * @apiSuccess {string} reportedComments.reason reason why the comment is reported
+ * @apiSuccess {string} reportedComments.subreason subreason of why the comment is reported
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "reportedComments": {
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
+ *               "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "isVerified": true,
+ *               "displayName": "Amiraelgarf123",
+ *               "about": "Lorem ipsum dolor sit amet",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
+ *           ],
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
+ *           "replies": [],
+ *           "reason": "Spam",
+ *         "subreason": "Irrelevant content"
+ *       },
+ *     }
+ *
+ * @apiError CommunityNotFound The specified community does not exist.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Community not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
 //#endregion Moderation
+
+//#region Admin
+
+/**
+ * @api {post} /dashboard/ban Ban User
+ * @apiName BanUser
+ * @apiGroup Admin Dashboard
+ *
+ * @apiDescription Bans a user from posting.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} username Username of the user to be banned.
+ * @apiParam {Boolean} isBanned Indicates whether the user is banned.
+ * @apiParam {String} banDuration Duration of the ban (if temporary).
+ * @apiParam {String} reason Reason for the ban.
+ * @apiParam {Boolean} isPermanent Indicates whether the ban is permanent.
+ * @apiParam {String} accessToken Access token of the user.
+ *
+ * @apiSuccess {Object} user User object containing user details.
+ * @apiSuccess {String} user._id User's unique ID.
+ * @apiSuccess {String} user.name User's name.
+ * @apiSuccess {String} user.email User's email address.
+ * @apiSuccess {String} user.username User's username..
+ * @apiSuccess {String} message Success message indicating user signed in or signed up successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "user": {
+ *           "id": "607f1f77bcf86cd799439011",
+ *           "name": "Amira El-Garf",
+ *           "username": "amiraelgarf123",
+ *           "email": "amiraelgarf99@gmail.com",
+ *           "googleId": "google_user_id",
+ *           "birth_date": "1990-01-01",
+ *           "phone": "123456789",
+ *           "avatar_url": "https://example.com/avatar.jpg",
+ *           "location": "City, Country",
+ *           "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+ *           "followers_count": 100,
+ *           "following_count": 50,
+ *           "created_at": "2024-04-08T12:00:00Z",
+ *           "role": "User",
+ *           "nsfw": false,
+ *           "activeInCommunityVisibility": true,
+ *           "isVerified": true,
+ *           "displayName": "Amiraelgarf123",
+ *           "about": "Some information about the user",
+ *           "cakeDay": "2022-04-08T12:00:00Z",
+ *           "subscribedCommunities": ["community1", "community2"]
+ *       },
+ *       "message": "User Banned successfully"
+ *     }
+ * @apiError Unauthorized The user is not authorized to perform this action.
+ * @apiError UserNotFound The specified user does not exist.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "message": "You are not authorized"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User is not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /dashboard/unban Unban User
+ * @apiName UnbanUser
+ * @apiGroup Admin Dashboard
+ *
+ * @apiDescription Unbans a previously banned user.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} username Username of the user to be unbanned.
+ * @apiParam {Boolean} isBanned Indicates whether the user is banned.
+ * @apiParam {String} accessToken Access token of the user.
+ *
+ * @apiSuccess {Object} user User object containing user details.
+ * @apiSuccess {String} user._id User's unique ID.
+ * @apiSuccess {String} user.name User's name.
+ * @apiSuccess {String} user.email User's email address.
+ * @apiSuccess {String} user.username User's username.
+ * @apiSuccess {String} message Success message indicating user signed in or signed up successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "user": {
+ *           "id": "607f1f77bcf86cd799439011",
+ *           "name": "Amira El-Garf",
+ *           "username": "amiraelgarf123",
+ *           "email": "amiraelgarf99@gmail.com",
+ *           "googleId": "google_user_id",
+ *           "birth_date": "1990-01-01",
+ *           "phone": "123456789",
+ *           "avatar_url": "https://example.com/avatar.jpg",
+ *           "location": "City, Country",
+ *           "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+ *           "followers_count": 100,
+ *           "following_count": 50,
+ *           "created_at": "2024-04-08T12:00:00Z",
+ *           "role": "User",
+ *           "nsfw": false,
+ *           "activeInCommunityVisibility": true,
+ *           "isVerified": true,
+ *           "displayName": "Amiraelgarf123",
+ *           "about": "Some information about the user",
+ *           "cakeDay": "2022-04-08T12:00:00Z",
+ *           "subscribedCommunities": ["community1", "community2"]
+ *       },
+ *       "message": "User unbanned successfully"
+ *     }
+ *
+ * @apiError Unauthorized The user is not authorized to perform this action.
+ * @apiError UserNotFound The specified user does not exist.
+ * @apiError UserNotBanned The specified user is not banned.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "message": "You are not authorized"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User is not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User is not banned"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /dashboard/comments Get Reported Comments
+ * @apiName GetComments
+ * @apiGroup Admin Dashboard
+ *
+ * @apiDescription Retrieves comments for administrative purposes.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiSuccess {Object} reportedComments  Object representing the added comment.
+ * @apiSuccess {String} reportedComments._id ID of the comment.
+ * @apiSuccess {String} reportedComments.content Content of the comment.
+ * @apiSuccess {Object} reportedComments.user User object representing the author of the comment.
+ * @apiSuccess {String} reportedComments.user.id ID of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.name Name of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.username Username of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.email Email of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.googleId Google ID of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.birth_date Birth date of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.phone Phone number of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} reportedComments.user.location Location of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.bio Bio of the user who posted the comment.
+ * @apiSuccess {Number} reportedComments.user.followers_count Number of followers of the user who posted the comment.
+ * @apiSuccess {Number} reportedComments .user.following_count Number of users followed by the user who posted the comment.
+ * @apiSuccess {Date} reportedComments.user.created_at Date when the user who posted the comment was created.
+ * @apiSuccess {String} reportedComments.user.role Role of the user who posted the comment.
+ * @apiSuccess {Boolean} reportedComments.user.nsfw Flag indicating if the user who posted the comment has NSFW content.
+ * @apiSuccess {Boolean} reportedComments.user.activeInCommunityVisibility Flag indicating if the user who posted the comment is active in community visibility.
+ * @apiSuccess {Boolean} reportedComments.user.isVerified Flag indicating if the user who posted the comment is verified.
+ * @apiSuccess {String} reportedComments.user.displayName Display name of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.about About information of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.cakeDay Cake day of the user who posted the comment.
+ * @apiSuccess {String[]} reportedComments.user.subscribedCommunities List of communities subscribed by the user who posted the comment.
+ * @apiSuccess {Number} reportedComments.likes_count Number of likes received by the comment.
+ * @apiSuccess {Number} reportedComments.replies_count Number of replies to the comment.
+ * @apiSuccess {Boolean} reportedComments.is_reply Indicates if the comment is a reply to another comment.
+ * @apiSuccess {String[]} reportedComments.media Array of URLs of attached media files.
+ * @apiSuccess {Date} reportedComments.created_at Date and time when the comment was created.
+ * @apiSuccess {Boolean} reportedComments.is_hidden Indicates if the comment is hidden.
+ * @apiSuccess {Boolean} reportedComments.is_saved Indicates if the comment is saved.
+ * @apiSuccess {String} reportedComments.post_title Title of the post to which the comment belongs.
+ * @apiSuccess {String} reportedComments.community_title Title of the community where the post belongs.
+ * @apiSuccess {Boolean} reportedComments.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} reportedComments.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} reportedComments.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} reportedComments.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} reportedComments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {commentObject[]} reportedComments.replies if the comment has a reply by default empty array
+ * @apiSuccess {string} reportedComments.reason reason why the comment is reported
+ * @apiSuccess {string} reportedComments.subreason subreason of why the comment is reported
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "reportedComments ": {
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
+ *               "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "isVerified": true,
+ *               "displayName": "Amiraelgarf123",
+ *               "about": "Lorem ipsum dolor sit amet",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
+ *           ],
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
+ *           "replies": [],
+ *           "reason": "Spam",
+ *         "subreason": "Irrelevant content"
+ *       },
+ *       "message": "Comments have been retrieved successfully"
+ *     }
+ *
+ * @apiError Unauthorized The user is not authorized to perform this action.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "message": "You are not authorized"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /dashboard/posts Get Reported Posts
+ * @apiName GetReportedPosts
+ * @apiGroup Admin Dashboard
+ *
+ * @apiDescription Retrieves reported posts for administrative purposes.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiSuccess {Object[]} reportedPosts List of reported post objects.
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *         "reportedPosts": [
+ *          {
+ *               "_id": "1234567890",
+ *              "userId": "0987654321",
+ *              "username": "example_user",
+ *              "userProfilePic": "http://example.com/avatar.jpg",
+ *              "hasUpvoted": false,
+ *              "hasDownvoted": false,
+ *              "hasVotedOnPoll": false,
+ *              "selectedPollOption": null,
+ *              "numberOfViews": 1080,
+ *              "votesUpCount": 10,
+ *              "votesDownCount": 2,
+ *              "sharesCount": 5,
+ *              "commentsCount": 15,
+ *              "title": "Sample Title",
+ *              "content": "Sample Content",
+ *              "community": "Sample Community",
+ *              "type": "Post",
+ *              "link": "http://example.com",
+ *              "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *              "isPollEnabled": true,
+ *              "pollVotingLength": "7 days",
+ *              "isSpoiler": false,
+ *              "isNsfw": false,
+ *              "sendPostReplyNotification": true,
+ *              "isCommentsLocked": false,
+ *              "isSaved": false,
+ *              "date": "2024-04-16T10:00:00.000Z",
+ *              "pollOptions": [],
+ *              "attachments": []
+ *          }
+ *      ],
+ *      "message": "Posts have been retrieved successfully"
+ *      }
+ *
+ * @apiError Unauthorized The user is not authorized to perform this action.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "message": "You are not authorized"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+
+//#endregion Admin
+
+
