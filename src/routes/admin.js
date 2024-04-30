@@ -233,7 +233,7 @@ router.get("/dashboard/comments", auth.authentication, async (req, res) => {
       for (const comment of comments) {
           const report = await Report.findOne({ commentId: comment._id, reason: reportedReason });
           if (report) {
-              const commentObject = await Comment.getCommentObject(comment);
+              const commentObject = await Comment.getCommentObject(comment, comment.userId, true);
               commentObject.reason = report.reason;
               commentObject.subreason = report.subreason;
               reportedComments.push(commentObject);
