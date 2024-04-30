@@ -214,8 +214,16 @@ CommentSchema.statics.getCommentRepliesss = async function (comment, userId) {
     return comment.replies;
 };
 
-
-
+CommentSchema.statics.findRootComment = async (commentId) => {
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return null;
+    }
+    if (comment.parentCommentId) {
+      return findRootComment(comment.parentCommentId);
+    }
+    return comment;
+  };
 
 const Comment = mongoose.model("comment", CommentSchema);
 module.exports = Comment;

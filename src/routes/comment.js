@@ -1,5 +1,6 @@
 const express = require("express");
 const Comment = require("../models/comment");
+const Community = require("../models/community");
 const User = require("../models/user");
 const Post = require("../models/post");
 const Message = require("../models/message");
@@ -26,8 +27,6 @@ router.post(
       const post = await Post.findById(postId);
       const recieverId = post.userId;
       const { content, fileType } = req.body;
-
-      //console.log(userId);
       if (!content) {
         return res.status(400).send({
           message: "Comment content is required",
@@ -47,6 +46,19 @@ router.post(
         postId,
       });
 
+      const communityName = post.community;
+      const community = await Community.findOne({communityName: communityName});
+      const contributors = community.contributors;
+      if(contributors.includes(userId) && (community.type === "Restricted" || community.type == "Private")){
+        newComment.isApproved = true; 
+      }
+      else if((community.type === "Restricted" || community.type == "Private")){
+        return res.status(400).send({
+          message: "You are not an approved user to this community",
+        });
+      }
+        
+
       if (req.files) {
         for (let i = 0; i < req.files.length; i++) {
           //console.log(req.files);
@@ -57,25 +69,9 @@ router.post(
           newComment.attachments.push(attachmentObj);
         }
       }
-      //console.log(newComment);
       await newComment.save();
-      if (!(userId.toString() === recieverId.toString())) {
-        const newMessage = new Message({
-          senderId: userId,
-          recieverId: recieverId,
-          conversationSubject: `post reply : ${post.title}`,
-          contentType: "comment",
-          content: newComment,
-        });
-
-        await newMessage.save();
-        console.log(newMessage.content.userId);
-      }
-
       await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
-      //console.log(userId);
       const commentObj = await Comment.getCommentObject(newComment, userId);
-      //console.log(commentObj);
 
       //notification
       userWhoCreatedPost = await User.findById(post.userId);
@@ -97,6 +93,22 @@ router.post(
         });
         await notification.save();
       }
+
+      //message 
+
+      if (!(userId.toString() === recieverId.toString())) {
+        const newMessage = new Message({
+          senderId: userId,
+          recieverId: recieverId,
+          conversationSubject: `post reply : ${post.title}`,
+          contentType: "comment",
+          content: newComment,
+        });
+
+        await newMessage.save();
+        console.log(newMessage.content.userId);
+      }
+
       res.status(201).send({
         comment: commentObj,
         message: "Comment has been added successfully",
@@ -114,7 +126,10 @@ router.delete(
     try {
       const userId = req.user._id;
       const comment = await Comment.findByIdAndDelete(req.params.commentId);
-      if (comment.userId.toString() !== userId.toString()) {
+      const adminId = await UserRole.find({
+        name: "Admin",
+      }).select("_id");
+      if ((comment.userId.toString() !== userId.toString()) || (adminId[0]._id !== req.user.roleId)) {
         return res.status(403).send({
           message: "You are not authorized to delete this comment",
         });
@@ -125,20 +140,22 @@ router.delete(
           message: "comment not found",
         });
       }
+      if ((adminId[0]._id.equals(req.user.roleId)) || (comment.userId.toString() === userId.toString())) {
 
-      await Comment.deleteMany({ parentCommentId: req.params.commentId });
-      const post = await Post.findOneAndUpdate(
-        { _id: comment.postId },
-        { $inc: { commentsCount: -1 } },
-        { new: true }
-      );
+        await Comment.deleteMany({ parentCommentId: req.params.commentId });
+        const post = await Post.findOneAndUpdate(
+          { _id: comment.postId },
+          { $inc: { commentsCount: -1 } },
+          { new: true }
+        );
 
-      const commentObj = await Comment.getCommentObject(comment, userId);
+        const commentObj = await Comment.getCommentObject(comment, userId);
 
-      res.status(200).send({
-        comment: commentObj,
-        message: "comment deleted successfully",
-      });
+        res.status(200).send({
+          comment: commentObj,
+          message: "comment deleted successfully",
+        });
+    }
     } catch {
       res.status(500).send({
         message: "Internal Server Error",
@@ -353,11 +370,26 @@ router.post(
         });
       }
 
+      const rootComment = await Comment.findRootComment(parentCommentId);
+
+      if (!rootComment) {
+        return res.status(404).send({
+          message: "Root comment not found",
+        });
+      }
+
+      const community = await Community.findOne({ communityName: rootComment.community });
+      const contributors = community.contributors;
+
       const newReply = new Comment({
         content,
         userId,
         parentCommentId,
       });
+
+      if (contributors.includes(userId) && (community.type === "Restricted" || community.type === "Private")) {
+        newReply.isApproved = true;
+      }
 
       if (req.files) {
         for (let i = 0; i < req.files.length; i++) {
