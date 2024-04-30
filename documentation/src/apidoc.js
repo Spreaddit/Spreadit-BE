@@ -587,6 +587,9 @@
  * @apiSuccess {String} comment.community_title Title of the community where the post belongs.
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
  *
  * @apiSuccessExample {json} Success-Response:
@@ -626,6 +629,9 @@
  *           "community_title": "Sample Community",
  *           "is_upvoted": true,
  *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "replies": []
  *       },
  *       "message": "Comment has been added successfully"
@@ -682,8 +688,10 @@
  * @apiSuccess {Date} comment.updatedAt Date and time when the deleted comment was last updated.
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
-
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -698,6 +706,9 @@
  *           "updatedAt": "2022-05-14T12:00:00.000Z",
  *           "is_upvoted": true,
  *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "replies": []
  *       },
  *       "message": "Comment deleted successfully"
@@ -756,6 +767,9 @@
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
  *
  * @apiSuccessExample {json} Success-Response:
@@ -795,6 +809,9 @@
  *           "post_title": "Sample Post Title",
  *           "community_title": "Sample Community",
  *           "is_upvoted": true,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "is_downvoted": false,
  *           "replies": []
  *       }
@@ -849,6 +866,9 @@
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty
  *
  * @apiSuccessExample {json} Success-Response:
@@ -889,6 +909,9 @@
  *           "community_title": "Sample Community",
  *           "is_upvoted": true,
  *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "replies": []
  *       },
  *       ],
@@ -941,6 +964,9 @@
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
  *
  * @apiSuccessExample {json} Success-Response:
@@ -980,6 +1006,9 @@
  *           "post_title": "Sample Post Title",
  *           "community_title": "Sample Community",
  *           "is_upvoted": true,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "is_downvoted": false,
  *           "replies": []
  *       },
@@ -1116,6 +1145,9 @@
  * @apiSuccess {String} message Success message indicating that the reply has been added successfully.
  * @apiSuccess {Boolean} reply.is_upvoted if the reply is upvoted by the user
  * @apiSuccess {Boolean} reply.is_downvoted if the reply is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {replyObject[]} reply.replies if the reply has a reply by default empty array
  *
  * @apiSuccessExample {json} Success-Response:
@@ -1151,6 +1183,9 @@
  *           "post_title": "Example Post",
  *           "community_title": "Example Community",
  *           "is_upvoted": true,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "is_downvoted": false,
  *           "replies": []
  *       },
@@ -1209,6 +1244,9 @@
  * @apiSuccess {String} replies.community_title Title of the community to which the comment belongs.
  * @apiSuccess {String} message Success message indicating that replies have been retrieved successfully.
  * @apiSuccess {Boolean} replies.is_upvoted if the reply is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {Boolean} replies.is_downvoted if the reply is upvoted by the user
  * @apiSuccess {repliesObject[]} replies.replies if the reply has a reply by default empty array
  *
@@ -1249,6 +1287,9 @@
  *           "post_title": "Sample Post Title",
  *           "community_title": "Sample Community",
  *           "is_upvoted": true,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "is_downvoted": false,
  *           "replies": []
  *           },
@@ -6246,3 +6287,111 @@
  */
 
 //#endregion Mobile Settings
+
+
+//#region Moderation
+/**
+ * @api {post} /community/moderation/:communityName/spam-comment/:commentId Mark Comment as Spam
+ * @apiName MarkCommentAsSpam
+ * @apiGroup Moderation
+ *
+ * @apiDescription Marks a comment as spam by its ID.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} commentId ID of the comment to mark as spam.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Comment marked as spam successfully"
+ *     }
+ *
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community.
+ * @apiError NoPermission Moderator doesn't have permission.
+ * @apiError CommentNotFound The specified comment does not exist.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "comment not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/get-spam-comments Get Spam Comments
+ * @apiName GetSpamComments
+ * @apiGroup Moderation
+ *
+ * @apiDescription Retrieves all spam comments in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object[]} generatedComments List of generated comments.
+ * @apiSuccess {String} generatedComments._id ID of the generated comment.
+ * @apiSuccess {String} generatedComments.text Text content of the generated comment.
+ * @apiSuccess {String} generatedComments.author Author of the generated comment.
+ * @apiSuccess {String} generatedComments.createdAt Timestamp when the comment was created.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "generatedComments": [
+ *         {
+ *           "_id": "609d94e920d0f11550a9a0a0",
+ *           "text": "This is a spam comment",
+ *           "author": "example_user",
+ *           "createdAt": "2024-04-05T12:30:45Z"
+ *         },
+ *         {
+ *           "_id": "609d94e920d0f11550a9a0a1",
+ *           "text": "Another spam comment",
+ *           "author": "another_user",
+ *           "createdAt": "2024-04-06T08:45:20Z"
+ *         }
+ *       ]
+ *     }
+ *
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+//#endregion Moderation
