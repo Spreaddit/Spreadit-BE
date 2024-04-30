@@ -131,11 +131,13 @@ CommentSchema.statics.getCommentObject = async function (
     const isDownVoted = comment.downVotes.includes(userid);
     let postTitle;
     let subredditTitle;
+    let postId;
     if (comment.parentCommentId === null) {
         const post = await Post.findOne({ _id: comment.postId });
         if (post) {
             postTitle = post.title;
             subredditTitle = post.community;
+            postId = comment.postId;
         }
     }
     else {
@@ -147,6 +149,8 @@ CommentSchema.statics.getCommentObject = async function (
         if (post) {
             postTitle = post.title;
             subredditTitle = post.community;
+            postId = post._id;
+
         }
     }
 
@@ -166,7 +170,7 @@ CommentSchema.statics.getCommentObject = async function (
       community_title: subredditTitle,
       is_upvoted: isUpvoted,
       is_downvoted: isDownVoted,
-      postId: comment.postId,
+      postId: postId,
       last_edit: comment.lastEdit,
       is_removed: comment.isRemoved,
       is_approved: comment.isApproved,
@@ -223,7 +227,7 @@ CommentSchema.statics.findRootComment = async (commentId) => {
       return findRootComment(comment.parentCommentId);
     }
     return comment;
-  };
+};
 
 const Comment = mongoose.model("comment", CommentSchema);
 module.exports = Comment;
