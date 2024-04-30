@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 require("./user");
 require("./post");
+require("./community");
 const commentSchema = require('../models/comment')
 
 const PostSchema = new Schema(
@@ -136,8 +137,10 @@ const PostSchema = new Schema(
 
 PostSchema.statics.getPostObject = async function (post, userId, includeHidden = false) {
   const User = mongoose.model("user");
+  const Community = mongoose.model("community");
   const loginUser = await User.findById(userId);
   const postUser = await User.findById(post.userId);
+  const postcommunity = await Community.findOne({ name: post.community });
   const hasUpvoted = post.upVotes.includes(userId);
   const hasDownvoted = post.downVotes.includes(userId);
   const savedPostIds = postUser.savedPosts || [];
@@ -173,6 +176,7 @@ PostSchema.statics.getPostObject = async function (post, userId, includeHidden =
     title: post.title,
     content: post.content,
     community: post.community,
+    communityIcon: postcommunity ? postcommunity.image : null,
     type: post.type,
     link: post.link,
     pollExpiration: post.pollExpiration,
