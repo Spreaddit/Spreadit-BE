@@ -7,7 +7,7 @@ const postRoutes = require("../src/routes/post");
 const commentRoutes = require("../src/routes/comment");
 const communityRoutes = require("../src/routes/community");
 const listingRoutes = require("../src/routes/listing");
-
+const communityCommentRoutes = require("../src/routes/community-comment");
 app.use(express.json());
 //app.use(userRoutes);
 app.use(authRoutes);
@@ -17,6 +17,7 @@ app.use(commentRoutes);
 app.use(postRoutes);
 app.use(communityRoutes);
 app.use(listingRoutes);
+app.use(communityCommentRoutes);
 //app.use(accountSetting);
 //app.use(settingsRoutes);
 module.exports = app;
