@@ -5,7 +5,8 @@ const Report = require("../models/report.js");
 const Community = require("../models/community.js");
 const mongoose = require("mongoose");
 const Moderator = require("../models/moderator.js");
-
+const BanUser = require("../models/banUser.js");
+const UserRole = require("../models/constants/userRole.js")
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -161,6 +162,18 @@ exports.createPost = async (req, res) => {
     if (!user) {
       return res.status(400).json({ error: "User ID is invalid" });
     }
+    const communityName = req.body.community;
+    if (communityName) {
+      const banInfo = await BanUser.findOne({ userId, communityName });
+      if (banInfo) {
+        return res.status(403).json({ error: "You are banned from posting in this community" });
+      }
+    }
+
+    const globalBan = await BanUser.findOne({ userId });
+    if (globalBan) {
+      return res.status(403).json({ error: "You are globally banned and cannot create posts" });
+    }
     const {
       title,
       content,
@@ -262,19 +275,16 @@ exports.createPost = async (req, res) => {
         .status(400)
         .json({ error: "Invalid post data. Please provide real post type" });
     }
-    //*****************************************************************
-    // commented until farouq make approvedUsers
-    //****************************************************************
-    /* const communityExists = await Community.findOne({ name: community });
+    const communityExists = await Community.findOne({ name: community });
     if (!communityExists) {
       return res.status(404).json({ message: "Community not found" });
     }
     let isApproved = false;
 
     if (communityExists.communityType === "Public") {
-      isApproved = true; 
+      isApproved = true;
     } else {
-      if (!communityExists.approvedUsers.includes(userId)) {
+      if (!communityExists.contributors.includes(userId)) {
         return res.status(403).json({
           error: "User is not authorized to create posts in this community",
         });
@@ -282,7 +292,7 @@ exports.createPost = async (req, res) => {
       else {
         isApproved = false;
       }
-    } */
+    }
     const newPost = new Post({
       userId,
       username: user.username,
@@ -300,7 +310,7 @@ exports.createPost = async (req, res) => {
       isSpoiler,
       isNsfw,
       sendPostReplyNotification,
-      // isApproved,  // commented until farouq make approvedUsers
+      isApproved,
     });
     if (scheduledDate) {
       const job = scheduleScheduledPost(newPost, scheduledDate);
@@ -828,10 +838,15 @@ exports.deletePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
     const userId = req.user._id;
-    const post = await Post.findByIdAndDelete({ _id: postId, userId });
+    const adminId = await UserRole.findOne({ name: "Admin" }).select("_id");
+    const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
+    if (post.userId.toString() !== userId.toString() && adminId.toString() !== req.user.roleId) {
+      return res.status(403).json({ message: "You are not authorized to delete this post" });
+    }
+    await Post.findByIdAndDelete({ _id: postId, userId });
     await deleteComments(postId);
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (err) {
