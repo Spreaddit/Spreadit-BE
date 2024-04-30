@@ -455,3 +455,28 @@ exports.reportMessage = async (req, res) => {
     });
   }
 };
+
+exports.getMessageById = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    const messageId = req.params.messageId;
+    const message = await Message.findById(messageId);
+
+    if (!message) {
+      return res.status(404).json({ error: "Message not found" });
+    }
+
+    if (
+      message.senderId.toString() !== userId.toString() &&
+      message.recieverId.toString() !== userId.toString()
+    ) {
+      return res.status(403).json({ error: "Unauthorized access to message" });
+    }
+    const messageObj = await Message.getMessageObject(message, userId);
+    res.status(200).json(messageObj);
+  } catch (error) {
+    console.error("Error getting message:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
