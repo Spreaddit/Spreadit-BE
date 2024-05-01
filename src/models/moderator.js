@@ -28,6 +28,10 @@ const ModeratorSchema = new Schema(
     manageSettings: {
       type: Boolean,
       default: true,
+    },
+    isAccepted: {
+      type: Boolean,
+      default: false,
     }
   },
   {
