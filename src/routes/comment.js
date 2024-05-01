@@ -77,7 +77,7 @@ router.post(
       userWhoCreatedPost = await User.findById(post.userId);
       if (
         !post.userId.equals(req.user._id) &&
-        userWhoCreatedPost.posts == true
+        userWhoCreatedPost.comments == true
       ) {
         await Notification.sendNotification(
           post.userId,

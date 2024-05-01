@@ -463,7 +463,7 @@ UserSchema.statics.generateUserObject = async function (user) {
       isBanned: user.isBanned,
       displayName: user.displayName,
       bio: user.about,
-      cakeDay: user.cakeDay,
+      cakeDay: user.createdAt,
       subscribedCommunities: user.subscribedCommunities,
       favouriteCommunities: user.favouriteCommunities,
       socialLinks: user.socialLinks,

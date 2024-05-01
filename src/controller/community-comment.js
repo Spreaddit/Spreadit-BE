@@ -271,7 +271,7 @@ exports.getReportedComments = async (req, res) => {
                         reason: report.reason,
                         subreason: report.subreason
                     }));
-                    topLevelCommentObject.report = reportsArray;
+                    topLevelCommentObject.reports = reportsArray;
                     reportedComments.push(topLevelCommentObject);
                 }
 
