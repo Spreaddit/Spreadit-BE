@@ -201,7 +201,10 @@ exports.getSearch = async (req, res) => {
             else {
                 posts = sortedPosts;
             }
-            return res.status(200).json({ results: posts });
+
+            const postResults = await Promise.all(posts.map(post => Post.getPostResultObject(post)));
+
+            return res.status(200).json({ results: postResults });
         } else if (type === 'comments') {
             let comments = await Comment.find({ content: { $regex: q, $options: 'i' } });
             const sortedComments = filterComments(comments, q);
@@ -266,7 +269,9 @@ exports.getProfileSearch = async (req, res) => {
             } else {
                 posts = sortedPosts;
             }
-            return res.status(200).json({ results: posts });
+            const postResults = await Promise.all(posts.map(post => Post.getPostResultObject(post)));
+
+            return res.status(200).json({ results: postResults });
         } else if (type === 'comments') {
             let comments = await Comment.find({ ...query, content: { $regex: q, $options: 'i' } });
             const sortedComments = filterComments(comments, q);
@@ -337,7 +342,9 @@ exports.getTrendingPosts = async (req, res) => {
 
         const topTrendingPosts = await getTopTrendingPosts(allPosts);
 
-        res.status(200).json({ trendingPosts: topTrendingPosts });
+        const postResults = await Promise.all(topTrendingPosts.map(post => Post.getPostResultObject(post)));
+
+        return res.status(200).json({ results: postResults });
     } catch (err) {
         console.error('Error occurred while getting trending posts:', err);
         res.status(500).json({ error: 'Internal server error' });

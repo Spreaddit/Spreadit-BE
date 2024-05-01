@@ -22,6 +22,8 @@ const communitiespostsRoutes = require("./routes/community-post");
 const adminRoutes = require ("./routes/admin");
 const communityCommentsRouted = require("./routes/community-comment");
 
+const notificationsRoutes = require("../src/routes/notifications");
+
 //seeding
 const UserRoleSeeder = require("../seeders/user-role.seeder");
 const PostSeeder = require("../seeders/post.seeder");
@@ -64,6 +66,7 @@ app.use("/api", communitiespostsRoutes);
 app.use("/api", moderatorRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", communityCommentsRouted);
+app.use("/api", notificationsRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,

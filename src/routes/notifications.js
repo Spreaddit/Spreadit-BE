@@ -9,18 +9,24 @@ router
     .put(auth.authentication, notificationController.markAllAsRead);
 
 router
-    .route("notifications/read-notification/:notificationId")
+    .route("/notifications/read-notification/:notificationId")
     .put(auth.authentication, notificationController.markNotificationAsRead);
 
 router
-    .route("/notification/unread/count")
+    .route("/notifications/unread/count")
     .get(auth.authentication, notificationController.getUnreadNotificationCount);
 
 router
-    .route("/notification")
+    .route("/notifications")
     .get(auth.authentication, notificationController.getAllNotifications);
 
+router
+    .route("/community/suggest")
+    .get(auth.authentication, notificationController.suggestCommunity);
 
+router
+    .route("/notifications/hide/:communityId")
+    .post(auth.authentication, notificationController.hideNotification);
 
 
 module.exports = router;
