@@ -79,7 +79,7 @@ router.post("/notifications/subscribe", auth.authentication, async (req, res) =>
 });
 
 
-router.get("/notifications", auth.authentication, async (req, res) => {
+/* router.get("/notifications", auth.authentication, async (req, res) => {
   try {
     const user = req.user;
     const result = await Notification.find({ userId: user._id })
@@ -117,8 +117,8 @@ router.get("/notifications", auth.authentication, async (req, res) => {
   }
 }
 );
-
-router.put("/read-notification", auth.authentication, async (req, res) => {
+ */
+/* router.put("/read-notification", auth.authentication, async (req, res) => {
   try {
     const userId = req.user._id;
     const notificationId = req.body.notificationId;
@@ -150,6 +150,6 @@ router.put("/read-notification", auth.authentication, async (req, res) => {
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
-
+ */
 
 module.exports = router;
