@@ -334,11 +334,13 @@ exports.modifySafetyAndPrivacySettings = async (req, res) => {
         if (blockedUsername) {
             const blockedUser = await User.findOne({ username: blockedUsername });
             if (blockedUser) {
-                if (!user.blockedUsers.includes(blockedUser._id)) {
+                const index = user.blockedUsers.indexOf(blockedUser._id);
+                if (index !== -1) {
+                    // Remove the user from the blocklist
+                    user.blockedUsers.splice(index, 1);
+                } else {
+                    // Add the user to the blocklist
                     user.blockedUsers.push(blockedUser._id);
-                }
-                else {
-                    return res.status(400).json({ error: 'User is already blocked' });
                 }
             } else {
                 return res.status(404).json({ error: 'Blocked user not found' });
@@ -348,15 +350,19 @@ exports.modifySafetyAndPrivacySettings = async (req, res) => {
         if (mutedCommunityname) {
             const mutedCommunity = await Community.findOne({ name: mutedCommunityname });
             if (mutedCommunity) {
-                if (!user.mutedCommunities.includes(mutedCommunity._id)) {
-                    user.mutedCommunities.push(mutedCommunity._id);
+                const index = user.mutedCommunities.indexOf(mutedCommunity._id);
+                if (index !== -1) {
+                    // Remove the community from the muted communities list
+                    user.mutedCommunities.splice(index, 1);
                 } else {
-                    return res.status(400).json({ error: 'Community is already muted' });
+                    // Add the community to the muted communities list
+                    user.mutedCommunities.push(mutedCommunity._id);
                 }
             } else {
                 return res.status(404).json({ error: 'Muted community not found' });
             }
         }
+
         await user.save();
 
         res.status(200).json({ message: "Successful update" });
