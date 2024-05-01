@@ -775,7 +775,7 @@ exports.upvotePost = async (req, res) => {
           userId: post.userId,
           content: `${req.user.username} upvoted your post`,
           relatedUserId: req.user._id,
-          notificationTypeId: NotificationType.comment._id,
+          notificationTypeId: NotificationType.post._id,
           postId: post._id,
         });
         await notification.save();
