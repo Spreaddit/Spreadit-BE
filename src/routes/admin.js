@@ -40,7 +40,7 @@ router.post("/dashboard/ban", auth.authentication, async (req, res) => {
           { isBanned: true },
           { new: true, runValidators: true }
         );
-  
+        userToBeBanned.save();
         if (!user) {
           return res.status(404).send({ message: "User is not found" });
         }
