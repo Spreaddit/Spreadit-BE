@@ -7,6 +7,7 @@ const UserRole = require("../models/constants/userRole");
 const auth = require("../middleware/authentication");
 const router = express.Router();
 const Notification = require("../models/notification");
+const Report = require("../models/report");
 const mongoose = require("mongoose");
 const NotificationType = require("./../../seed-data/constants/notificationType");
 
@@ -39,7 +40,7 @@ router.post("/dashboard/ban", auth.authentication, async (req, res) => {
           { isBanned: true },
           { new: true, runValidators: true }
         );
-  
+        userToBeBanned.save();
         if (!user) {
           return res.status(404).send({ message: "User is not found" });
         }
@@ -101,9 +102,9 @@ router.post("/dashboard/unban", auth.authentication, async (req, res) => {
         if (!banuser) {
           return res.status(404).send({ message: "User is not banned" });
         }
-  
+        const userObj = await User.generateUserObject(user);
         res.status(200).send({
-          user: user,
+          user: userObj,
           message: "User was unbanned successfully",
         });
       } else return res.status(401).send({ message: "You are not authorized" });
@@ -196,20 +197,25 @@ router.get("/dashboard/posts", auth.authentication, async (req, res) => {
     const adminId = await UserRole.find({
       name: "Admin",
     }).select("_id");
+    const reportedPosts = [];
     if (adminId[0]._id.equals(req.user.roleId)) {
-
-      const reportedPosts = [];
+      console.log(req.user.roleId);
+      console.log(adminId[0]._id);
       const posts = await Post.find();
+      //console.log(posts);
       for (const post of posts) {
-          const report = await Report.findOne({ postId: post._id, reason: reportedReason });
-          if (report) {
-              const postObject = await Post.getPostObject(post);
-              postObject.reason = report.reason;
-              postObject.subreason = report.subreason;
-              reportedPosts.push(postObject);
-          }
+        const reports = await Report.find({ postId: post._id }).populate('userId');
+        if (reports.length > 0) {
+          const postObject = await Post.getPostObject(post, req.user._id);
+          const reportsArray = reports.map(report => ({
+            username: report.userId.username,
+            reason: report.reason,
+            subreason: report.subreason
+          }));     
+          postObject.reports = reportsArray;
+          reportedPosts.push(postObject);
+        }
       }
-  
     }
     res.status(200).send({
       reportedPosts: reportedPosts,
@@ -221,25 +227,86 @@ router.get("/dashboard/posts", auth.authentication, async (req, res) => {
   
 
 });
+
+/*
+router.get("/dashboard/posts", auth.authentication, async (req, res) => {
+  try{
+    const adminId = await UserRole.find({
+      name: "Admin",
+    }).select("_id");
+    let reportedPosts;
+    if (adminId[0]._id.equals(req.user.roleId)) {
+      reportedPosts = await Post.aggregate([
+        {
+          $lookup: {
+            from: "reports",
+            localField: "_id",
+            foreignField: "postId",
+            as: "reports"
+          }
+        },
+        {
+          $match: {
+            reports: { $exists: true, $not: { $size: 0 } }
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            userId: 1,
+            username: 1,
+            title: 1,
+            content: 1,
+            community: 1,
+            reports: {
+              $map: {
+                input: "$reports",
+                as: "report",
+                in: {
+                  username: "$$report.userId",
+                  reason: "$$report.reason",
+                  subreason: "$$report.subreason"
+                }
+              }
+            }
+          }
+        }
+      ]);
+    }
+    res.status(200).send({
+      reportedPosts: reportedPosts,
+      message: "Users have been retrived successfully",
+    });
+  } catch (e) {
+    res.status(500).send({ message: "Internal server error" });
+  }
+  
+
+});*/
 router.get("/dashboard/comments", auth.authentication, async (req, res) => {
   try{
     const adminId = await UserRole.find({
       name: "Admin",
     }).select("_id");
+    const reportedComments = [];
     if (adminId[0]._id.equals(req.user.roleId)) {
-
-      const reportedComments = [];
+      console.log(req.user.roleId);
+      console.log(adminId[0]._id);
       const comments = await Comment.find({ isRemoved: false }).populate('userId');
       for (const comment of comments) {
-          const report = await Report.findOne({ commentId: comment._id, reason: reportedReason });
-          if (report) {
-              const commentObject = await Comment.getCommentObject(comment);
-              commentObject.reason = report.reason;
-              commentObject.subreason = report.subreason;
-              reportedComments.push(commentObject);
+          const reports = await Report.find({ commentId: comment._id}).populate('userId');
+          //console.log(reports);
+          if (reports.length > 0) {
+            const commentObject = await Comment.getCommentObject(comment, req.user._id, true);
+            const reportsArray = reports.map(report => ({
+              username: report.userId.username,
+              reason: report.reason,
+              subreason: report.subreason
+            }));
+            commentObject.reports = reportsArray;
+            reportedComments.push(commentObject);
           }
       }
-  
     }
     res.status(200).send({
       reportedComments: reportedComments,
@@ -248,8 +315,6 @@ router.get("/dashboard/comments", auth.authentication, async (req, res) => {
   } catch (e) {
     res.status(500).send({ message: "Internal server error" });
   }
-  
-
 });
 
 

@@ -51,5 +51,8 @@ router
 router
   .route("/message/reportmsg/:messageId")
   .post(auth.authentication, messageController.reportMessage);
+router
+  .route("/message/:messageId/")
+  .get(auth.authentication, messageController.getMessageById);
 
 module.exports = router;

@@ -195,3 +195,48 @@ exports.checkUserBanStatus = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getBannedUsersInCommunity = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const moderator = await Moderator.findOne({
+      username: req.user.username,
+      communityName: req.body.communityName,
+    });
+
+    if (!moderator) {
+      return res
+        .status(403)
+        .send({ message: "You are not a moderator of this community" });
+    }
+
+    const bannedUsers = await BanUser.find({
+      communityName: req.body.communityName,
+    });
+
+    if (!bannedUsers || bannedUsers.length === 0) {
+      return res
+        .status(404)
+        .send({ message: "No users are banned in this community" });
+    }
+
+    const bannedUsersDetails = await Promise.all(
+      bannedUsers.map(async (bannedUser) => {
+        const user = await User.findById(bannedUser.userId);
+        return {
+          userId: user._id,
+          username: user.username,
+          email: user.email,
+          reason: bannedUser.reason,
+          banDuration: bannedUser.banDuration,
+          isPermanent: bannedUser.isPermanent,
+        };
+      })
+    );
+
+    res.status(200).send(bannedUsersDetails);
+  } catch (error) {
+    console.error("Error retrieving banned users:", error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};

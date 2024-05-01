@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 require("./user");
 require("./post");
+require("./community");
 const commentSchema = require('../models/comment')
 
 const PostSchema = new Schema(
@@ -136,8 +137,10 @@ const PostSchema = new Schema(
 
 PostSchema.statics.getPostObject = async function (post, userId, includeHidden = false) {
   const User = mongoose.model("user");
+  const Community = mongoose.model("community");
   const loginUser = await User.findById(userId);
   const postUser = await User.findById(post.userId);
+  const postcommunity = await Community.findOne({ name: post.community });
   const hasUpvoted = post.upVotes.includes(userId);
   const hasDownvoted = post.downVotes.includes(userId);
   const savedPostIds = postUser.savedPosts || [];
@@ -173,6 +176,7 @@ PostSchema.statics.getPostObject = async function (post, userId, includeHidden =
     title: post.title,
     content: post.content,
     community: post.community,
+    communityIcon: postcommunity ? postcommunity.image : null,
     type: post.type,
     link: post.link,
     pollExpiration: post.pollExpiration,
@@ -193,6 +197,37 @@ PostSchema.statics.getPostObject = async function (post, userId, includeHidden =
     attachments: post.attachments,
   };
 };
+
+PostSchema.statics.getPostResultObject = async function (post) {
+  const User = mongoose.model("user");
+  const Community = mongoose.model("community");
+
+  const user = await User.findById(post.userId).lean();
+  const username = user ? user.username : null;
+  const userProfilePic = user ? user.avatar : null;
+
+  const community = await Community.findOne({ name: post.community }).lean();
+  const communityname = community ? community.name : null;
+  const communityProfilePic = community ? community.image : null;
+
+  const postResultObject = {
+    postId: post._id.toString(),
+    title: post.title,
+    isnsfw: post.isNsfw || false,
+    isSpoiler: post.isSpoiler || false,
+    votesCount: (post.upVotes.length || 0) - (post.downVotes.length || 0),
+    commentsCount: post.commentsCount || 0,
+    date: post.createdAt,
+    username: username,
+    userProfilePic: userProfilePic,
+    attachments: post.attachments || [],
+    communityname: communityname,
+    communityProfilePic: communityProfilePic,
+  };
+
+  return postResultObject;
+};
+
 
 const Post = mongoose.model('post', PostSchema);
 

@@ -460,6 +460,7 @@ UserSchema.statics.generateUserObject = async function (user) {
       isVerified: user.isVerified,
       isVisible: user.isVisible,
       isActive: user.isActive,
+      isBanned: user.isBanned,
       displayName: user.displayName,
       bio: user.about,
       cakeDay: user.cakeDay,
@@ -541,6 +542,21 @@ UserSchema.methods.generateRandomString = function () {
 
   return randomString;
 };
+
+UserSchema.statics.getUserObjectSimplified = async function (user, loggedInUserId) {
+
+  const isFollowing = user.followers.includes(loggedInUserId);
+
+  return {
+    userId: user._id,
+    username: user.username,
+    userProfilePic: user.avatar,
+    userinfo: user.about,
+    followersCount: user.followers.length,
+    isFollowing: isFollowing,
+  };
+};
+
 
 const User = mongoose.model("user", UserSchema);
 

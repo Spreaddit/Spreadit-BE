@@ -68,10 +68,10 @@ exports.getSpamComments = async (req, res) => {
         const spamComments = await Post.find({ community: communityName, isSpam: true });
         const generatedComments = []
         for (const spamComment of spamComments) {
-            const generatedComment = await Comment.getCommentObject(spamComment);
+            const generatedComment = await Comment.getCommentObject(spamComment, req.user._id, true);
             generatedComments.push(generatedComment);
         }
-        res.status(200).json({ generatedComments });
+        res.status(200).json({ SpammedComments: generatedComments });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
@@ -222,11 +222,11 @@ exports.getEdititedCommentsHistory = async (req, res) => {
 
         const commentObjects = [];
         for (const comment of editedComments) {
-            const commentObject = await Comment.getCommentObject(comment, req.user._id);
+            const commentObject = await Comment.getCommentObject(comment, req.user._id, true);
             commentObjects.push(commentObject);
         }
 
-        return res.status(200).json(commentObjects);
+        return res.status(200).json({editedComment: commentObjects});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
@@ -249,7 +249,7 @@ exports.getReportedComments = async (req, res) => {
         for (const post of posts) {
             const comments = await Comment.find({ postId: post._id, isRemoved: false }).populate('userId');
             for (const comment of comments) {
-                const commentObject = await Comment.getCommentObject(comment);
+                const commentObject = await Comment.getCommentObject(comment, req.user._id, true);
                 const report = await Report.findOne({ commentId: comment._id });
                 if (report) {
                     const { reason, subreason } = report;
@@ -259,7 +259,7 @@ exports.getReportedComments = async (req, res) => {
                 reportedComments.push(commentObject);
             }
         }
-        return res.status(200).json(commentObjects);
+        return res.status(200).json({reportedComments: commentObjects});
 
     }catch(error){
         console.error(error);

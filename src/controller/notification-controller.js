@@ -58,7 +58,6 @@ exports.getAllNotifications = async (req, res) => {
     try {
         const user = req.user;
 
-        // Find notifications for the user that are not hidden
         const result = await Notification.find({ userId: user._id, isHidden: false })
             .sort({ createdAt: -1 })
             .populate('relatedUserId')
@@ -95,6 +94,23 @@ exports.hideNotification = async (req, res) => {
         res.status(200).send({ message: "Notification hidden successfully" });
     } catch (error) {
         console.error('Error hiding notification:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+};
+
+exports.suggestCommunity = async (req, res) => {
+    try {
+        const count = await Community.countDocuments();
+        const randomIndex = Math.floor(Math.random() * count);
+        const randomCommunity = await Community.findOne().skip(randomIndex);
+
+        if (!randomCommunity) {
+            return res.status(404).send({ error_message: "No community found" });
+        }
+
+        res.status(200).json(randomCommunity);
+    } catch (error) {
+        console.error('Error suggesting random community:', error);
         res.status(500).send({ error: 'Internal Server Error' });
     }
 };

@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 require("./user");
 require("./post");
+require("./community");
 
 const CommentSchema = new Schema(
     {
@@ -131,11 +132,13 @@ CommentSchema.statics.getCommentObject = async function (
     const isDownVoted = comment.downVotes.includes(userid);
     let postTitle;
     let subredditTitle;
+    let postId;
     if (comment.parentCommentId === null) {
         const post = await Post.findOne({ _id: comment.postId });
         if (post) {
             postTitle = post.title;
             subredditTitle = post.community;
+            postId = comment.postId;
         }
     }
     else {
@@ -147,31 +150,33 @@ CommentSchema.statics.getCommentObject = async function (
         if (post) {
             postTitle = post.title;
             subredditTitle = post.community;
+            postId = post._id;
+
         }
     }
 
 
     const commentInfo = {
-      id: comment._id,
-      content: comment.content,
-      user: userObject,
-      likes_count: likesCount,
-      replies_count: repliesCount,
-      is_reply: comment.parentCommentId != null ? true : false,
-      media: comment.attachments,
-      created_at: comment.createdAt,
-      is_hidden: isHidden,
-      is_saved: isSaved,
-      post_title: postTitle,
-      community_title: subredditTitle,
-      is_upvoted: isUpvoted,
-      is_downvoted: isDownVoted,
-      postId: comment.postId,
-      last_edit: comment.lastEdit,
-      is_removed: comment.isRemoved,
-      is_approved: comment.isApproved,
-      is_locked: comment.isLocked,
-      replies: [],
+        id: comment._id,
+        content: comment.content,
+        user: userObject,
+        likes_count: likesCount,
+        replies_count: repliesCount,
+        is_reply: comment.parentCommentId != null ? true : false,
+        media: comment.attachments,
+        created_at: comment.createdAt,
+        is_hidden: isHidden,
+        is_saved: isSaved,
+        post_title: postTitle,
+        community_title: subredditTitle,
+        is_upvoted: isUpvoted,
+        is_downvoted: isDownVoted,
+        postId: postId,
+        last_edit: comment.lastEdit,
+        is_removed: comment.isRemoved,
+        is_approved: comment.isApproved,
+        is_locked: comment.isLocked,
+        replies: [],
     };
 
     return commentInfo;
@@ -212,6 +217,43 @@ CommentSchema.statics.getCommentRepliesss = async function (comment, userId) {
     }
 
     return comment.replies;
+};
+
+CommentSchema.statics.findRootComment = async (commentId) => {
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+        return null;
+    }
+    if (comment.parentCommentId) {
+        return findRootComment(comment.parentCommentId);
+    }
+    return comment;
+};
+
+CommentSchema.statics.getCommentInfoSimplified = async function (comment) {
+    const Post = mongoose.model("post");
+    const User = mongoose.model("user");
+    const Community = mongoose.model("community");
+    const user = await User.findById(comment.userId).lean();
+    const post = comment.postId ? await Post.findById(comment.postId).populate('community').lean() : null;
+    const communityName = post && post.community ? post.community.name : '';
+    const community = communityName ? await Community.findOne({ name: communityName }).lean() : null;
+
+    return {
+        commentId: comment._id,
+        commentContent: comment.content,
+        commentVotes: comment.upVotes.length - comment.downVotes.length,
+        commentDate: comment.createdAt,
+        communityName: communityName,
+        communityProfilePic: community ? community.image : '',
+        username: user ? user.username : '',
+        userProfilePic: user ? user.avatar : '',
+        postDate: post ? post.createdAt : '',
+        postVotes: post ? post.upVotes.length - post.downVotes.length : 0,
+        postCommentsCount: post ? post.commentsCount : 0,
+        postTitle: post ? post.title : '',
+        attachments: comment.attachments,
+    };
 };
 
 
