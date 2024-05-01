@@ -88,7 +88,7 @@ const CommunitySchema = new Schema({
   invitedModerators: [
     {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "moderator",
       index: true,
     },
   ],
