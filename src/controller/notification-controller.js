@@ -65,11 +65,11 @@ exports.getAllNotifications = async (req, res) => {
             .populate('postId')
             .populate('userId');
 
+        console.log(result);
         if (!result || result.length === 0) {
             return res.status(404).send({ error_message: "Notifications not found" });
         }
-        const notifications = result.map(notification => Notification.getNotificationObject(notification));
-
+        const notifications = await Promise.all(result.map(notification => Notification.getNotificationObject(notification)));
         res.status(200).json(notifications);
     } catch (error) {
         console.error('Error retrieving notifications:', error);
