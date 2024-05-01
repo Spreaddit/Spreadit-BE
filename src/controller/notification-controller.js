@@ -57,7 +57,6 @@ exports.markNotificationAsRead = async (req, res) => {
 exports.getAllNotifications = async (req, res) => {
     try {
         const user = req.user;
-
         const result = await Notification.find({ userId: user._id, isHidden: false })
             .sort({ createdAt: -1 })
             .populate('relatedUserId')
