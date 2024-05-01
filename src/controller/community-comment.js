@@ -65,13 +65,19 @@ exports.getSpamComments = async (req, res) => {
         if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
             return res.status(402).json({ message: "Not a moderator or does not have permission" });
         }
-        const spamComments = await Post.find({ community: communityName, isSpam: true });
-        const generatedComments = []
-        for (const spamComment of spamComments) {
-            const generatedComment = await Comment.getCommentObject(spamComment, req.user._id, true);
-            generatedComments.push(generatedComment);
+        const posts = await Post.find({ community: communityName });
+        let spammComments = [];
+        for (const post of posts) {
+            const comments = await Comment.find({ postId: post._id, isSpam: true });
+            for (const comment of comments) {
+                const generatedComment = await Comment.getCommentObject(comment, req.user._id, true);
+                spammComments.push(generatedComment);
+
+            }
         }
-        res.status(200).json({ SpammedComments: generatedComments });
+        console.log(spammComments);
+        
+        res.status(200).json({ SpammedComments: spammComments });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
@@ -247,19 +253,33 @@ exports.getReportedComments = async (req, res) => {
         const posts = await Post.find({ community: communityName });
         const reportedComments = [];
         for (const post of posts) {
-            const comments = await Comment.find({ postId: post._id, isRemoved: false }).populate('userId');
-            for (const comment of comments) {
-                const commentObject = await Comment.getCommentObject(comment, req.user._id, true);
-                const report = await Report.findOne({ commentId: comment._id });
-                if (report) {
-                    const { reason, subreason } = report;
-                    commentObject.reason = reason;
-                    commentObject.subreason = subreason;
+            // Find all top-level comments for the current post that are not removed
+            const topLevelComments = await Comment.find({ postId: post._id, parentCommentId: null, isRemoved: false }).populate('userId');
+
+            // Iterate through each top-level comment
+            for (const topLevelComment of topLevelComments) {
+                
+
+                // Find report for the current top-level comment
+                const reports = await Report.find({ commentId: topLevelComment._id }).populate('userId');
+
+                // If report exists, add its details to the top-level comment object
+                if (reports.length > 0) {
+                    const topLevelCommentObject = await Comment.getCommentObject(topLevelComment, req.user._id, true);
+                    const reportsArray = reports.map(report => ({
+                        username: report.userId.username,
+                        reason: report.reason,
+                        subreason: report.subreason
+                    }));
+                    topLevelCommentObject.report = reportsArray;
+                    reportedComments.push(topLevelCommentObject);
                 }
-                reportedComments.push(commentObject);
+
+                // Push the top-level comment object to reportedComments array
+                
             }
         }
-        return res.status(200).json({reportedComments: commentObjects});
+        return res.status(200).json({reportedComments: reportedComments});
 
     }catch(error){
         console.error(error);
