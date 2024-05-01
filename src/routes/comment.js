@@ -415,12 +415,12 @@ router.post(
         userWhoCreatedComment.comments == true
       ) {
         await Notification.sendNotification(
-          post.userId,
+          newReply.userId,
           "You have recieved a new notification",
           `${req.user.username} replied on your comment`
         );
         const notification = new Notification({
-          userId: post.userId,
+          userId: newReply.userId,
           content: `${req.user.username} replied on your comment`,
           relatedUserId: req.user._id,
           notificationTypeId: NotificationType.commentReply._id,
