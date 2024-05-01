@@ -25,6 +25,7 @@ const notificationsRoutes = require("../src/routes/notifications");
 
 //seeding
 const UserRoleSeeder = require("../seeders/user-role.seeder");
+const notificationTypeSeeder = require("../seeders/notification-type.seeder")
 const PostSeeder = require("../seeders/post.seeder");
 const CommentSeeder = require("../seeders/comment.seeder");
 const CommunitySeeder = require("../seeders/community.seeder");
@@ -77,6 +78,7 @@ mongoose
     // Seed the database
     const seeders = [
       new UserRoleSeeder(),
+      new notificationTypeSeeder(),
       new UserSeeder(),
       new CommunitySeeder(),
       new RuleSeeder(),
