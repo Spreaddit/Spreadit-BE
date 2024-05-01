@@ -113,3 +113,19 @@ exports.suggestCommunity = async (req, res) => {
         res.status(500).send({ error: 'Internal Server Error' });
     }
 };
+
+exports.disableCommunityUpdates = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const communityId = req.params.communityId;
+        const user = await User.findById(userId);
+        if (user.disabledCommunities.includes(communityId)) {
+            return res.status(400).json({ error: "Community updates are already disabled for the user" });
+        }
+        await User.findByIdAndUpdate(userId, { $addToSet: { disabledCommunities: communityId } });
+        res.status(200).json({ message: "Updates disabled for the specified community" });
+    } catch (error) {
+        console.error('Error disabling updates for community:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};

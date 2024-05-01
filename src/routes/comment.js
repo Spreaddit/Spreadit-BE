@@ -47,17 +47,17 @@ router.post(
       });
 
       const communityName = post.community;
-      const community = await Community.findOne({communityName: communityName});
+      const community = await Community.findOne({ communityName: communityName });
       const contributors = community.contributors;
-      if(contributors.includes(userId) && (community.type === "Restricted" || community.type == "Private")){
-        newComment.isApproved = true; 
+      if (contributors.includes(userId) && (community.type === "Restricted" || community.type == "Private")) {
+        newComment.isApproved = true;
       }
-      else if((community.type === "Restricted" || community.type == "Private")){
+      else if ((community.type === "Restricted" || community.type == "Private")) {
         return res.status(400).send({
           message: "You are not an approved user to this community",
         });
       }
-        
+
 
       if (req.files) {
         for (let i = 0; i < req.files.length; i++) {
@@ -155,7 +155,7 @@ router.delete(
           comment: commentObj,
           message: "comment deleted successfully",
         });
-    }
+      }
     } catch {
       res.status(500).send({
         message: "Internal Server Error",
@@ -513,9 +513,8 @@ router.post(
       }
 
       res.status(200).send({
-        message: `Comment has been ${
-          isHidden ? "unhidden" : "hidden"
-        } successfully`,
+        message: `Comment has been ${isHidden ? "unhidden" : "hidden"
+          } successfully`,
       });
     } catch (err) {
       res.status(500).send(err.toString());
@@ -568,7 +567,7 @@ router.post(
       comment.upVotes.push(userId);
       netVotes = netVotes + 1;
       await comment.save();
-      
+
 
       userWhoCreatedComment = await User.findById(comment.userId);
       if (
