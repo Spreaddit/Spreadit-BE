@@ -6,6 +6,17 @@ const User = require("../src/models/user");
 
 const connectionUrl = "mongodb://localhost:27017/testDBforuseraction";
 
+const userOneId = new mongoose.Types.ObjectId();
+const userOne = {
+  _id: userOneId,
+  name: "Mahmoud Abbas",
+  username: "mahmoud12",
+  email: "mahmoudaly552@gmail.com",
+  password: "123456789",
+  gender: "Male",
+  isVerified: true
+}
+
 beforeAll(async () => {
   try {
     await mongoose.connect(connectionUrl, {
@@ -19,6 +30,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await User.deleteMany({});
+  await new User(userOne).save();
 }, 10000);
 
 afterAll(() => {
@@ -26,11 +38,6 @@ afterAll(() => {
 });
 
 test("Test: test follow user not found ", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "mahmoudaly552@gmail.com",
-    username: "mahmoud12",
-    password: "123456789",
-  });
   const login = await request(app)
     .post("/login")
     .send({ username: "mahmoud12", password: "123456789" });
@@ -46,11 +53,6 @@ test("Test: test follow user not found ", async () => {
 });
 
 test("Test: test block user not found ", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "mahmoudaly552@gmail.com",
-    username: "mahmoud12",
-    password: "123456789",
-  });
   const login = await request(app)
     .post("/login")
     .send({ username: "mahmoud12", password: "123456789" });
@@ -66,11 +68,6 @@ test("Test: test block user not found ", async () => {
 });
 
 test("Test: test report user not found ", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "mahmoudaly552@gmail.com",
-    username: "mahmoud12",
-    password: "123456789",
-  });
   const login = await request(app)
     .post("/login")
     .send({ username: "mahmoud12", password: "123456789" });
@@ -86,11 +83,6 @@ test("Test: test report user not found ", async () => {
 });
 
 test("Test: test unfollow user not found ", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "mahmoudaly552@gmail.com",
-    username: "mahmoud12",
-    password: "123456789",
-  });
   const login = await request(app)
     .post("/login")
     .send({ username: "mahmoud12", password: "123456789" });

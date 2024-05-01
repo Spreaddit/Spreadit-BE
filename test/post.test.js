@@ -9,6 +9,17 @@ const Community = require("../src/models/community");
 
 const connectionUrl = "mongodb://localhost:27017/testDBforSettings";
 
+const userOneId = new mongoose.Types.ObjectId();
+const userOne = {
+  _id: userOneId,
+  name: "Mohamed Maher",
+  username: "maher",
+  email: "moahmedmaher4@gmail.com",
+  password: "myPassw@ord123",
+  gender: "Male",
+  isVerified: true
+}
+
 beforeAll(async () => {
     try {
         await mongoose.connect(connectionUrl, {
@@ -22,6 +33,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     await User.deleteMany({});
+    await new User(userOne).save();
     await Community.deleteMany({});
 }, 10000);
 
@@ -31,20 +43,10 @@ afterAll(() => {
 
 describe("POST /api/posts", () => {
     test("It should create a new post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
         // Create a new community
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -62,7 +64,7 @@ describe("POST /api/posts", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -89,20 +91,9 @@ describe("POST /api/posts", () => {
 
 describe("POST /api/posts", () => {
     test("It should create a new post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
-
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -129,20 +120,9 @@ describe("POST /api/posts", () => {
 
 describe("GET /api/posts", () => {
     test("It should retrieve all posts", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -183,20 +163,9 @@ describe("DELETE /api/posts/:id", () => {
 
 describe("GET saved posts", () => {
     test("It should retrieve all saved posts", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -210,20 +179,9 @@ describe("GET saved posts", () => {
 
 describe(" save post", () => {
     test("It should save post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
         const cresponse = await request(app)
@@ -240,7 +198,7 @@ describe(" save post", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -272,20 +230,9 @@ describe(" save post", () => {
 
 describe(" unsave post", () => {
     test("It should unsave post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
         const cresponse = await request(app)
@@ -302,7 +249,7 @@ describe(" unsave post", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -335,20 +282,9 @@ describe(" unsave post", () => {
 
 describe(" unsave post", () => {
     test("It should unsave post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
         const cresponse = await request(app)
@@ -365,7 +301,7 @@ describe(" unsave post", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -395,20 +331,9 @@ describe(" unsave post", () => {
 
 describe("spoiler a post", () => {
     test("It should spoiler  post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
-
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -426,7 +351,7 @@ describe("spoiler a post", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -456,20 +381,9 @@ describe("spoiler a post", () => {
 
 describe("unspoiler a post", () => {
     test("It should unspoiler  post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
-
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -487,7 +401,7 @@ describe("unspoiler a post", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -522,20 +436,9 @@ describe("unspoiler a post", () => {
 
 describe("mark as nfsw", () => {
     test("It should nfsw  post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
-
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -553,7 +456,7 @@ describe("mark as nfsw", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -583,20 +486,9 @@ describe("mark as nfsw", () => {
 
 describe("mark as not nfsw", () => {
     test("It should unnfsw  post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
-
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -614,7 +506,7 @@ describe("mark as not nfsw", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -646,20 +538,9 @@ describe("mark as not nfsw", () => {
 
 describe("report post", () => {
     test("It should report  post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
-
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -677,7 +558,7 @@ describe("report post", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -708,20 +589,9 @@ describe("report post", () => {
 
 /* describe("vote post", () => {
     test("It should vote  post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
-
-        const loginResponse = await request(app)
+         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -739,7 +609,7 @@ describe("report post", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -770,20 +640,9 @@ describe("report post", () => {
 
 describe("hide post", () => {
     test("It should hide  post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
-
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -801,7 +660,7 @@ describe("hide post", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -831,20 +690,9 @@ describe("hide post", () => {
 
 describe("unhide post", () => {
     test("It should unhide  post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
-
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -862,7 +710,7 @@ describe("unhide post", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -896,20 +744,9 @@ describe("unhide post", () => {
 
 describe("unhide post", () => {
     test("It should unhide  post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
-
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -927,7 +764,7 @@ describe("unhide post", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
@@ -957,20 +794,9 @@ describe("unhide post", () => {
 
 describe("get hide posts", () => {
     test("It should get hide  post", async () => {
-        const signupResponse = await request(app)
-            .post("/signup")
-            .send({
-                email: "amiraelgarf991234@gmail.com",
-                username: "amira12amira",
-                password: "12345678",
-            });
-        const usernameee = "amira12amira";
-
-        await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
-
         const loginResponse = await request(app)
             .post("/login")
-            .send({ username: "amira12amira", password: "12345678" });
+            .send({ username: "maher", password: "myPassw@ord123" });
 
         const tokenlogin = loginResponse.body.access_token;
 
@@ -988,7 +814,7 @@ describe("get hide posts", () => {
 
         const communityId = createdCommunity._id;
 
-        const user = await User.findOne({ username: usernameee });
+        const user = await User.findOne({ username: "maher" });
 
         user.subscribedCommunities.push(communityId);
         await user.save();
