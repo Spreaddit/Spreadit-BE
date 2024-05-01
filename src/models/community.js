@@ -85,11 +85,19 @@ const CommunitySchema = new Schema({
     ref: "user",
     index: true,
   },
+  invitedModerators: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      index: true,
+    },
+  ],
   moderatorPermissions: {
     type: [Schema.Types.ObjectId],
     ref: "moderator",
     index: true,
   },
+
   membersCount: {
     type: Number,
     default: 1,
@@ -98,11 +106,6 @@ const CommunitySchema = new Schema({
     type: String,
     default: "Members",
     maxlength: 30,
-  },
-  moderators: {
-    type: [Schema.Types.ObjectId],
-    ref: "user",
-    index: true,
   },
   contributors: {
     type: [Schema.Types.ObjectId],
@@ -142,27 +145,35 @@ const CommunitySchema = new Schema({
   },
 });
 
-CommunitySchema.statics.getCommunityObjectFiltered = async function (community, userId) {
-  const isFollowing = await this.isUserFollowingCommunity(userId, community._id);
+CommunitySchema.statics.getCommunityObjectFiltered = async function (
+  community,
+  userId
+) {
+  const isFollowing = await this.isUserFollowingCommunity(
+    userId,
+    community._id
+  );
   const communityObject = {
     communityId: community._id,
     communityName: community.name,
     communityProfilePic: community.profilePic,
     membersCount: community.members.length,
     communityInfo: community.info,
-    isFollowing: isFollowing
+    isFollowing: isFollowing,
   };
   return communityObject;
 };
 
-CommunitySchema.statics.isUserFollowingCommunity = async function (userId, communityId) {
-  const user = await this.model('user').findById(userId);
+CommunitySchema.statics.isUserFollowingCommunity = async function (
+  userId,
+  communityId
+) {
+  const user = await this.model("user").findById(userId);
   if (!user) {
     return false;
   }
   return user.subscribedCommunities.includes(communityId);
 };
-
 
 const Community = mongoose.model("community", CommunitySchema);
 
