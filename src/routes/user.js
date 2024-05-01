@@ -49,9 +49,9 @@ router.post("/notifications/subscribe", auth.authentication, async (req, res) =>
     const userId = req.user._id;
     const key = req.body.fcmToken;
 
-    const subscription = await NotificationSubscription.find({fcmToken: key})
+    const subscription = await NotificationSubscription.find({ fcmToken: key })
 
-    if(!subscription.includes({fcmToken: key})){
+    if (!subscription.includes({ fcmToken: key })) {
       const userSub = new NotificationSubscription({
         userId: userId,
         fcmToken: key,
@@ -68,10 +68,10 @@ router.post("/notifications/subscribe", auth.authentication, async (req, res) =>
           .send({ message: "Subscription could not be added" });
       }
 
-    }else{
+    } else {
       return res
-          .status(400)
-          .send({ message: "Subscription already there" });
+        .status(400)
+        .send({ message: "Subscription already there" });
     }
   } catch (error) {
     res.status(500).send(error.toString());
@@ -79,43 +79,43 @@ router.post("/notifications/subscribe", auth.authentication, async (req, res) =>
 });
 
 
-router.get( "/notifications", auth.authentication, async (req, res) => {
-    try {
-      const user = req.user;
-      const result = await Notification.find({ userId: user._id })
-        .sort({ createdAt: -1 })
-        .populate({
-          path: "relatedUserId",
-        })
-        .populate({
-          path: "notificationTypeId",
-        })
-        .populate({
-          path: "commentId",
-        })
-        .populate({
-          path: "postId",
-        })
-        .populate({
-          path: "userId",
-        });
+router.get("/notifications", auth.authentication, async (req, res) => {
+  try {
+    const user = req.user;
+    const result = await Notification.find({ userId: user._id })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "relatedUserId",
+      })
+      .populate({
+        path: "notificationTypeId",
+      })
+      .populate({
+        path: "commentId",
+      })
+      .populate({
+        path: "postId",
+      })
+      .populate({
+        path: "userId",
+      });
 
-      if (!result) {
-        res.status(404).send({ error_message: "Notifications not found" });
-      }
-
-      const notifications = [];
-      for (let i = 0; i < result.length; i++) {
-        const notificationObject = await Notification.getNotificationObject(
-          result[i]
-        );
-        notifications.push(notificationObject);
-      }
-      res.status(200).send({ notifications: notifications });
-    } catch (err) {
-      res.status(500).send(err.toString());
+    if (!result) {
+      res.status(404).send({ error_message: "Notifications not found" });
     }
+
+    const notifications = [];
+    for (let i = 0; i < result.length; i++) {
+      const notificationObject = await Notification.getNotificationObject(
+        result[i]
+      );
+      notifications.push(notificationObject);
+    }
+    res.status(200).send({ notifications: notifications });
+  } catch (err) {
+    res.status(500).send(err.toString());
   }
+}
 );
 
 router.put("/read-notification", auth.authentication, async (req, res) => {

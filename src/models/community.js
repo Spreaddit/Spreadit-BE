@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { boolean } = require("yargs");
 const Schema = mongoose.Schema;
+require("./user");
 
 const CommunitySchema = new Schema({
   name: {
@@ -140,6 +141,28 @@ const CommunitySchema = new Schema({
     default: {},
   },
 });
+
+CommunitySchema.statics.getCommunityObjectFiltered = async function (community, userId) {
+  const isFollowing = await this.isUserFollowingCommunity(userId, community._id);
+  const communityObject = {
+    communityId: community._id,
+    communityName: community.name,
+    communityProfilePic: community.profilePic,
+    membersCount: community.members.length,
+    communityInfo: community.info,
+    isFollowing: isFollowing
+  };
+  return communityObject;
+};
+
+CommunitySchema.statics.isUserFollowingCommunity = async function (userId, communityId) {
+  const user = await this.model('user').findById(userId);
+  if (!user) {
+    return false;
+  }
+  return user.subscribedCommunities.includes(communityId);
+};
+
 
 const Community = mongoose.model("community", CommunitySchema);
 

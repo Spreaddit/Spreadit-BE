@@ -185,7 +185,9 @@ exports.getSearch = async (req, res) => {
             });
 
             const sortedUsers = filterUsers(users, q);
-            return res.status(200).json({ results: sortedUsers });
+            const simplifiedUsers = await Promise.all(sortedUsers.map(user => User.getUserObjectSimplified(user, req.user.id)));
+
+            return res.status(200).json({ results: simplifiedUsers });
         } else if (type === 'posts') {
             let posts = await Post.find({ title: { $regex: q, $options: 'i' } });
             const sortedPosts = filterPosts(posts, q);
@@ -216,11 +218,16 @@ exports.getSearch = async (req, res) => {
             else {
                 comments = sortedComments;
             }
-            return res.status(200).json({ results: comments });
+            const commentObjects = await Promise.all(comments.map(async (comment) => {
+                return await Comment.getCommentInfoSimplified(comment);
+            }));
+
+            return res.status(200).json({ results: commentObjects });
         } else if (type === 'communities') {
             const communities = await Community.find({ name: { $regex: q, $options: 'i' } });
             const sortedCommunities = filterCommunities(communities, q);
-            return res.status(200).json({ results: sortedCommunities });
+            const communityResults = await Promise.all(sortedCommunities.map(community => Community.getCommunityObjectFiltered(community)));
+            return res.status(200).json({ results: communityResults });
         } else if (type === 'hashtags') {
             // Search for hashtags
             // Implement your logic here
@@ -282,7 +289,11 @@ exports.getProfileSearch = async (req, res) => {
             } else {
                 comments = sortedComments;
             }
-            return res.status(200).json({ results: comments });
+            const commentObjects = await Promise.all(comments.map(async (comment) => {
+                return await Comment.getCommentInfoSimplified(comment);
+            }));
+
+            return res.status(200).json({ results: commentObjects });
         } else {
             return res.status(400).json({ error: 'Invalid search type' });
         }
@@ -325,9 +336,10 @@ exports.getSearchSuggestions = async (req, res) => {
 
         const suggestedUsers = users.slice(0, 5);
         const suggestedCommunities = communities.slice(0, 5);
+        const communityResults = await Promise.all(suggestedCommunities.map(community => Community.getCommunityObjectFiltered(community)));
 
         return res.status(200).json({
-            communities: suggestedCommunities,
+            communities: communityResults,
             users: suggestedUsers
         });
     } catch (err) {
