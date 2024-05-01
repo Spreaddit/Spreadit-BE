@@ -415,7 +415,7 @@ router.post(
         userWhoCreatedComment.comments == true
       ) {
         await Notification.sendNotification(
-          newReply.userId,
+          existingComment.userId,
           "You have recieved a new notification",
           `${req.user.username} replied on your comment`
         );
@@ -547,6 +547,7 @@ router.post(
       if (downvoteIndex !== -1) {
         comment.downVotes.splice(downvoteIndex, 1);
         netVotes = netVotes - 1;
+        await comment.save();
         //console.log(netVotes)
       }
 
@@ -565,12 +566,14 @@ router.post(
       }
 
       comment.upVotes.push(userId);
-      await comment.save();
       netVotes = netVotes + 1;
+      await comment.save();
+      
+
       userWhoCreatedComment = await User.findById(comment.userId);
       if (
         !comment.userId.equals(req.user._id) &&
-        userWhoCreatedComment.upvoteComments == true
+        userWhoCreatedComment.upvotesComments == true
       ) {
         await Notification.sendNotification(
           comment.userId,
