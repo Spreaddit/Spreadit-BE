@@ -567,9 +567,15 @@ router.post(
       comment.upVotes.push(userId);
       netVotes = netVotes + 1;
       await comment.save();
-
-
       userWhoCreatedComment = await User.findById(comment.userId);
+      
+      const userDisabledCommunities = userWhoCreatedComment.disabledCommunities.map(c => c.toString());
+      if (userDisabledCommunities.includes(community._id.toString())) {
+        return res.status(200).json({
+          votes: netVotes,
+          message: "Post upvoted successfully, but notifications are disabled for this community",
+        });
+      }
       if (
         !comment.userId.equals(req.user._id) &&
         userWhoCreatedComment.upvotesComments == true
