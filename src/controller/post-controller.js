@@ -189,6 +189,28 @@ exports.createPost = async (req, res) => {
       scheduledDate,
     } = req.body;
     let pollExpiration, isPollEnabled;
+    const communitySettings = await Community.findOne({ name: community }).select('settings');
+    if (communitySettings) {
+      const postTypeOptions = communitySettings.settings.postTypeOptions;
+      const isSpoilerEnabled = communitySettings.settings.spoilerEnabled;
+      const isMultipleImagesPerPostAllowed = communitySettings.settings.multipleImagesPerPostAllowed;
+      const isPollsAllowed = communitySettings.settings.pollsAllowed;
+
+      if (postTypeOptions === 'links only' && type !== 'Link') {
+        return res.status(400).json({ error: "This community allows only link posts" });
+      } else if (postTypeOptions === 'text posts only' && type !== 'Post') {
+        return res.status(400).json({ error: "This community allows only text posts" });
+      }
+      if (!isSpoilerEnabled && isSpoiler) {
+        return res.status(400).json({ error: "This community does not allow spoiler posts" });
+      }
+      if (!isMultipleImagesPerPostAllowed && fileType === 'image' && req.files && req.files.length > 1) {
+        return res.status(400).json({ error: "This community does not allow multiple images per post" });
+      }
+      if (!isPollsAllowed && type === 'Poll') {
+        return res.status(400).json({ error: "This community does not allow polls" });
+      }
+    }
     if (!title || !community) {
       return res.status(400).json({
         error: "Invalid post data. Please provide title and community",
