@@ -6,6 +6,7 @@ const router = express.Router();
 const Community = require("../models/community.js");
 const Rule = require("../models/rule.js");
 const RemovalReason = require("../models/removalReason.js");
+const Moderator = require("../models/moderator.js");
 router.use(passport.initialize());
 router.use(cookieParser("spreaditsecret"));
 const auth = require("../middleware/authentication");
@@ -674,6 +675,61 @@ router.get("/community/muted", auth.authentication, async (req, res) => {
     );
 
     res.status(200).json(mutedCommunitiesData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/community/moderation/:communityName/moderators", auth.authentication, async (req, res) => {
+  try {
+    const communityName = req.params.communityName;
+    const community = await Community.findOne({ name: communityName }).populate(
+      "moderators",
+      "username banner avatar createdat managePostsAndComments manageUsers manageSettings",
+      null,
+      { select: { createdat: "moderationDate" } }
+    );
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    res.status(200).json(community.moderators);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/community/moderation/:communityName/moderators/editable", auth.authentication, async (req, res) => {
+  try {
+    const communityName = req.params.communityName;
+    const user = req.user;
+
+    const userUsername = user.username;
+
+    const community = await Community.findOne({ name: communityName });
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    const moderators = await Moderator.find({ username: { $in: community.moderatorPermissions } });
+
+    moderators.sort((a, b) => a.createdAt - b.createdAt);
+
+    const userModerator = moderators.find((moderator) => moderator.username === userUsername);
+
+    if (userModerator) {
+      const index = moderators.indexOf(userModerator);
+      if (index !== -1) {
+        moderators.splice(index, 1);
+        moderators.unshift(userModerator);
+      }
+    }
+
+    const userCreationDate = user.createdAt;
+    const editableModerators = moderators.filter((moderator) => moderator.createdAt > userCreationDate);
+
+    res.status(200).json(editableModerators);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
