@@ -85,19 +85,6 @@ const CommunitySchema = new Schema({
     ref: "user",
     index: true,
   },
-  invitedModerators: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "moderator",
-      index: true,
-    },
-  ],
-  moderatorPermissions: {
-    type: [Schema.Types.ObjectId],
-    ref: "moderator",
-    index: true,
-  },
-
   membersCount: {
     type: Number,
     default: 1,
