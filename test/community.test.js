@@ -7,6 +7,27 @@ const Rule = require("../src/models/rule");
 const jwt = require("jwt-decode");
 
 const connectionUrl = "mongodb://localhost:27017/testDBforCommunity";
+const userOneId = new mongoose.Types.ObjectId();
+const userTwoId = new mongoose.Types.ObjectId();
+const userOne = {
+  _id: userOneId,
+  name: "Farouq Diaa",
+  username: "farouquser",
+  email: "farouqdiaa@gmail.com",
+  password: "12345678",
+  gender: "Male",
+  isVerified: true
+}
+const userTwo = {
+  _id: userTwoId,
+  name: "Farouuuq",
+  username: "farouquser2",
+  birth_date: "1999-10-10T00:00:00.000Z",
+  email: "farouqdiaa2@gmail.com",
+  password: "12345678",
+  gender: "Male",
+  isVerified: true
+}
 
 beforeAll(async () => {
   try {
@@ -21,6 +42,8 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await User.deleteMany({});
+  await new User(userOne).save();
+  await new User(userTwo).save();
   await Community.deleteMany({});
   await Rule.deleteMany({});
 }, 10000);
@@ -31,14 +54,6 @@ afterAll(() => {
 
 describe("Adding a rule", () => {
   test("It should add a new rule", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
-
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
-
     const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
 
     const token = logIn.body.access_token;
@@ -64,14 +79,8 @@ describe("Adding a rule", () => {
     expect(response.body.message).toBe("Rule added successfully");
   });
   test("It should return 'Invalid rule data' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
 
     const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
     const token = logIn.body.access_token;
     const decoded = jwt.jwtDecode(token);
     const user = await User.findById(decoded._id);
@@ -90,11 +99,6 @@ describe("Adding a rule", () => {
   });
 
   test("It should return 'Error' for status 401", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
 
     const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
 
@@ -108,16 +112,10 @@ describe("Adding a rule", () => {
   });
 
   test("It should return 'You are not a moderator of this community' for status 402", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
 
     const token = logIn.body.access_token;
 
@@ -145,17 +143,11 @@ describe("Adding a rule", () => {
   });
 
   test("It should return 'Title already used' for status 403", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -186,16 +178,10 @@ describe("Adding a rule", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
     const token = logIn.body.access_token;
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -214,17 +200,11 @@ describe("Adding a rule", () => {
 
 describe("Removing a rule", () => {
   test("It should remove a rule", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -255,17 +235,11 @@ describe("Removing a rule", () => {
   });
 
   test("It should return 'Invalid request parameters' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -280,17 +254,11 @@ describe("Removing a rule", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -307,28 +275,18 @@ describe("Removing a rule", () => {
   });
 
   test("It should return 'Not a moderator' for status 402", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
-    await request(app).post("/signup").send({
-      email: "farouqdiaa2@gmail.com",
-      username: "farouquser2",
-      password: "12345678",
-    });
 
     const logIn2 = await request(app).post("/login").send({
       username: "farouquser2",
       password: "12345678",
     });
-    await User.findOneAndUpdate({ username: "farouquser2" }, { isVerified: true });
+     
 
     const token2 = logIn2.body.access_token;
     const decodedToken = jwt.jwtDecode(token);
@@ -360,17 +318,13 @@ describe("Removing a rule", () => {
   });
 
   test("It should return 'Rule not found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -398,17 +352,13 @@ describe("Removing a rule", () => {
 
 describe("Adding community to favorites", () => {
   test("It should add community to favorites", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -433,17 +383,13 @@ describe("Adding community to favorites", () => {
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const response = await request(app)
       .post("/community/add-to-favourites")
@@ -455,17 +401,13 @@ describe("Adding community to favorites", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const response = await request(app)
       .post("/community/add-to-favourites")
@@ -479,17 +421,13 @@ describe("Adding community to favorites", () => {
   });
 
   test("It should return 'Community is already in favorites' for status 402", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -520,17 +458,13 @@ describe("Adding community to favorites", () => {
 
 describe("Removing community from favorites", () => {
   test("It should remove community from favorites", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -557,17 +491,13 @@ describe("Removing community from favorites", () => {
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const response = await request(app)
       .post("/community/remove-favourite")
@@ -579,17 +509,13 @@ describe("Removing community from favorites", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const response = await request(app)
       .post("/community/remove-favourite")
@@ -603,17 +529,13 @@ describe("Removing community from favorites", () => {
   });
 
   test("It should return 'Community is not in favorites' for status 402", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -640,17 +562,13 @@ describe("Removing community from favorites", () => {
 /*
 describe("Checking if community is favorite", () => {
   test("It should return true if community is favourite", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -675,17 +593,13 @@ describe("Checking if community is favorite", () => {
   });
 
   test("It should return false if community is not favorite", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -708,17 +622,13 @@ describe("Checking if community is favorite", () => {
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const response = await request(app)
       .get("/community/is-favourite")
@@ -729,17 +639,13 @@ describe("Checking if community is favorite", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const response = await request(app)
       .get("/community/is-favourite")
@@ -753,17 +659,13 @@ describe("Checking if community is favorite", () => {
 */
 describe("Muting community", () => {
   test("It should mute community", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -787,17 +689,13 @@ describe("Muting community", () => {
     expect(response.body.message).toBe("Community muted successfully");
   });
   test("It should return 'Invalid parameters' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -818,17 +716,13 @@ describe("Muting community", () => {
     expect(response.body.message).toBe("Invalid parameters");
   });
   test("It should return 'Community not found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -852,17 +746,13 @@ describe("Muting community", () => {
   });
 
   test("It should return 'Community is already muted' for status 402", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -891,17 +781,13 @@ describe("Muting community", () => {
 
 describe("Unmuting community", () => {
   test("It should unmute community", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -928,17 +814,13 @@ describe("Unmuting community", () => {
     expect(response.body.message).toBe("Community unmuted successfully");
   });
   test("It should return 'Invalid parameters' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -960,17 +842,13 @@ describe("Unmuting community", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -994,17 +872,13 @@ describe("Unmuting community", () => {
   });
 
   test("It should return 'Community is not muted' for status 402", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1030,17 +904,13 @@ describe("Unmuting community", () => {
 /*
 describe("Checking if community is muted", () => {
   test("It should return true if community is muted", async () => {
-   await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+    
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1065,17 +935,13 @@ describe("Checking if community is muted", () => {
   });
 
   test("It should return false if community is not muted", async () => {
-   await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+    
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1097,17 +963,13 @@ describe("Checking if community is muted", () => {
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
-   await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+    
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1128,17 +990,13 @@ describe("Checking if community is muted", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-   await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+    
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1164,17 +1022,13 @@ describe("Checking if community is muted", () => {
 describe("Subscribing to community", () => {
   /*
   test("It should subscribe to the community successfully", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     await request(app).post("/community/create").set("Authorization", `Bearer ${token}`).send({
       name: "farouqfans",
@@ -1191,17 +1045,13 @@ describe("Subscribing to community", () => {
   });
 */
   test("It should return 'Invalid parameters' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1222,17 +1072,13 @@ describe("Subscribing to community", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1254,28 +1100,20 @@ describe("Subscribing to community", () => {
   });
   /*
   test("It should return 'Restricted or Private community' for status 403", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn2 = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
-    await request(app).post("/signup").send({
-      email: "farouqdiaa2@gmail.com",
-      username: "farouquser2",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser2",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
     const token2 = logIn2.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser2" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1297,17 +1135,13 @@ describe("Subscribing to community", () => {
   });
 */
   test("It should return 'User is already subscribed' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1335,17 +1169,13 @@ describe("Subscribing to community", () => {
 
 describe("Unsubscribing from community", () => {
   test("It should unsubscribe from the community", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1372,17 +1202,13 @@ describe("Unsubscribing from community", () => {
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1403,17 +1229,13 @@ describe("Unsubscribing from community", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1435,17 +1257,13 @@ describe("Unsubscribing from community", () => {
   });
 
   test("It should return 'User isn't subscribed to community' for status 403", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1469,17 +1287,13 @@ describe("Unsubscribing from community", () => {
 /*
 describe("Checking if user is subscribed to a community", () => {
   test("It should return true if user is subscribed", async () => {
- await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+  
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1506,17 +1320,13 @@ describe("Checking if user is subscribed to a community", () => {
   });
 
   test("It should return false if user is not subscribed", async () => {
- await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+  
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1538,17 +1348,13 @@ describe("Checking if user is subscribed to a community", () => {
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
-await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+ 
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1569,17 +1375,13 @@ await request(app).post("/signup").send({
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+ 
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1605,17 +1407,13 @@ await request(app).post("/signup").send({
 /*
 describe("Getting top communities", () => {
   test("It should return top public communities", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     await request(app).post("/community/create").set("Authorization", `Bearer ${token}`).send({
       name: "farouqfans",
@@ -1633,17 +1431,13 @@ describe("Getting top communities", () => {
   });
 
   test("It should return 'No Public communities found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const response = await request(app)
       .get("/community/top-communities")
@@ -1657,17 +1451,13 @@ describe("Getting top communities", () => {
 /*
 describe("Getting random category communities", () => {
   test("It should return random category communities", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1690,17 +1480,13 @@ describe("Getting random category communities", () => {
 });
 describe("Getting specific category communities", () => {
   test("It should return specific category communities", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1725,17 +1511,13 @@ describe("Getting specific category communities", () => {
   });
 
   test("It should return 'No communities found for the specified category' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1760,17 +1542,13 @@ describe("Getting specific category communities", () => {
   });
 
   test("It should return 'Invalid request parameters' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1795,17 +1573,13 @@ describe("Getting specific category communities", () => {
 
 describe("Getting community info", () => {
   test("It should return community info", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1829,17 +1603,13 @@ describe("Getting community info", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1862,17 +1632,13 @@ describe("Getting community info", () => {
   });
 
   test("It should return 'Invalid request parameters' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1893,17 +1659,13 @@ describe("Getting community info", () => {
 */
 describe("Creating a community", () => {
   test("It should create a community", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const response = await request(app)
       .post("/community/create")
@@ -1919,17 +1681,13 @@ describe("Creating a community", () => {
   });
 
   test("It should return 'Community name is not available' for status 403", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1956,17 +1714,13 @@ describe("Creating a community", () => {
   });
 
   test("It should return 'Invalid request parameters' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const response = await request(app).post("/community/create").set("Authorization", `Bearer ${token}`).expect(400);
 
@@ -1980,17 +1734,13 @@ describe("Creating a community", () => {
 // Test suite for getting user profile info
 describe("Getting user profile info", () => {
   test("It should return user profile info", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const response = await request(app).get("/user/profile-info/farouquser").expect(200);
 
@@ -2004,17 +1754,13 @@ describe("Getting user profile info", () => {
 });
 describe("Updating user profile info", () => {
   /*  test("It should update user profile info", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
+     
 
     const response = await request(app)
       .put("/user/profile-info")
@@ -2034,27 +1780,19 @@ describe("Updating user profile info", () => {
   });
 */
   test("It should return 'Username not available' for status 400", async () => {
-    await request(app).post("/signup").send({
-      email: "farouqdiaa@gmail.com",
-      username: "farouquser",
-      password: "12345678",
-    });
+     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate({ username: "farouquser" }, { isVerified: true });
-    await request(app).post("/signup").send({
-      email: "farouqdiaa2@gmail.com",
-      username: "farouquser2",
-      password: "12345678",
-    });
+     
+     
     const logIn2 = await request(app).post("/login").send({
       username: "farouquser2",
       password: "12345678",
     });
-    await User.findOneAndUpdate({ username: "farouquser2" }, { isVerified: true });
+     
     const response = await request(app)
       .put("/user/profile-info")
       .set("Authorization", `Bearer ${token}`)

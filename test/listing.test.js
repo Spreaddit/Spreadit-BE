@@ -7,6 +7,16 @@ const User = require("../src/models/user");
 const jwt = require("jwt-decode");
 
 const connectionUrl = "mongodb://localhost:27017/testDBforlisting";
+const userOneId = new mongoose.Types.ObjectId();
+const userOne = {
+  _id: userOneId,
+  name: "Mohamed Maher",
+  username: "maher",
+  email: "moahmedmaher4@gmail.com",
+  password: "myPassw@ord123",
+  gender: "Male",
+  isVerified: true
+}
 
 beforeAll(async () => {
   try {
@@ -21,6 +31,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await User.deleteMany({});
+  await new User(userOne).save();
   await Post.deleteMany({});
 }, 10000);
 
@@ -30,18 +41,14 @@ afterAll(() => {
 
 describe("GET /new", () => {
   test("It should get unauthorized 401", async () => {
-    const signupResponse = await request(app).post("/signup").send({
-      email: "amiraelgarf991234@gmail.com",
-      username: "amira12amira",
-      password: "12345678",
-    });
-    const usernameee = "amira12amira";
+    
+    const usernameee = "maher";
 
     await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
 
     const loginResponse = await request(app)
       .post("/login")
-      .send({ username: "amira12amira", password: "12345678" });
+      .send({ username: "maher", password: "myPassw@ord123" });
 
     const tokenlogin = loginResponse.body.access_token;
 
@@ -75,23 +82,18 @@ describe("GET /new", () => {
 
 describe("sort post by new", () => {
   test("It should sort by new", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
@@ -108,23 +110,18 @@ describe("sort post by new", () => {
 
 describe("sort post by hot", () => {
   test("It should sort by hot", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
@@ -141,23 +138,18 @@ describe("sort post by hot", () => {
 
 describe("sort post by views", () => {
   test("It should sort by views", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
@@ -174,23 +166,18 @@ describe("sort post by views", () => {
 
 describe("sort post by number of comments", () => {
   test("It should sort by number of comments", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
@@ -207,23 +194,18 @@ describe("sort post by number of comments", () => {
 
 describe("sort post by ", () => {
   test("It should sort by best", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
@@ -240,21 +222,21 @@ describe("sort post by ", () => {
   // test("It should sort by hot", async () => {
   //   await request(app).post("/signup").send({
   //     email: "mahmoudaly@gmail.com",
-  //     username: "mahmoud12",
+  //     username: "maher",
   //     password: "12345678",
   //   });
   //   const logIn = await request(app).post("/login").send({
-  //     username: "mahmoud12",
+  //     username: "maher",
   //     password: "12345678",
   //   });
   //   const token = logIn.body.access_token;
   //   await User.findOneAndUpdate(
-  //     { username: "mahmoud12" },
+  //     { username: "maher" },
   //     { isVerified: true }
   //   );
   //   const newpost = new Post({
-  //     userId: "jjhgd666",
-  //     username: "mahmoud",
+  //     userId: userOneId,
+  //     username: "maher",
   //     title: "Test ",
   //     content: "",
   //     community: "mahmoud556",
@@ -271,23 +253,18 @@ describe("sort post by ", () => {
 
 describe("sort post by  hot in supspreadit", () => {
   test("It should sort by best", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
@@ -304,23 +281,18 @@ describe("sort post by  hot in supspreadit", () => {
 
 describe("sort post by new in community", () => {
   test("It should sort by best", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
@@ -337,23 +309,18 @@ describe("sort post by new in community", () => {
 
 describe("It should sort by best ", () => {
   test("It should sort by best", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
@@ -367,18 +334,13 @@ describe("It should sort by best ", () => {
 
 describe("sort post by new in community best if no posts found", () => {
   test("It should return 404 if no posts found", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -388,18 +350,13 @@ describe("sort post by new in community best if no posts found", () => {
   });
 
   test("It should return 404 if no posts found in hot in community", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -409,18 +366,13 @@ describe("sort post by new in community best if no posts found", () => {
   });
 
   test("It should return 404 if no posts found in top in community", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -430,18 +382,13 @@ describe("sort post by new in community best if no posts found", () => {
   });
 
   test("It should return 404 if no posts found in top", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -451,18 +398,13 @@ describe("sort post by new in community best if no posts found", () => {
   });
 
   test("It should return 404 if no posts found in best", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -472,18 +414,13 @@ describe("sort post by new in community best if no posts found", () => {
   });
 
   test("It should return 404 if no posts found in top now", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -493,18 +430,13 @@ describe("sort post by new in community best if no posts found", () => {
   });
 
   test("It should return 404 if no posts found in top today", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -514,18 +446,13 @@ describe("sort post by new in community best if no posts found", () => {
   });
 
   test("It should return 404 if no posts found in top month", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -535,18 +462,13 @@ describe("sort post by new in community best if no posts found", () => {
   });
 
   test("It should return 404 if no posts found in top week", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -556,18 +478,13 @@ describe("sort post by new in community best if no posts found", () => {
   });
 
   test("It should return 404 if no posts found in top year", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -577,18 +494,13 @@ describe("sort post by new in community best if no posts found", () => {
   });
 
   test("It should return 404 if no posts found in sorting by comments", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -598,18 +510,13 @@ describe("sort post by new in community best if no posts found", () => {
   });
 
   test("It should return 404 if no posts found in sorting by views", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     await request(app)
@@ -635,21 +542,21 @@ describe("sort post by new in community best if no posts found", () => {
 //   test("It should sort by top", async () => {
 //     await request(app).post("/signup").send({
 //       email: "mahmoudaly@gmail.com",
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const logIn = await request(app).post("/login").send({
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const token = logIn.body.access_token;
 //     await User.findOneAndUpdate(
-//       { username: "mahmoud12" },
+//       { username: "maher" },
 //       { isVerified: true }
 //     );
 //     const newpost = new Post({
-//       userId: "jjhgd666",
-//       username: "mahmoud",
+//       userId: userOneId,
+//       username: "maher",
 //       title: "Test ",
 //       content: "",
 //       community: "mahmoud556",
@@ -668,21 +575,21 @@ describe("sort post by new in community best if no posts found", () => {
 //   test("It should sort by top", async () => {
 //     await request(app).post("/signup").send({
 //       email: "mahmoudaly@gmail.com",
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const logIn = await request(app).post("/login").send({
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const token = logIn.body.access_token;
 //     await User.findOneAndUpdate(
-//       { username: "mahmoud12" },
+//       { username: "maher" },
 //       { isVerified: true }
 //     );
 //     const newpost = new Post({
-//       userId: "jjhgd666",
-//       username: "mahmoud",
+//       userId: userOneId,
+//       username: "maher",
 //       title: "Test ",
 //       content: "",
 //       community: "mahmoud556",
@@ -701,21 +608,21 @@ describe("sort post by new in community best if no posts found", () => {
 //   test("It should sort by top", async () => {
 //     await request(app).post("/signup").send({
 //       email: "mahmoudaly@gmail.com",
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const logIn = await request(app).post("/login").send({
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const token = logIn.body.access_token;
 //     await User.findOneAndUpdate(
-//       { username: "mahmoud12" },
+//       { username: "maher" },
 //       { isVerified: true }
 //     );
 //     const newpost = new Post({
-//       userId: "jjhgd666",
-//       username: "mahmoud",
+//       userId: userOneId,
+//       username: "maher",
 //       title: "Test ",
 //       content: "",
 //       community: "mahmoud556",
@@ -734,21 +641,21 @@ describe("sort post by new in community best if no posts found", () => {
 //   test("It should sort by top", async () => {
 //     await request(app).post("/signup").send({
 //       email: "mahmoudaly@gmail.com",
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const logIn = await request(app).post("/login").send({
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const token = logIn.body.access_token;
 //     await User.findOneAndUpdate(
-//       { username: "mahmoud12" },
+//       { username: "maher" },
 //       { isVerified: true }
 //     );
 //     const newpost = new Post({
-//       userId: "jjhgd666",
-//       username: "mahmoud",
+//       userId: userOneId,
+//       username: "maher",
 //       title: "Test ",
 //       content: "",
 //       community: "mahmoud556",
@@ -767,21 +674,21 @@ describe("sort post by new in community best if no posts found", () => {
 //   test("It should sort by top", async () => {
 //     await request(app).post("/signup").send({
 //       email: "mahmoudaly@gmail.com",
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const logIn = await request(app).post("/login").send({
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const token = logIn.body.access_token;
 //     await User.findOneAndUpdate(
-//       { username: "mahmoud12" },
+//       { username: "maher" },
 //       { isVerified: true }
 //     );
 //     const newpost = new Post({
-//       userId: "jjhgd666",
-//       username: "mahmoud",
+//       userId: userOneId,
+//       username: "maher",
 //       title: "Test ",
 //       content: "",
 //       community: "mahmoud556",
@@ -800,21 +707,21 @@ describe("sort post by new in community best if no posts found", () => {
 //   test("It should sort by top now", async () => {
 //     await request(app).post("/signup").send({
 //       email: "mahmoudaly@gmail.com",
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const logIn = await request(app).post("/login").send({
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const token = logIn.body.access_token;
 //     await User.findOneAndUpdate(
-//       { username: "mahmoud12" },
+//       { username: "maher" },
 //       { isVerified: true }
 //     );
 //     const newpost = new Post({
-//       userId: "jjhgd666",
-//       username: "mahmoud",
+//       userId: userOneId,
+//       username: "maher",
 //       title: "Test ",
 //       content: "",
 //       community: "mahmoud556",
@@ -833,21 +740,21 @@ describe("sort post by new in community best if no posts found", () => {
 //   test("It should sort by top now", async () => {
 //     await request(app).post("/signup").send({
 //       email: "mahmoudaly@gmail.com",
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const logIn = await request(app).post("/login").send({
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const token = logIn.body.access_token;
 //     await User.findOneAndUpdate(
-//       { username: "mahmoud12" },
+//       { username: "maher" },
 //       { isVerified: true }
 //     );
 //     const newpost = new Post({
-//       userId: "jjhgd666",
-//       username: "mahmoud",
+//       userId: userOneId,
+//       username: "maher",
 //       title: "Test ",
 //       content: "",
 //       community: "mahmoud556",
@@ -866,21 +773,21 @@ describe("sort post by new in community best if no posts found", () => {
 //   test("It should sort by top now", async () => {
 //     await request(app).post("/signup").send({
 //       email: "mahmoudaly@gmail.com",
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const logIn = await request(app).post("/login").send({
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const token = logIn.body.access_token;
 //     await User.findOneAndUpdate(
-//       { username: "mahmoud12" },
+//       { username: "maher" },
 //       { isVerified: true }
 //     );
 //     const newpost = new Post({
-//       userId: "jjhgd666",
-//       username: "mahmoud",
+//       userId: userOneId,
+//       username: "maher",
 //       title: "Test ",
 //       content: "",
 //       community: "mahmoud556",
@@ -899,21 +806,21 @@ describe("sort post by new in community best if no posts found", () => {
 //   test("It should sort by top day", async () => {
 //     await request(app).post("/signup").send({
 //       email: "mahmoudaly@gmail.com",
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const logIn = await request(app).post("/login").send({
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const token = logIn.body.access_token;
 //     await User.findOneAndUpdate(
-//       { username: "mahmoud12" },
+//       { username: "maher" },
 //       { isVerified: true }
 //     );
 //     const newpost = new Post({
-//       userId: "jjhgd666",
-//       username: "mahmoud",
+//       userId: userOneId,
+//       username: "maher",
 //       title: "Test ",
 //       content: "",
 //       community: "mahmoud556",
@@ -932,21 +839,21 @@ describe("sort post by new in community best if no posts found", () => {
 //   test("It should sort by top week", async () => {
 //     await request(app).post("/signup").send({
 //       email: "mahmoudaly@gmail.com",
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const logIn = await request(app).post("/login").send({
-//       username: "mahmoud12",
+//       username: "maher",
 //       password: "12345678",
 //     });
 //     const token = logIn.body.access_token;
 //     await User.findOneAndUpdate(
-//       { username: "mahmoud12" },
+//       { username: "maher" },
 //       { isVerified: true }
 //     );
 //     const newpost = new Post({
-//       userId: "jjhgd666",
-//       username: "mahmoud",
+//       userId: userOneId,
+//       username: "maher",
 //       title: "Test ",
 //       content: "",
 //       community: "mahmoud556",
@@ -963,23 +870,18 @@ describe("sort post by new in community best if no posts found", () => {
 
 describe("sort post by top month", () => {
   test("It should sort by top month", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
@@ -996,23 +898,18 @@ describe("sort post by top month", () => {
 
 describe("sort post by top year", () => {
   test("It should sort by top year", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
@@ -1029,23 +926,18 @@ describe("sort post by top year", () => {
 
 describe("sort post by recent", () => {
   test("It should sort by recent", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
@@ -1062,23 +954,18 @@ describe("sort post by recent", () => {
 
 describe("sort post by random in community ", () => {
   test("It should sort by top", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "mahmoud12",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
-      username: "mahmoud12",
-      password: "12345678",
+      username: "maher",
+      password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate(
-      { username: "mahmoud12" },
+      { username: "maher" },
       { isVerified: true }
     );
     const newpost = new Post({
-      userId: "jjhgd666",
-      username: "mahmoud",
+      userId: userOneId,
+      username: "maher",
       title: "Test ",
       content: "",
       community: "mahmoud556",
