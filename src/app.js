@@ -19,6 +19,8 @@ const messageRoutes = require("./routes/message");
 const startUnbanScheduler = require("./models/unbanScheduler");
 const searchRoutes = require("./routes/search");
 const communitiespostsRoutes = require("./routes/community-post");
+const adminRoutes = require ("./routes/admin");
+const communityCommentsRoutes = require("./routes/community-comment");
 const notificationsRoutes = require("../src/routes/notifications");
 
 //seeding
@@ -61,6 +63,8 @@ app.use("/api", messageRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api", communitiespostsRoutes);
 app.use("/api", moderatorRoutes);
+app.use("/api", adminRoutes);
+app.use("/api", communityCommentsRoutes);
 app.use("/api", notificationsRoutes);
 mongoose
   .connect(connectionurl, {
