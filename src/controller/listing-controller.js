@@ -25,13 +25,13 @@ function calculatePostTime(post) {
 exports.sortPostNew = async (req, res) => {
   try {
     const userId = req.user._id;
-    const page = req.query.page || 1;
+    const page = req.query.page || 4;
     const limit = 20;
     const skip = (page - 1) * limit;
-
     const totalPosts = await Post.countDocuments();
     const totalPages = Math.ceil(totalPosts / limit);
-
+    // const communities = await Community.find({ category: { $ne: "private" } });
+    // const communityIds = communities.map((community) => community._id);
     const posts = await Post.find().sort({ date: -1 }).skip(skip).limit(limit);
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
@@ -53,15 +53,20 @@ exports.sortPostNew = async (req, res) => {
     return res.status(500).json({ error: "internal server error" });
   }
 };
-
 exports.sortPostTop = async (req, res) => {
   try {
     const userId = req.user._id;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
     const posts = await Post.find();
 
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
+
+    // Sort the posts by the difference between upvotes and downvotes
     posts.sort((a, b) => {
       return (
         b.upVotes.length -
@@ -69,33 +74,49 @@ exports.sortPostTop = async (req, res) => {
         (a.upVotes.length - a.downVotes.length)
       );
     });
+
+    // Calculate total pages for pagination
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    // Paginate the sorted posts
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
+
     const postInfoArray = await Promise.all(
-      posts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
   }
 };
-
 exports.sortPostTopCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
-
     const communityName = req.params.subspreaditname;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
-    const posts = await Post.find({
-      community: communityName,
-    }).exec();
+    const posts = await Post.find({ community: communityName }).exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
+
     posts.sort((a, b) => {
       return (
         b.upVotes.length -
@@ -103,15 +124,28 @@ exports.sortPostTopCommunity = async (req, res) => {
         (a.upVotes.length - a.downVotes.length)
       );
     });
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
+
     const postInfoArray = await Promise.all(
-      posts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -122,21 +156,39 @@ exports.sortPostNewCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
     const communityName = req.params.subspreaditname;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
     const posts = await Post.find({ community: communityName })
       .sort({ date: -1 })
       .exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
+
     const postInfoArray = await Promise.all(
-      posts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
   }
@@ -145,23 +197,39 @@ exports.sortPostNewCommunity = async (req, res) => {
 exports.sortPostViews = async (req, res) => {
   try {
     const userId = req.user._id;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
     const posts = await Post.find().sort({ numberOfViews: -1 }).exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    const user = await User.findById(userId);
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
     const visiblePosts = posts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
+
+    const paginatedPosts = visiblePosts.slice(skip, skip + limit);
+
     const postInfoArray = await Promise.all(
-      posts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
   }
@@ -170,19 +238,37 @@ exports.sortPostViews = async (req, res) => {
 exports.sortPostComment = async (req, res) => {
   try {
     const userId = req.user._id;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
     const posts = await Post.find().sort({ commentsCount: -1 }).exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
+
     const postInfoArray = await Promise.all(
-      posts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
   }
@@ -191,10 +277,16 @@ exports.sortPostComment = async (req, res) => {
 exports.sortPostBest = async (req, res) => {
   try {
     const userId = req.user._id;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
     const posts = await Post.find().exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
+
     posts.sort((a, b) => {
       const ratioA =
         a.downVotes.length !== 0
@@ -207,15 +299,28 @@ exports.sortPostBest = async (req, res) => {
 
       return ratioB - ratioA;
     });
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
+
     const postInfoArray = await Promise.all(
-      posts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -225,59 +330,89 @@ exports.sortPostBest = async (req, res) => {
 exports.sortPostHot = async (req, res) => {
   try {
     const userId = req.user._id;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
     const posts = await Post.find().exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    const postsWithScores = posts.map((post) => ({
-      ...post.toObject(),
-      hotnessScore: calculateHotnessScore(post),
-    }));
-    const sortedPosts = postsWithScores.sort((a, b) => {
-      return b.hotnessScore - a.hotnessScore;
+
+    const sortedPosts = posts.sort((a, b) => {
+      const hotnessScoreA = calculateHotnessScore(a);
+      const hotnessScoreB = calculateHotnessScore(b);
+      return hotnessScoreB - hotnessScoreA;
     });
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = sortedPosts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
+
     const postInfoArray = await Promise.all(
-      sortedPosts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
   }
 };
-
 exports.sortPostHotCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
     const communityName = req.params.subspreaditname;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
-    const posts = await Post.find({
-      community: communityName,
-    }).exec();
+    const posts = await Post.find({ community: communityName }).exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    const postsWithScores = posts.map((post) => ({
-      ...post.toObject(),
-      hotnessScore: calculateHotnessScore(post),
-    }));
-    const sortedPosts = postsWithScores.sort((a, b) => {
-      return b.hotnessScore - a.hotnessScore;
+
+    const sortedPosts = posts.sort((a, b) => {
+      const hotnessScoreA = calculateHotnessScore(a);
+      const hotnessScoreB = calculateHotnessScore(b);
+      return hotnessScoreB - hotnessScoreA;
     });
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = sortedPosts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
+
     const postInfoArray = await Promise.all(
-      sortedPosts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -287,31 +422,36 @@ exports.sortPostHotCommunity = async (req, res) => {
 exports.sortPostRandomCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
-
     const communityName = req.params.subspreaditname;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
-    const posts = await Post.find({
-      community: communityName,
-    }).exec();
+    const posts = await Post.find({ community: communityName }).exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    const pipeline = [
-      { $sample: { size: posts.length } }, // $sample stage to randomly select documents
-    ];
 
-    // Execute the aggregation pipeline
+    const pipeline = [{ $sample: { size: posts.length } }];
     const randomPosts = await Post.aggregate(pipeline);
 
     const user = await User.findById(userId);
+
     const postInfoArray = await Promise.all(
       randomPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -329,26 +469,22 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
     else if (time === "week") sortTime = 24 * 7;
     else if (time === "month") sortTime = 24 * 30;
     else if (time === "year") sortTime = 365 * 24;
-    // console.log(sortTime);
 
-    const posts = await Post.find({
-      community: communityName,
-    }).exec();
+    const posts = await Post.find({ community: communityName }).exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    const postsWithTime = posts.map((post) => ({
-      ...post.toObject(),
-      postTime: calculatePostTime(post),
-    }));
-    //console.log(postsWithTime);
-    const postsToSort = postsWithTime.filter(
-      (post) => post.postTime <= sortTime
-    );
+
+    const postsToSort = posts.filter((post) => {
+      const postTime = calculatePostTime(post);
+      return postTime <= sortTime;
+    });
+
     if (postsToSort.length == 0) {
       return res.status(404).json({ error: "no posts found" });
-      //console.log(postsToSort);
     }
+
     const sortedPosts = postsToSort.sort((a, b) => {
       return (
         b.upVotes.length -
@@ -356,21 +492,33 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
         (a.upVotes.length - a.downVotes.length)
       );
     });
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = sortedPosts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
+
     const postInfoArray = await Promise.all(
-      sortedPosts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
   }
 };
-
 exports.sortPostTopTime = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -381,24 +529,27 @@ exports.sortPostTopTime = async (req, res) => {
     else if (time === "week") sortTime = 24 * 7;
     else if (time === "month") sortTime = 24 * 30;
     else if (time === "year") sortTime = 365 * 24;
-    // console.log(sortTime);
+
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
     const posts = await Post.find().exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    const postsWithTime = posts.map((post) => ({
-      ...post.toObject(),
-      postTime: calculatePostTime(post),
-    }));
-    //console.log(postsWithTime);
-    const postsToSort = postsWithTime.filter(
-      (post) => post.postTime <= sortTime
-    );
+    const postsToSort = posts.filter((post) => {
+      const postTime = calculatePostTime(post);
+      return postTime <= sortTime;
+    });
+
+    console.log(postsToSort);
+
     if (postsToSort.length == 0) {
       return res.status(404).json({ error: "no posts found" });
-      //console.log(postsToSort);
     }
+
     const sortedPosts = postsToSort.sort((a, b) => {
       return (
         b.upVotes.length -
@@ -406,39 +557,71 @@ exports.sortPostTopTime = async (req, res) => {
         (a.upVotes.length - a.downVotes.length)
       );
     });
-    const user = await User.findById(userId);
+
+    const totalPosts = postsToSort.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = sortedPosts.slice(skip, skip + limit);
+
     const postInfoArray = await Promise.all(
-      sortedPosts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
   }
 };
+
 exports.recentPosts = async (req, res) => {
   try {
     const userId = req.user._id;
-    const user = await User.findById(userId).populate("recentPosts");
+    const user = await User.findById(userId).populate({
+      path: "recentPosts",
+      options: { sort: { createdAt: -1 } },
+    });
 
     if (!user) {
       return res.status(404).json({ error: "user not found" });
     }
-    const Posts = user.recentPosts;
-    recentPosts = Posts.reverse();
+
+    const posts = user.recentPosts;
+    const totalPosts = posts.length;
+
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const postInfoArray = await Promise.all(
-      recentPosts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
     );
+
+    const totalPages = Math.ceil(totalPosts / limit);
+
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error: "internal server error" });
   }
 };

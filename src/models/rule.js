@@ -27,6 +27,7 @@ const RuleSchema = new Schema({
   appliesTo: {
     type: String,
     enum: ["posts", "comments", "both"],
+    default: "both",
   },
 });
 

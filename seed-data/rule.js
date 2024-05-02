@@ -5,6 +5,7 @@ const ruleSeedData = [
     description: "1. Be respectful and supportive of fellow coders.",
     reportReason: "Violation of community guidelines",
     communityName: "CodeCrafters",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb2c",
@@ -12,6 +13,7 @@ const ruleSeedData = [
     description: "1. Engage in constructive discussions about technology trends and innovations.",
     reportReason: "Violation of community guidelines",
     communityName: "TechTalks",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb2d",
@@ -19,6 +21,7 @@ const ruleSeedData = [
     description: "1. Collaborate respectfully on coding projects and challenges.",
     reportReason: "Violation of community guidelines",
     communityName: "CodeGeeks",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb2e",
@@ -26,6 +29,7 @@ const ruleSeedData = [
     description: "1. Share and discuss scientific topics with an open mind and respect for diverse perspectives.",
     reportReason: "Violation of community guidelines",
     communityName: "ScienceExplorersClub",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb2f",
@@ -33,6 +37,7 @@ const ruleSeedData = [
     description: "1. Share and discuss astronomical topics with enthusiasm and curiosity.",
     reportReason: "Violation of community guidelines",
     communityName: "SpaceAndAstronomyLovers",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb30",
@@ -40,6 +45,7 @@ const ruleSeedData = [
     description: "1. Respectfully discuss and explore various aspects of biology.",
     reportReason: "Violation of community guidelines",
     communityName: "BiologyBuffsSociety",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb31",
@@ -47,6 +53,7 @@ const ruleSeedData = [
     description: "1. Share creative works and ideas with positivity and constructive feedback.",
     reportReason: "Violation of community guidelines",
     communityName: "CreativeMindsCollective",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb32",
@@ -54,6 +61,7 @@ const ruleSeedData = [
     description: "1. Respect and appreciate diverse forms of visual art.",
     reportReason: "Violation of community guidelines",
     communityName: "VisualArtsGallery",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb33",
@@ -61,6 +69,7 @@ const ruleSeedData = [
     description: "1. Provide constructive feedback and support to fellow writers.",
     reportReason: "Violation of community guidelines",
     communityName: "Writers'Haven",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb34",
@@ -68,6 +77,7 @@ const ruleSeedData = [
     description: "1. Practice mindfulness and engage in meditation discussions with empathy and kindness.",
     reportReason: "Violation of community guidelines",
     communityName: "MindfulnessAndMeditation",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb35",
@@ -75,6 +85,7 @@ const ruleSeedData = [
     description: "1. Respect the privacy and emotions of members when discussing mental health issues.",
     reportReason: "Violation of community guidelines",
     communityName: "MentalHealthSupportGroup",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb3e",
@@ -82,6 +93,7 @@ const ruleSeedData = [
     description: "1. Discuss psychological topics with empathy and respect for diverse viewpoints.",
     reportReason: "Violation of community guidelines",
     communityName: "PsychologyInsightsCircle",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb37",
@@ -89,6 +101,7 @@ const ruleSeedData = [
     description: "1. Share travel experiences and advice while respecting different cultures and perspectives.",
     reportReason: "Violation of community guidelines",
     communityName: "GlobetrottersCommunity",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb38",
@@ -96,6 +109,7 @@ const ruleSeedData = [
     description: "1. Encourage responsible and respectful travel behavior.",
     reportReason: "Violation of community guidelines",
     communityName: "AdventurousSoulsSociety",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb39",
@@ -103,6 +117,7 @@ const ruleSeedData = [
     description: "1. Share culinary experiences and recipes with enthusiasm and positivity.",
     reportReason: "Violation of community guidelines",
     communityName: "CulinaryDelights",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb3a",
@@ -110,6 +125,7 @@ const ruleSeedData = [
     description: "1. Appreciate and celebrate diverse culinary cultures and cuisines.",
     reportReason: "Violation of community guidelines",
     communityName: "GourmetAdventures",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb3b",
@@ -117,6 +133,7 @@ const ruleSeedData = [
     description: "1. Respect and appreciate various forms of popular culture without discrimination.",
     reportReason: "Violation of community guidelines",
     communityName: "PopCultureFanatics",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb3c",
@@ -124,6 +141,7 @@ const ruleSeedData = [
     description: "1. Engage in respectful and insightful discussions about films.",
     reportReason: "Violation of community guidelines",
     communityName: "MovieBuffsClub",
+    appliesTo: "both",
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb3d",
@@ -131,6 +149,7 @@ const ruleSeedData = [
     description: "1. Share and appreciate diverse musical tastes and genres with respect for fellow members.",
     reportReason: "Violation of community guidelines",
     communityName: "MusicManiacsLounge",
+    appliesTo: "both",
   },
 ];
 

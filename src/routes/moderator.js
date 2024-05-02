@@ -185,7 +185,7 @@ router.get("/community/:communityName/rules", auth.authentication, async (req, r
       return res.status(404).json({ message: "Community not found" });
     }
 
-    const rules = await Rule.find({ communityName: communityName });
+    const rules = await Rule.find({ communityName: communityName }).select("title description reportReason appliesTo");
 
     res.status(200).json(rules);
   } catch (error) {
@@ -332,7 +332,9 @@ router.get("/community/:communityName/removal-reasons", auth.authentication, asy
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-    const removalReasons = await RemovalReason.find({ communityName: communityName });
+    const removalReasons = await RemovalReason.find({ communityName: communityName }).select(
+      "title reasonMessage communityName"
+    );
 
     res.status(200).json(removalReasons);
   } catch (error) {
@@ -398,43 +400,38 @@ router.get("/community/:communityName/get-info", auth.authentication, async (req
       return res.status(400).json({ message: "Invalid request parameters" });
     }
 
-    const community = await Community.getCommunityObject(communityName, req.user._id)
-      .select(
-        "is18plus name category communityType description image members membersCount rules removalReasons dateCreated communityBanner membersNickname"
-      )
-      .populate("rules", "title description reportReason appliesTo")
-      .populate("removalReasons", "title reasonMessage");
+    const communityObject = await Community.getCommunityObject(communityName, req.user._id);
+    const community = await Community.findOne({ name: communityName });
 
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-    const lastInsight = community.insights[community.insights.length - 1];
-    const currentDate = new Date();
-    const lastInsightDate = new Date(lastInsight.month);
 
-    if (
-      currentDate.getMonth() !== lastInsightDate.getMonth() ||
-      currentDate.getFullYear() !== lastInsightDate.getFullYear()
-    ) {
+    const currentDate = new Date();
+    const currentMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+    const lastInsight = community.insights[community.insights.length - 1];
+
+    if (!lastInsight || lastInsight.month.getMonth() !== currentMonthStart.getMonth()) {
       const newInsight = {
-        month: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
+        month: new Date(currentMonthStart),
         views: 1,
         newMembers: 0,
         leavingMembers: 0,
       };
       community.insights.push(newInsight);
-      await community.save();
     } else {
-      community.insights[community.insights.length - 1].views += 1;
-      await community.save();
+      lastInsight.views += 1;
     }
-    res.status(200).json(community);
+
+    await community.save();
+    res.status(200).json(communityObject);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
+///////////////////
 router.get("/community/moderation/:communityName/contributors", auth.authentication, async (req, res) => {
   try {
     const communityName = req.params.communityName;

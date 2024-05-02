@@ -80,8 +80,8 @@ exports.banUser = async (req, res) => {
     const message = req.body.isPermanent
       ? `You have been banned permanently from posting in ${communityName}. \n Reason: ${req.body.reason}`
       : `You have been banned from posting in ${communityName} until ${new Date(
-        req.body.banDuration
-      ).toDateString()}.\n Reason: ${req.body.reason}`;
+          req.body.banDuration
+        ).toDateString()}.\n Reason: ${req.body.reason}`;
     await Notification.sendNotification(
       userToBeBanned._id,
       "You have received a new notification",
@@ -187,8 +187,8 @@ exports.editBan = async (req, res) => {
     const message = req.body.isPermanent
       ? `You have been banned permanently from posting in ${communityName}. \n Reason: ${req.body.reason}`
       : `You have been banned from posting in ${communityName} until ${new Date(
-        req.body.banDuration
-      ).toDateString()}.\n Reason: ${req.body.reason}`;
+          req.body.banDuration
+        ).toDateString()}.\n Reason: ${req.body.reason}`;
     await Notification.sendNotification(
       userToBeBanned._id,
       "You have received a new notification",
@@ -414,12 +414,6 @@ exports.inviteModerator = async (req, res) => {
             to accept, visit the moderators page for ${communityName} and click "accept".
             otherwise, if you did not expect to receive this, you can simply ignore this invitation or report it.`,
     });
-    if (!followerUser) {
-      return res.status(404).json({ error: "user not found" });
-    }
-    const response = {
-      description: "User followed successfully",
-    };
     if (invitedUser.invitations) {
       await Notification.sendNotification(
         invitedUser._id,
@@ -448,6 +442,7 @@ exports.inviteModerator = async (req, res) => {
 
 exports.acceptInvite = async (req, res) => {
   try {
+    const user = req.user;
     const userId = req.user._id;
     const { communityName } = req.params;
 
@@ -470,6 +465,9 @@ exports.acceptInvite = async (req, res) => {
     moderator.isAccepted = true;
     await moderator.save();
     community.moderators.push(userId);
+    await community.save();
+    user.moderatedCommunities.push(community._id);
+    await user.save();
 
     return res
       .status(200)
