@@ -352,8 +352,10 @@ exports.getTrendingPosts = async (req, res) => {
     try {
         const allPosts = await Post.find();
 
-        const topTrendingPosts = await getTopTrendingPosts(allPosts);
+        const postsWithAttachments = allPosts.filter(post => post.attachments && post.attachments.length > 0);
+        const sortedPosts = postsWithAttachments.sort((a, b) => b.commentsCount - a.commentsCount);
 
+        const topTrendingPosts = sortedPosts.slice(0, 5);
         const postResults = await Promise.all(topTrendingPosts.map(post => Post.getPostResultObject(post)));
 
         return res.status(200).json({ results: postResults });
