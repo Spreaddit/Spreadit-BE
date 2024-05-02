@@ -25,11 +25,11 @@ router
     .get(auth.authentication, notificationController.suggestCommunity);
 
 router
-    .route("/notifications/hide/:communityId")
+    .route("/notifications/hide/:notificationId")
     .post(auth.authentication, notificationController.hideNotification);
 
 router
-    .route("/community/update/disable/:communityId")
+    .route("/community/update/disable/:communityname")
     .post(auth.authentication, notificationController.disableCommunityUpdates);
 
 

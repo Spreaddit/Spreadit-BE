@@ -203,7 +203,9 @@ exports.getSearch = async (req, res) => {
             else {
                 posts = sortedPosts;
             }
-
+            await Promise.all(posts.map(async (post) => {
+                await Post.updateOne({ _id: post._id }, { $inc: { numberOfViews: 1 } });
+            }));
             const postResults = await Promise.all(posts.map(post => Post.getPostResultObject(post)));
 
             return res.status(200).json({ results: postResults });
@@ -221,7 +223,6 @@ exports.getSearch = async (req, res) => {
             const commentObjects = await Promise.all(comments.map(async (comment) => {
                 return await Comment.getCommentInfoSimplified(comment);
             }));
-
             return res.status(200).json({ results: commentObjects });
         } else if (type === 'communities') {
             const communities = await Community.find({ name: { $regex: q, $options: 'i' } });
@@ -276,6 +277,9 @@ exports.getProfileSearch = async (req, res) => {
             } else {
                 posts = sortedPosts;
             }
+            await Promise.all(posts.map(async (post) => {
+                await Post.updateOne({ _id: post._id }, { $inc: { numberOfViews: 1 } });
+            }));
             const postResults = await Promise.all(posts.map(post => Post.getPostResultObject(post)));
 
             return res.status(200).json({ results: postResults });
@@ -352,8 +356,13 @@ exports.getTrendingPosts = async (req, res) => {
     try {
         const allPosts = await Post.find();
 
-        const topTrendingPosts = await getTopTrendingPosts(allPosts);
+        const postsWithAttachments = allPosts.filter(post => post.attachments && post.attachments.length > 0);
+        const sortedPosts = postsWithAttachments.sort((a, b) => b.commentsCount - a.commentsCount);
 
+        const topTrendingPosts = sortedPosts.slice(0, 5);
+        await Promise.all(topTrendingPosts.map(async (post) => {
+            await Post.updateOne({ _id: post._id }, { $inc: { numberOfViews: 1 } });
+        }));
         const postResults = await Promise.all(topTrendingPosts.map(post => Post.getPostResultObject(post)));
 
         return res.status(200).json({ results: postResults });

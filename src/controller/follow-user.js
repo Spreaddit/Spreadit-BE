@@ -1,5 +1,8 @@
 const User = require("../models/user");
 const FollowUser = require("../models/user");
+const Notification = require("./../models/notification");
+const NotificationType = require("./../../seed-data/constants/notificationType");
+require("./../models/constants/notificationType");
 const jwt = require("jsonwebtoken");
 
 exports.followUser = async (req, res) => {
@@ -14,7 +17,7 @@ exports.followUser = async (req, res) => {
       console.error("User not found");
       return res.status(404).json({ error: "User not found" });
     }
-    const toFollowID = user._id;
+    const toFollowID = user._id; //notification to it
     const followerID = req.user._id;
 
     if (toFollowID.equals(followerID)) {
@@ -37,16 +40,26 @@ exports.followUser = async (req, res) => {
       { new: true } // To return the updated document after the update operation
     );
 
-    await FollowUser.updateOne(
-      { _id: toFollowID }, // Filter to find the user by their ID
-      { $set: { newFollowers: true } } // Update operation using $set to set 'newFollowers' to true
-    );
     if (!followerUser) {
       return res.status(404).json({ error: "user not found" });
     }
     const response = {
       description: "User followed successfully",
     };
+    if (user.newFollowers) {
+      await Notification.sendNotification(
+        post.userId,
+        "You have recieved a new notification",
+        `${req.user.username} follow you `
+      );
+      const notification = new Notification({
+        userId: toFollowID,
+        content: `${req.user.username} follow you`,
+        relatedUserId: req.user._id,
+        notificationTypeId: NotificationType.follow._id,
+      });
+      await notification.save();
+    }
     res.status(200).json(response);
   } catch (err) {
     console.error("Internal server error", err);

@@ -42,9 +42,9 @@ const accountUpdate = {
     name: "Account Update",
 };
 
-const message = {
+const invite = {
     _id: "6240cf6f63dab85c8756307f",
-    name: "Message",
+    name: "Invite",
 };
 
 const notificationTypes = [
@@ -54,7 +54,7 @@ const notificationTypes = [
     comment,
     upvotePosts,
     accountUpdate,
-    message,
+    invite,
 ];
 
 exports.data = notificationTypes;
@@ -64,4 +64,4 @@ exports.commentReply = commentReply;
 exports.comment = comment;
 exports.upvotePosts = upvotePosts;
 exports.accountUpdate = accountUpdate;
-exports.message = message;
+exports.invite = invite;

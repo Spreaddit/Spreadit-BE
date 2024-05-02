@@ -5,11 +5,13 @@ const Report = require("../models/report.js");
 const Community = require("../models/community.js");
 const mongoose = require("mongoose");
 const Notification = require('../models/notification');
+const Message = require('../models/message.js');
 
 
 exports.markAllAsRead = async (req, res) => {
     try {
         await Notification.updateMany({ userId: req.user._id }, { $set: { isRead: true } });
+        await Message.updateMany({ recieverId: req.user._id }, { $set: { isRead: true } });
         res.status(200).json({ message: 'Notifications marked as read successfully' });
     } catch (error) {
         console.error('Error marking notifications as read:', error);
@@ -19,7 +21,9 @@ exports.markAllAsRead = async (req, res) => {
 
 exports.getUnreadNotificationCount = async (req, res) => {
     try {
-        const unreadCount = await Notification.countDocuments({ userId: req.user._id, isRead: false });
+        const unreadNotificationCount = await Notification.countDocuments({ userId: req.user._id, isRead: false, isHidden: false });
+        const unreadMessageCount = await Message.countDocuments({ recieverId: req.user._id, isRead: false, isDeleted: false });
+        const unreadCount = unreadNotificationCount + unreadMessageCount;
         const responseObject = {
             unreadCount: unreadCount
         };
@@ -65,7 +69,6 @@ exports.getAllNotifications = async (req, res) => {
             .populate('postId')
             .populate('userId');
 
-        console.log(result);
         if (!result || result.length === 0) {
             return res.status(404).send({ error_message: "Notifications not found" });
         }
@@ -107,7 +110,7 @@ exports.suggestCommunity = async (req, res) => {
             return res.status(404).send({ error_message: "No community found" });
         }
 
-        res.status(200).json(randomCommunity);
+        res.status(200).json({ communityname: randomCommunity.name });
     } catch (error) {
         console.error('Error suggesting random community:', error);
         res.status(500).send({ error: 'Internal Server Error' });
@@ -117,7 +120,12 @@ exports.suggestCommunity = async (req, res) => {
 exports.disableCommunityUpdates = async (req, res) => {
     try {
         const userId = req.user._id;
-        const communityId = req.params.communityId;
+        const communityname = req.params.communityname;
+        const community = await Community.findOne({ name: communityname });
+        if (!community) {
+            return res.status(404).json({ error: 'Community not found' });
+        }
+        const communityId = community._id;
         const user = await User.findById(userId);
         if (user.disabledCommunities.includes(communityId)) {
             return res.status(400).json({ error: "Community updates are already disabled for the user" });
