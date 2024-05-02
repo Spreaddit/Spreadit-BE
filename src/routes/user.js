@@ -49,9 +49,10 @@ router.post("/notifications/subscribe", auth.authentication, async (req, res) =>
     const userId = req.user._id;
     const key = req.body.fcmToken;
 
-    const subscription = await NotificationSubscription.find({ fcmToken: key })
+    let subscription = [];
+    subscription = await NotificationSubscription.find({ fcmToken: key })
 
-    if (!subscription.includes({ fcmToken: key })) {
+    if (subscription.length === 0) {
       const userSub = new NotificationSubscription({
         userId: userId,
         fcmToken: key,

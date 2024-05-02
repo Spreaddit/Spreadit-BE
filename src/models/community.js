@@ -3,6 +3,25 @@ const { boolean } = require("yargs");
 const Schema = mongoose.Schema;
 require("./user");
 
+const InsightSchema = new Schema({
+  month: {
+    type: Date,
+    required: true,
+    unique: true,
+  },
+  views: {
+    type: Number,
+    default: 0,
+  },
+  newMembers: {
+    type: Number,
+    default: 0,
+  },
+  leavingMembers: {
+    type: Number,
+    default: 0,
+  },
+});
 const CommunitySchema = new Schema({
   name: {
     type: String,
@@ -99,6 +118,10 @@ const CommunitySchema = new Schema({
     ref: "user",
     index: true,
   },
+  insights: {
+    type: [InsightSchema],
+    default: [],
+  },
   settings: {
     type: {
       postTypeOptions: {
@@ -132,14 +155,8 @@ const CommunitySchema = new Schema({
   },
 });
 
-CommunitySchema.statics.getCommunityObjectFiltered = async function (
-  community,
-  userId
-) {
-  const isFollowing = await this.isUserFollowingCommunity(
-    userId,
-    community._id
-  );
+CommunitySchema.statics.getCommunityObjectFiltered = async function (community, userId) {
+  const isFollowing = await this.isUserFollowingCommunity(userId, community._id);
   const communityObject = {
     communityId: community._id,
     communityName: community.name,
@@ -151,15 +168,42 @@ CommunitySchema.statics.getCommunityObjectFiltered = async function (
   return communityObject;
 };
 
-CommunitySchema.statics.isUserFollowingCommunity = async function (
-  userId,
-  communityId
-) {
+CommunitySchema.statics.isUserFollowingCommunity = async function (userId, communityId) {
   const user = await this.model("user").findById(userId);
   if (!user) {
     return false;
   }
   return user.subscribedCommunities.includes(communityId);
+};
+CommunitySchema.statics.getCommunityObject = async function (communityName, userId) {
+  const community = await Community.findOne({ name: communityName });
+  const communityObject = {
+    name: community.name,
+    category: community.category,
+    rules: community.rules,
+    removalReasons: community.removalReasons,
+    dateCreated: community.dateCreated,
+    communityBanner: community.communityBanner,
+    image: community.image,
+    description: community.description,
+    is18plus: community.is18plus,
+    allowNfsw: community.allowNfsw,
+    allowSpoile: community.allowSpoile,
+    communityType: community.communityType,
+    creator: community.creator,
+    members: community.members,
+    moderators: community.moderators,
+    membersCount: community.members.length,
+    membersNickname: community.membersNickname,
+    contributors: community.contributors,
+    settings: community.settings,
+    dateCreated: community.createdAt,
+    isModerator: community.moderators.includes(userId),
+    isCreator: userId.equals(community.creator),
+    isMember: community.members.includes(userId),
+    isContributor: community.contributors.includes(userId),
+  };
+  return communityObject;
 };
 
 const Community = mongoose.model("community", CommunitySchema);
