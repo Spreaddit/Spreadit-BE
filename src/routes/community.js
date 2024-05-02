@@ -223,7 +223,26 @@ router.post("/community/subscribe", auth.authentication, async (req, res) => {
     if (user.subscribedCommunities.includes(community._id)) {
       return res.status(400).json({ message: "User is already subscribed" });
     }
+    const lastInsight = community.insights[community.insights.length - 1];
+    const currentDate = new Date();
+    const lastInsightDate = new Date(lastInsight.month);
 
+    if (
+      currentDate.getMonth() !== lastInsightDate.getMonth() ||
+      currentDate.getFullYear() !== lastInsightDate.getFullYear()
+    ) {
+      const newInsight = {
+        month: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
+        views: 0,
+        newMembers: 1,
+        leavingMembers: 0,
+      };
+      community.insights.push(newInsight);
+      await community.save();
+    } else {
+      community.insights[community.insights.length - 1].newMembers += 1;
+      await community.save();
+    }
     user.subscribedCommunities.push(community._id);
     await user.save();
     community.membersCount += 1;
@@ -256,7 +275,26 @@ router.post("/community/unsubscribe", auth.authentication, async (req, res) => {
     if (!user.subscribedCommunities.includes(community._id)) {
       return res.status(403).json({ message: "User isn't subscribed to community" });
     }
+    const lastInsight = community.insights[community.insights.length - 1];
+    const currentDate = new Date();
+    const lastInsightDate = new Date(lastInsight.month);
 
+    if (
+      currentDate.getMonth() !== lastInsightDate.getMonth() ||
+      currentDate.getFullYear() !== lastInsightDate.getFullYear()
+    ) {
+      const newInsight = {
+        month: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
+        views: 0,
+        newMembers: 0,
+        leavingMembers: 1,
+      };
+      community.insights.push(newInsight);
+      await community.save();
+    } else {
+      community.insights[community.insights.length - 1].leavingMembers += 1;
+      await community.save();
+    }
     const index = user.subscribedCommunities.indexOf(community._id);
     user.subscribedCommunities.splice(index, 1);
     await user.save();

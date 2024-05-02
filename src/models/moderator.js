@@ -31,7 +31,7 @@ const ModeratorSchema = new Schema(
     },
     isAccepted: {
       type: Boolean,
-      default: false,
+      default: true,
     }
   },
   {
