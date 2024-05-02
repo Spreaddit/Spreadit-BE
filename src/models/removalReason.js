@@ -21,6 +21,6 @@ const RemovalReasonSchema = new Schema({
   },
 });
 
-const RemovalReason = mongoose.model("removalReason", RemovalReasonSchema);
+const RemovalReason = mongoose.model("removalreason", RemovalReasonSchema);
 
 module.exports = RemovalReason;

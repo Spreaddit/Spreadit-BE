@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const { boolean } = require("yargs");
 const Schema = mongoose.Schema;
 require("./user");
-
+require('./removalReason.js');
+require("./rule");
 const InsightSchema = new Schema({
   month: {
     type: Date,
@@ -90,12 +90,10 @@ const CommunitySchema = new Schema({
   },
   creator: {
     type: Schema.Types.ObjectId,
-    required: [true, "A community must have a creator."],
     ref: "user",
   },
   members: {
     type: [Schema.Types.ObjectId],
-    required: [true, "A community must have at least one member."],
     ref: "user",
     index: true,
   },
@@ -176,8 +174,18 @@ CommunitySchema.statics.isUserFollowingCommunity = async function (userId, commu
   return user.subscribedCommunities.includes(communityId);
 };
 CommunitySchema.statics.getCommunityObject = async function (communityName, userId) {
-  const community = await Community.findOne({ name: communityName });
-  const communityObject = {
+  const community = await Community.findOne({ name: communityName })
+    .select(
+      "name category rules removalReasons dateCreated communityBanner image description is18plus allowNfsw allowSpoile communityType creator members moderators membersCount membersNickname contributors settings"
+    )
+    .populate("rules", "title description reportReason appliesTo")
+    .populate("removalReasons", "title reasonMessage");
+
+  if (!community) {
+    return null;
+  }
+
+  return {
     name: community.name,
     category: community.category,
     rules: community.rules,
@@ -197,13 +205,11 @@ CommunitySchema.statics.getCommunityObject = async function (communityName, user
     membersNickname: community.membersNickname,
     contributors: community.contributors,
     settings: community.settings,
-    dateCreated: community.createdAt,
     isModerator: community.moderators.includes(userId),
     isCreator: userId.equals(community.creator),
     isMember: community.members.includes(userId),
     isContributor: community.contributors.includes(userId),
   };
-  return communityObject;
 };
 
 const Community = mongoose.model("community", CommunitySchema);

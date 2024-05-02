@@ -103,6 +103,7 @@ const communitySeedData = [
     members: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14"], // Farouq, Basma, Karim
     moderators: ["624a4fbf3f392aefdb4dd1c8"], // Farouq
     membersCount: 3,
+    removalReasons: ["6633ddb655d6bba0f4023c40"],
 },
 {
     _id: "624a6a677c8d9c9f5fd5eb1f",
