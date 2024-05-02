@@ -25,6 +25,8 @@ router.post("/rule/add", auth.authentication, async (req, res) => {
     ) {
       return res.status(400).json({ message: "Invalid rule data" });
     }
+    console.log(title);
+    console.log(communityName);
     let existingRule = await Rule.findOne({
       title: title,
       communityName: communityName,
@@ -61,7 +63,7 @@ router.post("/rule/add", auth.authentication, async (req, res) => {
     if (community.rules.length >= 15) {
       return res.status(405).json({ message: "Max number of rules reached" });
     }
-    const moderator = await Moderator.findOne({ communityName: communityName, username: username });
+    const moderator = await Moderator.findOne({ communityName: communityName, username: user.username });
     if (!moderator || !moderator.manageSettings) {
       return res.status(406).json({ message: "Moderator doesn't have permission to manage settings" });
     }
@@ -715,8 +717,8 @@ router.get("/community/moderation/:communityName/moderators", auth.authenticatio
     const communityName = req.params.communityName;
     const community = await Community.findOne({ name: communityName }).populate(
       "moderators",
-      "username banner avatar createdat managePostsAndComments manageUsers manageSettings",
-      { select: { createdat: "moderationDate" } }
+      "username banner avatar createdAt managePostsAndComments manageUsers manageSettings",
+      { select: { createdAt: "moderationDate" } }
     );
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
@@ -735,8 +737,8 @@ router.get("/community/moderation/:communityName/moderators/editable", auth.auth
 
     const community = await Community.findOne({ name: communityName }).populate(
       "moderators",
-      "username banner avatar createdat managePostsAndComments manageUsers manageSettings",
-      { select: { createdat: "moderationDate" } }
+      "username banner avatar createdAt managePostsAndComments manageUsers manageSettings",
+      { select: { createdAt: "moderationDate" } }
     );
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
@@ -907,7 +909,7 @@ router.put("/community/moderation/:communityName/:username/permissions", auth.au
     if (!moderator) {
       return res.status(404).json({ message: "Moderator not found" });
     }
-    if (!userModerator || userModerator.createdat > moderator.createdat) {
+    if (!userModerator || userModerator.createdAt > moderator.createdAt) {
       return res.status(406).json({ message: "Not authorized to modify permissions" });
     }
 

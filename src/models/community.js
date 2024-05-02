@@ -3,6 +3,25 @@ const { boolean } = require("yargs");
 const Schema = mongoose.Schema;
 require("./user");
 
+const InsightSchema = new Schema({
+  month: {
+    type: Date,
+    required: true,
+    unique: true,
+  },
+  views: {
+    type: Number,
+    default: 0,
+  },
+  newMembers: {
+    type: Number,
+    default: 0,
+  },
+  leavingMembers: {
+    type: Number,
+    default: 0,
+  },
+});
 const CommunitySchema = new Schema({
   name: {
     type: String,
@@ -136,26 +155,6 @@ const CommunitySchema = new Schema({
   },
 });
 
-const InsightSchema = new Schema({
-  month: {
-    type: Date,
-    required: true,
-    unique: true,
-  },
-  views: {
-    type: Number,
-    default: 0,
-  },
-  newMembers: {
-    type: Number,
-    default: 0,
-  },
-  leavingMembers: {
-    type: Number,
-    default: 0,
-  },
-});
-
 CommunitySchema.statics.getCommunityObjectFiltered = async function (community, userId) {
   const isFollowing = await this.isUserFollowingCommunity(userId, community._id);
   const communityObject = {
@@ -198,7 +197,7 @@ CommunitySchema.statics.getCommunityObject = async function (communityName, user
     membersNickname: community.membersNickname,
     contributors: community.contributors,
     settings: community.settings,
-    dateCreated: community.createdat,
+    dateCreated: community.createdAt,
     isModerator: community.moderators.includes(userId),
     isCreator: userId.equals(community.creator),
     isMember: community.members.includes(userId),
