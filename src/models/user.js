@@ -270,12 +270,12 @@ const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    communities: {
-      type: [String],
-      default: function () {
-        return [this.username];
-      },
-    },
+    /*     communities: {
+          type: [String],
+          default: function () {
+            return [this.username];
+          },
+        }, */
     savedPosts: [
       {
         type: Schema.Types.ObjectId,
@@ -334,6 +334,12 @@ const UserSchema = new Schema(
       },
     ],
     moderatedCommunities: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: Community,
+      },
+    ],
+    disabledCommunities: [
       {
         type: Schema.Types.ObjectId,
         ref: Community,
@@ -463,7 +469,7 @@ UserSchema.statics.generateUserObject = async function (user) {
       isBanned: user.isBanned,
       displayName: user.displayName,
       bio: user.about,
-      cakeDay: user.cakeDay,
+      cakeDay: user.createdAt,
       subscribedCommunities: user.subscribedCommunities,
       favouriteCommunities: user.favouriteCommunities,
       socialLinks: user.socialLinks,

@@ -170,6 +170,17 @@ exports.removeComment = async (req, res) => {
         await comment.save();
 
         //a3mel add new comment with the removal reason
+        const removalComment = new Comment({
+            content: removalReason,
+            userId: req.user._id,
+            parentCommentId: comment._id,
+        });
+        await removalComment.save();
+        const rootComment = await Comment.findRootComment(comment._id);
+        const post = await Post.find(rootComment.postId);
+        post.comments.push(removalComment._id);
+        post.commentsCount = (post.commentsCount) + 1;
+        await post.save();
         return res.status(200).json({ message: "Comment removed successfully" });
     } catch (error) {
         console.error("Error removing post:", error);
@@ -271,7 +282,7 @@ exports.getReportedComments = async (req, res) => {
                         reason: report.reason,
                         subreason: report.subreason
                     }));
-                    topLevelCommentObject.report = reportsArray;
+                    topLevelCommentObject.reports = reportsArray;
                     reportedComments.push(topLevelCommentObject);
                 }
 

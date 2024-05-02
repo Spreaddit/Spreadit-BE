@@ -1,5 +1,5 @@
 const express = require("express");
-const banUser = require("../models/banUser");
+const BanUser = require("../models/banUser");
 const User = require("../models/user");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
@@ -13,27 +13,14 @@ const NotificationType = require("./../../seed-data/constants/notificationType")
 
 
 router.post("/dashboard/ban", auth.authentication, async (req, res) => {
-    const banuser = new banUser(req.body);
-    const updates = Object.keys(req.body);
-    const allowedUpdates = [
-      "username",
-      "isBanned",
-      "banDuration",
-      "reason",
-      "isPermanent",
-      "accessToken",
-    ];
-    const isValidOperation = updates.every((update) =>
-      allowedUpdates.includes(update)
-    );
-    if (!isValidOperation) {
-      return res.status(400).send({ message: "Invalid updates!" });
-    }
     try {
       const adminId = await UserRole.find({
         name: "Admin",
       }).select("_id");
       const userToBeBanned = await User.getUserByEmailOrUsername(req.body.username);
+      if (!userToBeBanned) {
+        return res.status(404).send({ message: "User is not found" });
+      }
       if (adminId[0]._id.equals(req.user.roleId)) {
         const user = await User.findByIdAndUpdate(
           userToBeBanned._id,
@@ -44,7 +31,19 @@ router.post("/dashboard/ban", auth.authentication, async (req, res) => {
         if (!user) {
           return res.status(404).send({ message: "User is not found" });
         }
+        const banuser = new BanUser();
         banuser.userId = userToBeBanned._id;
+        banuser.reason = req.body.reason;
+        if (req.body.isPermanent === true) {
+          banuser.isPermanent = true;
+        } else {
+          if (!req.body.banDuration) {
+              return res.status(400).send({ message: "banDuration is required for temporary bans" });
+          }
+          banuser.isPermanent = false;
+          banuser.banDuration = req.body.banDuration;
+        }
+        
         banuser.save();
         const message = req.body.isPermanent
           ? `This account has been banned permanently from posting. \n Reason: ${req.body.reason}`
@@ -60,6 +59,7 @@ router.post("/dashboard/ban", auth.authentication, async (req, res) => {
           userId: userToBeBanned._id,
           content: message,
           notificationTypeId: NotificationType.accountUpdate._id,
+          relatedUserId: req.user._id,
         });
         await notification.save();
   

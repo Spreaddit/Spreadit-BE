@@ -28,5 +28,9 @@ router
     .route("/notifications/hide/:communityId")
     .post(auth.authentication, notificationController.hideNotification);
 
+router
+    .route("/community/update/disable/:communityId")
+    .post(auth.authentication, notificationController.disableCommunityUpdates);
+
 
 module.exports = router;

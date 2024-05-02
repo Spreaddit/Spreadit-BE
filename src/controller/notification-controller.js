@@ -65,11 +65,11 @@ exports.getAllNotifications = async (req, res) => {
             .populate('postId')
             .populate('userId');
 
+        console.log(result);
         if (!result || result.length === 0) {
             return res.status(404).send({ error_message: "Notifications not found" });
         }
-        const notifications = result.map(notification => Notification.getNotificationObject(notification));
-
+        const notifications = await Promise.all(result.map(notification => Notification.getNotificationObject(notification)));
         res.status(200).json(notifications);
     } catch (error) {
         console.error('Error retrieving notifications:', error);
@@ -111,5 +111,21 @@ exports.suggestCommunity = async (req, res) => {
     } catch (error) {
         console.error('Error suggesting random community:', error);
         res.status(500).send({ error: 'Internal Server Error' });
+    }
+};
+
+exports.disableCommunityUpdates = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const communityId = req.params.communityId;
+        const user = await User.findById(userId);
+        if (user.disabledCommunities.includes(communityId)) {
+            return res.status(400).json({ error: "Community updates are already disabled for the user" });
+        }
+        await User.findByIdAndUpdate(userId, { $addToSet: { disabledCommunities: communityId } });
+        res.status(200).json({ message: "Updates disabled for the specified community" });
+    } catch (error) {
+        console.error('Error disabling updates for community:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };

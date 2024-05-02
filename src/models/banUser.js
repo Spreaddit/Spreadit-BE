@@ -11,7 +11,6 @@ const BanUserSchema = new Schema(
     },
     banDuration: {
       type: Date,
-      required: true,
     },
     reason: {
       type: String,

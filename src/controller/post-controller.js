@@ -9,6 +9,9 @@ const BanUser = require("../models/banUser.js");
 const UserRole = require("../models/constants/userRole.js")
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
+const Notification = require("./../models/notification");
+const NotificationType = require("./../../seed-data/constants/notificationType");
+require("./../models/constants/notificationType");
 const { uploadMedia } = require("../service/cloudinary.js");
 
 async function isModeratorOrCreator(userId, communityName) {
@@ -715,6 +718,7 @@ exports.upvotePost = async (req, res) => {
     if (!postId || postId.length !== 24) {
       return res.status(404).json({ message: "Post not found" });
     }
+    const user = req.user;
     const userId = req.user._id;
 
     const post = await Post.findById(postId);
@@ -741,7 +745,42 @@ exports.upvotePost = async (req, res) => {
     const upvotesCount = post.upVotes.length;
     const newdownvotesCount = post.downVotes.length;
     const netVotes = upvotesCount - newdownvotesCount;
+    const community = await Community.findOne({ name: post.community });
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
 
+    // Check if the community is in the user's disabledCommunities
+    const userDisabledCommunities = user.disabledCommunities.map(c => c.toString());
+    if (userDisabledCommunities.includes(community._id.toString())) {
+      return res.status(200).json({
+        votes: netVotes,
+        message: "Post upvoted successfully, but notifications are disabled for this community",
+      });
+    }
+
+    //notification
+    if (user.upvotesPosts) {
+      userWhoCreatedPost = await User.findById(post.userId);
+      if (
+        !post.userId.equals(req.user._id) &&
+        userWhoCreatedPost.posts == true
+      ) {
+        await Notification.sendNotification(
+          post.userId,
+          "You have recieved a new notification",
+          `${req.user.username} upvoted your post`
+        );
+        const notification = new Notification({
+          userId: post.userId,
+          content: `${req.user.username} upvoted your post`,
+          relatedUserId: req.user._id,
+          notificationTypeId: NotificationType.post._id,
+          postId: post._id,
+        });
+        await notification.save();
+      }
+    }
     res.status(200).send({
       votes: netVotes,
       message: "post has been upvoted successfully",

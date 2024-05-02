@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
+const Community = require("./community");
 const Schema = mongoose.Schema;
 require("./conversation");
 require("./user");
+require("./community");
 
 const MessageSchema = new Schema(
   {
@@ -17,10 +19,13 @@ const MessageSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    senderType: {
+      type: String,
+      default: "user",
+    },
     senderId: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "user",
     },
     recieverId: {
       type: Schema.Types.ObjectId,
@@ -69,16 +74,26 @@ MessageSchema.statics.getMessageObject = async function (message, userId) {
     relatedUser = await User.findById(message.recieverId);
     direction = "outgoing";
   } else if (message.recieverId.equals(userId)) {
-    relatedUser = await User.findById(message.senderId);
+    if (message.senderType == "user") {
+      relatedUser = await User.findById(message.senderId);
+    } else {
+      relatedUser = await Community.findById(message.senderId);
+    }
     direction = "incoming";
   }
-  const username = relatedUser ? relatedUser.username : null;
+  let username;
+  if (message.senderType == "user")
+    username = relatedUser ? relatedUser.username : null;
+  else {
+    username = relatedUser ? relatedUser.name : null;
+  }
   const type = message.contentType;
 
   return {
     _id: message._id,
     conversationId: message.conversationId,
-    relatedUser: username,
+    senderType: message.senderType,
+    relatedUserOrCommunity: username,
     type: type,
     content: message.content,
     time: message.sentTime,

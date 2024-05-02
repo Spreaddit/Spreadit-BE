@@ -74,27 +74,32 @@ NotificationSchema.statics.getNotificationObject = async function (
 
     if (notification.postId != null) {
         const Post = mongoose.model("post");
-        // Here you can generate the postObject if needed
+        post = {
+            title: notification.postId.title,
+            community: notification.postId.community
+        };
     }
     if (notification.relatedUserId != null) {
-        const User = mongoose.model("user");
-        user = await User.generateUserObject(
-            notification.relatedUserId,
-            notification.userId.username
-        );
+        user = {
+            username: notification.relatedUserId.username,
+            avatar: notification.relatedUserId.avatar
+        };
     }
 
     if (notification.commentId != null) {
         const Comment = mongoose.model("comment");
-        comment = await Comment.getCommentObject(
-            notification.commentId,
-            notification.userId._id,
-            false
-        );
+        comment = {
+            content: notification.commentId.content,
+            postTitle: notification.commentId.postTitle,
+            communityTitle: notification.commentId.communityTitle
+        };
     }
 
     const notificationObject = {
         _id: notification._id,
+        userId: notification.userId ? notification.userId._id : null,
+        postId: notification.postId ? notification.postId._id : null,
+        commentId: notification.commentId ? notification.commentId._id : null,
         content: notification.content,
         notification_type: notification.notificationTypeId.name,
         related_user: user,

@@ -9,12 +9,12 @@ const ModeratorSchema = new Schema(
   {
     username: {
       type: String,
-      ref: 'user',
+      ref: "user",
       required: true,
     },
     communityName: {
       type: String,
-      ref: 'community',
+      ref: "community",
       required: true,
     },
     managePostsAndComments: {
@@ -31,8 +31,8 @@ const ModeratorSchema = new Schema(
     },
     isAccepted: {
       type: Boolean,
-      default: true,
-    }
+      default: false,
+    },
   },
   {
     timestamps: true,

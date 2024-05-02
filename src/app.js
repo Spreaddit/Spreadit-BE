@@ -19,12 +19,14 @@ const messageRoutes = require("./routes/message");
 const startUnbanScheduler = require("./models/unbanScheduler");
 const searchRoutes = require("./routes/search");
 const communitiespostsRoutes = require("./routes/community-post");
-const adminRoutes = require ("./routes/admin");
+const adminRoutes = require("./routes/admin");
 const communityCommentsRoutes = require("./routes/community-comment");
 const notificationsRoutes = require("../src/routes/notifications");
+const banInviteRoutes = require("../src/routes/ban-invite");
 
 //seeding
 const UserRoleSeeder = require("../seeders/user-role.seeder");
+const notificationTypeSeeder = require("../seeders/notification-type.seeder");
 const PostSeeder = require("../seeders/post.seeder");
 const CommentSeeder = require("../seeders/comment.seeder");
 const CommunitySeeder = require("../seeders/community.seeder");
@@ -66,6 +68,7 @@ app.use("/api", moderatorRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", communityCommentsRoutes);
 app.use("/api", notificationsRoutes);
+app.use("/api", banInviteRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
@@ -77,6 +80,7 @@ mongoose
     // Seed the database
     const seeders = [
       new UserRoleSeeder(),
+      new notificationTypeSeeder(),
       new UserSeeder(),
       new CommunitySeeder(),
       new RuleSeeder(),
@@ -91,7 +95,9 @@ mongoose
         await seeder.run();
         console.log(`${seeder.constructor.name} Seeder executed successfully`);
       } else {
-        console.log(`${seeder.constructor.name} Seeder already executed, skipping...`); // Use backticks instead of single quotes
+        console.log(
+          `${seeder.constructor.name} Seeder already executed, skipping...`
+        ); // Use backticks instead of single quotes
       }
     }
 

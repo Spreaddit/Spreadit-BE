@@ -111,27 +111,32 @@
  *     {
  *       "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
  *       "user": {
- *           "id": "607f1f77bcf86cd799439011",
- *           "name": "Amira El-Garf",
- *           "username": "amiraelgarf123",
- *           "email": "amiraelgarf99@gmail.com",
- *           "googleId": "google_user_id",
- *           "birth_date": "1990-01-01",
- *           "phone": "123456789",
- *           "avatar_url": "https://example.com/avatar.jpg",
- *           "location": "City, Country",
- *           "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
- *           "followers_count": 100,
- *           "following_count": 50,
- *           "created_at": "2024-04-08T12:00:00Z",
- *           "role": "User",
- *           "nsfw": false,
- *           "activeInCommunityVisibility": true,
- *           "isVerified": true,
- *           "displayName": "Amiraelgarf123",
- *           "about": "Some information about the user",
- *           "cakeDay": "2022-04-08T12:00:00Z",
- *           "subscribedCommunities": ["community1", "community2"]
+ *              "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
+ *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
+ *               "displayName": "Amiraelgarf123",
+ *               "bio": "active",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *       },
  *       "token_expiration_date": "2024-04-08T12:00:00Z",
  *       "message": "User logged in successfully"
@@ -609,11 +614,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -790,11 +806,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -889,11 +916,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -987,11 +1025,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -1167,11 +1216,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 0,
  *           "replies_count": 0,
@@ -1268,11 +1328,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -6412,11 +6483,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -6730,11 +6812,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -6839,8 +6932,9 @@
  * @apiSuccess {Boolean} reportedComments.is_approved if the comment is approved by the moderator
  * @apiSuccess {Boolean} reportedComments.is_locked if the comment is locked by the moderator
  * @apiSuccess {reportedCommentsObject[]} reportedComments.replies if the comment has a reply by default empty array
- * @apiSuccess {string} reportedComments.reason reason why the comment is reported
- * @apiSuccess {string} reportedComments.subreason subreason of why the comment is reported
+ * @apiSuccess {string} reportedComments.reports.username the user who reported the comennt
+ * @apiSuccess {string} reportedComments.reports.reason reason why the comment is reported
+ * @apiSuccess {string} reportedComments.reports.subreason subreason of why the comment is reported
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
@@ -6859,11 +6953,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -6883,8 +6988,11 @@
  *           "is_approved": true,
  *           "is_locked": false,
  *           "replies": [],
- *           "reason": "Spam",
- *         "subreason": "Irrelevant content"
+ *           "reports":{
+ *                  "username": "mimo12"
+ *                  "reason": "Spam",
+ *                  "subreason": "Irrelevant content"
+ *              }
  *       },
  *     }
  *
@@ -6926,11 +7034,9 @@
  * @apiHeader {String} Authorization User's access token.
  *
  * @apiParam {String} username Username of the user to be banned.
- * @apiParam {Boolean} isBanned Indicates whether the user is banned.
  * @apiParam {String} banDuration Duration of the ban (if temporary).
  * @apiParam {String} reason Reason for the ban.
  * @apiParam {Boolean} isPermanent Indicates whether the ban is permanent.
- * @apiParam {String} accessToken Access token of the user.
  *
  * @apiSuccess {Object} user User object containing user details.
  * @apiSuccess {String} user._id User's unique ID.
@@ -6943,27 +7049,32 @@
  *     HTTP/1.1 200 OK
  *     {
  *       "user": {
- *           "id": "607f1f77bcf86cd799439011",
- *           "name": "Amira El-Garf",
- *           "username": "amiraelgarf123",
- *           "email": "amiraelgarf99@gmail.com",
- *           "googleId": "google_user_id",
- *           "birth_date": "1990-01-01",
- *           "phone": "123456789",
- *           "avatar_url": "https://example.com/avatar.jpg",
- *           "location": "City, Country",
- *           "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
- *           "followers_count": 100,
- *           "following_count": 50,
- *           "created_at": "2024-04-08T12:00:00Z",
- *           "role": "User",
- *           "nsfw": false,
- *           "activeInCommunityVisibility": true,
- *           "isVerified": true,
- *           "displayName": "Amiraelgarf123",
- *           "about": "Some information about the user",
- *           "cakeDay": "2022-04-08T12:00:00Z",
- *           "subscribedCommunities": ["community1", "community2"]
+ *           "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
+ *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
+ *               "displayName": "Amiraelgarf123",
+ *               "bio": "active",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *       },
  *       "message": "User Banned successfully"
  *     }
@@ -7001,8 +7112,6 @@
  * @apiHeader {String} Authorization User's access token.
  *
  * @apiParam {String} username Username of the user to be unbanned.
- * @apiParam {Boolean} isBanned Indicates whether the user is banned.
- * @apiParam {String} accessToken Access token of the user.
  *
  * @apiSuccess {Object} user User object containing user details.
  * @apiSuccess {String} user._id User's unique ID.
@@ -7015,27 +7124,32 @@
  *     HTTP/1.1 200 OK
  *     {
  *       "user": {
- *           "id": "607f1f77bcf86cd799439011",
- *           "name": "Amira El-Garf",
- *           "username": "amiraelgarf123",
- *           "email": "amiraelgarf99@gmail.com",
- *           "googleId": "google_user_id",
- *           "birth_date": "1990-01-01",
- *           "phone": "123456789",
- *           "avatar_url": "https://example.com/avatar.jpg",
- *           "location": "City, Country",
- *           "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
- *           "followers_count": 100,
- *           "following_count": 50,
- *           "created_at": "2024-04-08T12:00:00Z",
- *           "role": "User",
- *           "nsfw": false,
- *           "activeInCommunityVisibility": true,
- *           "isVerified": true,
- *           "displayName": "Amiraelgarf123",
- *           "about": "Some information about the user",
- *           "cakeDay": "2022-04-08T12:00:00Z",
- *           "subscribedCommunities": ["community1", "community2"]
+ *           "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
+ *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
+ *               "displayName": "Amiraelgarf123",
+ *               "bio": "active",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *       },
  *       "message": "User unbanned successfully"
  *     }
@@ -7120,8 +7234,9 @@
  * @apiSuccess {Boolean} reportedComments.is_approved if the comment is approved by the moderator
  * @apiSuccess {Boolean} reportedComments.is_locked if the comment is locked by the moderator
  * @apiSuccess {commentObject[]} reportedComments.replies if the comment has a reply by default empty array
- * @apiSuccess {string} reportedComments.reason reason why the comment is reported
- * @apiSuccess {string} reportedComments.subreason subreason of why the comment is reported
+ * @apiSuccess {string} reportedComments.reports.username the user who reported the comennt
+ * @apiSuccess {string} reportedComments.reports.reason reason why the comment is reported
+ * @apiSuccess {string} reportedComments.reports.subreason subreason of why the comment is reported
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
@@ -7140,11 +7255,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -7164,8 +7290,11 @@
  *           "is_approved": true,
  *           "is_locked": false,
  *           "replies": [],
- *           "reason": "Spam",
- *         "subreason": "Irrelevant content"
+ *           "reports":{
+ *                  "username": "mimo12"
+ *                  "reason": "Spam",
+ *                  "subreason": "Irrelevant content"
+ *              }
  *       },
  *       "message": "Comments have been retrieved successfully"
  *     }
@@ -7233,8 +7362,12 @@
  *              "date": "2024-04-16T10:00:00.000Z",
  *              "pollOptions": [],
  *              "attachments": [],
- *              "reason": "Spam",
- *              "subreason": "Irrelevant content"
+ *              "reports":{
+ *                  "username": "mimo12"
+ *                  "reason": "Spam",
+ *                  "subreason": "Irrelevant content"
+ *              }
+ *              
  *          }
  *      ],
  *      "message": "Posts have been retrieved successfully"
