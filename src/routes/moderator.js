@@ -61,7 +61,7 @@ router.post("/rule/add", auth.authentication, async (req, res) => {
     if (community.rules.length >= 15) {
       return res.status(405).json({ message: "Max number of rules reached" });
     }
-    const moderator = community.moderators.find((moderator) => moderator.username === user.username);
+    const moderator = await Moderator.findOne({ communityName: communityName, username: username });
     if (!moderator || !moderator.manageSettings) {
       return res.status(406).json({ message: "Moderator doesn't have permission to manage settings" });
     }
@@ -105,7 +105,7 @@ router.post("/rule/remove", auth.authentication, async (req, res) => {
     if (index == -1) {
       return res.status(404).json({ message: "Rule not found" });
     }
-    const moderator = community.moderators.find((moderator) => moderator.username === user.username);
+    const moderator = await Moderator.findOne({ communityName: communityName, username: user.username });
     if (!moderator || !moderator.manageSettings) {
       return res.status(406).json({ message: "Moderator doesn't have permission to manage settings" });
     }
@@ -148,7 +148,7 @@ router.put("/rule/edit", auth.authentication, async (req, res) => {
       return res.status(402).json({ message: "Not a moderator" });
     }
 
-    const moderator = community.moderators.find((moderator) => moderator.username === user.username);
+    const moderator = await Moderator.findOne({ communityName: communityName, username: user.username });
     if (!moderator || !moderator.manageSettings) {
       return res.status(406).json({ message: "Moderator doesn't have permission to manage settings" });
     }
@@ -217,7 +217,7 @@ router.post("/removal-reason/add", auth.authentication, async (req, res) => {
       return res.status(405).json({ message: "Max number of removal reasons reached" });
     }
 
-    const moderator = community.moderators.find((moderator) => moderator.username === req.user.username);
+    const moderator = await Moderator.findOne({ communityName: communityName, username: req.user.username });
     if (!moderator || !moderator.manageSettings) {
       return res.status(406).json({ message: "Moderator doesn't have permission" });
     }
@@ -261,7 +261,7 @@ router.post("/removal-reason/remove", auth.authentication, async (req, res) => {
       return res.status(404).json({ message: "Removal reason not found" });
     }
 
-    const moderator = community.moderators.find((moderator) => moderator.username === req.user.username);
+    const moderator = await Moderator.findOne({ communityName: communityName, username: req.user.username });
     if (!moderator || !moderator.manageSettings) {
       return res.status(406).json({ message: "Moderator doesn't have permission" });
     }
@@ -297,7 +297,7 @@ router.put("/removal-reason/edit", auth.authentication, async (req, res) => {
       return res.status(402).json({ message: "You are not a moderator of this community" });
     }
 
-    const moderator = community.moderators.find((moderator) => moderator.username === req.user.username);
+    const moderator = await Moderator.findOne({ communityName: communityName, username: req.user.username });
     if (!moderator || !moderator.manageSettings) {
       return res.status(406).json({ message: "Moderator doesn't have permission" });
     }
@@ -366,7 +366,11 @@ router.post("/community/moderation/:communityName/:username/leave", auth.authent
       community.moderators.splice(userIndex, 1);
       await community.save();
     }
-
+    const creatorIndex = user._id.equals(community.creator);
+    if (creatorIndex !== -1) {
+      community.creator = null;
+      await community.save();
+    }
     const communityIndex = user.moderatedCommunities.indexOf(community._id);
     if (communityIndex !== -1) {
       user.moderatedCommunities.splice(communityIndex, 1);
@@ -387,7 +391,7 @@ router.post("/community/moderation/:communityName/:username/leave", auth.authent
   }
 });
 
-router.get("/community/:communityName/get-info", async (req, res) => {
+router.get("/community/:communityName/get-info", auth.authentication, async (req, res) => {
   try {
     const communityName = req.params.communityName;
 
@@ -395,7 +399,7 @@ router.get("/community/:communityName/get-info", async (req, res) => {
       return res.status(400).json({ message: "Invalid request parameters" });
     }
 
-    const community = await Community.findOne({ name: communityName })
+    const community = await Community.getCommunityObject(communityName, req.user._id)
       .select(
         "is18plus name category communityType description image members membersCount rules removalReasons dateCreated communityBanner membersNickname"
       )
@@ -405,7 +409,26 @@ router.get("/community/:communityName/get-info", async (req, res) => {
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
+    const lastInsight = community.insights[community.insights.length - 1];
+    const currentDate = new Date();
+    const lastInsightDate = new Date(lastInsight.month);
 
+    if (
+      currentDate.getMonth() !== lastInsightDate.getMonth() ||
+      currentDate.getFullYear() !== lastInsightDate.getFullYear()
+    ) {
+      const newInsight = {
+        month: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
+        views: 1,
+        newMembers: 0,
+        leavingMembers: 0,
+      };
+      community.insights.push(newInsight);
+      await community.save();
+    } else {
+      community.insights[community.insights.length - 1].views += 1;
+      await community.save();
+    }
     res.status(200).json(community);
   } catch (error) {
     console.error(error);
@@ -431,13 +454,7 @@ router.get("/community/moderation/:communityName/contributors", auth.authenticat
       return res.status(402).json({ message: "Not a moderator" });
     }
 
-    const contributors = community.contributors.map((contributor) => ({
-      username: contributor.username,
-      banner: contributor.banner,
-      avatar: contributor.avatar,
-    }));
-
-    res.status(200).json(contributors);
+    res.status(200).json(community.contributors);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -469,7 +486,7 @@ router.post("/community/moderation/:communityName/:username/add-contributor", au
     if (community.contributors.includes(contributorUser._id)) {
       return res.status(405).json({ message: "User is already a contributor" });
     }
-    const moderator = community.moderators.find((moderator) => moderator.username === req.user.username);
+    const moderator = await Moderator.findOne({ communityName: communityName, username: req.user.username });
     if (!moderator || !moderator.manageUsers) {
       return res.status(406).json({ message: "Moderator doesn't have permission" });
     }
@@ -513,6 +530,11 @@ router.delete(
         return res.status(405).json({ message: "User is not a contributor" });
       }
 
+      const moderator = await Moderator.findOne({ communityName: communityName, username: req.user.username });
+      if (!moderator || !moderator.manageUsers) {
+        return res.status(406).json({ message: "Moderator doesn't have permission" });
+      }
+
       const contributorIndex = community.contributors.indexOf(contributorUser._id);
 
       community.contributors.splice(contributorIndex, 1);
@@ -541,6 +563,10 @@ router.get("/community/moderation/:communityName/:username/is-contributor", auth
 
     if (!contributorUser) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!community.moderators.includes(req.user._id)) {
+      return res.status(402).json({ message: "Not a moderator" });
     }
 
     const isContributor = community.contributors.includes(contributorUser._id);
@@ -609,8 +635,7 @@ router.get("/community/:communityName/settings", auth.authentication, async (req
       return res.status(404).json({ message: "Community not found" });
     }
 
-    const moderator = community.moderators.find((moderator) => moderator.username === user.username);
-
+    const moderator = await Moderator.findOne({ communityName: communityName, username: user.username });
     if (!moderator || !moderator.manageSettings) {
       return res.status(406).json({ message: "Moderator doesn't have permission" });
     }
@@ -647,6 +672,10 @@ router.put("/community/:communityName/settings", auth.authentication, async (req
       return res.status(402).json({ message: "Not a moderator" });
     }
 
+    const moderator = await Moderator.findOne({ communityName: communityName, username: user.username });
+    if (!moderator || !moderator.manageSettings) {
+      return res.status(406).json({ message: "Moderator doesn't have permission" });
+    }
     community.postTypeOptions = postTypeOptions;
     community.spoilerEnabled = spoilerEnabled;
     community.multipleImagesPerPostAllowed = multipleImagesPerPostAllowed;
@@ -687,7 +716,6 @@ router.get("/community/moderation/:communityName/moderators", auth.authenticatio
     const community = await Community.findOne({ name: communityName }).populate(
       "moderators",
       "username banner avatar createdat managePostsAndComments manageUsers manageSettings",
-      null,
       { select: { createdat: "moderationDate" } }
     );
     if (!community) {
@@ -705,18 +733,20 @@ router.get("/community/moderation/:communityName/moderators/editable", auth.auth
     const communityName = req.params.communityName;
     const user = req.user;
 
-    const userUsername = user.username;
-
-    const community = await Community.findOne({ name: communityName });
+    const community = await Community.findOne({ name: communityName }).populate(
+      "moderators",
+      "username banner avatar createdat managePostsAndComments manageUsers manageSettings",
+      { select: { createdat: "moderationDate" } }
+    );
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    const moderators = await Moderator.find({ username: { $in: community.moderators } });
+    const moderators = community.moderators;
 
     moderators.sort((a, b) => a.createdAt - b.createdAt);
 
-    const userModerator = moderators.find((moderator) => moderator.username === userUsername);
+    const userModerator = moderators.find((moderator) => moderator.username === user.username);
 
     if (userModerator) {
       const index = moderators.indexOf(userModerator);
@@ -726,8 +756,9 @@ router.get("/community/moderation/:communityName/moderators/editable", auth.auth
       }
     }
 
-    const userCreationDate = user.createdAt;
-    const editableModerators = moderators.filter((moderator) => moderator.createdAt > userCreationDate);
+    const editableModerators = moderators.filter(
+      (moderator) => moderator.moderationDate >= userModerator.moderationDate
+    );
 
     res.status(200).json(editableModerators);
   } catch (error) {
@@ -736,7 +767,7 @@ router.get("/community/moderation/:communityName/moderators/editable", auth.auth
   }
 });
 
-router.get("/community/moderation/:communityName/invited-moderators", async (req, res) => {
+router.get("/community/moderation/:communityName/invited-moderators", auth.authentication, async (req, res) => {
   try {
     const communityName = req.params.communityName;
 
@@ -744,8 +775,12 @@ router.get("/community/moderation/:communityName/invited-moderators", async (req
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-
-    res.status(200).json(community.invitedModerators);
+    const moderator = await Moderator.findOne({ communityName: communityName, username: req.user.username });
+    if (!moderator || !moderator.manageUsers) {
+      return res.status(406).json({ message: "Moderator doesn't have permission" });
+    }
+    const invitedModerators = await Moderator.findOne({ communityName: communityName, isAccepted: false });
+    res.status(200).json(invitedModerators);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -754,9 +789,9 @@ router.get("/community/moderation/:communityName/invited-moderators", async (req
 
 router.delete("/community/moderation/:communityName/:username/remove-invite", auth.authentication, async (req, res) => {
   try {
-    const communityName = req.params.communityName;
-    const username = req.params.username;
-    const user = await Moderator.findOne({ username: username });
+    const { communityName, username } = req.params;
+
+    const user = req.user;
 
     const community = await Community.findOne({ name: communityName });
     if (!community) {
@@ -766,14 +801,181 @@ router.delete("/community/moderation/:communityName/:username/remove-invite", au
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    if (!community.invitedModerators.includes(user._id)) {
+    const moderator = await Moderator.findOne({ communityName: communityName, username: req.user.username });
+    if (!moderator || !moderator.manageUsers) {
+      return res.status(406).json({ message: "Moderator doesn't have permission" });
+    }
+    const invitedModerators = await Moderator.findOne({
+      communityName: communityName,
+      isAccepted: false,
+      username: username,
+    });
+    if (!invitedModerators) {
       return res.status(402).json({ message: "No invitation sent for this user" });
     }
-
-    community.invitedModerators.pull(invitedUser._id);
-    await community.save();
-
+    await invitedModerators.remove();
     res.status(200).json({ message: "Moderator invite removed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/community/moderation/:communityName/:username/is-moderator", auth.authentication, async (req, res) => {
+  try {
+    const { communityName, username } = req.params;
+
+    const community = await Community.findOne({ name: communityName });
+
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isModerator = community.moderators.includes(user._id);
+
+    res.status(200).json({ isModerator });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/community/moderation/:communityName/:username/is-invited", auth.authentication, async (req, res) => {
+  try {
+    const { communityName, username } = req.params;
+
+    const invitedModerator = await Moderator.findOne({
+      communityName: communityName,
+      isAccepted: false,
+      username: username,
+    });
+
+    const isInvited = invitedModerator ? true : false;
+
+    res.status(200).json({ isInvited });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/community/moderation/user/:username", auth.authentication, async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    const user = await User.findOne({ username })
+      .select({ moderatedCommunities: 1 })
+      .populate(
+        "moderatedCommunities",
+        "is18plus name category communityType description image members membersCount rules removalReasons dateCreated communityBanner membersNickname"
+      )
+      .populate("rules", "title description reportReason appliesTo")
+      .populate("removalReasons", "title reasonMessage");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user.moderatedCommunities);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.put("/community/moderation/:communityName/:username/permissions", auth.authentication, async (req, res) => {
+  try {
+    const { communityName, username } = req.params;
+    const { managePostsAndComments, manageUsers, manageSettings } = req.body;
+
+    const community = await Community.findOne({ name: communityName });
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    if (community.creator !== req.user._id) {
+      return res.status(402).json({ message: "Not the creator" });
+    }
+    const userModerator = await Moderator.findOne({ communityName, username: req.user.username });
+    const moderator = await Moderator.findOne({ communityName, username });
+    if (!moderator) {
+      return res.status(404).json({ message: "Moderator not found" });
+    }
+    if (!userModerator || userModerator.createdat > moderator.createdat) {
+      return res.status(406).json({ message: "Not authorized to modify permissions" });
+    }
+
+    moderator.managePostsAndComments = managePostsAndComments;
+    moderator.manageUsers = manageUsers;
+    moderator.manageSettings = manageSettings;
+    await moderator.save();
+
+    res.status(200).json({ message: "Moderator permissions changed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.delete("/community/moderation/:communityName/moderators/:username", auth.authentication, async (req, res) => {
+  try {
+    const { communityName, username } = req.params;
+
+    const community = await Community.findOne({ name: communityName });
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    if (community.creator !== req.user._id) {
+      return res.status(402).json({ message: "Not the creator" });
+    }
+    const user = await User.findOne({ _id: req.user._id });
+
+    const moderator = await Moderator.findOne({ communityName, username });
+    if (!moderator) {
+      return res.status(404).json({ message: "Moderator not found" });
+    }
+    const index = user.moderatedCommunities.indexOf(community._id);
+    if (index !== -1) {
+      user.moderatedCommunities.splice(index, 1);
+    }
+    const communityIndex = community.moderators.indexOf(user._id);
+    if (communityIndex !== -1) {
+      community.moderators.splice(communityIndex, 1);
+    }
+
+    await community.save();
+    await user.save();
+    await moderator.remove();
+
+    res.status(200).json({ message: "Moderator removed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/community/:communityName/insights", auth.authentication, async (req, res) => {
+  try {
+    const communityName = req.params.communityName;
+
+    if (!communityName) {
+      return res.status(400).json({ message: "Invalid request parameters" });
+    }
+
+    const community = await Community.findOne({ name: communityName });
+
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    res.status(200).json(community.insights);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
