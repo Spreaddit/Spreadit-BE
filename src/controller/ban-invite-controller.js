@@ -13,25 +13,16 @@ const Notification = require("../models/notification");
 const NotificationType = require("../../seed-data/constants/notificationType");
 
 exports.banUser = async (req, res) => {
-  const updates = Object.keys(req.body);
-  const allowedUpdates = [
-    "banMessage",
-    "banDuration",
-    "reason",
-    "isPermanent",
-    "modNote",
-    "accessToken",
-  ];
-  const isValidOperation = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
-  console.log(isValidOperation);
-  if (!isValidOperation) {
-    return res.status(400).send({ message: "Invalid updates!" });
-  }
-
   try {
     const userId = req.user._id;
+    const banDuration = req.body.banDuration;
+    const banMessage = req.body.banMessage;
+    const reason = req.body.reason;
+    const isPermanent = req.body.isPermanent;
+
+    if (!banDuration || !banMessage || !reason)
+      return res.status(400).send({ message: "please insert all data" });
+
     const { communityName, username } = req.params;
     if (!communityName || !username)
       return res
@@ -66,6 +57,13 @@ exports.banUser = async (req, res) => {
         .status(404)
         .send({ message: "User is not a member of the community" });
     }
+    const banUser = await BanUser.findOne({
+      userId: userToBeBanned._id,
+      communityName: communityName,
+    });
+    console.log(banUser);
+    if (banUser)
+      return res.status(400).send({ message: "User is already banned" });
 
     const banData = {
       userId: userToBeBanned._id,
@@ -80,23 +78,141 @@ exports.banUser = async (req, res) => {
     await ban.save();
 
     const message = req.body.isPermanent
-      ? `You have been banned permanently from posting in ${req.body.communityName}. \n Reason: ${req.body.reason}`
-      : `You have been banned from posting in ${
-          req.body.communityName
-        } until ${new Date(req.body.banDuration).toDateString()}.\n Reason: ${
-          req.body.reason
-        }`;
+      ? `You have been banned permanently from posting in ${communityName}. \n Reason: ${req.body.reason}`
+      : `You have been banned from posting in ${communityName} until ${new Date(
+          req.body.banDuration
+        ).toDateString()}.\n Reason: ${req.body.reason}`;
     await Notification.sendNotification(
       userToBeBanned._id,
       "You have received a new notification",
       message
     );
-    const notification = new Notification({
-      userId: userToBeBanned._id,
-      content: message,
-      notificationTypeId: NotificationType.accountUpdate._id,
+
+    const newConversation = new Conversation({
+      subject: `ban from ${communityName}`,
     });
-    await notification.save();
+    await newConversation.save();
+
+    const newMessage = new Message({
+      conversationId: newConversation._id,
+      senderId: community._id, // Provide the ID of the sender
+      senderType: "community",
+      conversationSubject: newConversation.subject,
+      recieverId: userToBeBanned._id, // Provide the ID of the receiver
+      contentType: "text",
+      content: banMessage,
+    });
+    await newMessage.save();
+    await Conversation.findByIdAndUpdate(newConversation._id, {
+      $addToSet: { messages: newMessage._id },
+    });
+
+    const userObj = await User.generateUserObject(userToBeBanned);
+    res.status(200).send({
+      user: userObj,
+      message: "User banned successfully",
+    });
+  } catch (error) {
+    console.error("Error banning user:", error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};
+
+exports.editBan = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const banDuration = req.body.banDuration;
+    const banMessage = req.body.banMessage;
+    const reason = req.body.reason;
+    const isPermanent = req.body.isPermanent;
+
+    if (!banDuration || !banMessage || !reason)
+      return res.status(400).send({ message: "please insert all data" });
+
+    const { communityName, username } = req.params;
+    if (!communityName || !username)
+      return res
+        .status(400)
+        .send({ message: "username and community name is required" });
+    const moderator = await Moderator.findOne({
+      username: req.user.username,
+      communityName: communityName,
+      // isAccepted: true,
+    });
+    if (!moderator) {
+      return res.status(404).send({ message: "Moderator not found" });
+    }
+
+    if (!moderator.manageUsers) {
+      return res
+        .status(403)
+        .send({ message: "You are not allowed to manage users" });
+    }
+
+    const userToBeBanned = await User.getUserByEmailOrUsername(username);
+    if (!userToBeBanned) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    const community = await Community.findOne({
+      name: communityName,
+      members: userToBeBanned._id,
+    });
+    if (!community) {
+      return res
+        .status(404)
+        .send({ message: "User is not a member of the community" });
+    }
+    const update = {
+      banDuration: req.body.banDuration,
+      reason: req.body.reason,
+      isPermanent: req.body.isPermanent,
+      banMessage: req.body.banMessage,
+    };
+
+    // Update the ban record
+    const updatedBan = await BanUser.findOneAndUpdate(
+      {
+        userId: userToBeBanned._id,
+        communityName: communityName,
+      },
+      update,
+      { new: true }
+    );
+
+    if (!updatedBan) {
+      return res.status(404).send({ message: "Ban record not found" });
+    }
+
+    const message = req.body.isPermanent
+      ? `You have been banned permanently from posting in ${communityName}. \n Reason: ${req.body.reason}`
+      : `You have been banned from posting in ${communityName} until ${new Date(
+          req.body.banDuration
+        ).toDateString()}.\n Reason: ${req.body.reason}`;
+    await Notification.sendNotification(
+      userToBeBanned._id,
+      "You have received a new notification",
+      message
+    );
+
+    const newConversation = new Conversation({
+      subject: `Your ban from ${communityName} has changed`,
+    });
+    await newConversation.save();
+
+    const newMessage = new Message({
+      conversationId: newConversation._id,
+      senderId: community._id, // Provide the ID of the sender
+      senderType: "community",
+      conversationSubject: newConversation.subject,
+      recieverId: userToBeBanned._id, // Provide the ID of the receiver
+      contentType: "text",
+      content: banMessage,
+    });
+    await newMessage.save();
+    await Conversation.findByIdAndUpdate(newConversation._id, {
+      $addToSet: { messages: newMessage._id },
+    });
 
     const userObj = await User.generateUserObject(userToBeBanned);
     res.status(200).send({
@@ -112,23 +228,15 @@ exports.banUser = async (req, res) => {
 exports.unbanUser = async (req, res) => {
   try {
     const userId = req.user._id;
-    const updates = Object.keys(req.body);
-    const allowedUpdates = [
-      "username",
-      "isBanned",
-      "accessToken",
-      "communityName",
-    ];
-    const isValidOperation = updates.every((update) =>
-      allowedUpdates.includes(update)
-    );
-    if (!isValidOperation) {
-      return res.status(400).send({ message: "Invalid updates!" });
-    }
+    const { communityName, username } = req.params;
+    if (!communityName || !username)
+      return res
+        .status(400)
+        .send({ message: "username and community name is required" });
 
     const moderator = await Moderator.findOne({
       username: req.user.username,
-      communityName: req.body.communityName,
+      communityName: communityName,
     });
     if (!moderator) {
       return res.status(404).send({ message: "Moderator not found" });
@@ -140,15 +248,13 @@ exports.unbanUser = async (req, res) => {
         .send({ message: "You are not allowed to manage users" });
     }
 
-    const userToBeUnbanned = await User.getUserByEmailOrUsername(
-      req.body.username
-    );
+    const userToBeUnbanned = await User.getUserByEmailOrUsername(username);
     if (!userToBeUnbanned) {
       return res.status(404).send({ message: "User not found" });
     }
 
     const community = await Community.findOne({
-      name: req.body.communityName,
+      name: communityName,
       members: userToBeUnbanned._id,
     });
     if (!community) {
@@ -156,9 +262,14 @@ exports.unbanUser = async (req, res) => {
         .status(404)
         .send({ message: "User is not a member of the community" });
     }
+    const banUser = await BanUser.find({ userId: userToBeUnbanned._id });
+    if (!banUser)
+      return res.status(400).send({ message: "User is not banned" });
 
-    // Delete ban record
-    const banuser = await BanUser.deleteOne({ userId: userToBeUnbanned._id });
+    const banuser = await BanUser.deleteOne({
+      userId: userToBeUnbanned._id,
+      communityName: communityName,
+    });
     if (!banuser) {
       return res.status(404).send({ message: "User is not banned" });
     }
@@ -177,14 +288,14 @@ exports.unbanUser = async (req, res) => {
 
 exports.checkUserBanStatus = async (req, res) => {
   try {
-    const { userId, communityName } = req.body;
-    if (!userId || !communityName) {
+    const { communityName, username } = req.params;
+    if (!communityName || !username)
       return res
         .status(400)
-        .json({ message: "User ID and community name are required" });
-    }
+        .send({ message: "username and community name is required" });
+    const user = await User.findOne({ username: username });
     const banRecord = await BanUser.findOne({
-      userId,
+      userId: user._id,
       communityName,
     });
 
@@ -202,9 +313,10 @@ exports.checkUserBanStatus = async (req, res) => {
 exports.getBannedUsersInCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
+    const { communityName } = req.params;
     const moderator = await Moderator.findOne({
       username: req.user.username,
-      communityName: req.body.communityName,
+      communityName: communityName,
     });
 
     if (!moderator) {
@@ -214,7 +326,7 @@ exports.getBannedUsersInCommunity = async (req, res) => {
     }
 
     const bannedUsers = await BanUser.find({
-      communityName: req.body.communityName,
+      communityName: communityName,
     });
 
     if (!bannedUsers || bannedUsers.length === 0) {
@@ -226,13 +338,9 @@ exports.getBannedUsersInCommunity = async (req, res) => {
     const bannedUsersDetails = await Promise.all(
       bannedUsers.map(async (bannedUser) => {
         const user = await User.findById(bannedUser.userId);
+        const userObj = await User.generateUserObject(user);
         return {
-          userId: user._id,
-          username: user.username,
-          email: user.email,
-          reason: bannedUser.reason,
-          banDuration: bannedUser.banDuration,
-          isPermanent: bannedUser.isPermanent,
+          userObj,
         };
       })
     );
@@ -297,10 +405,10 @@ exports.inviteModerator = async (req, res) => {
     await newConversation.save();
     const newMessage = new Message({
       conversationId: newConversation._id,
-      senderId: community._id, // Provide the ID of the sender
+      senderId: community._id,
       senderType: "community",
       conversationSubject: newConversation.subject,
-      recieverId: invitedUser._id, // Provide the ID of the receiver
+      recieverId: invitedUser._id,
       contentType: "text",
       content: `you are invited to become a moderator of ${communityName}: 
             to accept, visit the moderators page for ${communityName} and click "accept".

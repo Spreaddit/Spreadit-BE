@@ -16,5 +16,17 @@ router
 
 router
   .route("/community/moderation/:communityName/:username/ban")
-  .post(auth.authentication, banInviteController.banUser);
+  .post(auth.authentication, banInviteController.banUser)
+  .put(auth.authentication, banInviteController.editBan);
+
+router
+  .route("/community/moderation/:communityName/:username/unban")
+  .post(auth.authentication, banInviteController.unbanUser);
+router
+  .route("/community/moderation/:communityName/:username/isbanned")
+  .post(auth.authentication, banInviteController.checkUserBanStatus);
+
+router
+  .route("/community/moderation/:communityName/banned-users")
+  .get(auth.authentication, banInviteController.getBannedUsersInCommunity);
 module.exports = router;
