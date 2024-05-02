@@ -7034,11 +7034,9 @@
  * @apiHeader {String} Authorization User's access token.
  *
  * @apiParam {String} username Username of the user to be banned.
- * @apiParam {Boolean} isBanned Indicates whether the user is banned.
  * @apiParam {String} banDuration Duration of the ban (if temporary).
  * @apiParam {String} reason Reason for the ban.
  * @apiParam {Boolean} isPermanent Indicates whether the ban is permanent.
- * @apiParam {String} accessToken Access token of the user.
  *
  * @apiSuccess {Object} user User object containing user details.
  * @apiSuccess {String} user._id User's unique ID.
@@ -7114,8 +7112,6 @@
  * @apiHeader {String} Authorization User's access token.
  *
  * @apiParam {String} username Username of the user to be unbanned.
- * @apiParam {Boolean} isBanned Indicates whether the user is banned.
- * @apiParam {String} accessToken Access token of the user.
  *
  * @apiSuccess {Object} user User object containing user details.
  * @apiSuccess {String} user._id User's unique ID.
