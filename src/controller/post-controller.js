@@ -772,24 +772,21 @@ exports.upvotePost = async (req, res) => {
     }
     //notification
     if (userUpVote && userWhoCreatedPost && userWhoCreatedPost.upvotesPosts) {
-      if (
-        !post.userId.equals(req.user._id) &&
-        userWhoCreatedPost.posts == true
-      ) {
-        await Notification.sendNotification(
-          post.userId,
-          "You have recieved a new notification",
-          `${req.user.username} upvoted your post`
-        );
-        const notification = new Notification({
-          userId: post.userId,
-          content: `${req.user.username} upvoted your post`,
-          relatedUserId: req.user._id,
-          notificationTypeId: NotificationType.upvotePosts._id,
-          postId: post._id,
-        });
-        await notification.save();
-      }
+
+      await Notification.sendNotification(
+        post.userId,
+        "You have recieved a new notification",
+        `${req.user.username} upvoted your post`
+      );
+      const notification = new Notification({
+        userId: post.userId,
+        content: `${req.user.username} upvoted your post`,
+        relatedUserId: req.user._id,
+        notificationTypeId: NotificationType.upvotePosts._id,
+        postId: post._id,
+      });
+      await notification.save();
+
     }
     res.status(200).send({
       votes: netVotes,
