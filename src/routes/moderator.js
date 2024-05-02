@@ -18,6 +18,10 @@ router.post("/rule/add", auth.authentication, async (req, res) => {
     if (!title || !communityName) {
       return res.status(400).json({ message: "Invalid rule data" });
     }
+    const community = await Community.findOne({ name: communityName });
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
     if (
       title.length > 100 ||
       (description && description.length > 500) ||
@@ -25,8 +29,6 @@ router.post("/rule/add", auth.authentication, async (req, res) => {
     ) {
       return res.status(400).json({ message: "Invalid rule data" });
     }
-    console.log(title);
-    console.log(communityName);
     let existingRule = await Rule.findOne({
       title: title,
       communityName: communityName,
@@ -50,11 +52,6 @@ router.post("/rule/add", auth.authentication, async (req, res) => {
 
     const userId = req.user._id;
     const user = await User.findById(userId);
-    const community = await Community.findOne({ name: communityName });
-
-    if (!community) {
-      return res.status(404).json({ message: "Community not found" });
-    }
 
     if (!community.moderators.includes(user._id)) {
       return res.status(402).json({ message: "You are not a moderator of this community" });
