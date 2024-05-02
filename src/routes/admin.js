@@ -13,22 +13,6 @@ const NotificationType = require("./../../seed-data/constants/notificationType")
 
 
 router.post("/dashboard/ban", auth.authentication, async (req, res) => {
-    const banuser = new banUser(req.body);
-    const updates = Object.keys(req.body);
-    const allowedUpdates = [
-      "username",
-      "isBanned",
-      "banDuration",
-      "reason",
-      "isPermanent",
-      "accessToken",
-    ];
-    const isValidOperation = updates.every((update) =>
-      allowedUpdates.includes(update)
-    );
-    if (!isValidOperation) {
-      return res.status(400).send({ message: "Invalid updates!" });
-    }
     try {
       const adminId = await UserRole.find({
         name: "Admin",
