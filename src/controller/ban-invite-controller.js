@@ -80,8 +80,8 @@ exports.banUser = async (req, res) => {
     const message = req.body.isPermanent
       ? `You have been banned permanently from posting in ${communityName}. \n Reason: ${req.body.reason}`
       : `You have been banned from posting in ${communityName} until ${new Date(
-          req.body.banDuration
-        ).toDateString()}.\n Reason: ${req.body.reason}`;
+        req.body.banDuration
+      ).toDateString()}.\n Reason: ${req.body.reason}`;
     await Notification.sendNotification(
       userToBeBanned._id,
       "You have received a new notification",
@@ -187,8 +187,8 @@ exports.editBan = async (req, res) => {
     const message = req.body.isPermanent
       ? `You have been banned permanently from posting in ${communityName}. \n Reason: ${req.body.reason}`
       : `You have been banned from posting in ${communityName} until ${new Date(
-          req.body.banDuration
-        ).toDateString()}.\n Reason: ${req.body.reason}`;
+        req.body.banDuration
+      ).toDateString()}.\n Reason: ${req.body.reason}`;
     await Notification.sendNotification(
       userToBeBanned._id,
       "You have received a new notification",
@@ -414,7 +414,26 @@ exports.inviteModerator = async (req, res) => {
             to accept, visit the moderators page for ${communityName} and click "accept".
             otherwise, if you did not expect to receive this, you can simply ignore this invitation or report it.`,
     });
-
+    if (!followerUser) {
+      return res.status(404).json({ error: "user not found" });
+    }
+    const response = {
+      description: "User followed successfully",
+    };
+    if (invitedUser.invitations) {
+      await Notification.sendNotification(
+        invitedUser._id,
+        "You have recieved a new notification",
+        `${req.user.username} invite you to be a moderator in ${communityName} community`
+      );
+      const notification = new Notification({
+        userId: invitedUser._id,
+        content: `${req.user.username} invite you to be a moderator in ${communityName} community`,
+        relatedUserId: req.user._id,
+        notificationTypeId: NotificationType.invite._id,
+      });
+      await notification.save();
+    }
     await newMessage.save();
     await Conversation.findByIdAndUpdate(newConversation._id, {
       $addToSet: { messages: newMessage._id },
