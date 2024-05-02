@@ -722,12 +722,14 @@ exports.upvotePost = async (req, res) => {
     const userId = req.user._id;
 
     const post = await Post.findById(postId);
-
+    userWhoCreatedPost = await User.findById(post.userId);
     if (!post) {
       return res.status(404).send({
         message: "post not found",
       });
     }
+    let userUpVote = true;
+    const samePerson = userWhoCreatedPost._id.toString() === user._id.toString();;
     const downvotesCount = post.downVotes.length;
 
     const downvoteIndex = post.downVotes.indexOf(userId);
@@ -737,6 +739,7 @@ exports.upvotePost = async (req, res) => {
       post.upVotes.push(userId);
     } else if (upvoteIndex !== -1) {
       post.upVotes.splice(downvoteIndex, 1);
+      userUpVote = false;
     } else {
       post.upVotes.push(userId);
     }
@@ -749,19 +752,26 @@ exports.upvotePost = async (req, res) => {
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-
-    // Check if the community is in the user's disabledCommunities
-    const userDisabledCommunities = user.disabledCommunities.map(c => c.toString());
-    if (userDisabledCommunities.includes(community._id.toString())) {
+    if (samePerson) {
+      return res.status(200).json({
+        votes: netVotes,
+        message: "Post upvoted successfully, but notifications are disabled for same person",
+      });
+    }
+    if (!userUpVote) {
+      return res.status(200).json({
+        votes: netVotes,
+        message: "Post upvoted successfully, but no notifications because it is downvote",
+      });
+    }
+    if (userWhoCreatedPost && userWhoCreatedPost.disabledCommunities.includes(community._id)) {
       return res.status(200).json({
         votes: netVotes,
         message: "Post upvoted successfully, but notifications are disabled for this community",
       });
     }
-
     //notification
-    if (user.upvotesPosts) {
-      userWhoCreatedPost = await User.findById(post.userId);
+    if (userUpVote && userWhoCreatedPost && userWhoCreatedPost.upvotesPosts) {
       if (
         !post.userId.equals(req.user._id) &&
         userWhoCreatedPost.posts == true
@@ -775,7 +785,7 @@ exports.upvotePost = async (req, res) => {
           userId: post.userId,
           content: `${req.user.username} upvoted your post`,
           relatedUserId: req.user._id,
-          notificationTypeId: NotificationType.post._id,
+          notificationTypeId: NotificationType.upvotePosts._id,
           postId: post._id,
         });
         await notification.save();

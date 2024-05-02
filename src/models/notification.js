@@ -109,6 +109,10 @@ NotificationSchema.statics.getNotificationObject = async function (
         is_hidden: notification.isHidden,
         created_at: notification.createdAt,
     };
+    if (notification.notificationTypeId.name === "Account Update") {
+        delete notificationObject.related_user;
+    }
+
     return notificationObject;
 };
 
