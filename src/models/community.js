@@ -179,7 +179,10 @@ CommunitySchema.statics.getCommunityObject = async function (communityName, user
       "name category rules removalReasons dateCreated communityBanner image description is18plus allowNfsw allowSpoile communityType creator members moderators membersCount membersNickname contributors settings"
     )
     .populate("rules", "title description reportReason appliesTo")
-    .populate("removalReasons", "title reasonMessage");
+    .populate("removalReasons", "title reasonMessage")
+    .populate("members", "username banner avatar")
+    .populate("moderators", "username banner avatar")
+    .populate("creator", "username banner avatar");
 
   if (!community) {
     return null;
