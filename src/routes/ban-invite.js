@@ -13,4 +13,8 @@ router
 router
   .route("/community/moderation/:communityName/decline-invite")
   .post(auth.authentication, banInviteController.declineInvite);
+
+router
+  .route("/community/moderation/:communityName/:username/ban")
+  .post(auth.authentication, banInviteController.banUser);
 module.exports = router;

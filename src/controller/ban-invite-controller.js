@@ -13,28 +13,34 @@ const Notification = require("../models/notification");
 const NotificationType = require("../../seed-data/constants/notificationType");
 
 exports.banUser = async (req, res) => {
-  try {
-    const updates = Object.keys(req.body);
-    const allowedUpdates = [
-      "username",
-      "isBanned",
-      "banDuration",
-      "reason",
-      "isPermanent",
-      "accessToken",
-      "communityName",
-    ];
-    const isValidOperation = updates.every((update) =>
-      allowedUpdates.includes(update)
-    );
-    if (!isValidOperation) {
-      return res.status(400).send({ message: "Invalid updates!" });
-    }
+  const updates = Object.keys(req.body);
+  const allowedUpdates = [
+    "banMessage",
+    "banDuration",
+    "reason",
+    "isPermanent",
+    "modNote",
+    "accessToken",
+  ];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+  console.log(isValidOperation);
+  if (!isValidOperation) {
+    return res.status(400).send({ message: "Invalid updates!" });
+  }
 
+  try {
     const userId = req.user._id;
+    const { communityName, username } = req.params;
+    if (!communityName || !username)
+      return res
+        .status(400)
+        .send({ message: "username and community name is required" });
     const moderator = await Moderator.findOne({
       username: req.user.username,
-      communityName: req.body.communityName,
+      communityName: communityName,
+      // isAccepted: true,
     });
     if (!moderator) {
       return res.status(404).send({ message: "Moderator not found" });
@@ -46,15 +52,13 @@ exports.banUser = async (req, res) => {
         .send({ message: "You are not allowed to manage users" });
     }
 
-    const userToBeBanned = await User.getUserByEmailOrUsername(
-      req.body.username
-    );
+    const userToBeBanned = await User.getUserByEmailOrUsername(username);
     if (!userToBeBanned) {
       return res.status(404).send({ message: "User not found" });
     }
 
     const community = await Community.findOne({
-      name: req.body.communityName,
+      name: communityName,
       members: userToBeBanned._id,
     });
     if (!community) {
@@ -68,7 +72,7 @@ exports.banUser = async (req, res) => {
       banDuration: req.body.banDuration,
       reason: req.body.reason,
       isPermanent: req.body.isPermanent,
-      communityName: req.body.communityName,
+      communityName: communityName,
       banMessage: req.body.banMessage,
       modNote: req.body.modNote,
     };
@@ -323,6 +327,9 @@ exports.acceptInvite = async (req, res) => {
     if (!communityName) {
       return res.status(404).json({ message: "Community name is required" });
     }
+    const community = await Community.findOne({ name: communityName });
+    if (!community)
+      return res.status(404).json({ message: " community not found" });
 
     const moderator = await Moderator.findOne({
       username: req.user.username,
@@ -335,6 +342,8 @@ exports.acceptInvite = async (req, res) => {
     }
     moderator.isAccepted = true;
     await moderator.save();
+    community.moderators.push(userId);
+
     return res
       .status(200)
       .json({ message: "Moderator invite accepted successfully" });
