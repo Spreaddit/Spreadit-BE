@@ -397,6 +397,7 @@ exports.getUnreadMessageCount = async (req, res) => {
     const unreadMessageCount = await Message.countDocuments({
       recieverId: userId,
       isRead: false,
+      isDeleted: false,
     });
 
     res.status(200).json({ unreadMessageCount });
