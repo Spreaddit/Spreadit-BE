@@ -6361,7 +6361,6 @@
 
 //#endregion Mobile Settings
 
-
 //#region Moderation
 /**
  * @api {post} /community/moderation/:communityName/spam-comment/:commentId Mark Comment as Spam
@@ -6592,7 +6591,6 @@
  *       "error": "Internal server error"
  *     }
  */
-
 
 /**
  * @api {post} /community/moderation/:communityName/:commentId/unlock-comment Unlock Comment
@@ -7375,7 +7373,7 @@
  *                  "subreason": "Irrelevant content"
  *                 }
  *              ]
- *              
+ *
  *          }
  *      ],
  *      "message": "Posts have been retrieved successfully"
@@ -7397,7 +7395,607 @@
  *     }
  */
 
-
 //#endregion Admin
+//#region message
+/**
+ * @api {post} /message/compose/ Send a Message
+ * @apiVersion 0.1.0
+ * @apiName SendMessage
+ * @apiGroup Message
+ * @apiDescription Send a message to another user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the recipient.
+ * @apiParam {String} subject Subject of the message.
+ * @apiParam {String} content Content of the message.
+ *
+ * @apiSuccess {Object} messageContent Details of the sent message.
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "messageContent": {
+ *           "_id": "1234567890",
+ *           "conversationId": "0987654321",
+ *           "senderType": "user",
+ *           "relatedUserOrCommunity": "recipient_username",
+ *           "type": "text",
+ *           "content": "Message content",
+ *           "time": "2024-05-02T12:00:00.000Z",
+ *           "direction": "outgoing",
+ *           "isRead": false,
+ *           "isDeleted": false,
+ *           "subject": "Message subject"
+ *       },
+ *       "message": "Message sent successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User cannot message themselves.
+ * @apiError (404) NotFound Recipient user not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "User cannot message themselves"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Recipient user not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
 
+/**
+ * @api {post} /message/reply/:messageId Reply to a Message
+ * @apiVersion 0.1.0
+ * @apiName ReplyToMessage
+ * @apiGroup Message
+ * @apiDescription Reply to a message.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} messageId ID of the message to reply to.
+ * @apiParam {String} content Content of the reply message.
+ *
+ * @apiSuccess {Object} messageContent Details of the sent reply message.
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User is not authorized to reply to this message.
+ * @apiError (404) NotFound Message not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Message content is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "You are not authorized to reply to this message"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Message not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
 
+/**
+ * @api {post} /message/readmsg/:messageId Mark Message as Read
+ * @apiVersion 0.1.0
+ * @apiName MarkMessageAsRead
+ * @apiGroup Message
+ * @apiDescription Mark a message as read.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} messageId ID of the message to mark as read.
+ *
+ * @apiSuccess {Object} messageContent Details of the marked message.
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (400) BadRequest Message already marked as read.
+ * @apiError (403) Forbidden User is not authorized to mark message as read.
+ * @apiError (404) NotFound Message not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Message already marked as read"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "You are not authorized to mark message as read"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Message not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /message/unreadmsg/:messageId Mark Message as Unread
+ * @apiVersion 0.1.0
+ * @apiName MarkMessageAsUnread
+ * @apiGroup Message
+ * @apiDescription Mark a message as unread.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} messageId ID of the message to mark as unread.
+ *
+ * @apiSuccess {Object} messageContent Details of the marked message.
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (400) BadRequest Message already marked as unread.
+ * @apiError (403) Forbidden User is not authorized to mark message as unread.
+ * @apiError (404) NotFound Message not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Message already marked as unread"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "You are not authorized to mark message as unread"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Message not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /message/readallmessages/ Mark All Messages as Read
+ * @apiVersion 0.1.0
+ * @apiName MarkAllMessagesAsRead
+ * @apiGroup Message
+ * @apiDescription Mark all messages as read.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (404) NotFound No unread messages found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No unread messages found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/inbox/ Get Inbox Messages
+ * @apiVersion 0.1.0
+ * @apiName GetInboxMessages
+ * @apiGroup Message
+ * @apiDescription Retrieve all inbox messages of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} messages List of inbox messages.
+ *
+ * @apiError (404) NotFound No messages found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No messages found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {delete} /message/deletemsg/:messageId Delete a Message
+ * @apiVersion 0.1.0
+ * @apiName DeleteMessage
+ * @apiGroup Message
+ * @apiDescription Delete a message with the given message ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (403) Forbidden User is not authorized to delete this message.
+ * @apiError (404) NotFound Message not found or already deleted.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "You are not authorized to delete this message"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Message not found or already deleted"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /message/readallmessages/ Mark All Messages as Read
+ * @apiVersion 0.1.0
+ * @apiName MarkAllMessagesAsRead
+ * @apiGroup Message
+ * @apiDescription Mark all messages as read for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/unread Get Unread Messages
+ * @apiVersion 0.1.0
+ * @apiName GetUnreadMessages
+ * @apiGroup Message
+ * @apiDescription Retrieve unread messages for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} unreadMessages List of unread messages.
+ * @apiSuccess {String} unreadMessages._id ID of the message.
+ * @apiSuccess {String} unreadMessages.conversationId ID of the conversation.
+ * @apiSuccess {String} unreadMessages.senderType Type of sender (user or community).
+ * @apiSuccess {String} unreadMessages.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} unreadMessages.type Content type of the message.
+ * @apiSuccess {String} unreadMessages.content Content of the message.
+ * @apiSuccess {Date} unreadMessages.time Timestamp of when the message was sent.
+ * @apiSuccess {String} unreadMessages.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} unreadMessages.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} unreadMessages.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} unreadMessages.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound No unread messages found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No unread messages found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/messages Get All Messages
+ * @apiVersion 0.1.0
+ * @apiName GetAllMessages
+ * @apiGroup Message
+ * @apiDescription Retrieve all messages for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} allMessages List of all messages.
+ * @apiSuccess {String} allMessages._id ID of the message.
+ * @apiSuccess {String} allMessages.conversationId ID of the conversation.
+ * @apiSuccess {String} allMessages.senderType Type of sender (user or community).
+ * @apiSuccess {String} allMessages.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} allMessages.type Content type of the message.
+ * @apiSuccess {String} allMessages.content Content of the message.
+ * @apiSuccess {Date} allMessages.time Timestamp of when the message was sent.
+ * @apiSuccess {String} allMessages.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} allMessages.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} allMessages.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} allMessages.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound No messages found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No messages found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/postreplies Get Post Replies
+ * @apiVersion 0.1.0
+ * @apiName GetPostReplies
+ * @apiGroup Message
+ * @apiDescription Retrieve replies to posts for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} postReplies List of post replies.
+ * @apiSuccess {String} postReplies._id ID of the reply.
+ * @apiSuccess {String} postReplies.conversationId ID of the conversation.
+ * @apiSuccess {String} postReplies.senderType Type of sender (user or community).
+ * @apiSuccess {String} postReplies.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} postReplies.type Content type of the message.
+ * @apiSuccess {String} postReplies.content Content of the message.
+ * @apiSuccess {Date} postReplies.time Timestamp of when the message was sent.
+ * @apiSuccess {String} postReplies.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} postReplies.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} postReplies.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} postReplies.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound No post replies found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No post replies found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/mentions Get User Mentions
+ * @apiVersion 0.1.0
+ * @apiName GetUserMentions
+ * @apiGroup Message
+ * @apiDescription Retrieve mentions for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} userMentions List of user mentions.
+ * @apiSuccess {String} userMentions._id ID of the mention.
+ * @apiSuccess {String} userMentions.conversationId ID of the conversation.
+ * @apiSuccess {String} userMentions.senderType Type of sender (user or community).
+ * @apiSuccess {String} userMentions.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} userMentions.type Content type of the message.
+ * @apiSuccess {String} userMentions.content Content of the message.
+ * @apiSuccess {Date} userMentions.time Timestamp of when the message was sent.
+ * @apiSuccess {String} userMentions.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} userMentions.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} userMentions.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} userMentions.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound No user mentions found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No user mentions found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/sent Get Sent Messages
+ * @apiVersion 0.1.0
+ * @apiName GetSentMessages
+ * @apiGroup Message
+ * @apiDescription Retrieve sent messages for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} sentMessages List of sent messages.
+ * @apiSuccess {String} sentMessages._id ID of the message.
+ * @apiSuccess {String} sentMessages.conversationId ID of the conversation.
+ * @apiSuccess {String} sentMessages.senderType Type of sender (user or community).
+ * @apiSuccess {String} sentMessages.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} sentMessages.type Content type of the message.
+ * @apiSuccess {String} sentMessages.content Content of the message.
+ * @apiSuccess {Date} sentMessages.time Timestamp of when the message was sent.
+ * @apiSuccess {String} sentMessages.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} sentMessages.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} sentMessages.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} sentMessages.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound No sent messages found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No sent messages found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/unreadcount Get Unread Message Count
+ * @apiVersion 0.1.0
+ * @apiName GetUnreadMessageCount
+ * @apiGroup Message
+ * @apiDescription Get the count of unread messages for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Number} unreadCount Count of unread messages.
+ *
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /message/reportmsg/:messageId Report Message
+ * @apiVersion 0.1.0
+ * @apiName ReportMessage
+ * @apiGroup Message
+ * @apiDescription Report a message by its ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} messageId ID of the message to report.
+ *
+ * @apiSuccess {String} message Success message indicating the report operation's success.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid message ID"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/:messageId Get Message by ID
+ * @apiVersion 0.1.0
+ * @apiName GetMessageById
+ * @apiGroup Message
+ * @apiDescription Get a message by its ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} messageId ID of the message to retrieve.
+ *
+ * @apiSuccess {Object} messageDetails Details of the retrieved message.
+ * @apiSuccess {String} messageDetails._id ID of the message.
+ * @apiSuccess {String} messageDetails.conversationId ID of the conversation.
+ * @apiSuccess {String} messageDetails.senderType Type of sender (user or community).
+ * @apiSuccess {String} messageDetails.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} messageDetails.type Content type of the message.
+ * @apiSuccess {String} messageDetails.content Content of the message.
+ * @apiSuccess {Date} messageDetails.time Timestamp of when the message was sent.
+ * @apiSuccess {String} messageDetails.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} messageDetails.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} messageDetails.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} messageDetails.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound Message with the specified ID not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Message not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+//#end region message
