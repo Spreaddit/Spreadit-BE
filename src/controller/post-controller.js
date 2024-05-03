@@ -906,12 +906,14 @@ exports.deletePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
     const userId = req.user._id;
-    const adminId = await UserRole.findOne({ name: "Admin" }).select("_id");
+    const adminId = await UserRole.find({
+      name: "Admin",
+    }).select("_id");
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
-    if (post.userId.toString() !== userId.toString() && adminId.toString() !== req.user.roleId) {
+    if (post.userId.toString() !== userId.toString() && adminId[0]._id.toString() !== req.user.roleId.toString()) {
       return res.status(403).json({ message: "You are not authorized to delete this post" });
     }
     await Post.findByIdAndDelete({ _id: postId, userId });
