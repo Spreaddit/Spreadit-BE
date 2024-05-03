@@ -80,13 +80,10 @@ router.post(
       await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
       const commentObj = await Comment.getCommentObject(newComment, userId);
 
-      const mentionedUsernames = content
-        .match(/@(\S+)/g)
-        .map((username) => username.slice(1));
-
-      if (mentionedUsernames) {
+      const mentionedUsernames = content.match(/@(\S+)/g);
+      if (mentionedUsernames !== null) {
         const mentionedUsers = await User.find({
-          username: { $in: mentionedUsernames },
+          username: { $in: mentionedUsernames..map((username) => username.slice(1)) },
         });
         console.log(mentionedUsers);
 

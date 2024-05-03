@@ -6988,11 +6988,13 @@
  *           "is_approved": true,
  *           "is_locked": false,
  *           "replies": [],
- *           "reports":{
- *                  "username": "mimo12"
- *                  "reason": "Spam",
- *                  "subreason": "Irrelevant content"
- *              }
+ *           "reports":[
+ *               {
+ *                 "username": "mimo12"
+ *                 "reason": "Spam",
+ *                 "subreason": "Irrelevant content"
+ *               }
+ *            ]
  *       },
  *     }
  *
@@ -7290,11 +7292,13 @@
  *           "is_approved": true,
  *           "is_locked": false,
  *           "replies": [],
- *           "reports":{
+ *           "reports":[
+ *                 {
  *                  "username": "mimo12"
  *                  "reason": "Spam",
  *                  "subreason": "Irrelevant content"
- *              }
+ *                 }
+ *            ]
  *       },
  *       "message": "Comments have been retrieved successfully"
  *     }
@@ -7362,11 +7366,13 @@
  *              "date": "2024-04-16T10:00:00.000Z",
  *              "pollOptions": [],
  *              "attachments": [],
- *              "reports":{
+ *              "reports":[
+ *                 {
  *                  "username": "mimo12"
  *                  "reason": "Spam",
  *                  "subreason": "Irrelevant content"
- *              }
+ *                 }
+ *              ]
  *              
  *          }
  *      ],
