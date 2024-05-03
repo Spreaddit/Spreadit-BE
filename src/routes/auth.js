@@ -467,11 +467,12 @@ router.put(
     try {
       const userId = req.user._id;
       const { name, about, socialLinks, username, isVisible, isActive, fileType } = req.body;
-      let { avatar, banner } = req.files;
+      const avatar = req.files['avatar'] ? req.files['avatar'][0] : null;
+      const banner = req.files['banner'] ? req.files['banner'][0] : null;
       let avatarUrl, bannerUrl;
       if (avatar && banner) {
-        const avatarResult = await uploadMedia(avatar[0], fileType);
-        const bannerResult = await uploadMedia(banner[0], fileType);
+        const avatarResult = await uploadMedia(avatar, fileType);
+        const bannerResult = await uploadMedia(banner, fileType);
         avatarUrl = avatarResult.secure_url;
         bannerUrl = bannerResult.secure_url;
       }

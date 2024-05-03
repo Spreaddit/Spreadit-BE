@@ -165,7 +165,10 @@ router.delete(
   async (req, res) => {
     try {
       const userId = req.user._id;
-      const comment = await Comment.findByIdAndDelete(req.params.commentId);
+      const commentId = req.params.commentId;
+      const comment = await Comment.findById(commentId);
+
+      //const comment = await Comment.findByIdAndDelete(req.params.commentId);
       const adminId = await UserRole.find({
         name: "Admin",
       }).select("_id");
@@ -193,6 +196,8 @@ router.delete(
           { $inc: { commentsCount: -1 } },
           { new: true }
         );
+        
+        await Comment.findByIdAndDelete(commentId);
 
         const commentObj = await Comment.getCommentObject(comment, userId);
 
