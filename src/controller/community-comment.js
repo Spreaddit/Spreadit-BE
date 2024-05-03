@@ -88,7 +88,7 @@ exports.lockComment = async (req, res) => {
     try {
         const { communityName, commentId } = req.params;
         if (!commentId) {
-            return res.status(404).json({ message: "Comment not found" });
+            return res.status(404).json({ message: "CommentId not found" });
         }
 
         const comment = await Comment.findById(commentId);
@@ -218,6 +218,7 @@ exports.getEdititedCommentsHistory = async (req, res) => {
     try {
         const { communityName } = req.params;
         const community = await Community.findOne({ name: communityName });
+        console.log(community);
         if (!community) {
             return res.status(404).json({ error: 'Community not found' });
         }

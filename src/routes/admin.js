@@ -96,7 +96,7 @@ router.post("/dashboard/unban", auth.authentication, async (req, res) => {
           { isBanned: false },
           { new: true, runValidators: true }
         );
-        const banuser = await banUser.deleteOne({ userId: userToBeUnbanned._id });
+        const banuser = await BanUser.deleteOne({ userId: userToBeUnbanned._id });
   
         if (!user) {
           return res.status(404).send({ message: "User is not found" });

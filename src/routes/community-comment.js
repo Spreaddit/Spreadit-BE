@@ -16,11 +16,11 @@ router
     .get(auth.authentication, communityCommentController.getSpamComments);
 
 router
-    .route("/community/moderation/:communityName/:commentId/lock-comment ")
+    .route("/community/moderation/:communityName/:commentId/lock-comment")
     .post(auth.authentication, communityCommentController.lockComment)
 
 router
-    .route("/community/moderation/:communityName/:commentId/unlock-comment:")
+    .route("/community/moderation/:communityName/:commentId/unlock-comment")
     .post(auth.authentication, communityCommentController.unlockComment)
 
 router
