@@ -2,8 +2,6 @@ const express = require("express");
 const User = require("../models/user.js");
 const Community = require("../models/community.js");
 const axios = require("axios");
-//const auth = require("../middleware/authentication");
-//const { verifyGoogleToken } = require("../middleware/authentication");
 const auth = require("../middleware/authentication");
 const config = require("../configuration");
 const cookieParser = require("cookie-parser");
@@ -17,8 +15,6 @@ const upload = require("../service/fileUpload");
 const { uploadMedia } = require("../service/cloudinary.js");
 
 router.use(passport.initialize());
-//const express = require('express');
-//router.use(passport.session());
 router.use(cookieParser("spreaditsecret"));
 
 router.post("/signup", async (req, res) => {
@@ -97,7 +93,9 @@ router.post("/login", async (req, res) => {
       user.tokens = user.tokens.concat(authTokenInfo);
       await User.updateOne({ _id: user._id }, { $set: { tokens: user.tokens } });
       //console.log(user);
-
+      if (user.isBanned){
+        return res.status(402).send({ message: "The user is banned" });
+      }
       const userObj = await User.generateUserObject(user);
       //console.log(userObj);
       res.status(200).send({
