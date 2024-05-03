@@ -250,13 +250,14 @@ exports.modifyProfileSettings = async (req, res) => {
             displayName,
             about,
             socialLinks,
-            banner,
             nsfw,
             allowFollow,
             contentVisibility,
             activeInCommunityVisibility,
             clearHistory
         } = req.body;
+
+        let {avatar, banner} = req.files;
 
         const updatedFields = {};
         if (displayName !== undefined) {
@@ -271,16 +272,16 @@ exports.modifyProfileSettings = async (req, res) => {
         /*  if (avatar !== undefined) {
              updatedFields.avatar = avatar;
          } */
-        if (req.file) {
-            const result = await uploadMedia(req.file, "image");
+        if (avatar || banner) {
+            const avatarResult = await uploadMedia(avatar[0], fileType);
+            const bannerResult = await uploadMedia(banner[0], fileType);
+            const avatarUrl = avatarResult.secure_url;
+            const bannerUrl = bannerResult.secure_url;
             //const url = `${config.baseUrl}/media/${result.Key}`;
-            const url = result.secure_url;
-            updatedFields.avatar = url;
+            updatedFields.avatar = avatarUrl;
+            updatedFields.banner = bannerUrl
             // const attachmentObj = { type: fileType, link: url };
             // attachments.push(attachmentObj);
-        }
-        if (banner !== undefined) {
-            updatedFields.banner = banner;
         }
         if (nsfw !== undefined) {
             updatedFields.nsfw = nsfw;
