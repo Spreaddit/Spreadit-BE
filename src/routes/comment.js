@@ -6,6 +6,7 @@ const Post = require("../models/post");
 const Message = require("../models/message");
 const auth = require("../middleware/authentication");
 const mongoose = require("mongoose");
+const UserRole = require("../models/constants/userRole");
 const upload = require("../service/fileUpload");
 const { uploadMedia } = require("../service/cloudinary");
 const config = require("./../configuration");
@@ -172,22 +173,25 @@ router.delete(
       const adminId = await UserRole.find({
         name: "Admin",
       }).select("_id");
-      if (
-        comment.userId.toString() !== userId.toString() ||
-        adminId[0]._id !== req.user.roleId
-      ) {
-        return res.status(403).send({
-          message: "You are not authorized to delete this comment",
-        });
-      }
+
 
       if (!comment) {
         return res.status(404).send({
           message: "comment not found",
         });
       }
+
       if (
-        adminId[0]._id.toString() === userId.toString() ||
+        comment.userId.toString() !== userId.toString() &&
+        adminId[0]._id.toString() !== req.user.roleId.toString()
+      ) {
+        return res.status(403).send({
+          message: "You are not authorized to delete this comment",
+        });
+      }
+
+      if (
+        adminId[0]._id.toString() === req.user.roleId.toString() ||
         comment.userId.toString() === userId.toString()
       ) {
         await Comment.deleteMany({ parentCommentId: req.params.commentId });
@@ -196,7 +200,7 @@ router.delete(
           { $inc: { commentsCount: -1 } },
           { new: true }
         );
-        
+
         await Comment.findByIdAndDelete(commentId);
 
         const commentObj = await Comment.getCommentObject(comment, userId);
