@@ -273,8 +273,8 @@ exports.modifyProfileSettings = async (req, res) => {
              updatedFields.avatar = avatar;
          } */
         if (avatar || banner) {
-            const avatarResult = await uploadMedia(avatar[0], fileType);
-            const bannerResult = await uploadMedia(banner[0], fileType);
+            const avatarResult = await uploadMedia(avatar[0], "image");
+            const bannerResult = await uploadMedia(banner[0], "image");
             const avatarUrl = avatarResult.secure_url;
             const bannerUrl = bannerResult.secure_url;
             //const url = `${config.baseUrl}/media/${result.Key}`;

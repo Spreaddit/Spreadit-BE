@@ -44,6 +44,9 @@ const authentication = async (req, res, next) => {
         throw new Error();
       }
       userSend = newUser;
+      if (userSend.isBanned === true){
+        res.status(401).send({ message: "The user is banned" });
+      }
     }
     res.set("Access-Control-Allow-Origin", "*");
     req.user = userSend;
