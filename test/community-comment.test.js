@@ -311,9 +311,9 @@ it("should return 200 and lock the comment", async () => {
     if (!user) {
         throw new Error("User not found");
     }
-    
+    const communityName = "testCommunity";
     const response = await request(app)
-        .post("/community/moderation/testCommunity/"+commentId+"/lock-comment")
+        .post("/community/moderation/"+ communityName +"/"+ commentId +"/lock-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(200);
 
@@ -322,44 +322,346 @@ it("should return 200 and lock the comment", async () => {
 });
 
 it("should return 402 if user is not a moderator", async () => {
-    // Log in as a regular user
+    
     const loginResponse = await request(app)
         .post("/login")
         .send({ username: "abbas", password: "12345678" })
         .expect(200);
     const token = loginResponse.body.token;
-
-    // Make a request to lock the comment
+    const user = await getUser("abbas");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const communityName = "testCommunity";
     const response = await request(app)
-        .post("/community/moderation/testCommunity/1234567890/lock-comment")
-        .set("Authorization", "Bearer " + token)
+        .post("/community/moderation/"+ communityName +"/"+ commentId +"/lock-comment")
+        .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(402);
 
-    // Assertions
     expect(response.body.message).toBe("Not a moderator or does not have permission");
 });
 
-// Test case 3: Should return 500 if internal server error occurs
-it("should return 500 if internal server error occurs", async () => {
-    // Stubbing the Comment.findByIdAndUpdate method to simulate internal server error
-    jest.spyOn(Comment, "findByIdAndUpdate").mockRejectedValue(new Error("Internal server error"));
+it('should return 200 and unlock the comment', async () => {
+    const login = await request(app)
+        .post("/login")
+        .send({ username: "maher", password: "12345678" })
+        .expect(200);
+    const token = login.body.token;
+    const user = await getUser("maher");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const communityName = "testCommunity";
+    const lockResponse = await request(app)
+        .post("/community/moderation/"+ communityName +"/"+ commentId +"/lock-comment")
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+    
+    const response = await request(app)
+        .post("/community/moderation/"+ communityName +"/"+ commentId +"/unlock-comment")
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
 
-    // Log in as a moderator
+    expect(response.body.message).toBe("Comment unlocked successfully");
+
+    const unlockedComment = await Comment.findById(commentId);
+    expect(unlockedComment.isLocked).toBe(false);
+});
+
+it('should return 402 if user is not a moderator', async () => {
+    const login = await request(app)
+        .post("/login")
+        .send({ username: "abbas", password: "12345678" })
+        .expect(200);
+    const token = login.body.token;
+    const communityName = "testCommunity";
+    const user = await getUser("abbas");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const response = await request(app)
+        .post("/community/moderation/"+ communityName +"/"+ commentId +"/unlock-comment")
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(402);
+
+    expect(response.body.message).toBe("Not a moderator or does not have permission");
+});
+
+it('should return 500 if internal server error occurs', async () => {
+    jest.spyOn(Comment, "findById").mockRejectedValue(new Error("Internal server error"));
+
+    const login = await request(app)
+        .post("/login")
+        .send({ username: "maher", password: "12345678" })
+        .expect(200);
+    const token = login.body.token;
+    const user = await getUser("maher");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const communityName = "testCommunity";
+    const response = await request(app)
+        .post("/community/moderation/"+ communityName +"/"+ commentId +"/unlock-comment")
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(500);
+
+    expect(response.body.error).toBe("Internal server error");
+
+    Comment.findById.mockRestore();
+});
+
+//t3aly hena tany 
+it('should return 200 and remove the comment', async () => {
+    const login = await request(app)
+        .post("/login")
+        .send({ username: "maher", password: "12345678" })
+        .expect(200);
+    const token = login.body.token;
+    const user = await getUser("maher");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const communityName = "testCommunity";
+    const removalReason = "This comment violates community guidelines";
+    const response = await request(app)
+        .post("/community/moderation/"+ communityName +"/"+ commentId +"/remove-comment")
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({ removalReason })
+        .expect(200);
+
+    expect(response.body.message).toBe("Comment removed successfully");
+
+    const removedComment = await Comment.findById(commentId);
+    expect(removedComment.isRemoved).toBe(true);
+});
+
+it('should return 400 if removal reason is not provided', async () => {
+    const login = await request(app)
+        .post("/login")
+        .send({ username: "maher", password: "12345678" })
+        .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const communityName = "testCommunity";
+    let removalReason;
+    const response = await request(app)
+        .post("/community/moderation/"+ communityName +"/"+ commentId +"/remove-comment")
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({ removalReason })
+        .expect(400);
+
+    expect(response.body.message).toBe("Must has a removal reason");
+});
+
+it('should return 402 if user is not a moderator', async () => {
+    const login = await request(app)
+        .post("/login")
+        .send({ username: "abbas", password: "12345678" })
+        .expect(200);
+    const token = login.body.token;
+    const user = await getUser("abbas");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const communityName = "testCommunity";
+    const removalReason = "This comment violates community guidelines";
+    const response = await request(app)
+        .post("/community/moderation/"+ communityName +"/"+ commentId +"/remove-comment")
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .send({ removalReason })
+        .expect(402);
+
+    expect(response.body.message).toBe("Not a moderator or does not have permission");
+});
+
+
+it("should return 200 and approve the comment", async () => {
     const loginResponse = await request(app)
         .post("/login")
         .send({ username: "maher", password: "12345678" })
         .expect(200);
     const token = loginResponse.body.token;
-
-    // Make a request to lock the comment
+    const user = await getUser("maher");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const communityName = "testCommunity";
     const response = await request(app)
-        .post("/community/moderation/testCommunity/1234567890/lock-comment")
-        .set("Authorization", "Bearer " + token)
-        .expect(500);
+        .post("/community/moderation/"+ communityName +"/"+ commentId +"/approve-comment")
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
 
-    // Assertions
-    expect(response.body.message).toBe("Internal server error");
+    expect(response.body.message).toBe("Comment approved successfully");
+});
 
-    // Restore the original implementation of Comment.findByIdAndUpdate
-    Comment.findByIdAndUpdate.mockRestore();
+it("should return 402 if user is not a moderator", async () => {
+    const loginResponse = await request(app)
+        .post("/login")
+        .send({ username: "abbas", password: "12345678" })
+        .expect(200);
+    const token = loginResponse.body.token;
+    const user = await getUser("abbas");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const communityName = "testCommunity";
+    const response = await request(app)
+        .post("/community/moderation/"+ communityName +"/"+ commentId +"/approve-comment")
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(402);
+
+    expect(response.body.message).toBe("Not a moderator or does not have permission");
+});
+
+it('should return 200 and edited comments', async () => {
+    const loginResponse = await request(app)
+        .post("/login")
+        .send({ username: "maher", password: "12345678" })
+        .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const loginResponse2 = await request(app)
+        .post("/login")
+        .send({ username: "elgarf", password: "TTFTTSTTD" })
+        .expect(200);
+    const user2 = await getUser("elgarf");
+    if (!user2) {
+        throw new Error("User not found");
+    }
+    const editResponse = await request(app)
+        .post(`/comments/${comment._id}/edit`)
+        .set("Authorization", "Bearer " + user2.tokens[0].token)
+        .send({ content: "Updated comment content" })
+        .expect(200);
+
+    const communityName = "testCommunity";
+    const response = await request(app)
+        .get(`/community/moderation/${communityName}/get-edited-comments`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+    expect(response.body.editedComment.length).toBeGreaterThan(0);
+});
+
+// Test case: should return 404 if community not found
+it('should return 404 if community not found', async () => {
+    const loginResponse = await request(app)
+        .post("/login")
+        .send({ username: "maher", password: "12345678" })
+        .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const communityName = "testmeshMawgod";
+    const response = await request(app)
+        .get(`/community/moderation/${communityName}/get-edited-comments`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(404);
+
+    expect(response.body.error).toBe('Community not found');
+});
+
+// Test case: should return 404 if no edited comments found
+it('should return 404 if no edited comments found', async () => {
+    const loginResponse = await request(app)
+        .post("/login")
+        .send({ username: "maher", password: "12345678" })
+        .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const communityName = "testCommunity";
+    const response = await request(app)
+        .get(`/community/moderation/${communityName}/get-edited-comments`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(404);
+
+    expect(response.body.error).toBe('Edited comments not found');
+});
+
+
+
+
+it('should return 200 and reported comments', async () => {
+    const loginResponse = await request(app)
+        .post("/login")
+        .send({ username: "maher", password: "12345678" })
+        .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const loginResponse2 = await request(app)
+        .post("/login")
+        .send({ username: "abbas", password: "12345678" })
+        .expect(200);
+    const user2 = await getUser("abbas");
+    if (!user2) {
+        throw new Error("User not found");
+    }
+    const reportResponse = await request(app)
+        .post(`/comments/${comment._id}/report`)
+        .set("Authorization", "Bearer " + user2.tokens[0].token)
+        .send({
+            reason: "Offensive content",
+            subreason: "This comment contains offensive language"
+        })
+        .expect(201);
+    const communityName = "testCommunity";
+    
+    const response = await request(app)
+        .get(`/community/moderation/${communityName}/get-reported-comments`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200);
+
+    expect(response.body.reportedComments.length).toBeGreaterThan(0);
+});
+
+// Test case: should return 404 if community not found
+it('should return 404 if community not found', async () => {
+    await Community.deleteMany({});
+    const loginResponse = await request(app)
+        .post("/login")
+        .send({ username: "maher", password: "12345678" })
+        .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const communityName = "testCommunity";
+    const response = await request(app)
+        .get(`/community/moderation/${communityName}/get-reported-comments`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(404);
+
+    expect(response.body.error).toBe('Community not found');
+});
+
+// Test case: should return 402 if user is not a moderator
+it('should return 402 if user is not a moderator', async () => {
+    const loginResponse = await request(app)
+        .post("/login")
+        .send({ username: "abbas", password: "12345678" })
+        .expect(200);
+    const token = loginResponse.body.token;
+    const user = await getUser("abbas");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    console.log(user.tokens[0].token)
+    const communityName = "testCommunity";
+    const response = await request(app)
+        .get(`/community/moderation/${communityName}/get-reported-comments`)
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(402);
+
+    expect(response.body.message).toBe('Not a moderator or does not have permission');
 });
