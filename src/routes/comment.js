@@ -184,7 +184,7 @@ router.delete(
         });
       }
       if (
-        adminId[0]._id.equals(req.user.roleId) ||
+        adminId[0]._id.toString() === userId.toString() ||
         comment.userId.toString() === userId.toString()
       ) {
         await Comment.deleteMany({ parentCommentId: req.params.commentId });

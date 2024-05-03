@@ -245,6 +245,7 @@ exports.getProfileSetting = async (req, res) => {
 exports.modifyProfileSettings = async (req, res) => {
     try {
         const userId = req.user._id;
+        const user = await User.findById(userId);
 
         const {
             displayName,
@@ -257,51 +258,51 @@ exports.modifyProfileSettings = async (req, res) => {
             clearHistory
         } = req.body;
 
-        let {avatar, banner} = req.files;
-
+        const avatar = req.files['avatar'] ? req.files['avatar'][0] : null;
+        const banner = req.files['banner'] ? req.files['banner'][0] : null;
         const updatedFields = {};
         if (displayName !== undefined) {
-            updatedFields.displayName = displayName;
+            user.displayName = displayName;
         }
         if (about !== undefined) {
-            updatedFields.about = about;
+            user.about = about;
         }
         if (socialLinks !== undefined) {
-            updatedFields.socialLinks = socialLinks;
+            const parsedSocialLinks = JSON.parse(socialLinks);
+            user.socialLinks = parsedSocialLinks;
         }
         /*  if (avatar !== undefined) {
              updatedFields.avatar = avatar;
          } */
-        if (avatar || banner) {
-            const avatarResult = await uploadMedia(avatar[0], "image");
-            const bannerResult = await uploadMedia(banner[0], "image");
+        if (avatar) {
+            const avatarResult = await uploadMedia(avatar, "image");
             const avatarUrl = avatarResult.secure_url;
+            user.avatar = avatarUrl;
+        }
+        if (banner) {
+            const bannerResult = await uploadMedia(banner, "image");
             const bannerUrl = bannerResult.secure_url;
-            //const url = `${config.baseUrl}/media/${result.Key}`;
-            updatedFields.avatar = avatarUrl;
-            updatedFields.banner = bannerUrl
-            // const attachmentObj = { type: fileType, link: url };
-            // attachments.push(attachmentObj);
+            user.banner = bannerUrl
         }
         if (nsfw !== undefined) {
-            updatedFields.nsfw = nsfw;
+            user.nsfw = nsfw;
         }
         if (allowFollow !== undefined) {
-            updatedFields.allowFollow = allowFollow;
+            user.allowFollow = allowFollow;
         }
         if (contentVisibility !== undefined) {
-            updatedFields.contentVisibility = contentVisibility;
+            user.contentVisibility = contentVisibility;
         }
         if (activeInCommunityVisibility !== undefined) {
-            updatedFields.activeInCommunityVisibility = activeInCommunityVisibility;
+            user.activeInCommunityVisibility = activeInCommunityVisibility;
         }
         if (clearHistory !== undefined) {
-            updatedFields.clearHistory = clearHistory;
+            user.clearHistory = clearHistory;
         }
 
-        await User.findOneAndUpdate({ _id: userId }, { $set: updatedFields });
-
-        res.status(200).json({ message: "Successful update" });
+        await user.save();
+        const userObj = await User.generateUserObject(user);
+        res.status(200).json({ userObj: userObj, message: "Successful update" });
     } catch (err) {
         console.error('Error modifying profile settings', err);
         res.status(500).json({ error: 'Internal server error' });

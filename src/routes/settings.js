@@ -32,7 +32,10 @@ router.route('/notifications')
 
 router.route('/profile')
     .get(auth.authentication, SettingsController.getProfileSetting)
-    .put(auth.authentication, upload.single('avatar'), SettingsController.modifyProfileSettings);
+    .put(auth.authentication, upload.fields([
+        { name: "avatar", maxCount: 1 },
+        { name: "banner", maxCount: 1 },
+      ]), SettingsController.modifyProfileSettings);
 
 router.route('/safety-privacy')
     .get(auth.authentication, SettingsController.getSafetyAndPrivacySettings)
