@@ -332,9 +332,7 @@ router.get("/community/:communityName/removal-reasons", auth.authentication, asy
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-    const removalReasons = await RemovalReason.find({ communityName: communityName }).select(
-      "title reasonMessage communityName"
-    );
+    const removalReasons = await RemovalReason.find({ communityName: communityName });
 
     res.status(200).json(removalReasons);
   } catch (error) {

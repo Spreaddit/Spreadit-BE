@@ -133,7 +133,9 @@ router.post("/google/oauth", auth.verifyGoogleToken, async (req, res) => {
       }
       user.tokens = user.tokens.concat(authTokenInfo);
       await User.updateOne({ _id: user._id }, { $set: { tokens: user.tokens } });
-
+      if (user.isBanned){
+        return res.status(402).send({ message: "The user is banned" });
+      }
       const userObj = await User.generateUserObject(user);
       res.status(200).send({
         access_token: token,

@@ -70,6 +70,7 @@
  * @apiError (400) {String} BadRequest  The server cannot or will not process the request due to something that is perceived to be a client error
  * @apiError (500) {String} InternalServerError  The server encountered an unexpected condition which prevented it from fulfilling the request
  * @apiError (401) {String} NotFound  The enetered credentials are invalid
+ * @apiError (402) {String} The user is banned
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 401 NotFound
  * {
@@ -143,6 +144,7 @@
  *     }
  *
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiError (402) {String}  The user is banned
  *
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 500 Internal Server Error
