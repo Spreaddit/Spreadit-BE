@@ -103,15 +103,12 @@ exports.replyMessage = async (req, res) => {
     });
     await newReply.save();
 
-    // Find the index of the message being replied to in the conversation messages array
     const index = conversation.messages.findIndex(
       (msgId) => msgId.toString() === messageId
     );
 
-    // Insert the new reply message after the message being replied to
     conversation.messages.splice(index + 1, 0, newReply._id);
 
-    // Save the updated conversation
     await conversation.save();
     const reolyObj = await Message.getMessageObject(newReply, userId);
     res.status(201).send({
@@ -128,7 +125,10 @@ exports.getInboxMessages = async (req, res) => {
   try {
     const userId = req.user._id;
     const senderUser = await User.findById(userId);
-    const inboxMessages = await Message.find({ recieverId: userId });
+    const inboxMessages = await Message.find({
+      recieverId: userId,
+      isDeleted: false,
+    });
     if (inboxMessages.length == 0) {
       return res.status(404).json({ error: "No messages found" });
     }
@@ -223,7 +223,8 @@ exports.getAllMessages = async (req, res) => {
     for (const conversation of userConversations) {
       for (const message of conversation.messages) {
         const messageObj = await Message.getMessageObject(message, userId);
-        allMessages.push(messageObj);
+        if (message.recieverId.equals(userId) && message.isDeleted) {
+        } else allMessages.push(messageObj);
       }
     }
 
@@ -241,6 +242,7 @@ exports.getPostReplies = async (req, res) => {
     const allMessages = await Message.find({
       recieverId: userId,
       contentType: "comment",
+      isDeleted: false,
     });
     if (allMessages.length == 0) {
       return res.status(404).json({ error: "No messages found" });
@@ -265,6 +267,7 @@ exports.getUserMentions = async (req, res) => {
     const allMessages = await Message.find({
       recieverId: userId,
       contentType: "mention",
+      isDeleted: false,
     });
     if (allMessages.length == 0) {
       return res.status(404).json({ error: "No messages found" });
@@ -293,12 +296,12 @@ exports.getSentMessages = async (req, res) => {
     if (allMessages.length == 0) {
       return res.status(404).json({ error: "No messages found" });
     }
-    allMessagesWithStatus = allMessages.map((message) => {
-      return {
-        ...message.toObject(),
-        status: "outgoing",
-      };
-    });
+    allMessagesWithStatus = await Promise.all(
+      allMessages.map(async (message) => {
+        const messageObj = await Message.getMessageObject(message, userId);
+        return messageObj;
+      })
+    );
     res.status(200).json(allMessagesWithStatus);
   } catch (error) {
     console.error("Error get message :", error);
@@ -375,17 +378,15 @@ exports.getUnreadMessages = async (req, res) => {
     const unreadMessages = await Message.find({
       recieverId: userId,
       isRead: false,
+      isDeleted: false,
     });
     if (unreadMessages.length == 0) {
       return res.status(404).json({ error: "No unread messages found" });
     }
     unreadMessagesWithStatus = await Promise.all(
       unreadMessages.map(async (message) => {
-        // Add status attribute to each inbox message and return
-        return {
-          ...message.toObject(),
-          status: "incoming",
-        };
+        const messageObj = await Message.getMessageObject(message, userId);
+        return messageObj;
       })
     );
     res.status(200).json(unreadMessagesWithStatus);
