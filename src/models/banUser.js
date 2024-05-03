@@ -9,6 +9,10 @@ const BanUserSchema = new Schema(
       index: true,
       ref: "user",
     },
+    userWhoBan: {
+      type: String,
+      index: true,
+    },
     banDuration: {
       type: Date,
     },
@@ -32,6 +36,7 @@ const BanUserSchema = new Schema(
     modNote: {
       type: String,
       trim: true,
+      default: "",
     },
   },
   {

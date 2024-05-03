@@ -17,7 +17,7 @@ router
 router
   .route("/community/moderation/:communityName/:username/ban")
   .post(auth.authentication, banInviteController.banUser)
-  .put(auth.authentication, banInviteController.editBan);
+  .patch(auth.authentication, banInviteController.editBan);
 
 router
   .route("/community/moderation/:communityName/:username/unban")

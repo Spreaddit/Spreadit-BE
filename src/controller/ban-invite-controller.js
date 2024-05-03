@@ -73,6 +73,7 @@ exports.banUser = async (req, res) => {
       communityName: communityName,
       banMessage: req.body.banMessage,
       modNote: req.body.modNote,
+      userWhoBan: req.user.username,
     };
     const ban = new BanUser(banData);
     await ban.save();
@@ -137,8 +138,9 @@ exports.editBan = async (req, res) => {
     const moderator = await Moderator.findOne({
       username: req.user.username,
       communityName: communityName,
-      // isAccepted: true,
+      isAccepted: true,
     });
+    console.log(moderator);
     if (!moderator) {
       return res.status(404).send({ message: "Moderator not found" });
     }
@@ -309,7 +311,6 @@ exports.checkUserBanStatus = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 exports.getBannedUsersInCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -338,9 +339,17 @@ exports.getBannedUsersInCommunity = async (req, res) => {
     const bannedUsersDetails = await Promise.all(
       bannedUsers.map(async (bannedUser) => {
         const user = await User.findById(bannedUser.userId);
-        const userObj = await User.generateUserObject(user);
+        const banPeriod = bannedUser.isPermanent
+          ? "Permanent"
+          : bannedUser.banDuration.toDateString();
         return {
-          userObj,
+          username: user.username,
+          userProfilePic: user.avatar,
+          reasonForBan: bannedUser.reason,
+          userWhoBan: bannedUser.userWhoBan,
+          banPeriod: banPeriod,
+          isPermanent: bannedUser.isPermanent,
+          modNote: bannedUser.modNote || "",
         };
       })
     );
