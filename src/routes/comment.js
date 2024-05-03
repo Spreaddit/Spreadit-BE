@@ -83,7 +83,7 @@ router.post(
       const mentionedUsernames = content.match(/@(\S+)/g);
       if (mentionedUsernames !== null) {
         const mentionedUsers = await User.find({
-          username: { $in: mentionedUsernames..map((username) => username.slice(1)) },
+          username: { $in: mentionedUsernames.map((username) => username.slice(1)) },
         });
         console.log(mentionedUsers);
 
