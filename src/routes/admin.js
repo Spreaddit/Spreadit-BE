@@ -21,13 +21,13 @@ router.post("/dashboard/ban", auth.authentication, async (req, res) => {
       if (!userToBeBanned) {
         return res.status(404).send({ message: "User is not found" });
       }
-      if (adminId[0]._id.equals(req.user.roleId)) {
-        const user = await User.findByIdAndUpdate(
-          userToBeBanned._id,
-          { isBanned: true },
-          { new: true, runValidators: true }
-        );
-        userToBeBanned.save();
+      let previousBan = [];
+      previousBan = await BanUser.find({userId: userToBeBanned._id }); 
+      if (adminId[0]._id.equals(req.user.roleId) && previousBan.length === 0) {
+        const user = await User.findById(userToBeBanned._id);
+        user.isBanned = true;
+        console.log(user);
+        user.save();
         if (!user) {
           return res.status(404).send({ message: "User is not found" });
         }
@@ -68,6 +68,9 @@ router.post("/dashboard/ban", auth.authentication, async (req, res) => {
           user: userObj,
           message: "User Banned successfully",
         });
+      }
+      else if(previousBan !== 0 && userToBeBanned.isBanned === true){
+        return res.status(402).send({message: "the user is already banned"});
       } else return res.status(401).send({ message: "You are not authorized" });
     } catch (e) {
       res.status(500).send({ message: "Internal server error" });

@@ -436,7 +436,11 @@ UserSchema.statics.verifyCredentials = async function (usernameOremail, password
   if (userByEmail) {
     user = userByEmail;
   }
-
+  console.log(password);
+  
+  const decryptedPassword = await bcrypt.compare(password, user.password);
+  console.log(decryptedPassword)
+  console.log(await bcrypt.compare(password, user.password));
   if (user && (await bcrypt.compare(password, user.password))) {
     return user;
   } else {
