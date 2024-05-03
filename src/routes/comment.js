@@ -47,17 +47,24 @@ router.post(
       });
 
       const communityName = post.community;
-      const community = await Community.findOne({ communityName: communityName });
-      const contributors = community.contributors;
-      if (contributors.includes(userId) && (community.type === "Restricted" || community.type == "Private")) {
+      console.log(communityName);
+      const community = await Community.findOne({
+        name: communityName,
+      });
+      const contributors = community.members;
+      if (
+        contributors.includes(userId) &&
+        (community.type === "Restricted" || community.type == "Private")
+      ) {
         newComment.isApproved = true;
-      }
-      else if ((community.type === "Restricted" || community.type == "Private")) {
+      } else if (
+        community.type === "Restricted" ||
+        community.type == "Private"
+      ) {
         return res.status(400).send({
           message: "You are not an approved user to this community",
         });
       }
-
 
       if (req.files) {
         for (let i = 0; i < req.files.length; i++) {
@@ -72,6 +79,43 @@ router.post(
       await newComment.save();
       await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
       const commentObj = await Comment.getCommentObject(newComment, userId);
+
+      const mentionedUsernames = content
+        .match(/@(\S+)/g)
+        .map((username) => username.slice(1));
+
+      if (mentionedUsernames) {
+        const mentionedUsers = await User.find({
+          username: { $in: mentionedUsernames },
+        });
+        console.log(mentionedUsers);
+
+        for (const mentionedUser of mentionedUsers) {
+          if (!userId.equals(mentionedUser._id)) {
+            const newMessage = new Message({
+              senderId: userId,
+              recieverId: mentionedUser._id,
+              conversationSubject: `Mention in post comment`,
+              contentType: "mention",
+              content: commentObj,
+            });
+            await newMessage.save();
+            await Notification.sendNotification(
+              post.userId,
+              "You have recieved a new notification",
+              `${req.user.username} commented your post`
+            );
+            const notification = new Notification({
+              userId: mentionedUser._id,
+              content: `${req.user.username} mentioned you in a comment`,
+              relatedUserId: req.user._id,
+              notificationTypeId: NotificationType.mention._id,
+              postId: post._id,
+            });
+            await notification.save();
+          }
+        }
+      }
 
       //notification
       userWhoCreatedPost = await User.findById(post.userId);
@@ -94,7 +138,7 @@ router.post(
         await notification.save();
       }
 
-      //message 
+      //message
 
       if (!(userId.toString() === recieverId.toString())) {
         const newMessage = new Message({
@@ -102,11 +146,10 @@ router.post(
           recieverId: recieverId,
           conversationSubject: `post reply : ${post.title}`,
           contentType: "comment",
-          content: newComment,
+          content: commentObj,
         });
 
         await newMessage.save();
-        console.log(newMessage.content.userId);
       }
 
       res.status(201).send({
@@ -129,7 +172,10 @@ router.delete(
       const adminId = await UserRole.find({
         name: "Admin",
       }).select("_id");
-      if ((comment.userId.toString() !== userId.toString()) || (adminId[0]._id !== req.user.roleId)) {
+      if (
+        comment.userId.toString() !== userId.toString() ||
+        adminId[0]._id !== req.user.roleId
+      ) {
         return res.status(403).send({
           message: "You are not authorized to delete this comment",
         });
@@ -140,8 +186,10 @@ router.delete(
           message: "comment not found",
         });
       }
-      if ((adminId[0]._id.equals(req.user.roleId)) || (comment.userId.toString() === userId.toString())) {
-
+      if (
+        adminId[0]._id.equals(req.user.roleId) ||
+        comment.userId.toString() === userId.toString()
+      ) {
         await Comment.deleteMany({ parentCommentId: req.params.commentId });
         const post = await Post.findOneAndUpdate(
           { _id: comment.postId },
@@ -378,7 +426,9 @@ router.post(
         });
       }
 
-      const community = await Community.findOne({ communityName: rootComment.community });
+      const community = await Community.findOne({
+        communityName: rootComment.community,
+      });
       const contributors = community.contributors;
 
       const newReply = new Comment({
@@ -387,7 +437,10 @@ router.post(
         parentCommentId,
       });
 
-      if (contributors.includes(userId) && (community.type === "Restricted" || community.type === "Private")) {
+      if (
+        contributors.includes(userId) &&
+        (community.type === "Restricted" || community.type === "Private")
+      ) {
         newReply.isApproved = true;
       }
 
@@ -513,8 +566,9 @@ router.post(
       }
 
       res.status(200).send({
-        message: `Comment has been ${isHidden ? "unhidden" : "hidden"
-          } successfully`,
+        message: `Comment has been ${
+          isHidden ? "unhidden" : "hidden"
+        } successfully`,
       });
     } catch (err) {
       res.status(500).send(err.toString());
@@ -568,12 +622,14 @@ router.post(
       netVotes = netVotes + 1;
       await comment.save();
       userWhoCreatedComment = await User.findById(comment.userId);
-      
-      const userDisabledCommunities = userWhoCreatedComment.disabledCommunities.map(c => c.toString());
+
+      const userDisabledCommunities =
+        userWhoCreatedComment.disabledCommunities.map((c) => c.toString());
       if (userDisabledCommunities.includes(community._id.toString())) {
         return res.status(200).json({
           votes: netVotes,
-          message: "Post upvoted successfully, but notifications are disabled for this community",
+          message:
+            "Post upvoted successfully, but notifications are disabled for this community",
         });
       }
       if (

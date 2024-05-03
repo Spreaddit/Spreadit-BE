@@ -30,9 +30,18 @@ exports.sortPostNew = async (req, res) => {
     const skip = (page - 1) * limit;
     const totalPosts = await Post.countDocuments();
     const totalPages = Math.ceil(totalPosts / limit);
-    // const communities = await Community.find({ category: { $ne: "private" } });
-    // const communityIds = communities.map((community) => community._id);
-    const posts = await Post.find().sort({ date: -1 }).skip(skip).limit(limit);
+
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    })
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(limit);
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
@@ -60,7 +69,14 @@ exports.sortPostTop = async (req, res) => {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    const posts = await Post.find();
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    });
 
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
@@ -201,7 +217,16 @@ exports.sortPostViews = async (req, res) => {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    const posts = await Post.find().sort({ numberOfViews: -1 }).exec();
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    })
+      .sort({ numberOfViews: -1 })
+      .exec();
 
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
@@ -242,7 +267,16 @@ exports.sortPostComment = async (req, res) => {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    const posts = await Post.find().sort({ commentsCount: -1 }).exec();
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    })
+      .sort({ commentsCount: -1 })
+      .exec();
 
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
@@ -281,7 +315,14 @@ exports.sortPostBest = async (req, res) => {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    const posts = await Post.find().exec();
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    }).exec();
 
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
@@ -331,10 +372,17 @@ exports.sortPostHot = async (req, res) => {
   try {
     const userId = req.user._id;
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
 
-    const posts = await Post.find().exec();
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    }).exec();
 
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
@@ -534,7 +582,14 @@ exports.sortPostTopTime = async (req, res) => {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    const posts = await Post.find().exec();
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    }).exec();
 
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });

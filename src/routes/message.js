@@ -37,6 +37,10 @@ router
   .get(auth.authentication, messageController.getPostReplies);
 
 router
+  .route("/message/mentions/")
+  .get(auth.authentication, messageController.getUserMentions);
+
+router
   .route("/message/sent/")
   .get(auth.authentication, messageController.getSentMessages);
 

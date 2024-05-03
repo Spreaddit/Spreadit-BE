@@ -258,6 +258,30 @@ exports.getPostReplies = async (req, res) => {
   }
 };
 
+exports.getUserMentions = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const senderUser = await User.findById(userId);
+    const allMessages = await Message.find({
+      recieverId: userId,
+      contentType: "mention",
+    });
+    if (allMessages.length == 0) {
+      return res.status(404).json({ error: "No messages found" });
+    }
+    allMessagesWithStatus = await Promise.all(
+      allMessages.map(async (message) => {
+        const messageObj = await Message.getMessageObject(message, userId);
+        return messageObj;
+      })
+    );
+    res.status(200).json(allMessagesWithStatus);
+  } catch (error) {
+    console.error("Error get message :", error);
+    return res.status(500).json({ error: "internal server error" });
+  }
+};
+
 exports.getSentMessages = async (req, res) => {
   try {
     const userId = req.user._id;
