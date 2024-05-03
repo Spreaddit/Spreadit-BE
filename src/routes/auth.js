@@ -426,8 +426,10 @@ router.post("/forgot-username", async (req, res) => {
 router.get("/user/profile-info/:username", async (req, res) => {
   try {
     const { username } = req.params;
-    const user = await User.findOne({ username })
-      .select("username name avatar banner bio createdAt subscribedCommunities isVisible isActive socialLinks")
+    const user1 = await User.getUserByEmailOrUsername(username)
+    
+    const user = await User.findById(user1._id)
+      .select("username name avatar banner about createdAt subscribedCommunities isVisible isActive socialLinks")
       .populate({
         path: "subscribedCommunities",
         select: "name image communityBanner membersCount",
@@ -470,22 +472,15 @@ router.put(
       const avatar = req.files['avatar'] ? req.files['avatar'][0] : null;
       const banner = req.files['banner'] ? req.files['banner'][0] : null;
       let avatarUrl, bannerUrl;
-      if (avatar && banner) {
-        const avatarResult = await uploadMedia(avatar, fileType);
-        const bannerResult = await uploadMedia(banner, fileType);
+
+      if (avatar) {
+        const avatarResult = await uploadMedia(avatar, "image");
         avatarUrl = avatarResult.secure_url;
+      }
+      if (banner) {
+        const bannerResult = await uploadMedia(banner, "image");
         bannerUrl = bannerResult.secure_url;
       }
-      const updatedFields = {
-        name,
-        avatar: avatarUrl,
-        banner: bannerUrl,
-        about,
-        socialLinks,
-        username,
-        isVisible,
-        isActive,
-      };
       const user = await User.findById(userId);
 
       if (username) {
@@ -495,23 +490,27 @@ router.put(
         }
       }
 
-      const updatedUser = await User.findOneAndUpdate({ _id: userId }, { $set: updatedFields }, { new: true });
-
-      if (!updatedUser) {
-        return res.status(404).json({ message: "User not found" });
-      }
+      user.name = name;
+      user.avatar = avatarUrl;
+      user.banner = bannerUrl;
+      user.about = about;
+      user.socialLinks = socialLinks;
+      user.username = username;
+      user.isVisible = isVisible;
+      user.isActive = isActive;
+      await user.save();
 
       res.status(200).json({
-        username: updatedUser.username,
-        name: updatedUser.name,
-        avatar: updatedUser.avatar,
-        banner: updatedUser.banner,
-        about: updatedUser.about,
-        createdAt: updatedUser.createdAt,
-        subscribedCommunities: updatedUser.subscribedCommunities,
-        isVisible: updatedUser.isVisible,
-        isActive: updatedUser.isActive,
-        socialLinks: updatedUser.socialLinks,
+        username: user.username,
+        name: user.name,
+        avatar: user.avatar,
+        banner: user.banner,
+        about: user.about,
+        createdAt: user.createdAt,
+        subscribedCommunities: user.subscribedCommunities,
+        isVisible: user.isVisible,
+        isActive: user.isActive,
+        socialLinks: user.socialLinks,
       });
     } catch (error) {
       console.error(error);

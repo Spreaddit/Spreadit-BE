@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const config = require("../src/configuration");
 const User = require("../src/models/user");
 const Report = require("../src/models/report");
-const connectionUrl = config.testConnectionString;
+const connectionUrl = "mongodb://localhost:27017/testDBComments";
 
 
 beforeAll(async () => {
@@ -114,7 +114,14 @@ beforeEach(async () => {
     await new Comment(comment2).save();
     
 });
-
+afterEach(async() => {
+    await User.deleteMany({});
+    await Community.deleteMany({});
+    await Rule.deleteMany({});
+    await Comment.deleteMany({});
+    await Moderator.deleteMany({});
+    await Post.deleteMany({});
+});
 
 test("posting a comment", async()=>{
     const login = await request(app)

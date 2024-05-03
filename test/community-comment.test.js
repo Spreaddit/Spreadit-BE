@@ -11,7 +11,7 @@ const userRole = require('../seed-data/constants/userRole.js');
 const Rule = require('../src/models/rule.js');
 const config = require("../src/configuration.js");
 
-const connectionUrl = config.testConnectionString;
+const connectionUrl = "mongodb://localhost:27017/testDBCommentsCommuntiy";
 
 
 beforeAll(async () => {
@@ -150,6 +150,15 @@ beforeEach(async () => {
     await new Moderator(moderator).save();
     await Post.deleteMany({});
     await new Post(post).save();
+});
+
+afterEach(async() => {
+    await User.deleteMany({});
+    await Community.deleteMany({});
+    await Rule.deleteMany({});
+    await Comment.deleteMany({});
+    await Moderator.deleteMany({});
+    await Post.deleteMany({});
 });
 async function getUser(username_email) {
     const user = await User.find({
