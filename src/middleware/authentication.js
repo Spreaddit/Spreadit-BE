@@ -20,6 +20,9 @@ const authentication = async (req, res, next) => {
     if (!user) {
       throw new Error();
     }
+    if (user.isBanned === true){
+      res.status(401).send({ message: "The user is banned" });
+    }
     //get all expired tokens
     const expiredTokens = user.tokens.filter(
       (token) => token.token_expiration_date <= Date.now()
@@ -44,9 +47,6 @@ const authentication = async (req, res, next) => {
         throw new Error();
       }
       userSend = newUser;
-      if (userSend.isBanned === true){
-        res.status(401).send({ message: "The user is banned" });
-      }
     }
     res.set("Access-Control-Allow-Origin", "*");
     req.user = userSend;
