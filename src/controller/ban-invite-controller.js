@@ -473,9 +473,19 @@ exports.acceptInvite = async (req, res) => {
     }
     moderator.isAccepted = true;
     await moderator.save();
-    community.moderators.push(userId);
+    if (!community.moderators.includes(userId)) {
+      community.moderators.push(userId);
+    }
+    if (!community.members.includes(userId)) {
+      community.members.push(userId);
+    }
     await community.save();
-    user.moderatedCommunities.push(community._id);
+    if (!user.moderatedCommunities.includes(userId))
+      user.moderatedCommunities.push(community._id);
+
+    if (!user.subscribedCommunities.includes(userId))
+      user.subscribedCommunities.push(community._id);
+
     await user.save();
 
     return res
