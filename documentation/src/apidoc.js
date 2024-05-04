@@ -8380,3 +8380,275 @@
  */
 
 //#endregion ban-invite
+
+//#region Notifications
+
+/**
+ * @api {put} /notifications/mark-all-as-read Mark All Notifications as Read
+ * @apiVersion 0.1.0
+ * @apiName MarkAllNotificationsAsRead
+ * @apiGroup Notifications
+ * @apiDescription Marks all notifications and messages as read for the authenticated user.
+ * This endpoint updates the `isRead` field to true for all notifications and messages belonging to the user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {String} message Success message indicating notifications marked as read successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Notifications marked as read successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized User is not authenticated.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {put} /notifications/read-notification/:notificationId Mark Notification as Read
+ * @apiVersion 0.1.0
+ * @apiName MarkNotificationAsRead
+ * @apiGroup Notifications
+ * @apiDescription Marks a specific notification as read for the authenticated user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} notificationId ID of the notification to mark as read.
+ * @apiParamExample {json} Example:
+ *     {
+ *       "notificationId": "609cfff1c8b58f001d54ee1e"
+ *     }
+ *
+ * @apiSuccess {String} message Success message indicating notification marked as read successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Notification has been marked as read successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Notification with the provided ID not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /notifications/unread/count Get Unread Notification Count
+ * @apiVersion 0.1.0
+ * @apiName GetUnreadNotificationCount
+ * @apiGroup Notifications
+ * @apiDescription Retrieves the count of unread notifications and messages for the authenticated user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {Number} unreadCount Total count of unread notifications and messages.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "unreadCount": 5
+ *     }
+ *
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /notifications Get All Notifications
+ * @apiVersion 0.1.0
+ * @apiName GetAllNotifications
+ * @apiGroup Notifications
+ * @apiDescription Retrieves all notifications for the authenticated user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {Object[]} notifications Array of notification objects.
+ * @apiSuccess {String} notifications._id Unique ID of the notification.
+ * @apiSuccess {String} notifications.userId ID of the user associated with the notification.
+ * @apiSuccess {String} notifications.postId ID of the post associated with the notification.
+ * @apiSuccess {String} notifications.commentId ID of the comment associated with the notification.
+ * @apiSuccess {String} notifications.content Content of the notification.
+ * @apiSuccess {String} notifications.notification_type Type of the notification.
+ * @apiSuccess {Object} notifications.related_user Related user details.
+ * @apiSuccess {String} notifications.related_user.username Username of the related user.
+ * @apiSuccess {String} notifications.related_user.avatar Avatar URL of the related user.
+ * @apiSuccess {Object} notifications.post Post details associated with the notification.
+ * @apiSuccess {String} notifications.post.title Title of the post.
+ * @apiSuccess {String} notifications.post.community Community of the post.
+ * @apiSuccess {Object} notifications.comment Comment details associated with the notification.
+ * @apiSuccess {String} notifications.comment.content Content of the comment.
+ * @apiSuccess {String} notifications.comment.postTitle Title of the post related to the comment.
+ * @apiSuccess {String} notifications.comment.communityTitle Community of the post related to the comment.
+ * @apiSuccess {Boolean} notifications.is_read Indicates if the notification has been read.
+ * @apiSuccess {Boolean} notifications.is_hidden Indicates if the notification is hidden.
+ * @apiSuccess {Date} notifications.created_at Date and time when the notification was created.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "609cfff1c8b58f001d54ee1e",
+ *         "userId": "609cfff1c8b58f001d54ee1f",
+ *         "postId": "609d0222c8b58f001d54ee20",
+ *         "commentId": "609d0222c8b58f001d54ee21",
+ *         "content": "Your post has a new comment",
+ *         "notification_type": "Comment",
+ *         "related_user": {
+ *           "username": "example_user",
+ *           "avatar": "https://example.com/avatar.jpg"
+ *         },
+ *         "post": {
+ *           "title": "Example Post",
+ *           "community": "Example Community"
+ *         },
+ *         "comment": {
+ *           "content": "This is a new comment",
+ *           "postTitle": "Example Post",
+ *           "communityTitle": "Example Community"
+ *         },
+ *         "is_read": false,
+ *         "is_hidden": false,
+ *         "created_at": "2024-05-04T12:00:00.000Z"
+ *       }
+ *     ]
+ *
+ * @apiError (404) NotFound No notifications found for the user.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /notifications/hide/:notificationId Hide Notification
+ * @apiVersion 0.1.0
+ * @apiName HideNotification
+ * @apiGroup Notifications
+ * @apiDescription Hides a specific notification for the authenticated user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} notificationId ID of the notification to hide.
+ * @apiParamExample {json} Example:
+ *     {
+ *       "notificationId": "609cfff1c8b58f001d54ee1e"
+ *     }
+ *
+ * @apiSuccess {String} message Success message indicating notification hidden successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Notification hidden successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Notification with the provided ID not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/suggest Suggest Community
+ * @apiVersion 0.1.0
+ * @apiName SuggestCommunity
+ * @apiGroup Notifications
+ * @apiDescription Suggests a random community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {String} communityname Name of the suggested community.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "communityname": "example_community"
+ *     }
+ *
+ * @apiError (404) NotFound No communities found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/update/disable/:communityname Disable Community Updates
+ * @apiVersion 0.1.0
+ * @apiName DisableCommunityUpdates
+ * @apiGroup Notifications
+ * @apiDescription Disables updates for a specified community for the authenticated user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityname Name of the community to disable updates for.
+ * @apiParamExample {json} Example:
+ *     {
+ *       "communityname": "example_community"
+ *     }
+ *
+ * @apiSuccess {String} message Success message indicating updates disabled for the specified community.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Updates disabled for the specified community"
+ *     }
+ *
+ * @apiError (404) NotFound Community with the provided name not found.
+ * @apiError (400) BadRequest Community updates are already disabled for the user.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /notifications/subscribe Subscribe to Notifications
+ * @apiVersion 0.1.0
+ * @apiName SubscribeToNotifications
+ * @apiGroup Notifications
+ * @apiDescription Subscribes the authenticated user to receive notifications via Firebase Cloud Messaging (FCM).
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} fcmToken Firebase Cloud Messaging token for subscription.
+ * @apiParamExample {json} Example:
+ *     {
+ *       "fcmToken": "example_fcm_token"
+ *     }
+ *
+ * @apiSuccess {String} message Success message indicating subscription added successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Subscription added successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Subscription already exists for the provided FCM token.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal Server Error"
+ *     }
+ */
+
+//#endregion
