@@ -116,7 +116,11 @@ const CommunitySchema = new Schema({
     ref: "user",
     index: true,
   },
-  insights: {
+  last7DaysInsights: {
+    type: [InsightSchema],
+    default: [],
+  },
+  monthlyInsights: {
     type: [InsightSchema],
     default: [],
   },

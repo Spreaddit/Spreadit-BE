@@ -405,22 +405,39 @@ router.get("/community/:communityName/get-info", auth.authentication, async (req
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-
     const currentDate = new Date();
     const currentMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 
-    const lastInsight = community.insights[community.insights.length - 1];
+    const lastMonthlyInsight = community.monthlyInsights[community.monthlyInsights.length - 1];
 
-    if (!lastInsight || lastInsight.month.getMonth() !== currentMonthStart.getMonth()) {
-      const newInsight = {
+    const last7DaysInsight = community.last7DaysInsights[community.last7DaysInsights.length - 1];
+
+    if (!lastMonthlyInsight || lastMonthlyInsight.month.getMonth() !== currentMonthStart.getMonth()) {
+      const newMonthlyInsight = {
         month: new Date(currentMonthStart),
         views: 1,
         newMembers: 0,
         leavingMembers: 0,
       };
-      community.insights.push(newInsight);
+      community.monthlyInsights.push(newMonthlyInsight);
     } else {
-      lastInsight.views += 1;
+      lastMonthlyInsight.views += 1;
+    }
+
+    if (!last7DaysInsight || !isSameDay(last7DaysInsight.month, currentDate)) {
+      const new7DaysInsight = {
+        month: new Date(),
+        views: 1,
+        newMembers: 0,
+        leavingMembers: 0,
+      };
+      community.last7DaysInsights.push(new7DaysInsight);
+    } else {
+      last7DaysInsight.views += 1;
+    }
+
+    if (community.last7DaysInsights.length > 7) {
+      community.last7DaysInsights.shift();
     }
 
     await community.save();
@@ -430,7 +447,18 @@ router.get("/community/:communityName/get-info", auth.authentication, async (req
     res.status(500).json({ message: "Internal server error" });
   }
 });
-///////////////////
+
+function isSameDay(date1, date2) {
+  if (!date1 || !date2) {
+    return false;
+  }
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+}
+
 router.get("/community/moderation/:communityName/contributors", auth.authentication, async (req, res) => {
   try {
     const communityName = req.params.communityName;
@@ -982,8 +1010,12 @@ router.get("/community/:communityName/insights", auth.authentication, async (req
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
+    const insights = {
+      monthlyInsights: community.monthlyInsights,
+      last7DaysInsights: community.last7DaysInsights,
+    };
 
-    res.status(200).json(community.insights);
+    res.status(200).json(insights);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

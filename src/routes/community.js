@@ -199,6 +199,17 @@ router.get("/community/muted", auth.authentication, async (req, res) => {
   }
 });
 
+function isSameDay(date1, date2) {
+  if (!date1 || !date2) {
+    return false;
+  }
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+}
+
 router.post("/community/subscribe", auth.authentication, async (req, res) => {
   try {
     const { communityName } = req.body;
@@ -223,26 +234,42 @@ router.post("/community/subscribe", auth.authentication, async (req, res) => {
     if (user.subscribedCommunities.includes(community._id)) {
       return res.status(400).json({ message: "User is already subscribed" });
     }
-    const lastInsight = community.insights[community.insights.length - 1];
-    const currentDate = new Date();
-    const lastInsightDate = new Date(lastInsight.month);
 
-    if (
-      currentDate.getMonth() !== lastInsightDate.getMonth() ||
-      currentDate.getFullYear() !== lastInsightDate.getFullYear()
-    ) {
-      const newInsight = {
-        month: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
+    const currentDate = new Date();
+    const currentMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+    const lastMonthlyInsight = community.monthlyInsights[community.monthlyInsights.length - 1];
+
+    const last7DaysInsight = community.last7DaysInsights[community.last7DaysInsights.length - 1];
+
+    if (!lastMonthlyInsight || lastMonthlyInsight.month.getMonth() !== currentMonthStart.getMonth()) {
+      const newMonthlyInsight = {
+        month: new Date(currentMonthStart),
         views: 0,
         newMembers: 1,
         leavingMembers: 0,
       };
-      community.insights.push(newInsight);
-      await community.save();
+      community.monthlyInsights.push(newMonthlyInsight);
     } else {
-      community.insights[community.insights.length - 1].newMembers += 1;
-      await community.save();
+      lastMonthlyInsight.newMembers += 1;
     }
+
+    if (!last7DaysInsight || !isSameDay(last7DaysInsight.month, currentDate)) {
+      const new7DaysInsight = {
+        month: new Date(),
+        views: 0,
+        newMembers: 1,
+        leavingMembers: 0,
+      };
+      community.last7DaysInsights.push(new7DaysInsight);
+    } else {
+      last7DaysInsight.newMembers += 1;
+    }
+
+    if (community.last7DaysInsights.length > 7) {
+      community.last7DaysInsights.shift();
+    }
+
     user.subscribedCommunities.push(community._id);
     await user.save();
     community.membersCount += 1;
@@ -275,25 +302,40 @@ router.post("/community/unsubscribe", auth.authentication, async (req, res) => {
     if (!user.subscribedCommunities.includes(community._id)) {
       return res.status(403).json({ message: "User isn't subscribed to community" });
     }
-    const lastInsight = community.insights[community.insights.length - 1];
-    const currentDate = new Date();
-    const lastInsightDate = new Date(lastInsight.month);
 
-    if (
-      currentDate.getMonth() !== lastInsightDate.getMonth() ||
-      currentDate.getFullYear() !== lastInsightDate.getFullYear()
-    ) {
-      const newInsight = {
-        month: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
+    const currentDate = new Date();
+    const currentMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+    const lastMonthlyInsight = community.monthlyInsights[community.monthlyInsights.length - 1];
+
+    const last7DaysInsight = community.last7DaysInsights[community.last7DaysInsights.length - 1];
+
+    if (!lastMonthlyInsight || lastMonthlyInsight.month.getMonth() !== currentMonthStart.getMonth()) {
+      const newMonthlyInsight = {
+        month: new Date(currentMonthStart),
         views: 0,
         newMembers: 0,
         leavingMembers: 1,
       };
-      community.insights.push(newInsight);
-      await community.save();
+      community.monthlyInsights.push(newMonthlyInsight);
     } else {
-      community.insights[community.insights.length - 1].leavingMembers += 1;
-      await community.save();
+      lastMonthlyInsight.leavingMembers += 1;
+    }
+
+    if (!last7DaysInsight || !isSameDay(last7DaysInsight.month, currentDate)) {
+      const new7DaysInsight = {
+        month: new Date(),
+        views: 0,
+        newMembers: 0,
+        leavingMembers: 1,
+      };
+      community.last7DaysInsights.push(new7DaysInsight);
+    } else {
+      last7DaysInsight.leavingMembers += 1;
+    }
+
+    if (community.last7DaysInsights.length > 7) {
+      community.last7DaysInsights.shift();
     }
     const index = user.subscribedCommunities.indexOf(community._id);
     user.subscribedCommunities.splice(index, 1);
