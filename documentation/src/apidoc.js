@@ -8740,6 +8740,7 @@
  *         {
  *           "postId": "609d0222c8b58f001d54ee20",
  *           "title": "New Product Launch",
+ *           "content":"Test Content",
  *           "isnsfw": false,
  *           "isSpoiler": false,
  *           "votesCount": 50,
@@ -8754,6 +8755,7 @@
  *         {
  *           "postId": "609d033ec8b58f001d54ee23",
  *           "title": "Tech Talk",
+ *           "content":"Test Content",
  *           "isnsfw": false,
  *           "isSpoiler": false,
  *           "votesCount": 30,
@@ -8838,6 +8840,7 @@
  *         {
  *           "postId": "609d0222c8b58f001d54ee20",
  *           "title": "New Product Launch",
+ *           "content":"Test Content",
  *           "isnsfw": false,
  *           "isSpoiler": false,
  *           "votesCount": 50,
@@ -8852,6 +8855,7 @@
  *         {
  *           "postId": "609d033ec8b58f001d54ee23",
  *           "title": "Tech Talk",
+ *           "content":"Test Content",
  *           "isnsfw": false,
  *           "isSpoiler": false,
  *           "votesCount": 30,
@@ -8967,6 +8971,7 @@
  *         {
  *           "postId": "609d042ac8b58f001d54ee25",
  *           "title": "The Future of Artificial Intelligence",
+ *           "content":"Test Content",
  *           "isnsfw": false,
  *           "isSpoiler": false,
  *           "votesCount": 150,

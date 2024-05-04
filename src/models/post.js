@@ -213,6 +213,7 @@ PostSchema.statics.getPostResultObject = async function (post) {
   const postResultObject = {
     postId: post._id.toString(),
     title: post.title,
+    content: post.content,
     isnsfw: post.isNsfw || false,
     isSpoiler: post.isSpoiler || false,
     votesCount: (post.upVotes.length || 0) - (post.downVotes.length || 0),
