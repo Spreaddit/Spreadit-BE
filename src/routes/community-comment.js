@@ -4,8 +4,6 @@ const communityCommentController = require("../controller/community-comment");
 const upload = require("../service/fileUpload");
 const auth = require("../middleware/authentication");
 
-//I need to check ek approved users dah while creating a comment or a reply to a comment
-//I need to check mawdo3 el settings while creating comments bardo
 
 router
     .route("/community/moderation/:communityName/spam-comment/:commentId")

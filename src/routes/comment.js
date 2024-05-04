@@ -79,6 +79,8 @@ router.post(
       }
       await newComment.save();
       await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
+      post.comments.push(newComment._id);
+      await post.save();
       const commentObj = await Comment.getCommentObject(newComment, userId);
 
       const mentionedUsernames = content.match(/@(\S+)/g);

@@ -149,7 +149,8 @@ exports.unlockComment = async (req, res) => {
 exports.removeComment = async (req, res) => {
     try {
         const { communityName, commentId } = req.params;
-        const removalReason = req.body;
+        const removalReason = req.body.removalReason;
+        console.log(removalReason);
 
         if (!commentId) {
             return res.status(404).json({ message: "Comment not found" });
@@ -170,17 +171,24 @@ exports.removeComment = async (req, res) => {
         await comment.save();
 
         //a3mel add new comment with the removal reason
-        const removalComment = new Comment({
+        let removalComment = new Comment({
             content: removalReason,
             userId: req.user._id,
             parentCommentId: comment._id,
             isRemoval: true,
         });
         await removalComment.save();
+        removalComment=await Comment.find({userId:req.user._id});
         const rootComment = await Comment.findRootComment(comment._id);
-        const post = await Post.find(rootComment.postId);
-        post.comments.push(removalComment._id);
+        const post = await Post.findOne(rootComment.postId);
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+        console.log(post);
+        console.log(post.comments);
         post.commentsCount = (post.commentsCount) + 1;
+        post.comments.push(removalComment._id);
+        
         await post.save();
         return res.status(200).json({ message: "Comment removed successfully" });
     } catch (error) {
