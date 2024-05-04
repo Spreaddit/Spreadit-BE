@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 require("./user");
-require('./removalReason.js');
+require("./removalReason.js");
 require("./rule");
 const InsightSchema = new Schema({
   month: {
@@ -173,7 +173,9 @@ CommunitySchema.statics.isUserFollowingCommunity = async function (userId, commu
   }
   return user.subscribedCommunities.includes(communityId);
 };
+
 CommunitySchema.statics.getCommunityObject = async function (communityName, userId) {
+  const user = await this.model("user").findById(userId);
   const community = await Community.findOne({ name: communityName })
     .select(
       "name category rules removalReasons dateCreated communityBanner image description is18plus allowNfsw allowSpoile communityType creator members moderators membersCount membersNickname contributors settings"
@@ -182,7 +184,8 @@ CommunitySchema.statics.getCommunityObject = async function (communityName, user
     .populate("removalReasons", "title reasonMessage")
     .populate("members", "username banner avatar")
     .populate("moderators", "username banner avatar")
-    .populate("creator", "username banner avatar");
+    .populate("creator", "username banner avatar")
+    .populate("contributors", "username banner avatar");
 
   if (!community) {
     return null;
@@ -208,10 +211,10 @@ CommunitySchema.statics.getCommunityObject = async function (communityName, user
     membersNickname: community.membersNickname,
     contributors: community.contributors,
     settings: community.settings,
-    isModerator: community.moderators.includes(userId),
-    isCreator: userId.equals(community.creator),
-    isMember: community.members.includes(userId),
-    isContributor: community.contributors.includes(userId),
+    isModerator: community.moderators.some((moderator) => moderator._id.equals(user._id)),
+    isCreator: community.creator.equals(user._id),
+    isMember: community.members.some((member) => member._id.equals(user._id)),
+    isContributor: community.contributors.some((contributor) => contributor._id.equals(user._id)),
   };
 };
 

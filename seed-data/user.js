@@ -18,6 +18,7 @@ const users = [
         followers: ["624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0b"],
         followings: ["624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0b"],
         moderatedCommunities: ["624a6a677c8d9c9f5fd5eb1a", "624a6a677c8d9c9f5fd5eb20","624a6a677c8d9c9f5fd5eb22", "624a6a677c8d9c9f5fd5eb29"],
+        mutedCommunities: ["624a6a677c8d9c9f5fd5eb1a","624a6a677c8d9c9f5fd5eb20"],
     },
     {
         _id: "624a4fbf3f392aefdb4dd1c8", // farouq
@@ -36,6 +37,7 @@ const users = [
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a6a677c8d9c9f5fd5eb0b"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a6a677c8d9c9f5fd5eb0b"],
         moderatedCommunities: ["624a6a677c8d9c9f5fd5eb1e", "624a6a677c8d9c9f5fd5eb24", "624a6a677c8d9c9f5fd5eb26"],
+        mutedCommunities: ["624a6a677c8d9c9f5fd5eb1a","624a6a677c8d9c9f5fd5eb20"],
     },
     {
         _id: "624a52d75ff69df002d25035", // mahmoud
@@ -54,6 +56,7 @@ const users = [
         followers: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0b"],
         followings: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0b"],
         moderatedCommunities: ["624a6a677c8d9c9f5fd5eb1b", "624a6a677c8d9c9f5fd5eb1c", "624a48f143bd949036986953", "624a6a677c8d9c9f5fd5eb36", "624a6a677c8d9c9f5fd5eb28"],
+        mutedCommunities: ["624a6a677c8d9c9f5fd5eb1a","624a6a677c8d9c9f5fd5eb20"],
     },
     {
         _id: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
