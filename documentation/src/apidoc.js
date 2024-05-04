@@ -7396,6 +7396,7 @@
  */
 
 //#endregion Admin
+
 //#region message
 /**
  * @api {post} /message/compose/ Send a Message
@@ -7997,5 +7998,385 @@
  *       "error": "Internal server error"
  *     }
  */
-
 //#end region message
+
+//#region ban-invite
+/**
+ * @api {post} /community/moderation/:communityName/:username/invite Invite Moderator
+ * @apiVersion 0.1.0
+ * @apiName InviteModerator
+ * @apiGroup Moderator
+ * @apiDescription Invite a user to become a moderator of a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to invite the user as a moderator.
+ * @apiParam {String} username Username of the user to be invited as a moderator.
+ * @apiParam {Boolean} manageUsers Indicates whether the invited moderator can manage users.
+ * @apiParam {Boolean} managePostsAndComments Indicates whether the invited moderator can manage posts and comments.
+ * @apiParam {Boolean} manageSettings Indicates whether the invited moderator can manage community settings.
+ *
+ * @apiSuccess {String} message Success message indicating the moderator invite was sent successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User is not allowed to invite moderators.
+ * @apiError (404) NotFound Community or user not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission to manage users.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid moderator invite data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "You are not allowed to invite moderators"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission to manage users"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/accept-invite Accept Moderator Invite
+ * @apiVersion 0.1.0
+ * @apiName AcceptModeratorInvite
+ * @apiGroup Moderator
+ * @apiDescription Accept a moderator invitation for a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to accept the moderator invite.
+ *
+ * @apiSuccess {String} message Success message indicating the moderator invite was accepted successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (402) PaymentRequired Moderator invite not found.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Community name is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Payment Required
+ *     {
+ *       "message": "Moderator invite not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/decline-invite Decline Moderator Invite
+ * @apiVersion 0.1.0
+ * @apiName DeclineModeratorInvite
+ * @apiGroup Moderator
+ * @apiDescription Decline a moderator invitation for a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to decline the moderator invite.
+ *
+ * @apiSuccess {String} message Success message indicating the moderator invite was declined successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (402) PaymentRequired Moderator invite not found.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Community name is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Payment Required
+ *     {
+ *       "message": "Moderator invite not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:username/ban Ban User
+ * @apiVersion 0.1.0
+ * @apiName BanUser
+ * @apiGroup Moderator
+ * @apiDescription Ban a user from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community from which to ban the user.
+ * @apiParam {String} username Username of the user to ban.
+ * @apiParam {Date} banDuration Duration of the ban (optional).
+ * @apiParam {String} banMessage Message to be displayed to the banned user.
+ * @apiParam {String} reason Reason for the ban.
+ * @apiParam {Boolean} isPermanent Indicates whether the ban is permanent.
+ * @apiParam {String} [modNote=""] Moderator's note regarding the ban.
+ *
+ * @apiSuccess {Object} user Object containing details of the banned user.
+ * @apiSuccess {String} user.username Username of the banned user.
+ * @apiSuccess {String} user.avatar Avatar URL of the banned user.
+ * @apiSuccess {String} message Success message indicating the user was banned successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User is not allowed to ban users.
+ * @apiError (404) NotFound User, community, or ban record not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Please insert all data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "You are not allowed to manage users"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {patch} /community/moderation/:communityName/:username/ban Edit Ban
+ * @apiVersion 0.1.0
+ * @apiName EditBan
+ * @apiGroup Moderator
+ * @apiDescription Edit the ban details for a user in a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community in which the user is banned.
+ * @apiParam {String} username Username of the banned user.
+ * @apiParam {Date} banDuration New duration of the ban (optional).
+ * @apiParam {String} banMessage New message to be displayed to the banned user.
+ * @apiParam {String} reason New reason for the ban.
+ * @apiParam {Boolean} isPermanent Indicates whether the ban is permanent.
+ *
+ * @apiSuccess {Object} user Object containing details of the banned user.
+ * @apiSuccess {String} user.username Username of the banned user.
+ * @apiSuccess {String} user.avatar Avatar URL of the banned user.
+ * @apiSuccess {String} message Success message indicating the ban was edited successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User is not allowed to manage users.
+ * @apiError (404) NotFound User, community, or ban record not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Please insert all data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "You are not allowed to manage users"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:username/unban Unban User
+ * @apiVersion 0.1.0
+ * @apiName UnbanUser
+ * @apiGroup Moderator
+ * @apiDescription Unban a user from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community from which to unban the user.
+ * @apiParam {String} username Username of the user to unban.
+ *
+ * @apiSuccess {Object} user Object containing details of the unbanned user.
+ * @apiSuccess {String} user.username Username of the unbanned user.
+ * @apiSuccess {String} user.avatar Avatar URL of the unbanned user.
+ * @apiSuccess {String} message Success message indicating the user was unbanned successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User is not allowed to unban users.
+ * @apiError (404) NotFound User, community, or ban record not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Please insert all data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "You are not allowed to manage users"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:username/isbanned Check User Ban Status
+ * @apiVersion 0.1.0
+ * @apiName CheckUserBanStatus
+ * @apiGroup Moderator
+ * @apiDescription Check whether a user is banned from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to check the user's ban status.
+ * @apiParam {String} username Username of the user to check.
+ *
+ * @apiSuccess {Boolean} banned Indicates whether the user is banned from the community.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (404) NotFound Community, user, or ban record not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Please insert all data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community name is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/banned-users Get Banned Users in Community
+ * @apiVersion 0.1.0
+ * @apiName GetBannedUsersInCommunity
+ * @apiGroup Moderator
+ * @apiDescription Get the list of users banned in a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to get banned users from.
+ *
+ * @apiSuccess {Object[]} bannedUsersDetails Array containing details of banned users.
+ * @apiSuccess {String} bannedUsersDetails.username Username of the banned user.
+ * @apiSuccess {String} bannedUsersDetails.userProfilePic Profile picture URL of the banned user.
+ * @apiSuccess {String} bannedUsersDetails.reasonForBan Reason for the ban.
+ * @apiSuccess {String} bannedUsersDetails.userWhoBan Username of the moderator who banned the user.
+ * @apiSuccess {String} bannedUsersDetails.banPeriod Duration of the ban.
+ * @apiSuccess {Boolean} bannedUsersDetails.isPermanent Indicates whether the ban is permanent.
+ * @apiSuccess {String} bannedUsersDetails.modNote Moderator's note regarding the ban.
+ *
+ * @apiError (403) Forbidden User is not a moderator of the community.
+ * @apiError (404) NotFound No users are banned in the community.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "You are not a moderator of this community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "No users are banned in this community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+//#endregion ban-invite
