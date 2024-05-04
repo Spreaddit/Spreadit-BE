@@ -219,11 +219,12 @@ router.post("/settings/add-password/email", auth.authentication, async (req, res
       const emailToken = await user.generateEmailToken();
     let emailContent;
     if (isCross) {
+      //localhost:1234/#/settings/account-settings/add-password/${emailToken}
       emailContent = `To confirm your email, click the link below: app.spreadit.me/verify-email/${emailToken}`;
     } else {
       emailContent = `To confirm your email, click the link below: www.spreadit.me/verify-email/${emailToken}`;
     }
-    await sendEmail(user.email, 'Please Confirm Your Email', emailContent);
+    await sendEmail(user.connectedAccounts[0], 'Please Confirm Your Email', emailContent);
 
       res.status(200).send({ message: "email for adding the passowrd is sent successfully" });
     }
