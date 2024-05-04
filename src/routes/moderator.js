@@ -612,8 +612,14 @@ router.post(
     try {
       const communityName = req.params.communityName;
       const { name, is18plus, communityType, description, fileType, membersNickname } = req.body;
-      const image = req.files["image"] ? req.files["image"][0] : null;
-      const communityBanner = req.files["communityBanner"] ? req.files["communityBanner"][0] : null;
+      let image = null;
+      let communityBanner = null;
+      if (req.files && req.files["image"] && req.files["image"][0]) {
+        image = req.files["image"][0];
+      }
+      if (req.files && req.files["communityBanner"] && req.files["communityBanner"][0]) {
+        communityBanner = req.files["communityBanner"][0];
+      }
 
       if (!communityName) {
         return res.status(400).json({ message: "Invalid request parameters" });
