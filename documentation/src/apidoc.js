@@ -4042,63 +4042,103 @@
 //#region Post
 
 /**
- * @api {post} /post Create Post
+ * @api {post} /posts Create Post
  * @apiVersion 0.1.0
  * @apiName CreatePost
  * @apiGroup Post
  * @apiDescription Creates a new post.
- * @apiSampleRequest off
+ * This endpoint allows a user to create a new post with various types such as text, image/video, link, or poll.
  *
- * @apiHeader {String} Authorization User's authentication token.
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ * @apiHeader {String} Content-Type multipart/form-data
  *
  * @apiParam {String} title Title of the post.
- * @apiParam {String} content Content of the post.
+ * @apiParam {String} [content] Content of the post (for text posts).
  * @apiParam {String} community Name of the community where the post is created.
- * @apiParam {String} type Type of the post. Possible values are: "Post", "Images & Video", "Link", "Poll".
- * @apiParam {String} [pollOptions] Options for a poll post.
- * @apiParam {String} [pollVotingLength] Length of time for voting on a poll post.
- * @apiParam {String} [link] Link attached to the post (if applicable).
- * @apiParam {Boolean} [isSpoiler] Indicates if the post contains spoilers.
+ * @apiParam {String="Post","Images & Video","Link","Poll"} type Type of the post.
+ * @apiParam {Object[]} [pollOptions] Array of poll options for poll posts.
+ * @apiParam {String} pollOptions.option Option for the poll.
+ * @apiParam {Number} [pollOptions.votes] Number of votes for the option (default: 0).
+ * @apiParam {String} [pollVotingLength] Duration for voting on the poll (e.g., "7 days").
+ * @apiParam {String} [fileType] Type of file for image/video posts.
+ * @apiParam {String} [link] URL link for link posts.
+ * @apiParam {Boolean} [isSpoiler] Indicates if the post contains spoiler content.
  * @apiParam {Boolean} [isNsfw] Indicates if the post is not safe for work.
- * @apiParam {Boolean} [sendPostReplyNotification] Indicates if notifications should be sent for replies to this post.
- * @apiParam {File[]} [attachments] Array of images attached to the post (if applicable).
- * @apiParam {String} [fileType] (must sent it with attachments)Type of files attached to the post (if you send image in attachment send this fileType=image and if you send video in attachments make fileType=video )(if applicable).
+ * @apiParam {Boolean} [sendPostReplyNotification] Indicates if the user should receive notifications for post replies.
+ * @apiParam {String} [scheduledDate] Date and time to schedule the post (e.g., "2024-05-15T12:00:00Z").
+ * @apiParam {File[]} [attachments] Array of file attachments (for image/video posts).
  *
- * @apiParamExample {json} Request-Example:
+ * @apiParamExample {json} Text Post Example:
  * {
- *    "title": "Sample Title",
- *    "content": "Sample Content",
- *    "community": "Sample Community",
- *    "type": "Post"
+ *   "title": "My Text Post",
+ *   "content": "This is the content of my text post.",
+ *   "community": "community_name",
+ *   "type": "Post",
+ *   "sendPostReplyNotification": true
  * }
  *
- * @apiSuccess {String} message Success message indicating that the post has been created successfully.
- * @apiSuccess {String} postId ID of the created post.
+ * @apiParamExample {json} Image/Video Post Example:
+ * {
+ *   "title": "My Image/Video Post",
+ *   "community": "community_name",
+ *   "type": "Images & Video",
+ *   "fileType": "image",
+ *   "attachments": [
+ *     {
+ *       "type": "image",
+ *       "link": "https://example.com/image1.jpg"
+ *     },
+ *     {
+ *       "type": "image",
+ *       "link": "https://example.com/image2.jpg"
+ *     }
+ *   ],
+ *   "sendPostReplyNotification": true
+ * }
  *
+ * @apiParamExample {json} Link Post Example:
+ * {
+ *   "title": "My Link Post",
+ *   "community": "community_name",
+ *   "type": "Link",
+ *   "link": "https://example.com",
+ *   "sendPostReplyNotification": false
+ * }
+ *
+ * @apiParamExample {json} Poll Post Example:
+ * {
+ *   "title": "My Poll Post",
+ *   "community": "community_name",
+ *   "type": "Poll",
+ *   "pollOptions": [
+ *     { "option": "Option 1", "votes": 0 },
+ *     { "option": "Option 2", "votes": 0 },
+ *     { "option": "Option 3", "votes": 0 }
+ *   ],
+ *   "pollVotingLength": "3 days",
+ *   "sendPostReplyNotification": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating post created successfully.
+ * @apiSuccess {String} postId ID of the created post.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
  *     {
  *       "message": "Post created successfully",
- *       "postId": "1234567890"
+ *       "postId": "607f1f77bcf86cd799439011"
  *     }
  *
- * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404) NotFound User or community not found.
+ * @apiError (400) BadRequest Invalid post data.
+ * @apiError (403) Forbidden User is banned or not authorized to create posts.
+ * @apiError (404) NotFound Community not found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *       "error": "Invalid post data. Please provide title and community"
- *     }
- *
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 500 Internal Server Error
  *     {
- *       "error": "Internal server error"
+ *       "error": "Internal Server Error"
  *     }
  */
+
 
 /**
  * @api {get} /posts/community/:community Get All Posts in Community
@@ -8648,6 +8688,772 @@
  *     HTTP/1.1 500 Internal Server Error
  *     {
  *       "message": "Internal Server Error"
+ *     }
+ */
+
+//#endregion
+
+//#region Search
+
+/**
+ * @api {get} /search Perform Search
+ * @apiVersion 0.1.0
+ * @apiName getSearch
+ * @apiGroup Search
+ * @apiDescription Performs a search based on the provided query parameters.
+ * This endpoint searches for users, posts, comments, communities, and hashtags based on the search query.
+ * The response includes search results based on the specified type and sort criteria.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} q Search query. Example: "John Doe"
+ * @apiParam {String} type Type of search (people, posts, comments, communities, hashtags). Example: "people"
+ * @apiParam {String} [sort] Sorting criteria for search results (hot, new, top, comment). Example: "hot"
+ *
+ * @apiSuccess {Object[]} results Array of search results.
+ * @apiSuccessExample {json} Success-People-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "userId": "609cfff1c8b58f001d54ee1f",
+ *           "username": "john_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "userinfo": "A software engineer",
+ *           "followersCount": 1000,
+ *           "isFollowing": true
+ *         },
+ *         {
+ *           "userId": "609d033ec8b58f001d54ee22",
+ *           "username": "jane_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "userinfo": "A web developer",
+ *           "followersCount": 500,
+ *           "isFollowing": false
+ *         }
+ *       ]
+ *     }
+ * @apiSuccessExample {json} Success-Posts-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "postId": "609d0222c8b58f001d54ee20",
+ *           "title": "New Product Launch",
+ *           "isnsfw": false,
+ *           "isSpoiler": false,
+ *           "votesCount": 50,
+ *           "commentsCount": 20,
+ *           "date": "2024-05-04T12:00:00.000Z",
+ *           "username": "john_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "attachments": [],
+ *           "communityname": "tech_community",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg"
+ *         },
+ *         {
+ *           "postId": "609d033ec8b58f001d54ee23",
+ *           "title": "Tech Talk",
+ *           "isnsfw": false,
+ *           "isSpoiler": false,
+ *           "votesCount": 30,
+ *           "commentsCount": 10,
+ *           "date": "2024-05-04T12:00:00.000Z",
+ *           "username": "jane_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "attachments": [],
+ *           "communityname": "tech_community",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg"
+ *         }
+ *       ]
+ *     }
+ * @apiSuccessExample {json} Success-Comments-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "commentId": "609cfff1c8b58f001d54ee1e",
+ *           "commentContent": "Great post!",
+ *           "commentVotes": 10,
+ *           "commentDate": "2024-05-04T12:00:00.000Z",
+ *           "communityName": "programming",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg",
+ *           "username": "jane_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "postId": "609d033ec8b58f001d54ee23",
+ *           "postDate": "2024-05-04T12:00:00.000Z",
+ *           "postVotes": 30,
+ *           "postCommentsCount": 15,
+ *           "postTitle": "New Feature Announcement",
+ *           "attachments": []
+ *         }
+ *       ]
+ *     }
+ * @apiSuccessExample {json} Success-Communities-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "communityId": "609d033ec8b58f001d54ee24",
+ *           "communityName": "programming",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg",
+ *           "membersCount": 10000,
+ *           "communityInfo": "A community for programmers",
+ *           "isFollowing": true
+ *         }
+ *       ]
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid search query or type.
+ * @apiError (404) NotFound No search results found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+/**
+ * @api {get} /search/profile Perform Profile Search
+ * @apiVersion 0.1.0
+ * @apiName PerformProfileSearch
+ * @apiGroup Search
+ * @apiDescription Performs a search within user profiles or community posts based on the provided query parameters.
+ * This endpoint allows searching for posts or comments within a specific user profile or community.
+ * The response includes search results based on the specified type and sort criteria.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} [username] Username of the user whose profile is being searched. Example: "john_doe"
+ * @apiParam {String} [communityname] Name of the community whose posts are being searched. Example: "programming"
+ * @apiParam {String} q Search query. Example: "New feature"
+ * @apiParam {String} type Type of search (posts, comments). Example: "posts"
+ * @apiParam {String} [sort] Sorting criteria for search results (hot, new, top, comment). Example: "new"
+ *
+ * @apiSuccess {Object[]} results Array of search results.
+ * @apiSuccessExample {json} Success-Posts-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "postId": "609d0222c8b58f001d54ee20",
+ *           "title": "New Product Launch",
+ *           "isnsfw": false,
+ *           "isSpoiler": false,
+ *           "votesCount": 50,
+ *           "commentsCount": 20,
+ *           "date": "2024-05-04T12:00:00.000Z",
+ *           "username": "john_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "attachments": [],
+ *           "communityname": "tech_community",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg"
+ *         },
+ *         {
+ *           "postId": "609d033ec8b58f001d54ee23",
+ *           "title": "Tech Talk",
+ *           "isnsfw": false,
+ *           "isSpoiler": false,
+ *           "votesCount": 30,
+ *           "commentsCount": 10,
+ *           "date": "2024-05-04T12:00:00.000Z",
+ *           "username": "jane_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "attachments": [],
+ *           "communityname": "tech_community",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg"
+ *         }
+ *       ]
+ *     }
+ * @apiSuccessExample {json} Success-Comments-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "commentId": "609cfff1c8b58f001d54ee1e",
+ *           "commentContent": "Great post!",
+ *           "commentVotes": 10,
+ *           "commentDate": "2024-05-04T12:00:00.000Z",
+ *           "communityName": "programming",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg",
+ *           "username": "jane_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "postId": "609d033ec8b58f001d54ee23",
+ *           "postDate": "2024-05-04T12:00:00.000Z",
+ *           "postVotes": 30,
+ *           "postCommentsCount": 15,
+ *           "postTitle": "New Feature Announcement",
+ *           "attachments": []
+ *         }
+ *       ]
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid search query or type.
+ * @apiError (404) NotFound No search results found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /search/suggestions Get Search Suggestions
+ * @apiVersion 0.1.0
+ * @apiName GetSearchSuggestions
+ * @apiGroup Search
+ * @apiDescription Retrieves search suggestions based on the provided query parameter.
+ * This endpoint returns suggested users and communities based on exact matches, starts with matches,
+ * and contains matches for the search query.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} q Search query. Example: "programming"
+ *
+ * @apiSuccess {Object[]} communities Array of suggested community objects.
+ * @apiSuccess {Object[]} users Array of suggested user objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "communities": [
+ *         {
+ *           "communityId": "609d0222c8b58f001d54ee20",
+ *           "communityName": "programming",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg",
+ *           "membersCount": 500,
+ *           "communityInfo": "A community for programmers",
+ *           "isFollowing": false
+ *         }
+ *       ],
+ *       "users": [
+ *         {
+ *           "userId": "609d033ec8b58f001d54ee23",
+ *           "username": "john_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "userinfo": "Software Engineer",
+ *           "followersCount": 100,
+ *           "isFollowing": false
+ *         }
+ *       ]
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid search query.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+//#region Trending Posts
+
+/**
+ * @api {get} /search/trending Get Trending Posts
+ * @apiVersion 0.1.0
+ * @apiName GetTrendingPosts
+ * @apiGroup Search
+ * @apiDescription Retrieves the top trending posts based on the number of comments.
+ * This endpoint returns the top 5 posts with the highest number of comments.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {Object[]} results Array of top trending post objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "postId": "609d042ac8b58f001d54ee25",
+ *           "title": "The Future of Artificial Intelligence",
+ *           "isnsfw": false,
+ *           "isSpoiler": false,
+ *           "votesCount": 150,
+ *           "commentsCount": 200,
+ *           "date": "2024-05-01T10:30:00Z",
+ *           "username": "john_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "attachments": ["https://example.com/post_attachment.jpg"],
+ *           "communityname": "technology",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg"
+ *         }
+ *       ]
+ *     }
+ *
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /search/log Log Search Activity
+ * @apiVersion 0.1.0
+ * @apiName LogSearchActivity
+ * @apiGroup Search
+ * @apiDescription Logs search activity performed by users, including searches for posts, communities, and users.
+ * This endpoint records search queries, search type (normal, community, or user), and additional information like community name and username if applicable.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} query The search query entered by the user.
+ * @apiParam {String="normal","community","user"} type The type of search: "normal" for general search, "community" for community search, "user" for user search.
+ * @apiParam {String} [communityName] The name of the community if the search type is "community".
+ * @apiParam {String} [username] The username if the search type is "user".
+ * @apiParam {Boolean} [isInProfile] Indicates whether the search was performed from a user's profile page. Default is false.
+ *
+ * @apiSuccess {String} message Success message indicating search activity logged successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Search activity logged successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request body or missing required fields.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /search/history Get Search History
+ * @apiVersion 0.1.0
+ * @apiName GetSearchHistory
+ * @apiGroup Search
+ * @apiDescription Retrieves the search history of the authenticated user, including the most recent searches.
+ * This endpoint returns the search queries along with associated details such as community name, user name, and profile picture.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {Object[]} history Array containing search history records.
+ * @apiSuccess {String} history.query The search query.
+ * @apiSuccess {String} history.type The type of search: "normal" for general search, "community" for community search, "user" for user search.
+ * @apiSuccess {String} [history.communityId] The ID of the community if the search type is "community".
+ * @apiSuccess {String} [history.communityName] The name of the community if the search type is "community".
+ * @apiSuccess {String} [history.communityProfilePic] The profile picture of the community if the search type is "community".
+ * @apiSuccess {String} [history.userId] The ID of the user if the search type is "user".
+ * @apiSuccess {String} [history.userName] The username of the user if the search type is "user".
+ * @apiSuccess {String} [history.userProfilePic] The profile picture of the user if the search type is "user".
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "query": "example",
+ *         "type": "normal"
+ *       },
+ *       {
+ *         "query": "community",
+ *         "type": "community",
+ *         "communityId": "609bd4c92b108c0015e3d456",
+ *         "communityName": "Example Community",
+ *         "communityProfilePic": "community_image_url"
+ *       },
+ *       {
+ *         "query": "user",
+ *         "type": "user",
+ *         "userId": "609bd4c92b108c0015e3d457",
+ *         "userName": "example_user",
+ *         "userProfilePic": "user_avatar_url"
+ *       }
+ *     ]
+ *
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {delete} /search/history Delete Search History
+ * @apiVersion 0.1.0
+ * @apiName DeleteSearchHistory
+ * @apiGroup Search
+ * @apiDescription Deletes a specific search history record based on the query provided.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} query The search query to be deleted from the search history.
+ *
+ * @apiSuccess {String} message Success message indicating search history record deleted successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Search history record deleted successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid or missing search query parameter.
+ * @apiError (404) NotFound Search history record not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+
+//#endregion
+//#region Post Moderation
+
+/**
+ * @api {post} /community/moderation/:communityName/spam-post/:postId Mark Post as Spam
+ * @apiVersion 0.1.0
+ * @apiName MarkPostAsSpam
+ * @apiGroup Post
+ * @apiDescription Marks a post as spam within a community.
+ * This endpoint is used by moderators to mark a specific post as spam within their community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community where the post belongs.
+ * @apiParam {String} postId ID of the post to be marked as spam.
+ *
+ * @apiSuccess {String} message Success message indicating post marked as spam successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post marked as spam successfully"
+ *     }
+ *
+ * @apiError (402) Forbidden User is not a moderator.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission to mark the post as spam.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/get-spam-posts Get Spam Posts
+ * @apiVersion 0.1.0
+ * @apiName GetSpamPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves a list of spam posts within a community.
+ * This endpoint returns the list of posts marked as spam within a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object[]} posts Array of spam post objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "609d0222c8b58f001d54ee20",
+ *         "userId": "609d033ec8b58f001d54ee23",
+ *         "username": "john_doe",
+ *         "userProfilePic": "https://example.com/profile_pic.jpg",
+ *         "hasUpvoted": true,
+ *         "hasDownvoted": false,
+ *         "hasVotedOnPoll": true,
+ *         "selectedPollOption": "Option A",
+ *         "numberOfViews": 100,
+ *         "votesUpCount": 50,
+ *         "votesDownCount": 10,
+ *         "sharesCount": 5,
+ *         "commentsCount": 20,
+ *         "title": "New Product Launch",
+ *         "content": "Lorem ipsum dolor sit amet...",
+ *         "community": "tech_community",
+ *         "communityIcon": "https://example.com/community_pic.jpg",
+ *         "type": "text",
+ *         "link": null,
+ *         "pollExpiration": "2024-05-05T12:00:00Z",
+ *         "isPollEnabled": true,
+ *         "pollVotingLength": 24,
+ *         "isSpoiler": false,
+ *         "isNsfw": false,
+ *         "sendPostReplyNotification": true,
+ *         "isCommentsLocked": false,
+ *         "isSaved": true,
+ *         "isRemoved": false,
+ *         "removalReason": null,
+ *         "isApproved": true,
+ *         "isScheduled": false,
+ *         "isSpam": true,
+ *         "date": "2024-05-04T12:00:00Z",
+ *         "pollOptions": ["Option A", "Option B"],
+ *         "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/get-edited-posts Get Edited Posts History
+ * @apiVersion 0.1.0
+ * @apiName GetEditedPostsHistory
+ * @apiGroup Post
+ * @apiDescription Retrieves the history of edited posts within a community.
+ * This endpoint returns a list of edited posts within a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object[]} posts Array of edited post objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "609d0222c8b58f001d54ee20",
+ *         "userId": "609d033ec8b58f001d54ee23",
+ *         "username": "john_doe",
+ *         "userProfilePic": "https://example.com/profile_pic.jpg",
+ *         "hasUpvoted": true,
+ *         "hasDownvoted": false,
+ *         "hasVotedOnPoll": true,
+ *         "selectedPollOption": "Option A",
+ *         "numberOfViews": 100,
+ *         "votesUpCount": 50,
+ *         "votesDownCount": 10,
+ *         "sharesCount": 5,
+ *         "commentsCount": 20,
+ *         "title": "New Product Launch",
+ *         "content": "Lorem ipsum dolor sit amet...",
+ *         "community": "tech_community",
+ *         "communityIcon": "https://example.com/community_pic.jpg",
+ *         "type": "text",
+ *         "link": null,
+ *         "pollExpiration": "2024-05-05T12:00:00Z",
+ *         "isPollEnabled": true,
+ *         "pollVotingLength": 24,
+ *         "isSpoiler": false,
+ *         "isNsfw": false,
+ *         "sendPostReplyNotification": true,
+ *         "isCommentsLocked": false,
+ *         "isSaved": true,
+ *         "isRemoved": false,
+ *         "removalReason": null,
+ *         "isApproved": true,
+ *         "isScheduled": false,
+ *         "isSpam": false,
+ *         "date": "2024-05-04T12:00:00Z",
+ *         "pollOptions": ["Option A", "Option B"],
+ *         "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (404) NotFound Edited posts not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:postId/remove-post Remove Post
+ * @apiVersion 0.1.0
+ * @apiName RemovePost
+ * @apiGroup Post
+ * @apiDescription Removes a post from a community.
+ * This endpoint is used by moderators to remove a specific post from their community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community where the post belongs.
+ * @apiParam {String} postId ID of the post to be removed.
+ *
+ * @apiParam {String} removalReason Reason for removing the post.
+ *
+ * @apiSuccess {String} message Success message indicating post removed successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post removed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Must has a removal reason.
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (403) Forbidden Post has already been removed before.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/unmoderated-posts Get Unmoderated Posts
+ * @apiVersion 0.1.0
+ * @apiName GetUnmoderatedPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves a list of unmoderated posts within a community.
+ * This endpoint returns a list of posts that are not yet moderated within a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object[]} posts Array of unmoderated post objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "609d0222c8b58f001d54ee20",
+ *         "userId": "609d033ec8b58f001d54ee23",
+ *         "username": "john_doe",
+ *         "userProfilePic": "https://example.com/profile_pic.jpg",
+ *         "hasUpvoted": true,
+ *         "hasDownvoted": false,
+ *         "hasVotedOnPoll": true,
+ *         "selectedPollOption": "Option A",
+ *         "numberOfViews": 100,
+ *         "votesUpCount": 50,
+ *         "votesDownCount": 10,
+ *         "sharesCount": 5,
+ *         "commentsCount": 20,
+ *         "title": "New Product Launch",
+ *         "content": "Lorem ipsum dolor sit amet...",
+ *         "community": "tech_community",
+ *         "communityIcon": "https://example.com/community_pic.jpg",
+ *         "type": "text",
+ *         "link": null,
+ *         "pollExpiration": "2024-05-05T12:00:00Z",
+ *         "isPollEnabled": true,
+ *         "pollVotingLength": 24,
+ *         "isSpoiler": false,
+ *         "isNsfw": false,
+ *         "sendPostReplyNotification": true,
+ *         "isCommentsLocked": false,
+ *         "isSaved": true,
+ *         "isRemoved": false,
+ *         "removalReason": null,
+ *         "isApproved": false,
+ *         "isScheduled": false,
+ *         "isSpam": false,
+ *         "date": "2024-05-04T12:00:00Z",
+ *         "pollOptions": ["Option A", "Option B"],
+ *         "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (404) NotFound No unmoderated posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/schedule-posts Get Scheduled Posts
+ * @apiVersion 0.1.0
+ * @apiName GetScheduledPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves a list of scheduled posts within a community.
+ * This endpoint returns a list of posts that are scheduled for publishing within a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object[]} posts Array of scheduled post objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "609d0222c8b58f001d54ee20",
+ *         "userId": "609d033ec8b58f001d54ee23",
+ *         "username": "john_doe",
+ *         "userProfilePic": "https://example.com/profile_pic.jpg",
+ *         "hasUpvoted": true,
+ *         "hasDownvoted": false,
+ *         "hasVotedOnPoll": true,
+ *         "selectedPollOption": "Option A",
+ *         "numberOfViews": 100,
+ *         "votesUpCount": 50,
+ *         "votesDownCount": 10,
+ *         "sharesCount": 5,
+ *         "commentsCount": 20,
+ *         "title": "New Product Launch",
+ *         "content": "Lorem ipsum dolor sit amet...",
+ *         "community": "tech_community",
+ *         "communityIcon": "https://example.com/community_pic.jpg",
+ *         "type": "text",
+ *         "link": null,
+ *         "pollExpiration": "2024-05-05T12:00:00Z",
+ *         "isPollEnabled": true,
+ *         "pollVotingLength": 24,
+ *         "isSpoiler": false,
+ *         "isNsfw": false,
+ *         "sendPostReplyNotification": true,
+ *         "isCommentsLocked": false,
+ *         "isSaved": true,
+ *         "isRemoved": false,
+ *         "removalReason": null,
+ *         "isApproved": false,
+ *         "isScheduled": true,
+ *         "isSpam": false,
+ *         "date": "2024-05-04T12:00:00Z",
+ *         "pollOptions": ["Option A", "Option B"],
+ *         "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (404) NotFound No scheduled posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:postId/approve-post Approve Post
+ * @apiVersion 0.1.0
+ * @apiName ApprovePost
+ * @apiGroup Post
+ * @apiDescription Approves a post within a community.
+ * This endpoint is used by moderators to approve a specific post within their community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community where the post belongs.
+ * @apiParam {String} postId ID of the post to be approved.
+ *
+ * @apiSuccess {String} message Success message indicating post approved successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post approved successfully"
+ *     }
+ *
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (404) NotFound Post or community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
  *     }
  */
 

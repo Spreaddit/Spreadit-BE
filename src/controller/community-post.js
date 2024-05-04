@@ -21,7 +21,7 @@ exports.spamPost = async (req, res) => {
         if (!isModerator) {
             return res.status(402).json({ message: "Not a moderator" });
         }
-        const hasPermission = await checkPermission(moderatorId, postId);
+        const hasPermission = await checkPermission(req.user.username, communityName);
         if (!hasPermission) {
             return res.status(406).json({ message: "Moderator doesn't have permission" });
         }
@@ -71,7 +71,14 @@ exports.getSpamPosts = async (req, res) => {
             return res.status(402).json({ message: "Not a moderator or does not have permission" });
         }
         const spamPosts = await Post.find({ community: communityName, isSpam: true });
-        res.status(200).json({ spamPosts });
+        const postInfoArray = await Promise.all(
+            spamPosts.map(async (post) => {
+                const postObject = await Post.getPostObject(post, req.user._id);
+                return postObject;
+            })
+        );
+        const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+        res.status(200).json(filteredPostInfoArray);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
@@ -98,15 +105,21 @@ exports.getEdititedPostsHistory = async (req, res) => {
         if (editedPosts.length === 0) {
             return res.status(404).json({ error: 'Edited posts not found' });
         }
-
-        return res.status(200).json(editedPosts);
+        const postInfoArray = await Promise.all(
+            editedPosts.map(async (post) => {
+                const postObject = await Post.getPostObject(post, req.user._id);
+                return postObject;
+            })
+        );
+        const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+        res.status(200).json(filteredPostInfoArray);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
     }
 }
 
-exports.lockPost = async (req, res) => {
+/* exports.lockPost = async (req, res) => {
     try {
         const { communityName, postId } = req.params;
         if (!postId || postId.length !== 24) {
@@ -166,7 +179,7 @@ exports.unlockPost = async (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 };
-
+ */
 exports.removePost = async (req, res) => {
     try {
         const { communityName, postId } = req.params;
@@ -219,7 +232,14 @@ exports.getUnmoderatedPosts = async (req, res) => {
         if (!unmoderatedPosts || unmoderatedPosts.length === 0) {
             return res.status(404).json({ message: "No unmoderated posts found" });
         }
-        res.status(200).json({ unmoderatedPosts });
+        const postInfoArray = await Promise.all(
+            unmoderatedPosts.map(async (post) => {
+                const postObject = await Post.getPostObject(post, req.user._id);
+                return postObject;
+            })
+        );
+        const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+        res.status(200).json(filteredPostInfoArray);
     } catch (error) {
         console.error("Error retrieving unmoderated posts:", error);
         res.status(500).json({ error: "Internal server error" });
@@ -239,7 +259,14 @@ exports.getScheduledPosts = async (req, res) => {
         if (!scheduledPosts || scheduledPosts.length === 0) {
             return res.status(404).json({ message: "No scheduled posts found" });
         }
-        res.status(200).json({ scheduledPosts });
+        const postInfoArray = await Promise.all(
+            scheduledPosts.map(async (post) => {
+                const postObject = await Post.getPostObject(post, req.user._id);
+                return postObject;
+            })
+        );
+        const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+        res.status(200).json(filteredPostInfoArray);
     } catch (error) {
         console.error("Error retrieving scheduled posts:", error);
         res.status(500).json({ error: "Internal server error" });

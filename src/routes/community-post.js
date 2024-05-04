@@ -17,13 +17,13 @@ router
     .get(auth.authentication, communityPostController.getEdititedPostsHistory);
 
 
-router
+/* router
     .route("/community/moderation/:communityName/:postId/lock-post")
     .post(auth.authentication, communityPostController.lockPost);
 
 router
     .route("/community/moderation/:communityName/:postId/unlock-post")
-    .post(auth.authentication, communityPostController.unlockPost);
+    .post(auth.authentication, communityPostController.unlockPost); */
 
 router
     .route("/community/moderation/:communityName/:postId/remove-post")
