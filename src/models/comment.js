@@ -62,6 +62,10 @@ const CommentSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        isRemoval: {
+            type: Boolean,
+            default: false,
+        },
         lastEdit: {
             type: String,
             default: "",
@@ -176,6 +180,7 @@ CommentSchema.statics.getCommentObject = async function (
         is_removed: comment.isRemoved,
         is_approved: comment.isApproved,
         is_locked: comment.isLocked,
+        is_removal: comment.isRemoval,
         replies: [],
     };
 

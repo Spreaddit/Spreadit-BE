@@ -174,6 +174,7 @@ exports.removeComment = async (req, res) => {
             content: removalReason,
             userId: req.user._id,
             parentCommentId: comment._id,
+            isRemoval: true,
         });
         await removalComment.save();
         const rootComment = await Comment.findRootComment(comment._id);
