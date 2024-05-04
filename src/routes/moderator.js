@@ -10,6 +10,7 @@ const Moderator = require("../models/moderator.js");
 router.use(passport.initialize());
 router.use(cookieParser("spreaditsecret"));
 const auth = require("../middleware/authentication");
+const upload = require("../service/fileUpload");
 
 router.post("/rule/add", auth.authentication, async (req, res) => {
   try {
@@ -572,47 +573,65 @@ router.get("/community/moderation/:communityName/:username/is-contributor", auth
   }
 });
 
-router.post("/community/:communityName/edit-info", auth.authentication, async (req, res) => {
-  try {
-    const communityName = req.params.communityName;
-    const { name, is18plus, communityType, description, image, communityBanner, membersNickname } = req.body;
+router.post(
+  "/community/:communityName/edit-info",
+  auth.authentication,
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "communityBanner", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const communityName = req.params.communityName;
+      const { name, is18plus, communityType, description, fileType, membersNickname } = req.body;
+      const image = req.files["image"] ? req.files["image"][0] : null;
+      const communityBanner = req.files["communityBanner"] ? req.files["communityBanner"][0] : null;
 
-    if (!communityName) {
-      return res.status(400).json({ message: "Invalid request parameters" });
+      if (!communityName) {
+        return res.status(400).json({ message: "Invalid request parameters" });
+      }
+      let imageUrl, communityBannerUrl;
+
+      if (image) {
+        const imageResult = await uploadMedia(image, "image");
+        imageUrl = imageResult.secure_url;
+      }
+      if (communityBanner) {
+        const communityBannerResult = await uploadMedia(communityBanner, "image");
+        communityBannerUrl = communityBannerResult.secure_url;
+      }
+
+      const community = await Community.findOne({ name: communityName });
+
+      if (!community) {
+        return res.status(404).json({ message: "Community not found" });
+      }
+      const existingCommunity = await Community.findOne({ name });
+      if (existingCommunity && name !== communityName) {
+        return res.status(402).json({ message: "Community name is used" });
+      }
+
+      const moderator = await Moderator.findOne({ communityName: communityName, username: req.user.username });
+      if (!moderator || !moderator.manageSettings) {
+        return res.status(406).json({ message: "Moderator doesn't have permission" });
+      }
+      community.name = name || community.name;
+      community.is18plus = is18plus || community.is18plus;
+      community.communityType = communityType || community.communityType;
+      community.description = description || community.description;
+      community.image = imageUrl || community.image;
+      community.communityBanner = communityBannerUrl || community.communityBanner;
+      community.membersNickname = membersNickname || community.membersNickname;
+
+      await community.save();
+
+      res.status(200).json({ message: "Community information updated successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    const user = req.user;
-    const community = await Community.findOne({ name: communityName });
-
-    if (!community) {
-      return res.status(404).json({ message: "Community not found" });
-    }
-    const existingCommunity = await Community.findOne({ name });
-    if (existingCommunity) {
-      return res.status(402).json({ message: "Community name is used" });
-    }
-    const moderator = community.moderators.find((moderator) => moderator.username === user.username);
-
-    if (!moderator || !moderator.manageSettings) {
-      return res.status(406).json({ message: "Moderator doesn't have permission" });
-    }
-
-    community.name = name || community.name;
-    community.is18plus = is18plus || community.is18plus;
-    community.communityType = communityType || community.communityType;
-    community.description = description || community.description;
-    community.image = image || community.image;
-    community.communityBanner = communityBanner || community.communityBanner;
-    community.membersNickname = membersNickname || community.membersNickname;
-
-    await community.save();
-
-    res.status(200).json({ message: "Community information updated successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
 router.get("/community/:communityName/settings", auth.authentication, async (req, res) => {
   try {
@@ -707,15 +726,12 @@ router.get("/community/muted", auth.authentication, async (req, res) => {
 router.get("/community/moderation/:communityName/moderators", auth.authentication, async (req, res) => {
   try {
     const communityName = req.params.communityName;
-    const community = await Community.findOne({ name: communityName }).populate(
-      "moderators",
-      "username banner avatar createdAt managePostsAndComments manageUsers manageSettings",
-      { select: { createdAt: "moderationDate" } }
-    );
+    const community = await Community.findOne({ name: communityName });
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-    res.status(200).json(community.moderators);
+    const moderators = await Moderator.getAllModerators(communityName);
+    res.status(200).json(moderators);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

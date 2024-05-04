@@ -86,6 +86,7 @@ const communitySeedData = [
     communityType: "Public",
     creator: "624a6a677c8d9c9f5fd5eb0e", // Basma
     members: ["624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0f", "624a6a677c8d9c9f5fd5eb12"], // Basma, Farida, Youssef
+    contributors: ["624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0f", "624a6a677c8d9c9f5fd5eb12"], // Basma, Farida, Youssef
     moderators: ["624a6a677c8d9c9f5fd5eb0e"], // Basma
     membersCount: 3,
 },
@@ -101,6 +102,7 @@ const communitySeedData = [
     communityType: "Public",
     creator: "624a4fbf3f392aefdb4dd1c8", // Farouq
     members: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14"], // Farouq, Basma, Karim
+    contributors: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14"], // Farouq, Basma, Karim
     moderators: ["624a4fbf3f392aefdb4dd1c8"], // Farouq
     membersCount: 3,
     removalReasons: ["6633ddb655d6bba0f4023c40"],
