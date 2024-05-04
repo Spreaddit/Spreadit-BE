@@ -253,6 +253,7 @@ CommentSchema.statics.getCommentInfoSimplified = async function (comment) {
         communityProfilePic: community ? community.image : '',
         username: user ? user.username : '',
         userProfilePic: user ? user.avatar : '',
+        postId: post ? post._id : '',
         postDate: post ? post.createdAt : '',
         postVotes: post ? post.upVotes.length - post.downVotes.length : 0,
         postCommentsCount: post ? post.commentsCount : 0,
