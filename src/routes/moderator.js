@@ -949,9 +949,6 @@ router.put("/community/moderation/:communityName/:username/permissions", auth.au
       return res.status(404).json({ message: "Community not found" });
     }
 
-    if (!community.creator.equals(req.user._id)) {
-      return res.status(402).json({ message: "Not the creator" });
-    }
     const userModerator = await Moderator.findOne({ communityName, username: req.user.username });
     const moderator = await Moderator.findOne({ communityName, username });
     if (!moderator) {
@@ -981,9 +978,10 @@ router.delete("/community/moderation/:communityName/moderators/:username", auth.
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-
-    if (!community.creator.equals(req.user._id)) {
-      return res.status(402).json({ message: "Not the creator" });
+    if (community.creator) {
+      if (!community.creator.equals(req.user._id)) {
+        return res.status(402).json({ message: "Not the creator" });
+      }
     }
     const user = await User.findOne({ _id: req.user._id });
 
