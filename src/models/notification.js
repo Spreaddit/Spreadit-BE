@@ -100,7 +100,7 @@ NotificationSchema.statics.getNotificationObject = async function (
         _id: notification._id,
         userId: notification.userId ? notification.userId._id : null,
         postId: notification.postId ? notification.postId._id : null,
-        commentId: rootComment._id ? notification.commentId._id : null,
+        commentId: rootComment._id ? notification.commentId?._id : null,
         content: notification.content,
         notification_type: notification.notificationTypeId.name,
         related_user: user,

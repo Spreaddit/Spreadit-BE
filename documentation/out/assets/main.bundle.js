@@ -4234,6 +4234,20 @@ function print() { __p += __j.call(arguments, '') }
 }`,type:"json"},{title:"Error-Response:",content:`HTTP/1.1 500 Internal Server Error
 {
   "error": "Internal server error"
+}`,type:"json"}]},filename:"apidoc.js",groupTitle:"User"},{type:"post",url:"/unblock",title:"Unblock User",version:"0.1.0",name:"UnblockUser",group:"User",description:"<p>Unblocks a user.</p>",header:{fields:{Header:[{group:"Header",type:"String",optional:!1,field:"Authorization",isArray:!1,description:"<p>User's authentication token.</p>"}]}},parameter:{fields:{Parameter:[{group:"Parameter",type:"String",optional:!1,field:"username",isArray:!1,description:"<p>Username of the user to unblock.</p>"}]},examples:[{title:"Request-Example:",content:`{
+   "username": "example_user"
+}`,type:"json"}]},success:{fields:{"Success 200":[{group:"Success 200",type:"String",optional:!1,field:"description",isArray:!1,description:"<p>Success message indicating that the user has been unblocked successfully.</p>"}]},examples:[{title:"Success-Response:",content:`HTTP/1.1 200 OK
+{
+  "description": "User unblocked successfully"
+}`,type:"json"}]},error:{fields:{400:[{group:"400",optional:!1,field:"BadRequest",isArray:!1,description:"<p>Missing or invalid parameters.</p>"}],401:[{group:"401",optional:!1,field:"Unauthorized",isArray:!1,description:"<p>Authorization token is required.</p>"}],404:[{group:"404",optional:!1,field:"NotFound",isArray:!1,description:"<p>User not found.</p>"}],500:[{group:"500",optional:!1,field:"InternalServerError",isArray:!1,description:"<p>An unexpected error occurred on the server.</p>"}]},examples:[{title:"Error-Response:",content:`HTTP/1.1 400 Bad Request
+{
+  "error": "Username is required"
+}`,type:"json"},{title:"Error-Response:",content:`HTTP/1.1 404 Not Found
+{
+  "error": "User not found"
+}`,type:"json"},{title:"Error-Response:",content:`HTTP/1.1 500 Internal Server Error
+{
+  "error": "Internal server error"
 }`,type:"json"}]},filename:"apidoc.js",groupTitle:"User"},{type:"post",url:"/users/unfollow",title:"Unfollow User",version:"0.1.0",name:"UnfollowUser",group:"User",description:"<p>Unfollows a user.</p>",header:{fields:{Header:[{group:"Header",type:"String",optional:!1,field:"Authorization",isArray:!1,description:"<p>User's authentication token.</p>"}]}},parameter:{fields:{Parameter:[{group:"Parameter",type:"String",optional:!1,field:"username",isArray:!1,description:"<p>Username of the user to unfollow.</p>"}]},examples:[{title:"Request-Example:",content:`{
    "username": "example_user"
 }`,type:"json"}]},success:{fields:{"Success 200":[{group:"Success 200",type:"String",optional:!1,field:"description",isArray:!1,description:"<p>Success message indicating that the user has been unfollowed successfully.</p>"}]},examples:[{title:"Success-Response:",content:`HTTP/1.1 200 OK

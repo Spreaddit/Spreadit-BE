@@ -28,6 +28,11 @@ const SearchLogSchema = new mongoose.Schema({
             return this.type === 'user';
         }
     },
+    searchedByUserId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true
+    },
     isInProfile: {
         type: Boolean,
         default: false
