@@ -32,9 +32,9 @@ router.post("/signup", async (req, res) => {
       let emailContent;
       if (isCross) {
         //emailContent = `To confirm your email, click the link below: app.spreadit.me/#/home/${emailToken}`;
-        emailContent = `To confirm your email, click the link below: https://www.localhost:8000/#/home/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: app.spreadit.me/#/home/${emailToken}`;
       } else {
-        emailContent = `To confirm your email, click the link below: www.spreadit.me/home/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: www.spreadit.me/verifyemail/${emailToken}`;
       }
       await sendEmail(savedUser.email, 'Please Confirm Your Email', emailContent);
 
@@ -221,7 +221,7 @@ router.post("/settings/add-password/email", auth.authentication, async (req, res
     let emailContent;
     if (isCross) {
       //localhost:1234/#/settings/account-settings/add-password/${emailToken}
-      emailContent = `To confirm your email, click the link below: app.spreadit.me/verify-email/${emailToken}`;
+      emailContent = `To confirm your email, click the link below: app.spreadit.me/#/settings/account-settings/add-password/${emailToken}`;
     } else {
       emailContent = `To confirm your email, click the link below: www.spreadit.me/verify-email/${emailToken}`;
     }
@@ -269,7 +269,7 @@ router.post("/forgot-password", async (req, res) => {
       return res.status(400).send({ message: "Error, wrong email" });
     }
     const resetToken = await user.generateResetToken();
-    const emailContent = `www.spreadit.me/reset-password-by-token?token=${resetToken}`;
+    const emailContent = `www.spreadit.me/password/${resetToken}`;
     await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
     res.status(200).send({ message: "Password reset link sent successfully" });
   } catch (err) {
@@ -293,7 +293,7 @@ router.post("/app/forgot-password", async (req, res) => {
 
     const resetToken = await user.generateResetToken();
 
-    const emailContent = `app.spreadit.me/#/forgetpassword/reset-password-by-token?token=${resetToken}`;
+    const emailContent = `app.spreadit.me/#/reset-password-by-token/${resetToken}`;
     await sendEmail(user.email, 'Ask and you shall receive.. a password reset', emailContent);
 
     res.status(200).send({ message: "Password reset link sent successfully" });
