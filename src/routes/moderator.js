@@ -912,8 +912,7 @@ router.get("/community/moderation/:communityName/:username/is-invited", auth.aut
 router.get("/community/moderation/user/:username", auth.authentication, async (req, res) => {
   try {
     const { username } = req.params;
-
-    const user = await User.findOne({ username })
+    const user = await User.findOne({ username: username })
       .select({ moderatedCommunities: 1 })
       .populate(
         "moderatedCommunities",

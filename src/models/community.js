@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const User = require("./user.js");
+
 require("./user");
 require("./removalReason.js");
 require("./rule");
@@ -216,7 +218,7 @@ CommunitySchema.statics.getCommunityObject = async function (communityName, user
     contributors: community.contributors,
     settings: community.settings,
     isModerator: community.moderators.some((moderator) => moderator._id.equals(user._id)),
-    isCreator: community.creator.equals(user._id),
+    isCreator: community.creator && community.creator.equals(user._id),
     isMember: community.members.some((member) => member._id.equals(user._id)),
     isContributor: community.contributors.some((contributor) => contributor._id.equals(user._id)),
   };

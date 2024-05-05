@@ -300,10 +300,10 @@ exports.checkUserBanStatus = async (req, res) => {
     });
 
     if (banRecord) {
-      return res.status(200).json({ banned: true });
+      return res.status(200).json({ isBanned: true });
     }
 
-    return res.status(200).json({ banned: false });
+    return res.status(200).json({ isBanned: false });
   } catch (error) {
     console.error("Error checking user ban status:", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -478,10 +478,10 @@ exports.acceptInvite = async (req, res) => {
       community.members.push(userId);
     }
     await community.save();
-    if (!user.moderatedCommunities.includes(userId))
+    if (!user.moderatedCommunities.includes(community._id))
       user.moderatedCommunities.push(community._id);
 
-    if (!user.subscribedCommunities.includes(userId))
+    if (!user.subscribedCommunities.includes(community._id))
       user.subscribedCommunities.push(community._id);
 
     await user.save();
