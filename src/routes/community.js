@@ -508,9 +508,11 @@ router.post("/community/create", auth.authentication, async (req, res) => {
     const userId = req.user._id;
     const user = await User.findById(userId);
     const { name, is18plus, communityType } = req.body;
-    if (!name || !is18plus || !communityType) {
+    if (!name || typeof is18plus === 'undefined' || !communityType) {
       return res.status(400).json({ message: "Invalid request parameters" });
     }
+    
+    
 
     const createdCommunity = new Community({
       name: name,
