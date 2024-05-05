@@ -849,15 +849,15 @@ router.delete("/community/moderation/:communityName/:username/remove-invite", au
     if (!moderator || !moderator.manageUsers) {
       return res.status(406).json({ message: "Moderator doesn't have permission" });
     }
-    const invitedModerators = await Moderator.findOne({
+    const invitedModerator = await Moderator.findOne({
       communityName: communityName,
       isAccepted: false,
       username: username,
     });
-    if (!invitedModerators) {
+    if (!invitedModerator) {
       return res.status(402).json({ message: "No invitation sent for this user" });
     }
-    await invitedModerators.remove();
+    await Moderator.findByIdAndDelete(invitedModerator._id);
     res.status(200).json({ message: "Moderator invite removed successfully" });
   } catch (error) {
     console.error(error);
@@ -936,12 +936,20 @@ router.put("/community/moderation/:communityName/:username/permissions", auth.au
     const { communityName, username } = req.params;
     const { managePostsAndComments, manageUsers, manageSettings } = req.body;
 
+    if (
+      typeof managePostsAndComments !== "boolean" ||
+      typeof manageUsers !== "boolean" ||
+      typeof manageSettings !== "boolean"
+    ) {
+      return res.status(400).json({ message: "Invalid parameters" });
+    }
+
     const community = await Community.findOne({ name: communityName });
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    if (community.creator !== req.user._id) {
+    if (!community.creator.equals(req.user._id)) {
       return res.status(402).json({ message: "Not the creator" });
     }
     const userModerator = await Moderator.findOne({ communityName, username: req.user.username });
@@ -974,7 +982,7 @@ router.delete("/community/moderation/:communityName/moderators/:username", auth.
       return res.status(404).json({ message: "Community not found" });
     }
 
-    if (community.creator !== req.user._id) {
+    if (!community.creator.equals(req.user._id)) {
       return res.status(402).json({ message: "Not the creator" });
     }
     const user = await User.findOne({ _id: req.user._id });
@@ -994,7 +1002,7 @@ router.delete("/community/moderation/:communityName/moderators/:username", auth.
 
     await community.save();
     await user.save();
-    await moderator.remove();
+    await Moderator.findByIdAndDelete(moderator._id);
 
     res.status(200).json({ message: "Moderator removed successfully" });
   } catch (error) {
