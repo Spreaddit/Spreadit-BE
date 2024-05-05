@@ -85,9 +85,10 @@ NotificationSchema.statics.getNotificationObject = async function (
             avatar: notification.relatedUserId.avatar
         };
     }
-
+    let rootComment;
     if (notification.commentId != null) {
         const Comment = mongoose.model("comment");
+        rootComment = await Comment.findRootComment(notification.commentId);
         comment = {
             content: notification.commentId.content,
             postTitle: notification.commentId.postId.title,
@@ -99,7 +100,7 @@ NotificationSchema.statics.getNotificationObject = async function (
         _id: notification._id,
         userId: notification.userId ? notification.userId._id : null,
         postId: notification.postId ? notification.postId._id : null,
-        commentId: notification.commentId ? notification.commentId._id : null,
+        commentId: rootComment._id ? notification.commentId?._id : null,
         content: notification.content,
         notification_type: notification.notificationTypeId.name,
         related_user: user,
@@ -125,7 +126,6 @@ NotificationSchema.statics.sendNotification = async function (
     if (!subs || subs.length === 0) {
         return null;
     }
-    console.log(subs);
     const payload = {
         notification: {
             title: title,

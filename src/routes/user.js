@@ -16,21 +16,18 @@ require("./../models/constants/notificationType");
 router.post('/test-notification', async (req, res) => {
   try {
     const { userId, title, body, key } = req.body;
-    console.log('Received request:', req.body);
 
     const userSub = new NotificationSubscription({
       userId: userId,
       fcmToken: key,
     });
     const saved = await userSub.save();
-    console.log('Saved notification subscription:', saved);
 
     if (!saved) {
       return res.status(500).json({ error: 'Failed to save notification subscription' });
     }
 
     const result = await Notification.sendNotification(userId, title, body);
-    console.log('Notification send result:', result);
 
     if (!result) {
       return res.status(500).json({ error: 'Failed to send notification' });
@@ -57,7 +54,6 @@ router.post("/notifications/subscribe", auth.authentication, async (req, res) =>
         userId: userId,
         fcmToken: key,
       });
-      //console.log(userSub);
       const saved = await userSub.save();
       if (saved) {
         return res

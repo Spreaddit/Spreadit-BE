@@ -55,7 +55,6 @@ async function isModeratorOrCreator(userId, communityName) {
 
 async function checkPermission(username, communityName) {
     const moderator = await Moderator.findOne({ username, communityName });
-    console.log(moderator);
     if (!moderator) {
         return false;
     }
