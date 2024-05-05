@@ -439,7 +439,7 @@ router.post(
       });
       const contributors = community.contributors;
 
-      const newReply = new Comment({
+      let newReply = new Comment({
         content,
         userId,
         parentCommentId,
@@ -467,6 +467,11 @@ router.post(
       await Comment.findByIdAndUpdate(parentCommentId, {
         $inc: { repliesCount: 1 },
       });
+      newReply = await Comment.findOne({parentCommentId: newReply.parentCommentId})
+      const post = await Post.findById(rootComment.postId);
+      await Post.findByIdAndUpdate(rootComment.postId, { $inc: { commentsCount: 1 } });
+      post.comments.push(newReply._id);
+      await post.save();
       const replyObj = await Comment.getCommentObject(newReply, userId);
 
       //notification
