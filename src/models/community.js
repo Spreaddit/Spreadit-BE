@@ -9,7 +9,6 @@ const InsightSchema = new Schema({
   month: {
     type: Date,
     required: true,
-    unique: true,
   },
   views: {
     type: Number,
@@ -159,8 +158,14 @@ const CommunitySchema = new Schema({
   },
 });
 
-CommunitySchema.statics.getCommunityObjectFiltered = async function (community, userId) {
-  const isFollowing = await this.isUserFollowingCommunity(userId, community._id);
+CommunitySchema.statics.getCommunityObjectFiltered = async function (
+  community,
+  userId
+) {
+  const isFollowing = await this.isUserFollowingCommunity(
+    userId,
+    community._id
+  );
   const communityObject = {
     communityId: community._id,
     communityName: community.name,
@@ -172,7 +177,10 @@ CommunitySchema.statics.getCommunityObjectFiltered = async function (community, 
   return communityObject;
 };
 
-CommunitySchema.statics.isUserFollowingCommunity = async function (userId, communityId) {
+CommunitySchema.statics.isUserFollowingCommunity = async function (
+  userId,
+  communityId
+) {
   const user = await this.model("user").findById(userId);
   if (!user) {
     return false;
@@ -180,7 +188,10 @@ CommunitySchema.statics.isUserFollowingCommunity = async function (userId, commu
   return user.subscribedCommunities.includes(communityId);
 };
 
-CommunitySchema.statics.getCommunityObject = async function (communityName, userId) {
+CommunitySchema.statics.getCommunityObject = async function (
+  communityName,
+  userId
+) {
   const user = await this.model("user").findById(userId);
   const community = await Community.findOne({ name: communityName })
     .select(
@@ -217,10 +228,14 @@ CommunitySchema.statics.getCommunityObject = async function (communityName, user
     membersNickname: community.membersNickname,
     contributors: community.contributors,
     settings: community.settings,
-    isModerator: community.moderators.some((moderator) => moderator._id.equals(user._id)),
+    isModerator: community.moderators.some((moderator) =>
+      moderator._id.equals(user._id)
+    ),
     isCreator: community.creator && community.creator.equals(user._id),
     isMember: community.members.some((member) => member._id.equals(user._id)),
-    isContributor: community.contributors.some((contributor) => contributor._id.equals(user._id)),
+    isContributor: community.contributors.some((contributor) =>
+      contributor._id.equals(user._id)
+    ),
   };
 };
 

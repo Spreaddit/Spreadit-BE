@@ -5,11 +5,12 @@ const router = express.Router();
 const commentController = require("../controller/comment-controller");
 
 router
-  .route("/post/comment/:postId")  
+  .route("/post/comment/:postId")
   .post(
     auth.authentication,
     upload.array("attachments"),
-    commentController.createComment);
+    commentController.createComment
+  );
 
 router
   .route("/posts/comment/delete/:commentId")
@@ -23,27 +24,25 @@ router
   .route("/comments/user/:username")
   .get(auth.authentication, commentController.getCommentByUsername);
 
-
 router
   .route("/comments/saved/user")
   .get(auth.authentication, commentController.getCommentSaved);
-
 
 router
   .route("/comments/:commentId/edit")
   .post(auth.authentication, commentController.editComment);
 
 router
-  .route("/comment/:parentCommentId/reply")  
+  .route("/comment/:parentCommentId/reply")
   .post(
     auth.authentication,
     upload.array("attachments"),
-    commentController.createReply);
+    commentController.createReply
+  );
 
 router
   .route("/comments/:commentId/replies")
   .get(auth.authentication, commentController.getRepliesByCommentId);
-  
 
 router
   .route("/comments/:commentId/hide")
@@ -53,11 +52,9 @@ router
   .route("/comments/:commentId/upvote")
   .post(auth.authentication, commentController.upvoteComment);
 
-
 router
   .route("/comments/:commentId/downvote")
   .post(auth.authentication, commentController.downvoteComment);
-
 
 router
   .route("/comments/:commentId/save")
@@ -66,6 +63,5 @@ router
 router
   .route("/comments/:commentId/report")
   .post(auth.authentication, commentController.reportComment);
-
 
 module.exports = router;

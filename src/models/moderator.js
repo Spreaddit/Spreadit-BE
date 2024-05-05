@@ -48,7 +48,10 @@ ModeratorSchema.statics.getModeratorObject = async function (communityName) {
   if (!community) {
     return null;
   }
-  const moderator = await Moderator.findOne({ communityName: communityName, isAccepted: true });
+  const moderator = await Moderator.findOne({
+    communityName: communityName,
+    isAccepted: true,
+  });
   const user = await User.findOne({ username: moderator.username });
   return {
     username: moderator.username,
@@ -67,7 +70,10 @@ ModeratorSchema.statics.getAllModerators = async function (communityName) {
   if (!community) {
     return null;
   }
-  const moderators = await Moderator.find({ communityName: communityName, isAccepted: true });
+  const moderators = await Moderator.find({
+    communityName: communityName,
+    isAccepted: true,
+  });
   const moderatorObjects = [];
   for (const moderator of moderators) {
     const user = await User.findOne({ username: moderator.username });
@@ -91,7 +97,10 @@ ModeratorSchema.statics.getInvitedModerators = async function (communityName) {
   if (!community) {
     return null;
   }
-  const moderators = await Moderator.find({ communityName: communityName, isAccepted: false });
+  const moderators = await Moderator.find({
+    communityName: communityName,
+    isAccepted: false,
+  });
   const moderatorObjects = [];
   for (const moderator of moderators) {
     const user = await User.findOne({ username: moderator.username });
