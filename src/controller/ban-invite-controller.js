@@ -302,10 +302,10 @@ exports.checkUserBanStatus = async (req, res) => {
     });
 
     if (banRecord) {
-      return res.status(200).json({ banned: true });
+      return res.status(200).json({ isBanned: true });
     }
 
-    return res.status(200).json({ banned: false });
+    return res.status(200).json({ isBanned: false });
   } catch (error) {
     console.error("Error checking user ban status:", error);
     return res.status(500).json({ message: "Internal server error" });
