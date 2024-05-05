@@ -480,10 +480,10 @@ exports.acceptInvite = async (req, res) => {
       community.members.push(userId);
     }
     await community.save();
-    if (!user.moderatedCommunities.includes(userId))
+    if (!user.moderatedCommunities.includes(community._id))
       user.moderatedCommunities.push(community._id);
 
-    if (!user.subscribedCommunities.includes(userId))
+    if (!user.subscribedCommunities.includes(community._id))
       user.subscribedCommunities.push(community._id);
 
     await user.save();
