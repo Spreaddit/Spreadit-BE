@@ -1588,128 +1588,6 @@
 
 //#endregion Comments
 
-//#region Rules
-
-/**
- * @api {post} /rule/add Add Rule to Community
- * @apiVersion 0.1.0
- * @apiName AddRuleToCommunity
- * @apiGroup Rules
- * @apiDescription Adds a rule to a community.
- * @apiSampleRequest off
- *
- * @apiHeader {String} Authorization User's authentication token.
- *
- * @apiParam {String} title Title of the rule.
- * @apiParam {String} description Description of the rule (optional).
- * @apiParam {String} reportReason Reason for reporting the rule (optional).
- * @apiParam {String} communityName Name of the community to which the rule will be added.
- *
- * @apiParamExample {json} Request-Example:
- * {
- *    "title": "No hate speech",
- *    "description": "This community does not tolerate hate speech.",
- *    "communityName": "Sample Community"
- * }
- *
- * @apiSuccess {String} message Success message indicating that the rule has been added successfully.
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "message": "Rule added successfully"
- *     }
- *
- * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (402) Forbidden User is not a moderator.
- * @apiError (403) UsedTitle Title already used.
- * @apiError (404) NotFound Community not found.
- * @apiError (500) InternalServerError An unexpected error occurred on the server.
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *       "message": "Invalid rule data"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 402 Forbidden
- *     {
- *       "message": "You are not a moderator of this community"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "message": "Community not found"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 500 Internal Server Error
- *     {
- *       "message": "Internal server error"
- *     }
- */
-
-/**
- * @api {post} /rule/remove Remove Rule from Community
- * @apiVersion 0.1.0
- * @apiName RemoveRuleFromCommunity
- * @apiGroup Rules
- * @apiDescription Removes a rule from a community.
- * @apiSampleRequest off
- *
- * @apiHeader {String} Authorization User's authentication token.
- *
- * @apiParam {String} communityName Name of the community from which the rule will be removed.
- * @apiParam {String} title Title of the rule to be removed.
- *
- * @apiParamExample {json} Request-Example:
- * {
- *    "communityName": "Sample Community",
- *    "title": "No hate speech"
- * }
- *
- * @apiSuccess {String} message Success message indicating that the rule has been removed successfully.
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "message": "Rule removed successfully"
- *     }
- *
- * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (402) Forbidden User is not a moderator of the community.
- * @apiError (404) NotFound Community not found.
- * @apiError (500) InternalServerError An unexpected error occurred on the server.
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *       "message": "Invalid request parameters"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 402 Forbidden
- *     {
- *       "message": "Not a moderator"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "message": "Community not found"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 500 Internal Server Error
- *     {
- *       "message": "Internal server error"
- *     }
- */
-//#endregion Rules
-
 //#region Community
 
 /**
@@ -9553,6 +9431,1250 @@
  *     {
  *       "error": "Internal Server Error"
  *     }
+ */
+
+//#endregion
+
+//#region Moderation
+
+/**
+ * @api {post} /rule/add Add Rule to Community
+ * @apiVersion 0.1.0
+ * @apiName AddRuleToCommunity
+ * @apiGroup Community Moderation
+ * @apiDescription Adds a rule to a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} title Title of the rule.
+ * @apiParam {String} [description] Description of the rule.
+ * @apiParam {String} [reportReason] Reason for reporting.
+ * @apiParam {String} communityName Name of the community to add the rule to.
+ * @apiParam {String="posts","comments","both"} [appliesTo="both"] Specifies whether the rule applies to posts, comments, or both.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "title": "Sample Rule",
+ *    "description": "Sample description for the rule",
+ *    "communityName": "Sample Community",
+ *    "appliesTo": "posts",
+ *    "reportReason": "example reason"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the rule has been added successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Rule added successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden User is not a moderator of the community.
+ * @apiError (403) Forbidden Title already used.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (405) MethodNotAllowed Max number of rules reached.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission to manage settings.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid rule data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "You are not a moderator of this community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "Title already used"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 405 Method Not Allowed
+ *     {
+ *       "message": "Max number of rules reached"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission to manage settings"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /rule/remove Remove Rule from Community
+ * @apiVersion 0.1.0
+ * @apiName RemoveRuleFromCommunity
+ * @apiGroup Community Moderation
+ * @apiDescription Removes a rule from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to remove the rule from.
+ * @apiParam {String} title Title of the rule to remove.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community",
+ *    "title": "Sample Rule"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the rule has been removed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Rule removed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator.
+ * @apiError (404) NotFound Community or rule not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission to manage settings.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Rule not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /rule/edit Edit Rule in Community
+ * @apiVersion 0.1.0
+ * @apiName EditRuleInCommunity
+ * @apiGroup Community Moderation
+ * @apiDescription Edits a rule in a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to edit the rule in.
+ * @apiParam {String} oldTitle Title of the rule to be edited.
+ * @apiParam {Object} newRule New details of the rule.
+ * @apiParam {String} newRule.title New title of the rule.
+ * @apiParam {String} [newRule.description] New description of the rule.
+ * @apiParam {String} [newRule.reportReason] New reason for reporting.
+ * @apiParam {String="posts","comments","both"} [newRule.appliesTo="both"] New value specifying whether the rule applies to posts, comments, or both.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community",
+ *    "oldTitle": "Sample Rule",
+ *    "newRule": {
+ *        "title": "Updated Rule",
+ *        "description": "Updated description for the rule"
+ *    }
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the rule has been edited successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Rule edited successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid rule data.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator.
+ * @apiError (404) NotFound Community or rule not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission to manage settings.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid rule data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Rule not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/:communityName/rules Get Community Rules
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityRules
+ * @apiGroup Community Moderation
+ * @apiDescription Retrieves a list of rules for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve rules from.
+ *
+ * @apiSuccess {Object[]} rules List of rules for the specified community.
+ * @apiSuccess {String} rules.title Title of the rule.
+ * @apiSuccess {String} rules.description Description of the rule.
+ * @apiSuccess {String} rules.reportReason Reason for reporting.
+ * @apiSuccess {String} rules.appliesTo Specifies whether the rule applies to posts, comments, or both.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "title": "Sample Rule",
+ *             "description": "Description of the sample rule",
+ *             "reportReason": "Reason for reporting",
+ *             "appliesTo": "posts"
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Missing or invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /removal-reason/add Add Removal Reason to Community
+ * @apiVersion 0.1.0
+ * @apiName AddRemovalReasonToCommunity
+ * @apiGroup Community Moderation
+ * @apiDescription Adds a removal reason to a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} title Title of the removal reason.
+ * @apiParam {String} reasonMessage Message explaining the reason for removal.
+ * @apiParam {String} communityName Name of the community to add the removal reason to.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "title": "Sample Reason",
+ *    "reasonMessage": "Sample message for the removal reason",
+ *    "communityName": "Sample Community"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the removal reason has been added successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Removal reason added successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid removal reason data.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden You are not a moderator of this community.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (405) MethodNotAllowed Max number of removal reasons reached.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid removal reason data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "You are not a moderator of this community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 405 Method Not Allowed
+ *     {
+ *       "message": "Max number of removal reasons reached"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /removal-reason/remove Remove Removal Reason from Community
+ * @apiVersion 0.1.0
+ * @apiName RemoveRemovalReasonFromCommunity
+ * @apiGroup Community Moderation
+ * @apiDescription Removes a removal reason from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to remove the removal reason from.
+ * @apiParam {String} rId ID of the removal reason to be removed.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community",
+ *    "rId": "609be36ec33f5f00154298b1"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the removal reason has been removed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Removal reason removed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator.
+ * @apiError (404) NotFound Community or removal reason not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Removal reason not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /removal-reason/edit Edit Removal Reason from Community
+ * @apiVersion 0.1.0
+ * @apiName EditRemovalReasonFromCommunity
+ * @apiGroup Community Moderation
+ * @apiDescription Edits a removal reason in a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community containing the removal reason.
+ * @apiParam {String} rId ID of the removal reason to be edited.
+ * @apiParam {Object} newRemovalReason New data for the removal reason.
+ * @apiParam {String} newRemovalReason.title New title for the removal reason.
+ * @apiParam {String} newRemovalReason.reasonMessage New message explaining the reason for removal.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community",
+ *    "rId": "609be36ec33f5f00154298b1",
+ *    "newRemovalReason": {
+ *        "title": "Updated Reason",
+ *        "reasonMessage": "Updated message for the removal reason"
+ *    }
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the removal reason has been edited successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Removal reason edited successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid removal reason data.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden You are not a moderator of this community.
+ * @apiError (404) NotFound Community or removal reason not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid removal reason data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "You are not a moderator of this community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Removal Reason not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/:communityName/removal-reasons Get Community Removal Reasons
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityRemovalReasons
+ * @apiGroup Community Moderation
+ * @apiDescription Retrieves a list of removal reasons for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve removal reasons from.
+ *
+ * @apiSuccess {Object[]} removalReasons List of removal reasons for the specified community.
+ * @apiSuccess {String} removalReasons.title Title of the removal reason.
+ * @apiSuccess {String} removalReasons.reasonMessage Message explaining the reason for removal.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "title": "Sample Reason",
+ *             "reasonMessage": "Sample message for the removal reason"
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Missing or invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/:communityName/get-info Get Community Info
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityInfo
+ * @apiGroup Community Moderation
+ * @apiDescription Retrieves information about a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve information from.
+ *
+ * @apiSuccess {Object} communityObject Object containing community information.
+ * @apiSuccess {String} communityObject.name Name of the community.
+ * @apiSuccess {String} communityObject.description Description of the community.
+ * @apiSuccess {Number} communityObject.members Total number of community members.
+ * @apiSuccess {Number} communityObject.posts Total number of posts in the community.
+ * @apiSuccess {Number} communityObject.comments Total number of comments in the community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "name": "Sample Community",
+ *       "description": "Description of the sample community",
+ *       "members": 1000,
+ *       "posts": 500,
+ *       "comments": 2000
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/contributors Get Community Contributors
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityContributors
+ * @apiGroup Community Moderation
+ * @apiDescription Retrieves a list of contributors for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve contributors from.
+ *
+ * @apiSuccess {Object[]} contributors List of contributors for the specified community.
+ * @apiSuccess {String} contributors.username Username of the contributor.
+ * @apiSuccess {String} contributors.banner Banner image URL of the contributor.
+ * @apiSuccess {String} contributors.avatar Avatar image URL of the contributor.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "username": "user1",
+ *             "banner": "https://example.com/banner1.jpg",
+ *             "avatar": "https://example.com/avatar1.jpg"
+ *         },
+ *         {
+ *             "username": "user2",
+ *             "banner": "https://example.com/banner2.jpg",
+ *             "avatar": "https://example.com/avatar2.jpg"
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator of the community.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:username/add-contributor Add Contributor to Community
+ * @apiVersion 0.1.0
+ * @apiName AddContributorToCommunity
+ * @apiGroup Community Moderation
+ * @apiDescription Adds a contributor to a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to add the contributor to.
+ * @apiParam {String} username Username of the user to be added as a contributor.
+ *
+ * @apiSuccess {String} message Success message indicating that the user has been added as a contributor successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "User added as contributor successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator of the community.
+ * @apiError (404) NotFound Community or user not found.
+ * @apiError (405) MethodNotAllowed User is already a contributor.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 405 Method Not Allowed
+ *     {
+ *       "message": "User is already a contributor"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:username/remove-contributor Remove Contributor from Community
+ * @apiVersion 0.1.0
+ * @apiName RemoveContributorFromCommunity
+ * @apiGroup Community Moderation
+ * @apiDescription Removes a contributor from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to remove the contributor from.
+ * @apiParam {String} username Username of the user to be removed as a contributor.
+ *
+ * @apiSuccess {String} message Success message indicating that the user has been removed as a contributor successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "User removed as contributor successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator of the community.
+ * @apiError (404) NotFound Community or user not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+/**
+ * @api {post} /community/:communityName/edit-info Edit Community Info
+ * @apiVersion 0.1.0
+ * @apiName EditCommunityInfo
+ * @apiGroup Community Management
+ * @apiDescription Edits information about a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to edit information for.
+ * @apiParam {String} name New name for the community.
+ * @apiParam {Boolean} [is18plus] Indicates if the community is for users aged 18 and above.
+ * @apiParam {String} [communityType] Type of the community (e.g., public, private).
+ * @apiParam {String} [description] New description for the community.
+ * @apiParam {String} [fileType] Type of file being uploaded (e.g., image).
+ * @apiParam {String} [membersNickname] New nickname for community members.
+ * @apiParam {File} [image] New image for the community.
+ * @apiParam {File} [communityBanner] New banner image for the community.
+ *
+ * @apiSuccess {String} message Success message indicating that the community information has been updated successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Community information updated successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (402) DuplicateName Community name is already used.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/:communityName/settings Get Community Settings
+ * @apiVersion 0.1.0
+ * @apiName GetCommunitySettings
+ * @apiGroup Community Management
+ * @apiDescription Retrieves settings for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve settings for.
+ *
+ * @apiSuccess {Object} settings Settings for the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *         "postTypeOptions": "any",
+ *         "spoilerEnabled": true,
+ *         "multipleImagesPerPostAllowed": true,
+ *         "pollsAllowed": true,
+ *         "commentSettings": {
+ *             "mediaInCommentsAllowed": true
+ *         }
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {put} /community/:communityName/settings Update Community Settings
+ * @apiVersion 0.1.0
+ * @apiName UpdateCommunitySettings
+ * @apiGroup Community Management
+ * @apiDescription Updates settings for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to update settings for.
+ * @apiParam {String} postTypeOptions Options for post types (e.g., any, links only, text posts only).
+ * @apiParam {Boolean} spoilerEnabled Indicates if spoilers are enabled.
+ * @apiParam {Boolean} multipleImagesPerPostAllowed Indicates if multiple images per post are allowed.
+ * @apiParam {Boolean} pollsAllowed Indicates if polls are allowed.
+ * @apiParam {Boolean} commentSettings.mediaInCommentsAllowed Indicates if media is allowed in comments.
+ *
+ * @apiSuccess {String} message Success message indicating that the community settings have been updated successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Community settings updated successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (402) Forbidden Not a moderator.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/muted Get Muted Communities
+ * @apiVersion 0.1.0
+ * @apiName GetMutedCommunities
+ * @apiGroup Community Management
+ * @apiDescription Retrieves a list of muted communities for the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} mutedCommunities List of muted communities.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "name": "Community Name",
+ *             "description": "Community Description",
+ *             "image": "Community Image URL",
+ *             "membersCount": 100,
+ *             "communityBanner": "Community Banner URL"
+ *         }
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+/**
+ * @api {get} /community/moderation/:communityName/moderators Get Community Moderators
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityModerators
+ * @apiGroup Community Management
+ * @apiDescription Retrieves a list of moderators for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve moderators for.
+ *
+ * @apiSuccess {Object[]} moderators List of moderators for the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2a",
+ *             "username": "moderator1",
+ *             "communityName": "community1"
+ *         },
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2b",
+ *             "username": "moderator2",
+ *             "communityName": "community1"
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/moderators/editable Get Editable Community Moderators
+ * @apiVersion 0.1.0
+ * @apiName GetEditableCommunityModerators
+ * @apiGroup Community Management
+ * @apiDescription Retrieves a list of editable moderators for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve editable moderators for.
+ *
+ * @apiSuccess {Object[]} editableModerators List of editable moderators for the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2b",
+ *             "username": "moderator2",
+ *             "communityName": "community1",
+ *             "moderationDate": "2024-05-05T00:00:00.000Z"
+ *         },
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2a",
+ *             "username": "moderator1",
+ *             "communityName": "community1",
+ *             "moderationDate": "2024-05-04T00:00:00.000Z"
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/invited-moderators Get Invited Community Moderators
+ * @apiVersion 0.1.0
+ * @apiName GetInvitedCommunityModerators
+ * @apiGroup Community Management
+ * @apiDescription Retrieves a list of invited moderators for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve invited moderators for.
+ *
+ * @apiSuccess {Object[]} invitedModerators List of invited moderators for the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2a",
+ *             "username": "invitedmoderator1",
+ *             "communityName": "community1",
+ *             "isAccepted": false
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {delete} /community/moderation/:communityName/:username/remove-invite Remove Moderator Invite
+ * @apiVersion 0.1.0
+ * @apiName RemoveModeratorInvite
+ * @apiGroup Community Management
+ * @apiDescription Removes an invitation for a moderator from a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to remove the moderator invite from.
+ * @apiParam {String} username Username of the moderator to remove the invite for.
+ *
+ * @apiSuccess {String} message Success message indicating that the moderator invite has been removed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Moderator invite removed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+/**
+ * @api {get} /community/moderation/:communityName/:username/is-moderator Check if User is Moderator
+ * @apiVersion 0.1.0
+ * @apiName CheckIfUserIsModerator
+ * @apiGroup Community Management
+ * @apiDescription Checks if a user is a moderator of a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to check moderator status for.
+ * @apiParam {String} username Username of the user to check moderator status for.
+ *
+ * @apiSuccess {Boolean} isModerator Indicates whether the user is a moderator of the community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "isModerator": true
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/:username/is-invited Check if User is Invited as Moderator
+ * @apiVersion 0.1.0
+ * @apiName CheckIfUserIsInvited
+ * @apiGroup Community Management
+ * @apiDescription Checks if a user is invited as a moderator of a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to check moderator invitation for.
+ * @apiParam {String} username Username of the user to check moderator invitation for.
+ *
+ * @apiSuccess {Boolean} isInvited Indicates whether the user is invited as a moderator of the community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "isInvited": true
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/moderation/user/:username Get Moderated Communities of User
+ * @apiVersion 0.1.0
+ * @apiName GetModeratedCommunitiesOfUser
+ * @apiGroup Community Management
+ * @apiDescription Retrieves a list of communities moderated by a specific user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the user to retrieve moderated communities for.
+ *
+ * @apiSuccess {Object[]} moderatedCommunities List of moderated communities by the user.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2a",
+ *             "is18plus": true,
+ *             "name": "community1",
+ *             "category": "General",
+ *             "communityType": "Public",
+ *             "description": "This is community 1",
+ *             "image": "https://example.com/community1.jpg",
+ *             "membersCount": 100,
+ *             "communityBanner": "https://example.com/community1/banner.jpg",
+ *             "membersNickname": "Community Members",
+ *             "dateCreated": "2024-05-05T00:00:00.000Z"
+ *         }
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {put} /community/moderation/:communityName/:username/permissions Update Moderator Permissions
+ * @apiVersion 0.1.0
+ * @apiName UpdateModeratorPermissions
+ * @apiGroup Community Management
+ * @apiDescription Updates the permissions of a moderator in a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to update moderator permissions for.
+ * @apiParam {String} username Username of the moderator to update permissions for.
+ * @apiParam {Boolean} managePostsAndComments Indicates whether the moderator can manage posts and comments.
+ * @apiParam {Boolean} manageUsers Indicates whether the moderator can manage users.
+ * @apiParam {Boolean} manageSettings Indicates whether the moderator can manage community settings.
+ *
+ * @apiSuccess {String} message Success message indicating that the moderator permissions have been updated successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Moderator permissions changed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community or moderator not found.
+ * @apiError (406) NotAcceptable Not authorized to modify permissions.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {delete} /community/moderation/:communityName/moderators/:username Remove Moderator from Community
+ * @apiVersion 0.1.0
+ * @apiName RemoveModeratorFromCommunity
+ * @apiGroup Community Management
+ * @apiDescription Removes a moderator from a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to remove the moderator from.
+ * @apiParam {String} username Username of the moderator to remove from the community.
+ *
+ * @apiSuccess {String} message Success message indicating that the moderator has been removed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Moderator removed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community or moderator not found.
+ * @apiError (402) PaymentRequired Not the creator.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/:communityName/insights Get Community Insights
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityInsights
+ * @apiGroup Community Management
+ * @apiDescription Retrieves insights data for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve insights for.
+ *
+ * @apiSuccess {Object} insights Object containing insights data for the community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "monthlyInsights": {
+ *           "newMembers": 10,
+ *           "posts": 50,
+ *           "comments": 100
+ *       },
+ *       "last7DaysInsights": {
+ *           "newMembers": 2,
+ *           "posts": 10,
+ *           "comments": 20
+ *       }
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
  */
 
 //#endregion

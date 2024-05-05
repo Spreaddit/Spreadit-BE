@@ -9,7 +9,6 @@ const InsightSchema = new Schema({
   month: {
     type: Date,
     required: true,
-    unique: true,
   },
   views: {
     type: Number,
