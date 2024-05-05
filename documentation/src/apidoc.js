@@ -7123,7 +7123,7 @@
  * @apiError Unauthorized The user is not authorized to perform this action.
  * @apiError UserNotFound The specified user does not exist.
  * @apiError InternalServerError Internal server error occurred.
- *
+ * @apiError The User is already banned
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
  *     {
@@ -7135,7 +7135,11 @@
  *     {
  *       "message": "User is not found"
  *     }
- *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Found
+ *     {
+ *       "message": "the user already banned"
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 500 Internal Server Error
  *     {
@@ -7347,7 +7351,7 @@
  * @apiError InternalServerError Internal server error occurred.
  *
  * @apiErrorExample Error-Response:
- *     HTTP/1.1 401 Unauthorized
+ *     HTTP/1.1 403 Unauthorized
  *     {
  *       "message": "You are not authorized"
  *     }
@@ -7423,7 +7427,7 @@
  * @apiError InternalServerError Internal server error occurred.
  *
  * @apiErrorExample Error-Response:
- *     HTTP/1.1 401 Unauthorized
+ *     HTTP/1.1 403 Unauthorized
  *     {
  *       "message": "You are not authorized"
  *     }
