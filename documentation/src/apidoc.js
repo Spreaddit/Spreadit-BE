@@ -10758,5 +10758,59 @@
  * @apiError (404) NotFound Community not found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  */
+/**
+ * @api {get} /community/moderation/:communityName/permissions/:username Get Moderator Permissions
+ * @apiVersion 0.1.0
+ * @apiName GetModeratorPermissions
+ * @apiGroup Moderation
+ * @apiDescription Retrieves the permissions of a moderator in a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} username Username of the moderator.
+ *
+ * @apiSuccess {Boolean} managePostsAndComments Ability to manage posts and comments.
+ * @apiSuccess {Boolean} manageUsers Ability to manage users.
+ * @apiSuccess {Boolean} manageSettings Ability to manage community settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "managePostsAndComments": true,
+ *       "manageUsers": false,
+ *       "manageSettings": true
+ *     }
+ *
+ * @apiError (404) NotFound Community or user not found.
+ * @apiError (402) Forbidden Not a moderator of the community.
+ * @apiError (403) Forbidden This user is not a moderator.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "This user is not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
 
 //#endregion
