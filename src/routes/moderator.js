@@ -10,25 +10,39 @@ const modController = require("../controller/moderator-controller.js");
 
 router.route("/rule/add").post(auth.authentication, modController.addRule);
 
-router.route("/rule/remove").post(auth.authentication, modController.removeRule);
+router
+  .route("/rule/remove")
+  .post(auth.authentication, modController.removeRule);
 
 router.route("/rule/edit").put(auth.authentication, modController.editRule);
 
-router.route("/community/:communityName/rules").get(auth.authentication, modController.getRules);
+router
+  .route("/community/:communityName/rules")
+  .get(auth.authentication, modController.getRules);
 
-router.route("/removal-reason/add").post(auth.authentication, modController.addRemovalReason);
+router
+  .route("/removal-reason/add")
+  .post(auth.authentication, modController.addRemovalReason);
 
-router.route("/removal-reason/remove").post(auth.authentication, modController.removeRemovalReason);
+router
+  .route("/removal-reason/remove")
+  .post(auth.authentication, modController.removeRemovalReason);
 
-router.route("/removal-reason/edit").put(auth.authentication, modController.editRemovalReason);
+router
+  .route("/removal-reason/edit")
+  .put(auth.authentication, modController.editRemovalReason);
 
-router.route("/community/:communityName/removal-reasons").get(auth.authentication, modController.getRemovalReasons);
+router
+  .route("/community/:communityName/removal-reasons")
+  .get(auth.authentication, modController.getRemovalReasons);
 
 router
   .route("/community/moderation/:communityName/:username/leave")
   .post(auth.authentication, modController.leaveModeration);
 
-router.route("/community/:communityName/get-info").get(auth.authentication, modController.getCommunityInfo);
+router
+  .route("/community/:communityName/get-info")
+  .get(auth.authentication, modController.getCommunityInfo);
 
 router
   .route("/community/moderation/:communityName/contributors")
@@ -60,7 +74,9 @@ router
   .get(auth.authentication, modController.getCommunitySettings)
   .put(auth.authentication, modController.editCommunitySettings);
 
-router.route("/community/muted").get(auth.authentication, modController.getMutedCommunities);
+router
+  .route("/community/muted")
+  .get(auth.authentication, modController.getMutedCommunities);
 
 router
   .route("/community/moderation/:communityName/moderators")
@@ -86,7 +102,9 @@ router
   .route("/community/moderation/:communityName/:username/is-invited")
   .get(auth.authentication, modController.isInvited);
 
-router.route("/community/moderation/user/:username").get(auth.authentication, modController.getModeratedCommunities);
+router
+  .route("/community/moderation/user/:username")
+  .get(auth.authentication, modController.getModeratedCommunities);
 
 router
   .route("/community/moderation/:communityName/:username/permissions")
@@ -96,6 +114,8 @@ router
   .route("/community/moderation/:communityName/moderators/:username")
   .delete(auth.authentication, modController.removeModerator);
 
-router.route("/community/:communityName/insights").get(auth.authentication, modController.getCommunityInsights);
+router
+  .route("/community/:communityName/insights")
+  .get(auth.authentication, modController.getCommunityInsights);
 
 module.exports = router;
