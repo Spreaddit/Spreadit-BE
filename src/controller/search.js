@@ -381,18 +381,27 @@ exports.logSearchActivity = async (req, res) => {
         }
 
         const communityId = await Community.findOne({ name: communityName });
-        const userId = await User.findOne({ username });
+        const searchedByUser = await User.findOne({ username });
 
         if (type === 'community' && !communityId) {
             return res.status(400).json({ error: 'Community name is required for community search' });
-        } else if (type === 'user' && !userId) {
+        } else if (type === 'user' && !searchedByUser) {
             return res.status(400).json({ error: 'Username is required for user search' });
         }
+        let existingSearchLogs = await SearchLog.find({ searchedByUserId: req.user._id });
+
+        if (existingSearchLogs.length >= 5) {
+            // If there are already 5 or more search logs for the user, delete the oldest one
+            const oldestSearchLog = existingSearchLogs.sort((a, b) => a.createdAt - b.createdAt)[0];
+            await oldestSearchLog.deleteOne();
+        }
+
         let existingSearchLog = await SearchLog.findOne({ query, type });
 
         if (existingSearchLog) {
             existingSearchLog.communityId = type === 'community' ? communityId : null;
-            existingSearchLog.userId = type === 'user' ? userId : null;
+            existingSearchLog.userId = type === 'user' ? searchedByUser._id : null;
+            existingSearchLog.searchedByUserId = req.user._id;
             existingSearchLog.isInProfile = Boolean(isInProfile);
             existingSearchLog.updatedAt = Date.now();
             await existingSearchLog.save();
@@ -401,16 +410,10 @@ exports.logSearchActivity = async (req, res) => {
                 query,
                 type,
                 communityId: type === 'community' ? communityId : null,
-                userId: type === 'user' ? userId : null,
+                userId: type === 'user' ? searchedByUser._id : null,
+                searchedByUserId: req.user._id,
                 isInProfile: Boolean(isInProfile)
             });
-
-            const count = await SearchLog.countDocuments();
-
-            if (count >= 5) {
-                const oldestSearchLog = await SearchLog.findOne().sort({ updateddAt: 1 });
-                await oldestSearchLog.deleteOne();
-            }
 
             await searchLog.save();
         }
@@ -424,9 +427,10 @@ exports.logSearchActivity = async (req, res) => {
 
 
 
+
 exports.getSearchHistory = async (req, res) => {
     try {
-        const searchHistory = await SearchLog.find()
+        const searchHistory = await SearchLog.find({ searchedByUserId: req.user._id })
             .sort({ updatedAt: -1 })
             .limit(5)
             .populate('communityId', 'name image')
@@ -441,6 +445,7 @@ exports.getSearchHistory = async (req, res) => {
             userId: history.userId ? history.userId._id.toString() : null,
             userName: history.userId ? history.userId.username : null,
             userProfilePic: history.userId ? history.userId.avatar : null,
+            isInProfile: history.isInProfile,
         }));
 
         return res.status(200).json(formattedHistory);
@@ -453,13 +458,18 @@ exports.getSearchHistory = async (req, res) => {
 exports.deleteSearchHistory = async (req, res) => {
     try {
         const query = req.query.query;
-        const deletedSearchLog = await SearchLog.findOneAndDelete({ query });
+        const userId = req.user._id;
+
+        const deletedSearchLog = await SearchLog.findOneAndDelete({ query, searchedByUserId: userId });
+
         if (!deletedSearchLog) {
             return res.status(404).json({ error: 'Search history record not found' });
         }
+
         return res.status(200).json({ message: 'Search history record deleted successfully' });
     } catch (err) {
         console.error('Error occurred while deleting search history record:', err);
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+
