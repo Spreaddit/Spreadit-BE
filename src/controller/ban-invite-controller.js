@@ -61,7 +61,6 @@ exports.banUser = async (req, res) => {
       userId: userToBeBanned._id,
       communityName: communityName,
     });
-    console.log(banUser);
     if (banUser)
       return res.status(400).send({ message: "User is already banned" });
 
@@ -140,7 +139,6 @@ exports.editBan = async (req, res) => {
       communityName: communityName,
       isAccepted: true,
     });
-    console.log(moderator);
     if (!moderator) {
       return res.status(404).send({ message: "Moderator not found" });
     }

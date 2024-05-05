@@ -772,8 +772,6 @@ exports.sortPostTopTime = async (req, res) => {
       return postTime <= sortTime;
     });
 
-    console.log(postsToSort);
-
     if (postsToSort.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
