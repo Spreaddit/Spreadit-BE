@@ -3,139 +3,162 @@ const Schema = mongoose.Schema;
 require("./user");
 require("./post");
 require("./community");
-const commentSchema = require('../models/comment')
+const commentSchema = require("../models/comment");
 
 const PostSchema = new Schema(
   {
-
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
-      required: true
+      ref: "user",
+      required: true,
     },
     upVotes: {
       type: [],
-      default: null
+      default: null,
     },
     downVotes: {
       type: [],
-      default: null
+      default: null,
     },
     sharesCount: {
       type: Number,
-      default: 0
+      default: 0,
     },
     commentsCount: {
       type: Number,
-      default: 0
+      default: 0,
     },
     numberOfViews: {
       type: Number,
-      default: 0
+      default: 0,
     },
     date: {
       type: Date,
-      default: Date.now
+      default: Date.now,
     },
     title: {
       type: String,
-      required: true
+      required: true,
     },
-    content: [{
-      type: String,
-    }],
+    content: [
+      {
+        type: String,
+      },
+    ],
     community: {
       type: String,
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      enum: ['Post', 'Images & Video', 'Link', 'Poll'],
-      default: 'Post'
+      enum: ["Post", "Images & Video", "Link", "Poll"],
+      default: "Post",
     },
-    pollOptions: [{
-      option: { type: String, required: true },
-      votes: { type: Number, default: 0 }
-    }],
-    pollExpiration:
-    {
-      type: Date, default: null
+    pollOptions: [
+      {
+        option: { type: String, required: true },
+        votes: { type: Number, default: 0 },
+      },
+    ],
+    pollExpiration: {
+      type: Date,
+      default: null,
     },
     isPollEnabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     pollVotingLength: {
       type: String,
-      enum: ['1 Day', '2 Days', '3 Days', '4 Days', '5 Days', '6 Days', '7 Days'],
-      default: '3 Days'
+      enum: [
+        "1 Day",
+        "2 Days",
+        "3 Days",
+        "4 Days",
+        "5 Days",
+        "6 Days",
+        "7 Days",
+      ],
+      default: "3 Days",
     },
-    votedUsers: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }],
-    link: {
-      type: String
-    },
-    attachments: [{
-      type: {
-        type: String,
-        enum: ['image', 'video'],
+    votedUsers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
-      link: {
-        type: String,
-      }
-    }],
+    ],
+    link: {
+      type: String,
+    },
+    attachments: [
+      {
+        type: {
+          type: String,
+          enum: ["image", "video"],
+        },
+        link: {
+          type: String,
+        },
+      },
+    ],
     isSpoiler: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isNsfw: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isSpam: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isRemoved: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isApproved: {
       type: Boolean,
-      default: true
+      default: true,
     },
     isScheduled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     removalReason: {
-      type: String
+      type: String,
     },
     sendPostReplyNotification: {
       type: Boolean,
-      default: true
+      default: true,
     },
     isCommentsLocked: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    hiddenBy: [{
-      type: Schema.Types.ObjectId,
-      ref: 'User'
-    }],
-    comments: [{
-      type: Schema.Types.ObjectId,
-      ref: 'Comment'
-    }]
+    hiddenBy: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    comments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-PostSchema.statics.getPostObject = async function (post, userId, includeHidden = false) {
+PostSchema.statics.getPostObject = async function (
+  post,
+  userId,
+  includeHidden = false
+) {
   const User = mongoose.model("user");
   const Community = mongoose.model("community");
   const loginUser = await User.findById(userId);
@@ -229,7 +252,6 @@ PostSchema.statics.getPostResultObject = async function (post) {
   return postResultObject;
 };
 
-
-const Post = mongoose.model('post', PostSchema);
+const Post = mongoose.model("post", PostSchema);
 
 module.exports = Post;

@@ -213,13 +213,14 @@ const UserSchema = new Schema(
     avatar: {
       type: String,
       trim: true,
-      default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+      default:
+        "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     },
     banner: {
       type: String,
       trim: true,
       default:
-      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713046574/uploads/WhatsApp_Image_2024-04-13_at_5.22.35_PM_f0yaln.jpg",
+        "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713046574/uploads/WhatsApp_Image_2024-04-13_at_5.22.35_PM_f0yaln.jpg",
     },
     nsfw: {
       type: Boolean,
@@ -425,7 +426,10 @@ UserSchema.statics.checkExistence = async function (email) {
   }
 };
 
-UserSchema.statics.verifyCredentials = async function (usernameOremail, password) {
+UserSchema.statics.verifyCredentials = async function (
+  usernameOremail,
+  password
+) {
   const userByEmail = await User.findOne({
     email: usernameOremail,
   }).populate("roleId");
@@ -543,14 +547,18 @@ UserSchema.methods.generateRandomString = function () {
   let randomString = "";
 
   for (let i = 0; i < length; i++) {
-    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+    randomString += characters.charAt(
+      Math.floor(Math.random() * characters.length)
+    );
   }
 
   return randomString;
 };
 
-UserSchema.statics.getUserObjectSimplified = async function (user, loggedInUserId) {
-
+UserSchema.statics.getUserObjectSimplified = async function (
+  user,
+  loggedInUserId
+) {
   const isFollowing = user.followers.includes(loggedInUserId);
 
   return {
@@ -562,7 +570,6 @@ UserSchema.statics.getUserObjectSimplified = async function (user, loggedInUserI
     isFollowing: isFollowing,
   };
 };
-
 
 const User = mongoose.model("user", UserSchema);
 

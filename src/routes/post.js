@@ -28,8 +28,7 @@ router
   .route("/:postId/unsave")
   .post(auth.authentication, postController.unsavePost);
 
-router.route("/:postId/edit")
-  .put(auth.authentication, postController.editPost);
+router.route("/:postId/edit").put(auth.authentication, postController.editPost);
 
 router
   .route("/:postId/spoiler")
@@ -71,8 +70,7 @@ router
   .route("/:postId/unhide")
   .post(auth.authentication, postController.unhidePost);
 
-router.route("/hide")
-  .get(auth.authentication, postController.getHiddenPosts);
+router.route("/hide").get(auth.authentication, postController.getHiddenPosts);
 
 router
   .route("/:postId/nsfw")
@@ -90,7 +88,6 @@ router
   .route("/:communityName/report")
   .get(auth.authentication, postController.getReportedPostsInCommunity);
 
-
 router
   .route("/:postId/poll/vote")
   .post(auth.authentication, postController.voteInPoll);
@@ -104,8 +101,5 @@ router.route("/:postId").get(auth.authentication, postController.getPostById);
 router
   .route("/deleterecent/:postId")
   .delete(auth.authentication, postController.deleteRecentPost);
-
-
-
 
 module.exports = router;

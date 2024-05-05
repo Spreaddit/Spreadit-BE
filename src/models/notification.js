@@ -11,140 +11,139 @@ require("./comment");
 const serviceAccount = require("./../../spreadit-b8b53-firebase-adminsdk-3ka4j-3ba29720af.json");
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(serviceAccount),
 });
 
 const NotificationSchema = new Schema(
-    {
-        userId: {
-            type: Schema.Types.ObjectId,
-            required: true,
-            index: true,
-            ref: "user",
-        },
-        postId: {
-            type: Schema.Types.ObjectId,
-            index: true,
-            ref: "post",
-            default: null,
-        },
-        commentId: {
-            type: Schema.Types.ObjectId,
-            index: true,
-            ref: "comment",
-            default: null,
-        },
-        content: {
-            type: String,
-            trim: true,
-            default: "",
-        },
-        notificationTypeId: {
-            type: Schema.Types.ObjectId,
-            required: true,
-            index: true,
-            ref: "notificationType",
-        },
-        relatedUserId: {
-            type: Schema.Types.ObjectId,
-            index: true,
-            ref: "user",
-            default: null,
-        },
-        isRead: {
-            type: Boolean,
-            default: false,
-        },
-        isHidden: {
-            type: Boolean,
-            default: false,
-        },
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      index: true,
+      ref: "user",
     },
-    {
-        timestamps: true,
-    }
+    postId: {
+      type: Schema.Types.ObjectId,
+      index: true,
+      ref: "post",
+      default: null,
+    },
+    commentId: {
+      type: Schema.Types.ObjectId,
+      index: true,
+      ref: "comment",
+      default: null,
+    },
+    content: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    notificationTypeId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      index: true,
+      ref: "notificationType",
+    },
+    relatedUserId: {
+      type: Schema.Types.ObjectId,
+      index: true,
+      ref: "user",
+      default: null,
+    },
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
+    isHidden: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
 NotificationSchema.statics.getNotificationObject = async function (
-    notification
+  notification
 ) {
-    let post = null,
-        user = null,
-        comment = null;
+  let post = null,
+    user = null,
+    comment = null;
 
-    if (notification.postId != null) {
-        const Post = mongoose.model("post");
-        post = {
-            title: notification.postId.title,
-            community: notification.postId.community
-        };
-    }
-    if (notification.relatedUserId != null) {
-        user = {
-            username: notification.relatedUserId.username,
-            avatar: notification.relatedUserId.avatar
-        };
-    }
-    let rootComment;
-    if (notification.commentId != null) {
-        const Comment = mongoose.model("comment");
-        rootComment = await Comment.findRootComment(notification.commentId);
-        comment = {
-            content: notification.commentId.content,
-            postTitle: notification.commentId.postId.title,
-            communityTitle: notification.commentId.postId.community
-        };
-    }
-
-    const notificationObject = {
-        _id: notification._id,
-        userId: notification.userId ? notification.userId._id : null,
-        postId: notification.postId ? notification.postId._id : null,
-        commentId: rootComment._id ? notification.commentId?._id : null,
-        content: notification.content,
-        notification_type: notification.notificationTypeId.name,
-        related_user: user,
-        post: post,
-        comment: comment,
-        is_read: notification.isRead,
-        is_hidden: notification.isHidden,
-        created_at: notification.createdAt,
+  if (notification.postId != null) {
+    const Post = mongoose.model("post");
+    post = {
+      title: notification.postId.title,
+      community: notification.postId.community,
     };
-    if (notification.notificationTypeId.name === "Account Update") {
-        delete notificationObject.related_user;
-    }
+  }
+  if (notification.relatedUserId != null) {
+    user = {
+      username: notification.relatedUserId.username,
+      avatar: notification.relatedUserId.avatar,
+    };
+  }
+  let rootComment;
+  if (notification.commentId != null) {
+    const Comment = mongoose.model("comment");
+    rootComment = await Comment.findRootComment(notification.commentId);
+    comment = {
+      content: notification.commentId.content,
+      postTitle: notification.commentId.postId.title,
+      communityTitle: notification.commentId.postId.community,
+    };
+  }
 
-    return notificationObject;
+  const notificationObject = {
+    _id: notification._id,
+    userId: notification.userId ? notification.userId._id : null,
+    postId: notification.postId ? notification.postId._id : null,
+    commentId: rootComment._id ? notification.commentId?._id : null,
+    content: notification.content,
+    notification_type: notification.notificationTypeId.name,
+    related_user: user,
+    post: post,
+    comment: comment,
+    is_read: notification.isRead,
+    is_hidden: notification.isHidden,
+    created_at: notification.createdAt,
+  };
+  if (notification.notificationTypeId.name === "Account Update") {
+    delete notificationObject.related_user;
+  }
+
+  return notificationObject;
 };
 
 NotificationSchema.statics.sendNotification = async function (
-    userId,
-    title,
-    body
+  userId,
+  title,
+  body
 ) {
-    const subs = await NotificationSub.find({ userId: userId });
-    if (!subs || subs.length === 0) {
-        return null;
-    }
-    const payload = {
-        notification: {
-            title: title,
-            body: body,
-        },
-    };
+  const subs = await NotificationSub.find({ userId: userId });
+  if (!subs || subs.length === 0) {
+    return null;
+  }
+  const payload = {
+    notification: {
+      title: title,
+      body: body,
+    },
+  };
 
-    for (let i = 0; i < subs.length; i++) {
-        try {
-            await admin.messaging().sendToDevice(subs[i].fcmToken, payload);
-            console.log("Notification sent to:", subs[i].fcmToken);
-        } catch (error) {
-            console.error("Error sending FCM message:", error);
-            return error; // Return the error to indicate failure
-        }
+  for (let i = 0; i < subs.length; i++) {
+    try {
+      await admin.messaging().sendToDevice(subs[i].fcmToken, payload);
+      console.log("Notification sent to:", subs[i].fcmToken);
+    } catch (error) {
+      console.error("Error sending FCM message:", error);
+      return error; // Return the error to indicate failure
     }
-    return true; // Return true to indicate success
+  }
+  return true; // Return true to indicate success
 };
-
 
 const Notification = mongoose.model("notification", NotificationSchema);
 
