@@ -457,7 +457,7 @@ exports.reportMessage = async (req, res) => {
         .json({ error: "You are not authorized to report this message" });
     }
 
-    if (!reason) {
+    if (!reason || !subreason) {
       return res.status(400).send({
         message: "invalid report data must send reason",
       });
