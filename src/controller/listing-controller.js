@@ -127,10 +127,37 @@ exports.sortPostTopCommunity = async (req, res) => {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    const posts = await Post.find({ community: communityName }).exec();
+    if (!communityName) {
+      return res.status(400).json({ error: "Community name is required" });
+    }
 
-    if (posts.length == 0) {
-      return res.status(404).json({ error: "no posts found" });
+    const communityExists = await Community.findOne({ name: communityName });
+
+    if (!communityExists) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    let posts;
+
+    const isModeratorOrCreator =
+      communityExists.moderators.includes(userId) ||
+      userId.equals(communityExists.creator);
+
+    const userIsMember = communityExists.members.includes(userId);
+
+    if (!userIsMember && communityExists.communityType === "private") {
+      return res.status(403).json({ message: "Unauthorized to see posts" });
+    }
+    if (isModeratorOrCreator) {
+      posts = await Post.find({ community: communityName });
+    } else {
+      posts = await Post.find({ community: communityName, isApproved: true });
+    }
+
+    if (!posts || posts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "no posts found in this community" });
     }
 
     posts.sort((a, b) => {
@@ -150,6 +177,9 @@ exports.sortPostTopCommunity = async (req, res) => {
 
     const postInfoArray = await Promise.all(
       paginatedPosts.map(async (post) => {
+        if (post.isRemoved || post.isSpam) {
+          return null;
+        }
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
@@ -176,12 +206,41 @@ exports.sortPostNewCommunity = async (req, res) => {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    const posts = await Post.find({ community: communityName })
-      .sort({ date: -1 })
-      .exec();
+    if (!communityName) {
+      return res.status(400).json({ error: "Community name is required" });
+    }
 
-    if (posts.length == 0) {
-      return res.status(404).json({ error: "no posts found" });
+    const communityExists = await Community.findOne({ name: communityName });
+
+    if (!communityExists) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    let posts;
+
+    const isModeratorOrCreator =
+      communityExists.moderators.includes(userId) ||
+      userId.equals(communityExists.creator);
+
+    const userIsMember = communityExists.members.includes(userId);
+
+    if (!userIsMember && communityExists.communityType === "private") {
+      return res.status(403).json({ message: "Unauthorized to see posts" });
+    }
+    if (isModeratorOrCreator) {
+      posts = await Post.find({ community: communityName })
+        .sort({ date: -1 })
+        .exec();
+    } else {
+      posts = await Post.find({ community: communityName, isApproved: true })
+        .sort({ date: -1 })
+        .exec();
+    }
+
+    if (!posts || posts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "no posts found in this community" });
     }
 
     const totalPosts = posts.length;
@@ -193,6 +252,9 @@ exports.sortPostNewCommunity = async (req, res) => {
 
     const postInfoArray = await Promise.all(
       paginatedPosts.map(async (post) => {
+        if (post.isRemoved || post.isSpam) {
+          return null;
+        }
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
@@ -427,11 +489,41 @@ exports.sortPostHotCommunity = async (req, res) => {
     const page = req.query.page || 1;
     const limit = 20;
     const skip = (page - 1) * limit;
+    if (!communityName) {
+      return res.status(400).json({ error: "Community name is required" });
+    }
 
-    const posts = await Post.find({ community: communityName }).exec();
+    const communityExists = await Community.findOne({ name: communityName });
 
-    if (posts.length == 0) {
-      return res.status(404).json({ error: "no posts found" });
+    if (!communityExists) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    let posts;
+
+    const isModeratorOrCreator =
+      communityExists.moderators.includes(userId) ||
+      userId.equals(communityExists.creator);
+
+    const userIsMember = communityExists.members.includes(userId);
+
+    if (!userIsMember && communityExists.communityType === "private") {
+      return res.status(403).json({ message: "Unauthorized to see posts" });
+    }
+    if (isModeratorOrCreator) {
+      posts = await Post.find({ community: communityName })
+        .sort({ date: -1 })
+        .exec();
+    } else {
+      posts = await Post.find({ community: communityName, isApproved: true })
+        .sort({ date: -1 })
+        .exec();
+    }
+
+    if (!posts || posts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "no posts found in this community" });
     }
 
     const sortedPosts = posts.sort((a, b) => {
@@ -449,6 +541,9 @@ exports.sortPostHotCommunity = async (req, res) => {
 
     const postInfoArray = await Promise.all(
       paginatedPosts.map(async (post) => {
+        if (post.isRemoved || post.isSpam) {
+          return null;
+        }
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
@@ -474,20 +569,61 @@ exports.sortPostRandomCommunity = async (req, res) => {
     const page = req.query.page || 1;
     const limit = 20;
     const skip = (page - 1) * limit;
-
-    const posts = await Post.find({ community: communityName }).exec();
-
-    if (posts.length == 0) {
-      return res.status(404).json({ error: "no posts found" });
+    if (!communityName) {
+      return res.status(400).json({ error: "Community name is required" });
     }
 
+    const communityExists = await Community.findOne({ name: communityName });
+
+    if (!communityExists) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    let posts;
+
+    const isModeratorOrCreator =
+      communityExists.moderators.includes(userId) ||
+      userId.equals(communityExists.creator);
+
+    const userIsMember = communityExists.members.includes(userId);
+
+    if (!userIsMember && communityExists.communityType === "private") {
+      return res.status(403).json({ message: "Unauthorized to see posts" });
+    }
+    if (isModeratorOrCreator) {
+      posts = await Post.find({ community: communityName })
+        .sort({ date: -1 })
+        .exec();
+    } else {
+      posts = await Post.find({ community: communityName, isApproved: true })
+        .sort({ date: -1 })
+        .exec();
+    }
+
+    if (!posts || posts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "no posts found in this community" });
+    }
     const pipeline = [{ $sample: { size: posts.length } }];
-    const randomPosts = await Post.aggregate(pipeline);
+    const randomPostIds = await Post.aggregate(pipeline);
+
+    const postIds = randomPostIds.map((randomPost) => randomPost._id);
+
+    const randomPosts = await Post.find({ _id: { $in: postIds } });
 
     const user = await User.findById(userId);
 
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = randomPosts.slice(skip, skip + limit);
+
     const postInfoArray = await Promise.all(
-      randomPosts.map(async (post) => {
+      paginatedPosts.map(async (post) => {
+        if (post.isRemoved || post.isSpam) {
+          return null;
+        }
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
@@ -509,6 +645,9 @@ exports.sortPostRandomCommunity = async (req, res) => {
 exports.sortPostTopTimeCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
     const communityName = req.params.subspreaditname;
     const time = req.params.time;
     let sortTime = 24;
@@ -517,11 +656,41 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
     else if (time === "week") sortTime = 24 * 7;
     else if (time === "month") sortTime = 24 * 30;
     else if (time === "year") sortTime = 365 * 24;
+    if (!communityName) {
+      return res.status(400).json({ error: "Community name is required" });
+    }
 
-    const posts = await Post.find({ community: communityName }).exec();
+    const communityExists = await Community.findOne({ name: communityName });
 
-    if (posts.length == 0) {
-      return res.status(404).json({ error: "no posts found" });
+    if (!communityExists) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    let posts;
+
+    const isModeratorOrCreator =
+      communityExists.moderators.includes(userId) ||
+      userId.equals(communityExists.creator);
+
+    const userIsMember = communityExists.members.includes(userId);
+
+    if (!userIsMember && communityExists.communityType === "private") {
+      return res.status(403).json({ message: "Unauthorized to see posts" });
+    }
+    if (isModeratorOrCreator) {
+      posts = await Post.find({ community: communityName })
+        .sort({ date: -1 })
+        .exec();
+    } else {
+      posts = await Post.find({ community: communityName, isApproved: true })
+        .sort({ date: -1 })
+        .exec();
+    }
+
+    if (!posts || posts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "no posts found in this community" });
     }
 
     const postsToSort = posts.filter((post) => {
@@ -550,6 +719,9 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
 
     const postInfoArray = await Promise.all(
       paginatedPosts.map(async (post) => {
+        if (post.isRemoved || post.isSpam) {
+          return null;
+        }
         const postObject = await Post.getPostObject(post, userId);
         return postObject;
       })
@@ -570,6 +742,7 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
 exports.sortPostTopTime = async (req, res) => {
   try {
     const userId = req.user._id;
+
     const time = req.params.time;
     let sortTime = 24;
     if (time === "now") sortTime = 1;
