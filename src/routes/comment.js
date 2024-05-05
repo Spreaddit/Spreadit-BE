@@ -38,6 +38,12 @@ router.post(
         });
       }
       const recieverId = post.userId;
+
+      if(post.isCommentsLocked){
+        return res.status(403).send({
+          message: "Comments are locked for this post",
+        });
+      }
       
 
       const newComment = new Comment({
@@ -419,11 +425,18 @@ router.post(
         });
       }
 
+      const post = await Post.findById(rootComment.postId);
+      if(post.isCommentsLocked){
+        return res.status(403).send({
+          message: "Comments are locked for this post",
+        });
+      }
+
       const community = await Community.findOne({
-        communityName: rootComment.community,
+        name: post.community,
       });
       const contributors = community.contributors;
-
+      
       let newReply = new Comment({
         content,
         userId,
@@ -453,7 +466,6 @@ router.post(
         $inc: { repliesCount: 1 },
       });
       newReply = await Comment.findOne({parentCommentId: newReply.parentCommentId})
-      const post = await Post.findById(rootComment.postId);
       await Post.findByIdAndUpdate(rootComment.postId, { $inc: { commentsCount: 1 } });
       post.comments.push(newReply._id);
       await post.save();

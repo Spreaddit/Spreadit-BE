@@ -658,12 +658,19 @@
  * @apiError (400) BadRequest Missing or invalid parameters.
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound Post not found.
+ * @apiError (403) Comments are locked for this post.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "message": "Comment content is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Bad Request
+ *     {
+ *       "message": "Comments are locked for this post"
  *     }
  *
  * @apiErrorExample {json} Error-Response:
@@ -1256,12 +1263,18 @@
  *
  * @apiError (400) BadRequest Missing or invalid parameters.
  * @apiError (404) NotFound Parent comment not found.
+ * @apiError (403) Comments are locked for this post.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "message": "Reply content is required"
+ *     }
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Bad Request
+ *     {
+ *       "message": "Comments are locked for this post"
  *     }
  *
  * @apiErrorExample {json} Error-Response:
