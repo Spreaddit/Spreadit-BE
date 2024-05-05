@@ -39,12 +39,12 @@ router.post(
       }
       const recieverId = post.userId;
 
-      if(post.isCommentsLocked){
+      if (post.isCommentsLocked) {
         return res.status(403).send({
           message: "Comments are locked for this post",
         });
       }
-      
+
 
       const newComment = new Comment({
         content,
@@ -112,6 +112,7 @@ router.post(
               relatedUserId: req.user._id,
               notificationTypeId: NotificationType.mention._id,
               postId: post._id,
+              commentId: newComment._id,
             });
             await notification.save();
           }
@@ -135,6 +136,7 @@ router.post(
           relatedUserId: req.user._id,
           notificationTypeId: NotificationType.comment._id,
           postId: post._id,
+          commentId: newComment._id,
         });
         await notification.save();
       }
@@ -426,7 +428,7 @@ router.post(
       }
 
       const post = await Post.findById(rootComment.postId);
-      if(post.isCommentsLocked){
+      if (post.isCommentsLocked) {
         return res.status(403).send({
           message: "Comments are locked for this post",
         });
@@ -436,7 +438,7 @@ router.post(
         name: post.community,
       });
       const contributors = community.contributors;
-      
+
       let newReply = new Comment({
         content,
         userId,
@@ -465,7 +467,7 @@ router.post(
       await Comment.findByIdAndUpdate(parentCommentId, {
         $inc: { repliesCount: 1 },
       });
-      newReply = await Comment.findOne({parentCommentId: newReply.parentCommentId})
+      newReply = await Comment.findOne({ parentCommentId: newReply.parentCommentId })
       await Post.findByIdAndUpdate(rootComment.postId, { $inc: { commentsCount: 1 } });
       post.comments.push(newReply._id);
       await post.save();
@@ -576,9 +578,8 @@ router.post(
       }
 
       res.status(200).send({
-        message: `Comment has been ${
-          isHidden ? "unhidden" : "hidden"
-        } successfully`,
+        message: `Comment has been ${isHidden ? "unhidden" : "hidden"
+          } successfully`,
       });
     } catch (err) {
       res.status(500).send(err.toString());
@@ -630,7 +631,7 @@ router.post(
 
       const rootComment = await Comment.findRootComment(comment._id);
       const post = await Post.findById(rootComment.postId);
-      const community = await Community.findOne({name: post.community})
+      const community = await Community.findOne({ name: post.community })
       const userDisabledCommunities =
         userWhoCreatedComment.disabledCommunities.map((c) => c.toString());
       if (userDisabledCommunities.includes(community._id.toString())) {

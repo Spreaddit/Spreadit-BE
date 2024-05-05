@@ -90,8 +90,8 @@ NotificationSchema.statics.getNotificationObject = async function (
         const Comment = mongoose.model("comment");
         comment = {
             content: notification.commentId.content,
-            postTitle: notification.commentId.postTitle,
-            communityTitle: notification.commentId.communityTitle
+            postTitle: notification.commentId.postId.title,
+            communityTitle: notification.commentId.postId.community
         };
     }
 
