@@ -24,8 +24,7 @@ exports.showFriend = async (req, res) => {
       console.error("Friend not found");
       return res.status(404).json({ error: "user not found" });
     }
-    const { name, username, email, location, bio, avatar, banner } =
-      friendInf;
+    const { name, username, email, location, bio, avatar, banner } = friendInf;
     const responseData = {
       name,
       username,

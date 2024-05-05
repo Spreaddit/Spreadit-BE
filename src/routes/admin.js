@@ -24,5 +24,4 @@ router
   .route("/dashboard/comments")
   .get(auth.authentication, adminController.adminGetReportedComments);
 
-
 module.exports = router;

@@ -6,7 +6,7 @@ const Community = require("../models/community.js");
 const mongoose = require("mongoose");
 const Moderator = require("../models/moderator.js");
 const BanUser = require("../models/banUser.js");
-const UserRole = require("../models/constants/userRole.js")
+const UserRole = require("../models/constants/userRole.js");
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const Notification = require("./../models/notification");
@@ -22,14 +22,15 @@ async function isModeratorOrCreator(userId, communityName) {
   if (community.creator.equals(userId)) {
     return true;
   }
-  const isModerator = community.moderators.some(moderatorId => moderatorId.equals(userId));
+  const isModerator = community.moderators.some((moderatorId) =>
+    moderatorId.equals(userId)
+  );
   if (isModerator) {
     return true;
   }
 
   return false;
 }
-
 
 async function checkPermission(username, communityName) {
   const moderator = await Moderator.findOne({ username, communityName });
@@ -127,7 +128,7 @@ exports.getAllUserPosts = async (req, res) => {
     );
 
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({posts: filteredPostInfoArray});
   } catch (err) {
     console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -168,13 +169,17 @@ exports.createPost = async (req, res) => {
     if (communityName) {
       const banInfo = await BanUser.findOne({ userId, communityName });
       if (banInfo) {
-        return res.status(403).json({ error: "You are banned from posting in this community" });
+        return res
+          .status(403)
+          .json({ error: "You are banned from posting in this community" });
       }
     }
 
     const globalBan = await BanUser.findOne({ userId });
     if (globalBan) {
-      return res.status(403).json({ error: "You are globally banned and cannot create posts" });
+      return res
+        .status(403)
+        .json({ error: "You are globally banned and cannot create posts" });
     }
     const {
       title,
@@ -191,26 +196,46 @@ exports.createPost = async (req, res) => {
       scheduledDate,
     } = req.body;
     let pollExpiration, isPollEnabled;
-    const communitySettings = await Community.findOne({ name: community }).select('settings');
+    const communitySettings = await Community.findOne({
+      name: community,
+    }).select("settings");
     if (communitySettings) {
       const postTypeOptions = communitySettings.settings.postTypeOptions;
       const isSpoilerEnabled = communitySettings.settings.spoilerEnabled;
-      const isMultipleImagesPerPostAllowed = communitySettings.settings.multipleImagesPerPostAllowed;
+      const isMultipleImagesPerPostAllowed =
+        communitySettings.settings.multipleImagesPerPostAllowed;
       const isPollsAllowed = communitySettings.settings.pollsAllowed;
 
-      if (postTypeOptions === 'links only' && type !== 'Link') {
-        return res.status(400).json({ error: "This community allows only link posts" });
-      } else if (postTypeOptions === 'text posts only' && type !== 'Post') {
-        return res.status(400).json({ error: "This community allows only text posts" });
+      if (postTypeOptions === "links only" && type !== "Link") {
+        return res
+          .status(400)
+          .json({ error: "This community allows only link posts" });
+      } else if (postTypeOptions === "text posts only" && type !== "Post") {
+        return res
+          .status(400)
+          .json({ error: "This community allows only text posts" });
       }
       if (!isSpoilerEnabled && isSpoiler) {
-        return res.status(400).json({ error: "This community does not allow spoiler posts" });
+        return res
+          .status(400)
+          .json({ error: "This community does not allow spoiler posts" });
       }
-      if (!isMultipleImagesPerPostAllowed && fileType === 'image' && req.files && req.files.length > 1) {
-        return res.status(400).json({ error: "This community does not allow multiple images per post" });
+      if (
+        !isMultipleImagesPerPostAllowed &&
+        fileType === "image" &&
+        req.files &&
+        req.files.length > 1
+      ) {
+        return res
+          .status(400)
+          .json({
+            error: "This community does not allow multiple images per post",
+          });
       }
-      if (!isPollsAllowed && type === 'Poll') {
-        return res.status(400).json({ error: "This community does not allow polls" });
+      if (!isPollsAllowed && type === "Poll") {
+        return res
+          .status(400)
+          .json({ error: "This community does not allow polls" });
       }
     }
     if (!title || !community) {
@@ -312,8 +337,7 @@ exports.createPost = async (req, res) => {
         return res.status(403).json({
           error: "User is not authorized to create posts in this community",
         });
-      }
-      else {
+      } else {
         isApproved = false;
       }
     }
@@ -380,7 +404,9 @@ exports.getAllPostsInCommunity = async (req, res) => {
 
     let posts;
 
-    const isModeratorOrCreator = communityExists.moderators.includes(userId) || userId.equals(communityExists.creator);
+    const isModeratorOrCreator =
+      communityExists.moderators.includes(userId) ||
+      userId.equals(communityExists.creator);
 
     if (isModeratorOrCreator) {
       posts = await Post.find({ community });
@@ -479,7 +505,7 @@ exports.getSavedPosts = async (req, res) => {
       })
     );
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({posts: filteredPostInfoArray});
   } catch (err) {
     console.error("Error fetching saved posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -595,13 +621,20 @@ exports.spoilerPostContent = async (req, res) => {
     if (!isModerator) {
       return res.status(402).json({ message: "Not a moderator" });
     }
-    const hasPermission = await checkPermission(req.user.username, post.community);
+    const hasPermission = await checkPermission(
+      req.user.username,
+      post.community
+    );
     if (!hasPermission) {
-      return res.status(406).json({ message: "Moderator doesn't have permission" });
+      return res
+        .status(406)
+        .json({ message: "Moderator doesn't have permission" });
     }
     post.isSpoiler = true;
     await post.save();
-    return res.status(200).json({ message: "Post content blurred successfully" });
+    return res
+      .status(200)
+      .json({ message: "Post content blurred successfully" });
   } catch (error) {
     console.error("Error spoiling post content:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -627,20 +660,26 @@ exports.unspoilerPostContent = async (req, res) => {
     if (!isModerator) {
       return res.status(402).json({ message: "Not a moderator" });
     }
-    const hasPermission = await checkPermission(req.user.username, post.community);
+    const hasPermission = await checkPermission(
+      req.user.username,
+      post.community
+    );
     if (!hasPermission) {
-      return res.status(406).json({ message: "Moderator doesn't have permission" });
+      return res
+        .status(406)
+        .json({ message: "Moderator doesn't have permission" });
     }
 
     post.isSpoiler = false;
     await post.save();
-    return res.status(200).json({ message: "Post content unblurred successfully" });
+    return res
+      .status(200)
+      .json({ message: "Post content unblurred successfully" });
   } catch (error) {
     console.error("Error unspoiling post content:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 exports.lockPostComments = async (req, res) => {
   try {
@@ -662,14 +701,21 @@ exports.lockPostComments = async (req, res) => {
       return res.status(402).json({ message: "Not a moderator" });
     }
 
-    const hasPermission = await checkPermission(req.user.username, post.community);
+    const hasPermission = await checkPermission(
+      req.user.username,
+      post.community
+    );
     if (!hasPermission) {
-      return res.status(406).json({ message: "Moderator doesn't have permission" });
+      return res
+        .status(406)
+        .json({ message: "Moderator doesn't have permission" });
     }
 
     post.isCommentsLocked = true;
     await post.save();
-    return res.status(200).json({ message: "Post comments locked successfully" });
+    return res
+      .status(200)
+      .json({ message: "Post comments locked successfully" });
   } catch (error) {
     console.error("Error locking post comments:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -696,20 +742,26 @@ exports.unlockPostComments = async (req, res) => {
       return res.status(402).json({ message: "Not a moderator" });
     }
 
-    const hasPermission = await checkPermission(req.user.username, post.community);
+    const hasPermission = await checkPermission(
+      req.user.username,
+      post.community
+    );
     if (!hasPermission) {
-      return res.status(406).json({ message: "Moderator doesn't have permission" });
+      return res
+        .status(406)
+        .json({ message: "Moderator doesn't have permission" });
     }
 
     post.isCommentsLocked = false;
     await post.save();
-    return res.status(200).json({ message: "Post comments unlocked successfully" });
+    return res
+      .status(200)
+      .json({ message: "Post comments unlocked successfully" });
   } catch (error) {
     console.error("Error unlocking post comments:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 exports.upvotePost = async (req, res) => {
   try {
@@ -728,7 +780,8 @@ exports.upvotePost = async (req, res) => {
       });
     }
     let userUpVote = true;
-    const samePerson = userWhoCreatedPost._id.toString() === user._id.toString();;
+    const samePerson =
+      userWhoCreatedPost._id.toString() === user._id.toString();
     const downvotesCount = post.downVotes.length;
 
     const downvoteIndex = post.downVotes.indexOf(userId);
@@ -754,24 +807,29 @@ exports.upvotePost = async (req, res) => {
     if (samePerson) {
       return res.status(200).json({
         votes: netVotes,
-        message: "Post upvoted successfully, but notifications are disabled for same person",
+        message:
+          "Post upvoted successfully, but notifications are disabled for same person",
       });
     }
     if (!userUpVote) {
       return res.status(200).json({
         votes: netVotes,
-        message: "Post upvoted successfully, but no notifications because it is downvote",
+        message:
+          "Post upvoted successfully, but no notifications because it is downvote",
       });
     }
-    if (userWhoCreatedPost && userWhoCreatedPost.disabledCommunities.includes(community._id)) {
+    if (
+      userWhoCreatedPost &&
+      userWhoCreatedPost.disabledCommunities.includes(community._id)
+    ) {
       return res.status(200).json({
         votes: netVotes,
-        message: "Post upvoted successfully, but notifications are disabled for this community",
+        message:
+          "Post upvoted successfully, but notifications are disabled for this community",
       });
     }
     //notification
     if (userUpVote && userWhoCreatedPost && userWhoCreatedPost.upvotesPosts) {
-
       await Notification.sendNotification(
         post.userId,
         "You have recieved a new notification",
@@ -785,7 +843,6 @@ exports.upvotePost = async (req, res) => {
         postId: post._id,
       });
       await notification.save();
-
     }
     res.status(200).send({
       votes: netVotes,
@@ -861,7 +918,7 @@ exports.getUpvotedPosts = async (req, res) => {
 
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
 
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({posts: filteredPostInfoArray});
   } catch (err) {
     console.error("Error fetching upvoted posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -891,7 +948,7 @@ exports.getDownvotedPosts = async (req, res) => {
 
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
 
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({posts: filteredPostInfoArray});
   } catch (err) {
     console.error("Error fetching downvoted posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -912,8 +969,13 @@ exports.deletePost = async (req, res) => {
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
-    if (post.userId.toString() !== userId.toString() && adminId[0]._id.toString() !== req.user.roleId.toString()) {
-      return res.status(403).json({ message: "You are not authorized to delete this post" });
+    if (
+      post.userId.toString() !== userId.toString() &&
+      adminId[0]._id.toString() !== req.user.roleId.toString()
+    ) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to delete this post" });
     }
     await Post.findByIdAndDelete({ _id: postId, userId });
     await deleteComments(postId);
@@ -1027,7 +1089,7 @@ exports.getHiddenPosts = async (req, res) => {
       })
     );
 
-    res.status(200).json(postInfoArray);
+    res.status(200).json({posts: postInfoArray});
   } catch (error) {
     console.error("Error fetching hidden posts:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -1053,9 +1115,14 @@ exports.markPostAsNsfw = async (req, res) => {
       return res.status(402).json({ message: "Not a moderator" });
     }
 
-    const hasPermission = await checkPermission(req.user.username, post.community);
+    const hasPermission = await checkPermission(
+      req.user.username,
+      post.community
+    );
     if (!hasPermission) {
-      return res.status(406).json({ message: "Moderator doesn't have permission" });
+      return res
+        .status(406)
+        .json({ message: "Moderator doesn't have permission" });
     }
 
     await Post.findByIdAndUpdate(postId, { isNsfw: true });
@@ -1085,9 +1152,14 @@ exports.markPostAsNotNsfw = async (req, res) => {
       return res.status(402).json({ message: "Not a moderator" });
     }
 
-    const hasPermission = await checkPermission(req.user.username, post.community);
+    const hasPermission = await checkPermission(
+      req.user.username,
+      post.community
+    );
     if (!hasPermission) {
-      return res.status(406).json({ message: "Moderator doesn't have permission" });
+      return res
+        .status(406)
+        .json({ message: "Moderator doesn't have permission" });
     }
 
     await Post.findByIdAndUpdate(postId, { isNsfw: false });
@@ -1236,16 +1308,24 @@ exports.getReportedPostsInCommunity = async (req, res) => {
       return res.status(402).json({ message: "Not a moderator" });
     }
 
-    const hasPermission = await checkPermission(req.user.username, communityName);
+    const hasPermission = await checkPermission(
+      req.user.username,
+      communityName
+    );
     if (!hasPermission) {
-      return res.status(406).json({ message: "Moderator doesn't have permission" });
+      return res
+        .status(406)
+        .json({ message: "Moderator doesn't have permission" });
     }
 
-    const reportedPosts = await Report.find({ postId: { $exists: true } })
-      .populate('postId')
+    const reportedPosts = await Report.find({
+      postId: { $exists: true },
+    }).populate("postId");
 
     if (!reportedPosts || reportedPosts.length === 0) {
-      return res.status(404).json({ message: "No reported posts found in the community" });
+      return res
+        .status(404)
+        .json({ message: "No reported posts found in the community" });
     }
 
     res.status(200).json({ reportedPosts });

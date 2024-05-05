@@ -5,6 +5,10 @@ const upload = require("../service/fileUpload");
 const auth = require("../middleware/authentication");
 
 router
+    .route("/notifications/subscribe")
+    .put(auth.authentication, notificationController.subscribe);
+
+router
     .route("/notifications/mark-all-as-read")
     .put(auth.authentication, notificationController.markAllAsRead);
 

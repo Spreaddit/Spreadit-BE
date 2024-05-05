@@ -4262,7 +4262,7 @@
  * @apiSuccess {Object[]} posts Array of post objects saved by the authenticated user.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
+ *     posts: [
  *       {
  *           "_id": "1234567890",
  *           "userId": "0987654321",
@@ -4624,7 +4624,7 @@
  * @apiSuccess {Object[]} posts Array of post objects upvoted by the user.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
+ *     posts: [
  *       {
  *           "_id": "1234567890",
  *           "userId": "0987654321",
@@ -4687,7 +4687,7 @@
  * @apiSuccess {Object[]} posts Array of post objects downvoted by the user.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
+ *     posts: [
  *       {
  *           "_id": "1234567890",
  *           "userId": "0987654321",
@@ -4837,7 +4837,7 @@
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
+ *     posts: [
  *       {
  *           "_id": "1234567890",
  *           "userId": "0987654321",
@@ -5129,7 +5129,7 @@
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
+ *     posts: [
  *       {
  *         "_id": "postId",
  *         "userId": "userId",
