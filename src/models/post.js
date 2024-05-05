@@ -204,7 +204,7 @@ PostSchema.statics.getPostResultObject = async function (post) {
 
   const user = await User.findById(post.userId).lean();
   const username = user ? user.username : null;
-  const userProfilePic = user ? user.avatar : null;
+  const userProfilePic = user && user.avatar ? user.avatar : null;
 
   const community = await Community.findOne({ name: post.community }).lean();
   const communityname = community ? community.name : null;
