@@ -241,7 +241,7 @@ CommentSchema.statics.getCommentInfoSimplified = async function (comment) {
     const Community = mongoose.model("community");
     const user = await User.findById(comment.userId).lean();
     const post = comment.postId ? await Post.findById(comment.postId).populate('community').lean() : null;
-    const communityName = post && post.community ? post.community.name : '';
+    const communityName = post && post.community ? post.community : '';
     const community = communityName ? await Community.findOne({ name: communityName }).lean() : null;
 
     return {

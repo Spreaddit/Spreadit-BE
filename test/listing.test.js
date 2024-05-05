@@ -32,7 +32,6 @@ beforeAll(async () => {
 beforeEach(async () => {
   await User.deleteMany({});
   await new User(userOne).save();
-  await Post.deleteMany({});
 }, 10000);
 
 afterAll(() => {

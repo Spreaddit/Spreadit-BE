@@ -9,6 +9,7 @@ const Message = require("../src/models/message");
 const Conversation = require("../src/models/conversation");
 const connectionUrl = "mongodb://localhost:27017/testDBformessage";
 const userOneId = new mongoose.Types.ObjectId();
+const userTwoId = new mongoose.Types.ObjectId();
 const userOne = {
   _id: userOneId,
   name: "Mohamed Maher",
@@ -19,6 +20,7 @@ const userOne = {
   isVerified: true,
 };
 const userTwo = {
+  _id: userTwoId,
   name: "mahmoud aly",
   username: "mahmoud",
   email: "mahmoud66@gmail.com",
@@ -219,7 +221,7 @@ describe("reply messages", () => {
       { isVerified: true }
     );
     await request(app)
-      .post("/message/reply/66376d9547d46195ad2936d2")
+      .post("/message/reply/6637a183680030d60f6fe436")
       .set("Authorization", `Bearer ${token}`)
       .send({
         username: "mahmoud",
@@ -227,6 +229,28 @@ describe("reply messages", () => {
         subject: "football",
       })
       .expect(201);
+  });
+
+  test("It send  message", async () => {
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud",
+      password: "12345678",
+    });
+    console.log(userOne);
+    const token = logIn.body.access_token;
+    const newUser = await User.findOneAndUpdate(
+      { username: "maher" },
+      { isVerified: true }
+    );
+    await request(app)
+      .post("/message/reply/66376d9547d46195ad293111")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        username: "mahmoud",
+        content: "real madrid",
+        subject: "football",
+      })
+      .expect(404);
   });
 });
 
@@ -243,7 +267,7 @@ describe("reply messages", () => {
       { isVerified: true }
     );
     await request(app)
-      .post("/message/reply/66376d9547d46195ad2936d2")
+      .post("/message/reply/6637a183680030d60f6fe436")
       .set("Authorization", `Bearer ${token}`)
       .send({
         username: "mahmoud",
@@ -266,7 +290,7 @@ describe("reply messages", () => {
       { isVerified: true }
     );
     await request(app)
-      .post("/message/reply/66376d9547d46195ad2936d2")
+      .post("/message/reply/6637a183680030d60f6fe436")
       .set("Authorization", `Bearer `)
       .send({
         username: "mahmoud",
@@ -460,7 +484,7 @@ describe("read messages", () => {
       { isVerified: true }
     );
     await request(app)
-      .post("/message/readmsg/66376d9547d46195ad2936d2")
+      .post("/message/readmsg/6637a183680030d60f6fe436")
       .set("Authorization", `Bearer ${token}`)
       .send({
         username: "mahmoud",
@@ -468,6 +492,28 @@ describe("read messages", () => {
         subject: "football",
       })
       .expect(201);
+  });
+
+  test("It should mark message as read", async () => {
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud",
+      password: "12345678",
+    });
+    console.log(userOne);
+    const token = logIn.body.access_token;
+    const newUser = await User.findOneAndUpdate(
+      { username: "maher" },
+      { isVerified: true }
+    );
+    await request(app)
+      .post("/message/readmsg/66376d9547d46195ad293111")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        username: "mahmoud",
+        content: "real madrid",
+        subject: "football",
+      })
+      .expect(404);
   });
 });
 
@@ -484,7 +530,7 @@ describe("read messages", () => {
       { isVerified: true }
     );
     await request(app)
-      .post("/message/readmsg/66376d9547d46195ad2936d2")
+      .post("/message/readmsg/6637a183680030d60f6fe436")
       .set("Authorization", `Bearer `)
       .send({
         username: "mahmoud",
@@ -493,4 +539,222 @@ describe("read messages", () => {
       })
       .expect(401);
   });
+});
+
+describe("unread messages", () => {
+  test("It should mark message as read", async () => {
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud",
+      password: "12345678",
+    });
+    console.log(userOne);
+    const token = logIn.body.access_token;
+    const newUser = await User.findOneAndUpdate(
+      { username: "maher" },
+      { isVerified: true }
+    );
+    await request(app)
+      .post("/message/unreadmsg/6637a183680030d60f6fe436")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        username: "mahmoud",
+        content: "real madrid",
+        subject: "football",
+      })
+      .expect(201);
+  });
+
+  test("It should mark message as read", async () => {
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud",
+      password: "12345678",
+    });
+    console.log(userOne);
+    const token = logIn.body.access_token;
+    const newUser = await User.findOneAndUpdate(
+      { username: "maher" },
+      { isVerified: true }
+    );
+    await request(app)
+      .post("/message/unreadmsg/66376d9547d46195ad293111")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        username: "mahmoud",
+        content: "real madrid",
+        subject: "football",
+      })
+      .expect(404);
+  });
+});
+
+describe("unread messages", () => {
+  test("It should send 401 unautorized", async () => {
+    const logIn = await request(app).post("/login").send({
+      username: "mahmoud",
+      password: "12345678",
+    });
+    console.log(userOne);
+    const token = logIn.body.access_token;
+    const newUser = await User.findOneAndUpdate(
+      { username: "maher" },
+      { isVerified: true }
+    );
+    await request(app)
+      .post("/message/unreadmsg/6637a183680030d60f6fe436")
+      .set("Authorization", `Bearer `)
+      .send({
+        username: "mahmoud",
+        content: "real madrid",
+        subject: "football",
+      })
+      .expect(401);
+  });
+});
+
+test("It get  message by id", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud",
+    password: "12345678",
+  });
+
+  const token = logIn.body.access_token;
+  const newUser = await User.findOneAndUpdate(
+    { username: "mahmoud" },
+    { isVerified: true }
+  );
+  await request(app)
+    .get("/message/6637a183680030d60f6fe436")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "mahmoud",
+      content: "real madrid",
+      subject: "football",
+    })
+    .expect(200);
+});
+
+test("It get  message by id", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud",
+    password: "12345678",
+  });
+
+  const token = logIn.body.access_token;
+  const newUser = await User.findOneAndUpdate(
+    { username: "mahmoud" },
+    { isVerified: true }
+  );
+  await request(app)
+    .get("/message/6637a183680030d60f6fe436")
+    .set("Authorization", `Bearer `)
+    .send({
+      username: "mahmoud",
+      content: "real madrid",
+      subject: "football",
+    })
+    .expect(401);
+});
+
+test("It get  message by id", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud",
+    password: "12345678",
+  });
+
+  const token = logIn.body.access_token;
+  const newUser = await User.findOneAndUpdate(
+    { username: "mahmoud" },
+    { isVerified: true }
+  );
+  await request(app)
+    .get("/message/66376d9547d461958d2936d8")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "mahmoud",
+      content: "real madrid",
+      subject: "football",
+    })
+    .expect(404);
+});
+
+test("It should report message", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud",
+    password: "12345678",
+  });
+  console.log(userOne);
+  const token = logIn.body.access_token;
+  const newUser = await User.findOneAndUpdate(
+    { username: "maher" },
+    { isVerified: true }
+  );
+  await request(app)
+    .post("/message/reportmsg/66376d9547d46195ad293111")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      reason: "spam",
+      subreason: "comment",
+    })
+    .expect(404);
+});
+
+test("It   report message", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud",
+    password: "12345678",
+  });
+
+  const token = logIn.body.access_token;
+  const newUser = await User.findOneAndUpdate(
+    { username: "mahmoud" },
+    { isVerified: true }
+  );
+  await request(app)
+    .post("/message/reportmsg/6637a183680030d60f6fe436")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      reason: "spam",
+      subreason: "comment",
+    })
+    .expect(200);
+});
+
+test("It   report message", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud",
+    password: "12345678",
+  });
+
+  const token = logIn.body.access_token;
+  const newUser = await User.findOneAndUpdate(
+    { username: "mahmoud" },
+    { isVerified: true }
+  );
+  await request(app)
+    .post("/message/reportmsg/6637a183680030d60f6fe436")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      reason: "spam",
+    })
+    .expect(400);
+});
+
+test("It   report message", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud",
+    password: "12345678",
+  });
+
+  const token = logIn.body.access_token;
+  const newUser = await User.findOneAndUpdate(
+    { username: "mahmoud" },
+    { isVerified: true }
+  );
+  await request(app)
+    .post("/message/reportmsg/6637a183680030d60f6fe436")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      subreason: "comment",
+    })
+    .expect(400);
 });
