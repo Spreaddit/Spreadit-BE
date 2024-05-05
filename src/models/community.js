@@ -164,7 +164,7 @@ CommunitySchema.statics.getCommunityObjectFiltered = async function (community, 
     communityName: community.name,
     communityProfilePic: community.image,
     membersCount: community.members.length,
-    communityInfo: community.info,
+    communityInfo: community.description,
     isFollowing: isFollowing,
   };
   return communityObject;
