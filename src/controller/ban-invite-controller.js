@@ -504,16 +504,15 @@ exports.declineInvite = async (req, res) => {
       return res.status(404).json({ message: "Community name is required" });
     }
 
-    const moderator = await Moderator.findOne({
+    const moderator = await Moderator.findOneAndDelete({
       username: req.user.username,
       communityName,
       isAccepted: false,
     });
-
     if (!moderator) {
       return res.status(402).json({ message: "Moderator invite not found" });
     }
-    await Moderator.findByIdAndDelete(userId);
+
     return res
       .status(200)
       .json({ message: "Moderator invite declined successfully" });
