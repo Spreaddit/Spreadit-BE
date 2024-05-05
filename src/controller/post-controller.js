@@ -128,7 +128,7 @@ exports.getAllUserPosts = async (req, res) => {
     );
 
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({posts: filteredPostInfoArray});
   } catch (err) {
     console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -505,7 +505,7 @@ exports.getSavedPosts = async (req, res) => {
       })
     );
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({posts: filteredPostInfoArray});
   } catch (err) {
     console.error("Error fetching saved posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -918,7 +918,7 @@ exports.getUpvotedPosts = async (req, res) => {
 
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
 
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({posts: filteredPostInfoArray});
   } catch (err) {
     console.error("Error fetching upvoted posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -948,7 +948,7 @@ exports.getDownvotedPosts = async (req, res) => {
 
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
 
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({posts: filteredPostInfoArray});
   } catch (err) {
     console.error("Error fetching downvoted posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -1089,7 +1089,7 @@ exports.getHiddenPosts = async (req, res) => {
       })
     );
 
-    res.status(200).json(postInfoArray);
+    res.status(200).json({posts: postInfoArray});
   } catch (error) {
     console.error("Error fetching hidden posts:", error);
     return res.status(500).json({ error: "Internal server error" });
