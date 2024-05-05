@@ -9,7 +9,6 @@ const Post = require('../models/post');
 const User = require('../models/user');
 
 router.post('/upload/test', upload.single('image'), function (req, res) {
-    console.log(req.file);
     uploadMedia(req.file);
 });
 

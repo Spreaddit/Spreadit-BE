@@ -449,14 +449,12 @@ exports.reportMessage = async (req, res) => {
       });
     }
     if (!userId.equals(message.recieverId)) {
-      console.log(userId);
-      console.log(message.recieverId);
       return res
         .status(403)
         .json({ error: "You are not authorized to report this message" });
     }
 
-    if (!reason) {
+    if (!reason || !subreason) {
       return res.status(400).send({
         message: "invalid report data must send reason",
       });

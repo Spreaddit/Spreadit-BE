@@ -218,7 +218,8 @@ const UserSchema = new Schema(
     banner: {
       type: String,
       trim: true,
-      default: "",
+      default:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713046574/uploads/WhatsApp_Image_2024-04-13_at_5.22.35_PM_f0yaln.jpg",
     },
     nsfw: {
       type: Boolean,

@@ -658,12 +658,19 @@
  * @apiError (400) BadRequest Missing or invalid parameters.
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound Post not found.
+ * @apiError (403) Comments are locked for this post.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "message": "Comment content is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Bad Request
+ *     {
+ *       "message": "Comments are locked for this post"
  *     }
  *
  * @apiErrorExample {json} Error-Response:
@@ -1256,12 +1263,18 @@
  *
  * @apiError (400) BadRequest Missing or invalid parameters.
  * @apiError (404) NotFound Parent comment not found.
+ * @apiError (403) Comments are locked for this post.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "message": "Reply content is required"
+ *     }
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Bad Request
+ *     {
+ *       "message": "Comments are locked for this post"
  *     }
  *
  * @apiErrorExample {json} Error-Response:
@@ -3068,42 +3081,55 @@
  * @apiHeader {String} Authorization User's authentication token.
  *
  * @apiSuccess {Object[]} posts List of posts sorted by top of all time.
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
+ *     {
+ *       "posts": [
+ *            {
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
  *       }
- *     ]
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3142,41 +3168,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by top within the specified community.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3215,41 +3253,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by top of all time within the specified community.
  *
+ *@apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3288,112 +3338,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by newest within the specified community.
  *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
- *
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404) NotFound No posts found.
- * @apiError (500) InternalServerError An unexpected error occurred on the server.
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 401 Unauthorized
- *     {
- *       "error": "Authorization token is required"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "error": "No posts found"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 500 Internal Server Error
- *     {
- *       "error": "Internal server error"
- *     }
- */
-
-/**
- * @api {get} /home/views Sort Posts by Views
- * @apiVersion 0.1.0
- * @apiName SortPostsViews
- * @apiGroup Post
- * @apiDescription Retrieves posts sorted by number of views.
- * @apiSampleRequest off
- *
- * @apiHeader {String} Authorization User's authentication token.
- *
- * @apiSuccess {Object[]} posts List of posts sorted by number of views.
+ *@apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3430,41 +3421,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by number of comments.
  *
+ *@apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *         {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3501,42 +3504,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by best.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
- *
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
@@ -3572,42 +3586,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by hotness score.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
- *
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
@@ -3645,41 +3670,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by hotness score within the specified community.
  *
+ *@apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3718,41 +3755,53 @@
  *
  * @apiSuccess {Object[]} posts List of randomly sorted posts within the specified community.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *        {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3792,41 +3841,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by top within the specified community and time period.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3865,41 +3926,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by top within the specified time period.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3936,41 +4009,53 @@
  *
  * @apiSuccess {Object[]} recentPosts List of recent posts of the authenticated user.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound User not found.
@@ -4138,7 +4223,6 @@
  *       "error": "Internal Server Error"
  *     }
  */
-
 
 /**
  * @api {get} /posts/community/:community Get All Posts in Community
@@ -7123,7 +7207,7 @@
  * @apiError Unauthorized The user is not authorized to perform this action.
  * @apiError UserNotFound The specified user does not exist.
  * @apiError InternalServerError Internal server error occurred.
- *
+ * @apiError The User is already banned
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 401 Unauthorized
  *     {
@@ -7135,7 +7219,11 @@
  *     {
  *       "message": "User is not found"
  *     }
- *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Found
+ *     {
+ *       "message": "the user already banned"
+ *     }
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 500 Internal Server Error
  *     {
@@ -7347,7 +7435,7 @@
  * @apiError InternalServerError Internal server error occurred.
  *
  * @apiErrorExample Error-Response:
- *     HTTP/1.1 401 Unauthorized
+ *     HTTP/1.1 403 Unauthorized
  *     {
  *       "message": "You are not authorized"
  *     }
@@ -7423,7 +7511,7 @@
  * @apiError InternalServerError Internal server error occurred.
  *
  * @apiErrorExample Error-Response:
- *     HTTP/1.1 401 Unauthorized
+ *     HTTP/1.1 403 Unauthorized
  *     {
  *       "message": "You are not authorized"
  *     }
@@ -8338,7 +8426,7 @@
  */
 
 /**
- * @api {post} /community/moderation/:communityName/:username/isbanned Check User Ban Status
+ * @api {get} /community/moderation/:communityName/:username/is-banned Check User Ban Status
  * @apiVersion 0.1.0
  * @apiName CheckUserBanStatus
  * @apiGroup Moderator
@@ -8350,7 +8438,7 @@
  * @apiParam {String} communityName Name of the community to check the user's ban status.
  * @apiParam {String} username Username of the user to check.
  *
- * @apiSuccess {Boolean} banned Indicates whether the user is banned from the community.
+ * @apiSuccess {Boolean} isBanned Indicates whether the user is banned from the community.
  *
  * @apiError (400) BadRequest Missing or invalid parameters.
  * @apiError (404) NotFound Community, user, or ban record not found.
@@ -8359,13 +8447,19 @@
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *       "message": "Please insert all data"
+ *       "message": "username and community name is required"
  *     }
  *
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 404 Not Found
  *     {
- *       "message": "Community name is required"
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
  *     }
  *
  * @apiErrorExample {json} Error-Response:
@@ -9103,7 +9197,6 @@
  *       "error": "Internal Server Error"
  *     }
  */
-
 
 //#endregion
 //#region Post Moderation

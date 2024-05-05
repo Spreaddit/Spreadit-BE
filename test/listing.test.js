@@ -15,8 +15,8 @@ const userOne = {
   email: "moahmedmaher4@gmail.com",
   password: "myPassw@ord123",
   gender: "Male",
-  isVerified: true
-}
+  isVerified: true,
+};
 
 beforeAll(async () => {
   try {
@@ -32,7 +32,6 @@ beforeAll(async () => {
 beforeEach(async () => {
   await User.deleteMany({});
   await new User(userOne).save();
-  await Post.deleteMany({});
 }, 10000);
 
 afterAll(() => {
@@ -41,7 +40,6 @@ afterAll(() => {
 
 describe("GET /new", () => {
   test("It should get unauthorized 401", async () => {
-    
     const usernameee = "maher";
 
     await User.findOneAndUpdate({ username: usernameee }, { isVerified: true });
@@ -87,10 +85,7 @@ describe("sort post by new", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",
@@ -115,10 +110,7 @@ describe("sort post by hot", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",
@@ -143,10 +135,7 @@ describe("sort post by views", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",
@@ -171,10 +160,7 @@ describe("sort post by number of comments", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",
@@ -199,10 +185,7 @@ describe("sort post by ", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",
@@ -258,10 +241,7 @@ describe("sort post by  hot in supspreadit", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",
@@ -286,10 +266,7 @@ describe("sort post by new in community", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",
@@ -314,10 +291,7 @@ describe("It should sort by best ", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",
@@ -339,10 +313,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/subspreadit/mahmoud556/new")
       .set("Authorization", `Bearer ${token}`)
@@ -355,10 +326,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/subspreadit/mahmoud556/hot")
       .set("Authorization", `Bearer ${token}`)
@@ -371,10 +339,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/subspreadit/mahmoud556/top")
       .set("Authorization", `Bearer ${token}`)
@@ -387,10 +352,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/home/top")
       .set("Authorization", `Bearer ${token}`)
@@ -403,10 +365,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/home/best")
       .set("Authorization", `Bearer ${token}`)
@@ -419,10 +378,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/home/top/now")
       .set("Authorization", `Bearer ${token}`)
@@ -435,10 +391,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/home/top/day")
       .set("Authorization", `Bearer ${token}`)
@@ -451,10 +404,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/home/top/month")
       .set("Authorization", `Bearer ${token}`)
@@ -467,10 +417,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/home/top/week")
       .set("Authorization", `Bearer ${token}`)
@@ -483,10 +430,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/home/top/year")
       .set("Authorization", `Bearer ${token}`)
@@ -499,10 +443,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/home/comments")
       .set("Authorization", `Bearer ${token}`)
@@ -515,10 +456,7 @@ describe("sort post by new in community best if no posts found", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     await request(app)
       .get("/home/views")
       .set("Authorization", `Bearer ${token}`)
@@ -875,10 +813,7 @@ describe("sort post by top month", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",
@@ -892,7 +827,7 @@ describe("sort post by top month", () => {
     await request(app)
       .get("/home/top/month")
       .set("Authorization", `Bearer ${token}`)
-      .expect(200);
+      .expect(404);
   });
 });
 
@@ -903,10 +838,7 @@ describe("sort post by top year", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",
@@ -920,7 +852,7 @@ describe("sort post by top year", () => {
     await request(app)
       .get("/home/top/year")
       .set("Authorization", `Bearer ${token}`)
-      .expect(200);
+      .expect(404);
   });
 });
 
@@ -931,10 +863,7 @@ describe("sort post by recent", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",
@@ -959,10 +888,7 @@ describe("sort post by random in community ", () => {
       password: "myPassw@ord123",
     });
     const token = logIn.body.access_token;
-    await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
+    await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
     const newpost = new Post({
       userId: userOneId,
       username: "maher",

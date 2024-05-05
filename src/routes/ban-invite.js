@@ -23,8 +23,8 @@ router
   .route("/community/moderation/:communityName/:username/unban")
   .post(auth.authentication, banInviteController.unbanUser);
 router
-  .route("/community/moderation/:communityName/:username/isbanned")
-  .post(auth.authentication, banInviteController.checkUserBanStatus);
+  .route("/community/moderation/:communityName/:username/is-banned")
+  .get(auth.authentication, banInviteController.checkUserBanStatus);
 
 router
   .route("/community/moderation/:communityName/banned-users")

@@ -6,6 +6,10 @@ const mongoose = require("mongoose");
 const config = require("../src/configuration");
 const User = require("../src/models/user");
 const Report = require("../src/models/report");
+const Community = require("../src/models/community");
+const Rule = require('../src/models/rule.js');
+const Moderator = require("../src/models/moderator.js");
+const UserRole = require("../src/models/constants/userRole.js")
 const connectionUrl = "mongodb://localhost:27017/testDBComments";
 
 
@@ -30,13 +34,51 @@ const userOneId = new mongoose.Types.ObjectId();
 const userTwoId = new mongoose.Types.ObjectId();
 const userThreeId = new mongoose.Types.ObjectId();
 
+const defaultRole = {
+    _id: "6240cb40ff875b3bd3e816c7",
+    name: "User",
+};
+  
+const adminRole = {
+    _id: "6240cb6a412efa3d5d89c0af",
+    name: "Admin",
+};
+
+const rule ={
+    _id: id2,
+    title: "test Community Guidelines",
+    description: "1. Respect the privacy and emotions of members when discussing mental health issues.",
+    reportReason: "Violation of community guidelines",
+    communityName: "testCommunity",
+}
+const community ={
+
+    _id: id,
+    name: "testCommunity",
+    category: "Entertainment and Pop Culture",
+    rules: [id2], 
+    description: "Discuss the latest movie releases, share reviews, recommendations, and indulge in lively debates about classic films.",
+    is18plus: false,
+    allowNfsw: true,
+    allowSpoile: true,
+    communityType: "Public",
+    creator: userOneId, 
+    members: [userOneId, userTwoId, userThreeId],
+    moderators: [userOneId], 
+    membersCount: 3,
+}
+const moderator ={
+    username: "maher", 
+    communityName: "testCommunity",  
+    isAccepted: true,
+}
 const post ={
     _id: id2,
     userId: userTwoId,
     username: "elgarf",
     title: "this is a post",
     content: "this is the content of the post",
-    community: "amira12amira",
+    community: "testCommunity",
     type: "Post"
 
 }
@@ -49,7 +91,6 @@ const comment1 = {
 }
 
 const comment2 = {
-    username: "elgarf",
     userId: userTwoId,
     postId: id2,
     parentId: id,
@@ -112,6 +153,15 @@ beforeEach(async () => {
     await Comment.deleteMany({});
     await new Comment(comment1).save();
     await new Comment(comment2).save();
+    await Community.deleteMany({});
+    await new Community(community).save();
+    await Rule.deleteMany({});
+    await new Rule(rule).save();
+    await Moderator.deleteMany({});
+    await new Moderator(moderator).save();
+    await UserRole.deleteMany({});
+    await new UserRole(defaultRole).save();
+    await new UserRole(adminRole).save();
     
 });
 afterEach(async() => {
@@ -173,7 +223,6 @@ test("non-existent post ID", async () => {
     if (!user) {
         throw new Error("User not found");
     }
-    const token = login.body.token;
     const nonExistentId = '661ebb4eb77c3f20e6998bf0';
 
     const response = await request(app)
@@ -379,14 +428,8 @@ test("reply to existing comment", async () => {
 
     const user = await getUser(userOne.username);
 
-    const parentComment = await Comment.create({
-        userId: userOneId,
-        postId: id2,
-        content: "This is a parent comment"
-    });
-
     const response = await request(app)
-        .post(`/comment/${parentComment._id}/reply`)
+        .post(`/comment/${comment1._id}/reply`)
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .send({ content: "This is a reply to the parent comment" })
         .expect(201);
@@ -544,26 +587,23 @@ test("hide non-existent comment", async () => {
 test("upvote comment", async () => {
     const login = await request(app)
         .post("/login")
-        .send({ username: userOne.email, password: userOne.password })
+        .send({ username: userTwo.email, password: userTwo.password })
         .expect(200);
 
-    const user = await getUser(userOne.username);
-    
-    const comment = await Comment.create({
-        userId: userOneId,
-        postId: id2,
-        content: "This is a test comment"
-    });
+    const user = await User.findById(userTwo._id);
+    if (!user) {
+        throw new Error("User not found");
+    }
 
     const response = await request(app)
-        .post(`/comments/${comment._id}/upvote`)
+        .post(`/comments/${comment1._id}/upvote`)
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(200);
 
     expect(response.body.message).toBe("Comment has been upvoted successfully");
 
-    const updatedComment = await Comment.findById(comment._id);
-    expect(updatedComment.upVotes.includes(userOneId)).toBeTruthy();
+    const updatedComment = await Comment.findById(comment1._id);
+    expect(updatedComment.upVotes.includes(userTwoId)).toBeTruthy();
 });
 
 test("remove upvote from comment", async () => {

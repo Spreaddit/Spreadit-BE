@@ -7,11 +7,13 @@ const User = require("../src/models/user.js");
 const Report = require("../src/models/report.js");
 const Community = require("../src/models/community.js");
 const Moderator = require("../src/models/moderator.js");
+const Ban = require("../src/models/banUser.js")
 const userRole = require('../seed-data/constants/userRole.js');
 const Rule = require('../src/models/rule.js');
+const UserRole = require("../src/models/constants/userRole.js")
 const config = require("../src/configuration.js");
 
-const connectionUrl = config.testConnectionString;
+const connectionUrl = "mongodb://localhost:27017/testDBAdmin";
 
 
 beforeAll(async () => {
@@ -32,14 +34,25 @@ afterAll(() => {
 
 
 const AdminId = "6240cb6a412efa3d5d89c0af";
-id = new mongoose.Types.ObjectId();
-id2 = new mongoose.Types.ObjectId();
+const admind = new mongoose.Types.ObjectId();
+const id = new mongoose.Types.ObjectId();
+const id2 = new mongoose.Types.ObjectId();
 const userOneId = new mongoose.Types.ObjectId();
 const userTwoId = new mongoose.Types.ObjectId();
 const userThreeId = new mongoose.Types.ObjectId();
 const commentId = new mongoose.Types.ObjectId();
 const postId = new mongoose.Types.ObjectId();
 const moderatorId = new mongoose.Types.ObjectId();
+
+const defaultRole = {
+    _id: "6240cb40ff875b3bd3e816c7",
+    name: "User",
+};
+  
+const adminRole = {
+    _id: "6240cb6a412efa3d5d89c0af",
+    name: "Admin",
+};
 
 const post ={
     _id: postId,
@@ -58,7 +71,7 @@ const comment ={
     parentCommentId: null,
 }
 const admin = {
-    _id: AdminId,
+    _id: admind,
     name: "Ahmed Ashry",
     username: "ashry",
     email: "ashry.ahmed4@gmail.com",
@@ -77,6 +90,7 @@ const userOne = {
     followings: [userTwoId],
     gender: "Male",
     isVerified: true,
+    roleId: userRole.defaultRole._id,
     subscribedCommunities: [id],
     isBanned: true,
 }
@@ -91,6 +105,7 @@ const userTwo = {
     followings: [userOneId],
     gender: "Female",
     isVerified: true,
+    roleId: userRole.defaultRole._id,
     subscribedCommunities: [id]
 }
 
@@ -103,6 +118,7 @@ const userThree = {
     password: "12345678",
     gender: "Male",
     isVerified: true,
+    roleId: userRole.defaultRole._id,
     subscribedCommunities: [id]
 }
 const rule ={
@@ -133,6 +149,11 @@ const moderator ={
     communityName: "testCommunity",  
     isAccepted: true,
 }
+const ban = {
+    userId: userOneId,
+    reason: "bad behaviour",
+    isPermanent: true,
+}
 
 
 beforeEach(async () => {
@@ -151,6 +172,11 @@ beforeEach(async () => {
     await new Moderator(moderator).save();
     await Post.deleteMany({});
     await new Post(post).save();
+    await UserRole.deleteMany({});
+    await new UserRole(defaultRole).save();
+    await new UserRole(adminRole).save();
+    await Ban.deleteMany({});
+    await new Ban(ban).save();
 });
 async function getUser(username_email) {
     const user = await User.find({
@@ -265,4 +291,147 @@ describe('POST /dashboard/ban', () => {
       expect(response.status).toBe(401);
       expect(response.body.message).toBe('You are not authorized');
     });
-  });
+});
+
+
+describe('POST /dashboard/unban', () => {
+    // Test case: should unban a user
+    
+    it('should unban a user', async () => {
+        const login = await request(app)
+            .post("/login")
+            .send({ username: "ashry", password: "123456789" })
+            .expect(200);
+        const user = await User.findOne({ username: "ashry" });
+
+        const response = await request(app)
+            .post('/dashboard/unban')
+            .send({ username: 'maher' })
+            .set("Authorization", "Bearer " + user.tokens[0].token)
+            .expect(200);
+
+        expect(response.body.message).toBe('User was unbanned successfully');
+        expect(response.body.user.isBanned).toBe(false);
+    });
+
+    // Test case: should return 404 if user is not found
+    it('should return 404 if user is not found', async () => {
+        const login = await request(app)
+            .post("/login")
+            .send({ username: "ashry", password: "123456789" })
+            .expect(200);
+        const user = await User.findOne({ username: "ashry" });
+
+        const response = await request(app)
+            .post('/dashboard/unban')
+            .send({ username: 'notfounduser' })
+            .set("Authorization", "Bearer " + user.tokens[0].token)
+            .expect(404);
+        expect(response.body.message).toBe('User is not found');
+    });
+
+    // Test case: should return 404 if user is not banned
+    it('should return 404 if user is not banned', async () => {
+        const login = await request(app)
+            .post("/login")
+            .send({ username: "ashry", password: "123456789" })
+            .expect(200);
+        const user = await User.findOne({ username: "ashry" });
+        const response = await request(app)
+            .post('/dashboard/unban')
+            .send({ username: 'abbas' })
+            .set("Authorization", "Bearer " + user.tokens[0].token)
+            .expect(404);
+
+        expect(response.body.message).toBe('User is not banned');
+    });
+});
+
+
+describe('GET /dashboard/comments', () => {
+    it('should retrieve reported comments for an admin', async () => {
+        const login = await request(app)
+            .post("/login")
+            .send({ username: "ashry", password: "123456789" })
+            .expect(200);
+        const user = await User.findOne({ username: "ashry" });
+
+        const login2 = await request(app)
+            .post("/login")
+            .send({ username: "abbas", password: "12345678" })
+            .expect(200);
+        const user2 = await User.findOne({ username: "abbas" });
+
+        const response = await request(app)
+            .post(`/comments/${commentId}/report`)
+            .set("Authorization", "Bearer " + user2.tokens[0].token)
+            .send({
+                reason: "Offensive content",
+                subreason: "This comment contains offensive language"
+            })
+            .expect(201);
+        
+      const res = await request(app)
+        .get('/dashboard/comments')
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200)
+  
+      expect(res.body.reportedComments.length).toBeGreaterThan(0);
+      expect(res.body.message).toBe('Comments have been retrived successfully');
+    });
+  
+    it('should return 403 for non-admin user', async () => {
+        const login = await request(app)
+            .post("/login")
+            .send({ username: "abbas", password: "12345678" })
+            .expect(200);
+        const user = await User.findOne({ username: "abbas" });
+
+      const res = await request(app)
+        .get('/dashboard/comments')
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(403)
+    });
+});
+describe('GET /dashboard/posts', () => {
+    it('should retrieve reported posts for an admin', async () => {
+        const login = await request(app)
+            .post("/login")
+            .send({ username: "ashry", password: "123456789" })
+            .expect(200);
+        const user = await User.findOne({ username: "ashry" });
+
+        const login2 = await request(app)
+            .post("/login")
+            .send({ username: "abbas", password: "12345678" })
+            .expect(200);
+        const user2 = await User.findOne({ username: "abbas" });
+        
+        const response3 = await request(app)
+            .post(`/${postId}/report`)
+            .send({ reason: "amira12amira", sureason: "12345678" })
+            .set("Authorization", "Bearer " + user2.tokens[0].token)
+            .expect(201);
+
+      const res = await request(app)
+        .get('/dashboard/posts')
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(200)
+  
+      expect(res.body.reportedPosts.length).toBeGreaterThan(0);
+      expect(res.body.message).toBe('Posts have been retrived successfully');
+    });
+  
+    it('should return 403 for non-admin user', async () => {
+        const login = await request(app)
+            .post("/login")
+            .send({ username: "abbas", password: "12345678" })
+            .expect(200);
+        const user = await User.findOne({ username: "abbas" });
+      const res = await request(app)
+        .get('/dashboard/posts')
+        .set("Authorization", "Bearer " + user.tokens[0].token)
+        .expect(403)
+    
+    });
+});
