@@ -129,7 +129,6 @@ exports.getInboxMessages = async (req, res) => {
       recieverId: userId,
       isDeleted: false,
     });
-    console.log(inboxMessages);
     if (inboxMessages.length == 0) {
       return res.status(404).json({ error: "No messages found" });
     }
@@ -450,8 +449,6 @@ exports.reportMessage = async (req, res) => {
       });
     }
     if (!userId.equals(message.recieverId)) {
-      console.log(userId);
-      console.log(message.recieverId);
       return res
         .status(403)
         .json({ error: "You are not authorized to report this message" });

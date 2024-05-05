@@ -92,12 +92,10 @@ router.post("/login", async (req, res) => {
       }
       user.tokens = user.tokens.concat(authTokenInfo);
       await User.updateOne({ _id: user._id }, { $set: { tokens: user.tokens } });
-      //console.log(user);
       if (user.isBanned){
         return res.status(402).send({ message: "The user is banned" });
       }
       const userObj = await User.generateUserObject(user);
-      //console.log(userObj);
       res.status(200).send({
         access_token: token,
         user: userObj,
@@ -117,10 +115,7 @@ router.post("/login", async (req, res) => {
 router.post("/google/oauth", auth.verifyGoogleToken, async (req, res) => {
   try {
     const userData = req.decoded;
-    //console.log(userData);
-
     let user = await User.findOne({ googleId: userData.id });
-    //console.log(user);
     if (user) {
       const token = await user.generateToken();
       const authTokenInfo = { token: token };
@@ -175,11 +170,9 @@ router.post("/google/connected-accounts", auth.verifyGoogleToken, auth.authentic
   try {
     const userData = req.decoded;
     const userId = req.user._id;
-    //console.log(userData);
     let user = await User.findById(userId);
 
     //let user = await User.findOne({ googleId: userData.id });
-    //console.log(user);
     if (user) {
 
       user.googleId = userData.id;

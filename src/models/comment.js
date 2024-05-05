@@ -107,21 +107,17 @@ CommentSchema.statics.getCommentObject = async function (
     userid,
     withUserInfo = true
 ) {
-    //console.log(comment.username);
     const likesCount = comment.upVotes.length - comment.downVotes.length;
     const repliesCount = await Comment.countDocuments({
         parentCommentId: comment._id,
     });
-    //console.log(userid);
     let userObject = {};
 
     if (withUserInfo) {
         const User = mongoose.model("user");
         if (userid === comment.userId) {
             const user = await User.findOne({ _id: comment.userId });
-            //console.log(user);
             userObject = await User.generateUserObject(user, userid);
-            //console.log(userObject);
         }
         else {
             const user = await User.findOne({ _id: comment.userId });
@@ -192,8 +188,6 @@ CommentSchema.statics.getCommentReplies = async function (comment, userId) {
     const replyComments = await Comment.find({
         parentCommentId: comment.id,
     });
-    //console.log(replyComments);
-    //comment.replies = [];
 
     for (let i = 0; i < replyComments.length; i++) {
         const reply = replyComments[i];
@@ -202,7 +196,6 @@ CommentSchema.statics.getCommentReplies = async function (comment, userId) {
         replyObject.replies = nestedReplies.replies;
         comment.replies.push(replyObject);
     }
-    //console.log(comment);
     return comment;
 };
 

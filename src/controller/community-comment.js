@@ -50,7 +50,6 @@ async function isModeratorOrCreator(userId, communityName) {
 
 async function checkPermission(username, communityName) {
     const moderator = await Moderator.findOne({ username, communityName });
-    //console.log(moderator);
     if (!moderator) {
         return false;
     }
@@ -75,7 +74,6 @@ exports.getSpamComments = async (req, res) => {
 
             }
         }
-        console.log(spammComments);
         
         res.status(200).json({ SpammedComments: spammComments });
     } catch (error) {
@@ -150,7 +148,6 @@ exports.removeComment = async (req, res) => {
     try {
         const { communityName, commentId } = req.params;
         const removalReason = req.body.removalReason;
-        console.log(removalReason);
 
         if (!commentId) {
             return res.status(404).json({ message: "Comment not found" });
@@ -184,8 +181,6 @@ exports.removeComment = async (req, res) => {
         if (!post) {
             return res.status(404).json({ error: "Post not found" });
         }
-        console.log(post);
-        console.log(post.comments);
         post.commentsCount = (post.commentsCount) + 1;
         post.comments.push(removalComment._id);
         
@@ -227,7 +222,6 @@ exports.getEdititedCommentsHistory = async (req, res) => {
     try {
         const { communityName } = req.params;
         const community = await Community.findOne({ name: communityName });
-        console.log(community);
         if (!community) {
             return res.status(404).json({ error: 'Community not found' });
         }
