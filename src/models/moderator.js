@@ -80,6 +80,7 @@ ModeratorSchema.statics.getAllModerators = async function (communityName) {
       isAccepted: moderator.isAccepted,
       moderationDate: moderator.createdAt,
       avatar: user ? user.avatar : null,
+      banner: user ? user.banner : null,
     });
   }
   return moderatorObjects;
@@ -103,6 +104,7 @@ ModeratorSchema.statics.getInvitedModerators = async function (communityName) {
       isAccepted: moderator.isAccepted,
       moderationDate: moderator.createdAt,
       avatar: user ? user.avatar : null,
+      banner: user ? user.banner : null,
     });
   }
   return moderatorObjects;

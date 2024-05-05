@@ -11,7 +11,7 @@ const userRole = require('../seed-data/constants/userRole.js');
 const Rule = require('../src/models/rule.js');
 const config = require("../src/configuration.js");
 
-const connectionUrl = config.testConnectionString;
+const connectionUrl = "mongodb://localhost:27017/testDBAdmin";
 
 
 beforeAll(async () => {
@@ -266,3 +266,57 @@ describe('POST /dashboard/ban', () => {
       expect(response.body.message).toBe('You are not authorized');
     });
   });
+
+
+  describe('POST /dashboard/unban', () => {
+    // Test case: should unban a user
+    it('should unban a user', async () => {
+        const login = await request(app)
+            .post("/login")
+            .send({ username: "ashry", password: "123456789" })
+            .expect(200);
+        const user = await User.findOne({ username: "ashry" });
+
+        const response = await request(app)
+            .post('/dashboard/unban')
+            .send({ username: 'maher' })
+            .set("Authorization", "Bearer " + user.tokens[0].token)
+            .expect(200);
+
+        expect(response.body.message).toBe('User was unbanned successfully');
+        expect(response.body.user.isBanned).toBe(false);
+    });
+
+    // Test case: should return 404 if user is not found
+    it('should return 404 if user is not found', async () => {
+        const login = await request(app)
+            .post("/login")
+            .send({ username: "ashry", password: "123456789" })
+            .expect(200);
+        const user = await User.findOne({ username: "ashry" });
+
+        const response = await request(app)
+            .post('/dashboard/unban')
+            .send({ username: 'notfounduser' })
+            .set("Authorization", "Bearer " + user.tokens[0].token)
+            .expect(404);
+
+        expect(response.body.message).toBe('User is not found');
+    });
+
+    // Test case: should return 404 if user is not banned
+    it('should return 404 if user is not banned', async () => {
+        const login = await request(app)
+            .post("/login")
+            .send({ username: "ashry", password: "123456789" })
+            .expect(200);
+        const user = await User.findOne({ username: "ashry" });
+        const response = await request(app)
+            .post('/dashboard/unban')
+            .send({ username: 'elgarf' })
+            .set("Authorization", "Bearer " + user.tokens[0].token)
+            .expect(404);
+
+        expect(response.body.message).toBe('User is not banned');
+    });
+});

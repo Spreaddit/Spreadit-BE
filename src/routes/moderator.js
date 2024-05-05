@@ -405,22 +405,39 @@ router.get("/community/:communityName/get-info", auth.authentication, async (req
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-
     const currentDate = new Date();
     const currentMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 
-    const lastInsight = community.insights[community.insights.length - 1];
+    const lastMonthlyInsight = community.monthlyInsights[community.monthlyInsights.length - 1];
 
-    if (!lastInsight || lastInsight.month.getMonth() !== currentMonthStart.getMonth()) {
-      const newInsight = {
+    const last7DaysInsight = community.last7DaysInsights[community.last7DaysInsights.length - 1];
+
+    if (!lastMonthlyInsight || lastMonthlyInsight.month.getMonth() !== currentMonthStart.getMonth()) {
+      const newMonthlyInsight = {
         month: new Date(currentMonthStart),
         views: 1,
         newMembers: 0,
         leavingMembers: 0,
       };
-      community.insights.push(newInsight);
+      community.monthlyInsights.push(newMonthlyInsight);
     } else {
-      lastInsight.views += 1;
+      lastMonthlyInsight.views += 1;
+    }
+
+    if (!last7DaysInsight || !isSameDay(last7DaysInsight.month, currentDate)) {
+      const new7DaysInsight = {
+        month: new Date(),
+        views: 1,
+        newMembers: 0,
+        leavingMembers: 0,
+      };
+      community.last7DaysInsights.push(new7DaysInsight);
+    } else {
+      last7DaysInsight.views += 1;
+    }
+
+    if (community.last7DaysInsights.length > 7) {
+      community.last7DaysInsights.shift();
     }
 
     await community.save();
@@ -430,7 +447,18 @@ router.get("/community/:communityName/get-info", auth.authentication, async (req
     res.status(500).json({ message: "Internal server error" });
   }
 });
-///////////////////
+
+function isSameDay(date1, date2) {
+  if (!date1 || !date2) {
+    return false;
+  }
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+}
+
 router.get("/community/moderation/:communityName/contributors", auth.authentication, async (req, res) => {
   try {
     const communityName = req.params.communityName;
@@ -584,8 +612,14 @@ router.post(
     try {
       const communityName = req.params.communityName;
       const { name, is18plus, communityType, description, fileType, membersNickname } = req.body;
-      const image = req.files["image"] ? req.files["image"][0] : null;
-      const communityBanner = req.files["communityBanner"] ? req.files["communityBanner"][0] : null;
+      let image = null;
+      let communityBanner = null;
+      if (req.files && req.files["image"] && req.files["image"][0]) {
+        image = req.files["image"][0];
+      }
+      if (req.files && req.files["communityBanner"] && req.files["communityBanner"][0]) {
+        communityBanner = req.files["communityBanner"][0];
+      }
 
       if (!communityName) {
         return res.status(400).json({ message: "Invalid request parameters" });
@@ -815,15 +849,15 @@ router.delete("/community/moderation/:communityName/:username/remove-invite", au
     if (!moderator || !moderator.manageUsers) {
       return res.status(406).json({ message: "Moderator doesn't have permission" });
     }
-    const invitedModerators = await Moderator.findOne({
+    const invitedModerator = await Moderator.findOne({
       communityName: communityName,
       isAccepted: false,
       username: username,
     });
-    if (!invitedModerators) {
+    if (!invitedModerator) {
       return res.status(402).json({ message: "No invitation sent for this user" });
     }
-    await invitedModerators.remove();
+    await Moderator.findByIdAndDelete(invitedModerator._id);
     res.status(200).json({ message: "Moderator invite removed successfully" });
   } catch (error) {
     console.error(error);
@@ -902,14 +936,19 @@ router.put("/community/moderation/:communityName/:username/permissions", auth.au
     const { communityName, username } = req.params;
     const { managePostsAndComments, manageUsers, manageSettings } = req.body;
 
+    if (
+      typeof managePostsAndComments !== "boolean" ||
+      typeof manageUsers !== "boolean" ||
+      typeof manageSettings !== "boolean"
+    ) {
+      return res.status(400).json({ message: "Invalid parameters" });
+    }
+
     const community = await Community.findOne({ name: communityName });
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    if (community.creator !== req.user._id) {
-      return res.status(402).json({ message: "Not the creator" });
-    }
     const userModerator = await Moderator.findOne({ communityName, username: req.user.username });
     const moderator = await Moderator.findOne({ communityName, username });
     if (!moderator) {
@@ -939,9 +978,10 @@ router.delete("/community/moderation/:communityName/moderators/:username", auth.
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-
-    if (community.creator !== req.user._id) {
-      return res.status(402).json({ message: "Not the creator" });
+    if (community.creator) {
+      if (!community.creator.equals(req.user._id)) {
+        return res.status(402).json({ message: "Not the creator" });
+      }
     }
     const user = await User.findOne({ _id: req.user._id });
 
@@ -960,7 +1000,7 @@ router.delete("/community/moderation/:communityName/moderators/:username", auth.
 
     await community.save();
     await user.save();
-    await moderator.remove();
+    await Moderator.findByIdAndDelete(moderator._id);
 
     res.status(200).json({ message: "Moderator removed successfully" });
   } catch (error) {
@@ -982,8 +1022,12 @@ router.get("/community/:communityName/insights", auth.authentication, async (req
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
+    const insights = {
+      monthlyInsights: community.monthlyInsights,
+      last7DaysInsights: community.last7DaysInsights,
+    };
 
-    res.status(200).json(community.insights);
+    res.status(200).json(insights);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
