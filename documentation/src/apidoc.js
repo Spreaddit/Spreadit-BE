@@ -2753,6 +2753,55 @@
  */
 
 /**
+ * @api {post} /unblock Unblock User
+ * @apiVersion 0.1.0
+ * @apiName UnblockUser
+ * @apiGroup User
+ * @apiDescription Unblocks a user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the user to unblock.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "username": "example_user"
+ * }
+ *
+ * @apiSuccess {String} description Success message indicating that the user has been unblocked successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "description": "User unblocked successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
  * @api {post} /users/unfollow Unfollow User
  * @apiVersion 0.1.0
  * @apiName UnfollowUser
