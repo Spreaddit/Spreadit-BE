@@ -11,6 +11,7 @@ router.use(passport.initialize());
 router.use(cookieParser("spreaditsecret"));
 const auth = require("../middleware/authentication");
 const upload = require("../service/fileUpload");
+const { uploadMedia } = require("../service/cloudinary.js");
 
 router.post("/rule/add", auth.authentication, async (req, res) => {
   try {

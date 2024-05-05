@@ -2242,66 +2242,6 @@
  */
 
 /**
- * @api {get} /community/get-info Get Community Information
- * @apiVersion 0.1.0
- * @apiName GetCommunityInformation
- * @apiGroup Community
- * @apiDescription Retrieves information about a specific community.
- * @apiSampleRequest off
- *
- * @apiParam {String} communityName Name of the community to retrieve information.
- *
- * @apiSuccess {Object} community Information about the specified community.
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "name": "Sample Community",
- *       "category": "Sample Category",
- *       "communityType": "Public",
- *       "description": "Sample description",
- *       "image": "community_image.jpg",
- *       "membersCount": 1000,
- *       "rules": [
- *         {
- *           "title": "Rule 1",
- *           "description": "Description of rule 1",
- *           "reportReason": "Reason for reporting rule 1"
- *         },
- *         {
- *           "title": "Rule 2",
- *           "description": "Description of rule 2",
- *           "reportReason": "Reason for reporting rule 2"
- *         }
- *       ],
- *       "dateCreated": "2024-01-01T00:00:00.000Z",
- *       "communityBanner": "community_banner.jpg"
- *     }
- *
- * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (404) NotFound Community not found.
- * @apiError (500) InternalServerError An unexpected error occurred on the server.
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *       "message": "Invalid request parameters"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "message": "Community not found"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 500 Internal Server Error
- *     {
- *       "message": "Internal server error"
- *     }
- */
-
-/**
  * @api {post} /community/create Create Community
  * @apiVersion 0.1.0
  * @apiName CreateCommunity
@@ -9490,7 +9430,7 @@
  * @api {post} /rule/add Add Rule to Community
  * @apiVersion 0.1.0
  * @apiName AddRuleToCommunity
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Adds a rule to a community.
  * @apiSampleRequest off
  *
@@ -9575,7 +9515,7 @@
  * @api {post} /rule/remove Remove Rule from Community
  * @apiVersion 0.1.0
  * @apiName RemoveRuleFromCommunity
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Removes a rule from a community.
  * @apiSampleRequest off
  *
@@ -9646,7 +9586,7 @@
  * @api {put} /rule/edit Edit Rule in Community
  * @apiVersion 0.1.0
  * @apiName EditRuleInCommunity
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Edits a rule in a community.
  * @apiSampleRequest off
  *
@@ -9726,7 +9666,7 @@
  * @api {get} /community/:communityName/rules Get Community Rules
  * @apiVersion 0.1.0
  * @apiName GetCommunityRules
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Retrieves a list of rules for a specific community.
  * @apiSampleRequest off
  *
@@ -9779,7 +9719,7 @@
  * @api {post} /removal-reason/add Add Removal Reason to Community
  * @apiVersion 0.1.0
  * @apiName AddRemovalReasonToCommunity
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Adds a removal reason to a community.
  * @apiSampleRequest off
  *
@@ -9853,7 +9793,7 @@
  * @api {post} /removal-reason/remove Remove Removal Reason from Community
  * @apiVersion 0.1.0
  * @apiName RemoveRemovalReasonFromCommunity
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Removes a removal reason from a community.
  * @apiSampleRequest off
  *
@@ -9918,7 +9858,7 @@
  * @api {put} /removal-reason/edit Edit Removal Reason from Community
  * @apiVersion 0.1.0
  * @apiName EditRemovalReasonFromCommunity
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Edits a removal reason in a community.
  * @apiSampleRequest off
  *
@@ -9996,7 +9936,7 @@
  * @api {get} /community/:communityName/removal-reasons Get Community Removal Reasons
  * @apiVersion 0.1.0
  * @apiName GetCommunityRemovalReasons
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Retrieves a list of removal reasons for a specific community.
  * @apiSampleRequest off
  *
@@ -10045,7 +9985,7 @@
  * @api {get} /community/:communityName/get-info Get Community Info
  * @apiVersion 0.1.0
  * @apiName GetCommunityInfo
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Retrieves information about a specific community.
  * @apiSampleRequest off
  *
@@ -10054,20 +9994,63 @@
  * @apiParam {String} communityName Name of the community to retrieve information from.
  *
  * @apiSuccess {Object} communityObject Object containing community information.
+ * @apiSuccess {Boolean} communityObject.is18plus Indicates if the community is for users above 18 years old.
  * @apiSuccess {String} communityObject.name Name of the community.
- * @apiSuccess {String} communityObject.description Description of the community.
- * @apiSuccess {Number} communityObject.members Total number of community members.
- * @apiSuccess {Number} communityObject.posts Total number of posts in the community.
- * @apiSuccess {Number} communityObject.comments Total number of comments in the community.
- *
+ * @apiSuccess {String} [communityObject.category] Category of the community.
+ * @apiSuccess {String} communityObject.communityType Type of the community (Public, Restricted, Private).
+ * @apiSuccess {String} [communityObject.description] Description of the community.
+ * @apiSuccess {String} [communityObject.image] Link to the image of the community.
+ * @apiSuccess {Array} [communityObject.members] Array of members in the community.
+ * @apiSuccess {Number} communityObject.membersCount Total number of community members.
+ * @apiSuccess {Array} [communityObject.rules] Array of rules in the community.
+ * @apiSuccess {String} communityObject.rules.title Title of the rule.
+ * @apiSuccess {String} [communityObject.rules.description] Description of the rule.
+ * @apiSuccess {String} [communityObject.rules.reportReason] Reason for reporting the rule.
+ * @apiSuccess {String} communityObject.rules.appliesTo Type to which the rule applies (e.g., posts).
+ * @apiSuccess {Array} [communityObject.removalReasons] Array of removal reasons in the community.
+ * @apiSuccess {String} communityObject.removalReasons.title Title of the removal reason.
+ * @apiSuccess {String} [communityObject.removalReasons.reasonMessage] Message describing the reason for removal.
+ * @apiSuccess {Date} communityObject.dateCreated Date when the community was created.
+ * @apiSuccess {String} [communityObject.communityBanner] Link to the banner of the community.
+ * @apiSuccess {String} [communityObject.membersNickname] Nickname for the community members.
+ * @apiSuccess {Boolean} communityObject.isModerator Indicates if the user is a moderator in the community.
+ * @apiSuccess {Boolean} communityObject.isCreator Indicates if the user is the creator of the community.
+ * @apiSuccess {Boolean} communityObject.isMember Indicates if the user is a member of the community.
+ * @apiSuccess {Boolean} communityObject.isContributor Indicates if the user is a contributor to the community.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "name": "Sample Community",
- *       "description": "Description of the sample community",
- *       "members": 1000,
- *       "posts": 500,
- *       "comments": 2000
+ *       "is18plus": true,
+ *       "name": "string",
+ *       "category": "string",
+ *       "communityType": "Public",
+ *       "description": "string",
+ *       "image": "string",
+ *       "members": [
+ *         {}
+ *       ],
+ *       "membersCount": 0,
+ *       "rules": [
+ *         {
+ *           "title": "string",
+ *           "description": "string",
+ *           "reportReason": "string",
+ *           "appliesTo": "posts"
+ *         }
+ *       ],
+ *       "removalReasons": [
+ *         {
+ *           "title": "string",
+ *           "reasonMessage": "string"
+ *         }
+ *       ],
+ *       "dateCreated": "2024-05-05T20:00:26.288Z",
+ *       "communityBanner": "string",
+ *       "membersNickname": "string",
+ *       "isModerator": true,
+ *       "isCreator": true,
+ *       "isMember": true,
+ *       "isContributor": true
  *     }
  *
  * @apiError (400) BadRequest Invalid request parameters.
@@ -10093,12 +10076,62 @@
  *       "message": "Internal server error"
  *     }
  */
+/**
+ * @api {post} /community/moderation/:communityName/:username/leave Leave Community Moderation
+ * @apiVersion 0.1.0
+ * @apiName LeaveCommunityModeration
+ * @apiGroup Moderation
+ * @apiDescription Allows a moderator to leave a community's moderation team.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} username Username of the moderator leaving the community.
+ *
+ * @apiSuccess {String} message Success message indicating that the moderator has left the community moderation successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Left moderator role successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid leave request.
+ * @apiError (404) NotFound User or community not found.
+ * @apiError (402) Forbidden User is not a moderator of the community.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid leave request"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User or community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "User is not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
 
 /**
  * @api {get} /community/moderation/:communityName/contributors Get Community Contributors
  * @apiVersion 0.1.0
  * @apiName GetCommunityContributors
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Retrieves a list of contributors for a specific community.
  * @apiSampleRequest off
  *
@@ -10161,7 +10194,7 @@
  * @api {post} /community/moderation/:communityName/:username/add-contributor Add Contributor to Community
  * @apiVersion 0.1.0
  * @apiName AddContributorToCommunity
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Adds a contributor to a community.
  * @apiSampleRequest off
  *
@@ -10227,7 +10260,7 @@
  * @api {post} /community/moderation/:communityName/:username/remove-contributor Remove Contributor from Community
  * @apiVersion 0.1.0
  * @apiName RemoveContributorFromCommunity
- * @apiGroup Community Moderation
+ * @apiGroup Moderation
  * @apiDescription Removes a contributor from a community.
  * @apiSampleRequest off
  *
@@ -10285,7 +10318,7 @@
  * @api {post} /community/:communityName/edit-info Edit Community Info
  * @apiVersion 0.1.0
  * @apiName EditCommunityInfo
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Edits information about a specific community.
  * @apiSampleRequest off
  *
@@ -10321,7 +10354,7 @@
  * @api {get} /community/:communityName/settings Get Community Settings
  * @apiVersion 0.1.0
  * @apiName GetCommunitySettings
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Retrieves settings for a specific community.
  * @apiSampleRequest off
  *
@@ -10354,7 +10387,7 @@
  * @api {put} /community/:communityName/settings Update Community Settings
  * @apiVersion 0.1.0
  * @apiName UpdateCommunitySettings
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Updates settings for a specific community.
  * @apiSampleRequest off
  *
@@ -10387,7 +10420,7 @@
  * @api {get} /community/muted Get Muted Communities
  * @apiVersion 0.1.0
  * @apiName GetMutedCommunities
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Retrieves a list of muted communities for the current user.
  * @apiSampleRequest off
  *
@@ -10414,7 +10447,7 @@
  * @api {get} /community/moderation/:communityName/moderators Get Community Moderators
  * @apiVersion 0.1.0
  * @apiName GetCommunityModerators
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Retrieves a list of moderators for a specific community.
  * @apiSampleRequest off
  *
@@ -10449,7 +10482,7 @@
  * @api {get} /community/moderation/:communityName/moderators/editable Get Editable Community Moderators
  * @apiVersion 0.1.0
  * @apiName GetEditableCommunityModerators
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Retrieves a list of editable moderators for a specific community.
  * @apiSampleRequest off
  *
@@ -10486,7 +10519,7 @@
  * @api {get} /community/moderation/:communityName/invited-moderators Get Invited Community Moderators
  * @apiVersion 0.1.0
  * @apiName GetInvitedCommunityModerators
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Retrieves a list of invited moderators for a specific community.
  * @apiSampleRequest off
  *
@@ -10518,7 +10551,7 @@
  * @api {delete} /community/moderation/:communityName/:username/remove-invite Remove Moderator Invite
  * @apiVersion 0.1.0
  * @apiName RemoveModeratorInvite
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Removes an invitation for a moderator from a specific community.
  * @apiSampleRequest off
  *
@@ -10545,7 +10578,7 @@
  * @api {get} /community/moderation/:communityName/:username/is-moderator Check if User is Moderator
  * @apiVersion 0.1.0
  * @apiName CheckIfUserIsModerator
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Checks if a user is a moderator of a specific community.
  * @apiSampleRequest off
  *
@@ -10572,7 +10605,7 @@
  * @api {get} /community/moderation/:communityName/:username/is-invited Check if User is Invited as Moderator
  * @apiVersion 0.1.0
  * @apiName CheckIfUserIsInvited
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Checks if a user is invited as a moderator of a specific community.
  * @apiSampleRequest off
  *
@@ -10599,7 +10632,7 @@
  * @api {get} /community/moderation/user/:username Get Moderated Communities of User
  * @apiVersion 0.1.0
  * @apiName GetModeratedCommunitiesOfUser
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Retrieves a list of communities moderated by a specific user.
  * @apiSampleRequest off
  *
@@ -10636,7 +10669,7 @@
  * @api {put} /community/moderation/:communityName/:username/permissions Update Moderator Permissions
  * @apiVersion 0.1.0
  * @apiName UpdateModeratorPermissions
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Updates the permissions of a moderator in a specific community.
  * @apiSampleRequest off
  *
@@ -10667,7 +10700,7 @@
  * @api {delete} /community/moderation/:communityName/moderators/:username Remove Moderator from Community
  * @apiVersion 0.1.0
  * @apiName RemoveModeratorFromCommunity
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Removes a moderator from a specific community.
  * @apiSampleRequest off
  *
@@ -10695,7 +10728,7 @@
  * @api {get} /community/:communityName/insights Get Community Insights
  * @apiVersion 0.1.0
  * @apiName GetCommunityInsights
- * @apiGroup Community Management
+ * @apiGroup Moderation
  * @apiDescription Retrieves insights data for a specific community.
  * @apiSampleRequest off
  *
