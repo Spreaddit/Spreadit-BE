@@ -216,7 +216,7 @@ router.post("/settings/add-password/email", auth.authentication, async (req, res
       //localhost:1234/#/settings/account-settings/add-password/${emailToken}
       emailContent = `To confirm your email, click the link below: app.spreadit.me/#/settings/account-settings/add-password/${emailToken}`;
     } else {
-      emailContent = `To confirm your email, click the link below: www.spreadit.me/verify-email/${emailToken}`;
+      emailContent = `To confirm your email, click the link below: www.spreadit.me/addpassword/${emailToken}`;
     }
     await sendEmail(user.connectedAccounts[0], 'Please Confirm Your Email', emailContent);
 
