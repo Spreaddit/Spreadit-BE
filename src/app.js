@@ -5,10 +5,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const config = require("./configuration");
 const authRoutes = require("./routes/auth");
-const userRoutes = require("./routes/user");
 const userActionRoutes = require("./routes/user-action");
 const postsRoutes = require("./routes/post");
-const uploadRoutes = require("./routes/upload-test");
 const settingsRoutes = require("./routes/settings");
 const mobileSettingsRoutes = require("./routes/mobile-settings");
 const communityRoutes = require("./routes/community");
@@ -52,13 +50,11 @@ app.use(
   })
 );
 startUnbanScheduler();
-app.use("/api", userRoutes);
 app.use("/api", authRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/mobile/settings", mobileSettingsRoutes);
 app.use("/api/users", userActionRoutes);
 app.use("/api/posts", postsRoutes);
-app.use("/api", uploadRoutes);
 app.use("/api", listingRoutes);
 app.use("/api", communityRoutes);
 app.use("/api", commentRoutes);
