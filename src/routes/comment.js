@@ -25,21 +25,20 @@ router.post(
       //verify that the post id exists in the post collections
       const postId = req.params.postId;
       const userId = req.user._id;
-      const post = await Post.findById(postId);
-      const recieverId = post.userId;
       const { content, fileType } = req.body;
       if (!content) {
         return res.status(400).send({
           message: "Comment content is required",
         });
       }
-      const existingPost = await Post.findById(postId);
-
-      if (!existingPost) {
+      const post = await Post.findById(postId);
+      if (!post) {
         return res.status(404).send({
           message: "Post not found",
         });
       }
+      const recieverId = post.userId;
+      
 
       const newComment = new Comment({
         content,
@@ -48,7 +47,6 @@ router.post(
       });
 
       const communityName = post.community;
-      console.log(communityName);
       const community = await Community.findOne({
         name: communityName,
       });
@@ -69,9 +67,7 @@ router.post(
 
       if (req.files) {
         for (let i = 0; i < req.files.length; i++) {
-          //console.log(req.files);
           const result = await uploadMedia(req.files[i], fileType);
-          //const url = `${config.baseUrl}/media/${result.Key}`;
           const url = result.secure_url;
           const attachmentObj = { type: fileType, link: url };
           newComment.attachments.push(attachmentObj);
@@ -88,7 +84,6 @@ router.post(
         const mentionedUsers = await User.find({
           username: { $in: mentionedUsernames.map((username) => username.slice(1)) },
         });
-        console.log(mentionedUsers);
 
         for (const mentionedUser of mentionedUsers) {
           if (!userId.equals(mentionedUser._id)) {
@@ -170,18 +165,16 @@ router.delete(
       const userId = req.user._id;
       const commentId = req.params.commentId;
       const comment = await Comment.findById(commentId);
-
-      //const comment = await Comment.findByIdAndDelete(req.params.commentId);
-      const adminId = await UserRole.find({
-        name: "Admin",
-      }).select("_id");
-
-
       if (!comment) {
         return res.status(404).send({
           message: "comment not found",
         });
       }
+
+      //const comment = await Comment.findByIdAndDelete(req.params.commentId);
+      const adminId = await UserRole.find({
+        name: "Admin",
+      }).select("_id");
 
       if (
         comment.userId.toString() !== userId.toString() &&
@@ -234,8 +227,6 @@ router.get("/posts/comment/:postId", auth.authentication, async (req, res) => {
       });
     }
 
-    //console.log("Comments:", comments);
-
     if (!comments || comments.length === 0) {
       return res.status(404).send({
         message: "No comments found for the given post Id",
@@ -243,16 +234,13 @@ router.get("/posts/comment/:postId", auth.authentication, async (req, res) => {
     }
 
     const commentObjects = [];
-    //console.log(req.query.include_replies)
     for (const comment of comments) {
-      ///console.log(req.user._id);
       const commentObject = await Comment.getCommentObject(
         comment,
         req.user._id,
         true
       );
       if (req.query.include_replies === "true") {
-        //console.log(req.user._id);
         const commentWithReplies = await Comment.getCommentReplies(
           commentObject,
           req.user._id,
@@ -283,8 +271,6 @@ router.get(
         path: "userId",
       });
 
-      //console.log("Comments:", comments);
-
       if (!comments || comments.length === 0) {
         return res.status(404).send({
           message: "No comments found for the user",
@@ -297,7 +283,6 @@ router.get(
           comment,
           req.user._id
         );
-        //console.log(commentObject);
         commentObjects.push(commentObject);
       }
 
@@ -596,9 +581,7 @@ router.post(
     try {
       const commentId = req.params.commentId;
       const userId = req.user._id;
-
       const comment = await Comment.findById(commentId);
-
       if (!comment) {
         return res.status(404).send({
           message: "Comment not found",
@@ -607,14 +590,12 @@ router.post(
       const downvotesCount = comment.downVotes.length;
       const upvotesCount = comment.upVotes.length;
       let netVotes = upvotesCount - downvotesCount;
-      //console.log(netVotes)
 
       const downvoteIndex = comment.downVotes.indexOf(userId);
       if (downvoteIndex !== -1) {
         comment.downVotes.splice(downvoteIndex, 1);
         netVotes = netVotes - 1;
         await comment.save();
-        //console.log(netVotes)
       }
 
       if (comment.upVotes.includes(userId)) {
@@ -624,7 +605,6 @@ router.post(
           await comment.save();
         }
         netVotes = netVotes - 1;
-        //console.log(netVotes)
         return res.status(400).send({
           votes: netVotes,
           message: "You have removed your upvote this comment",
@@ -636,6 +616,9 @@ router.post(
       await comment.save();
       userWhoCreatedComment = await User.findById(comment.userId);
 
+      const rootComment = await Comment.findRootComment(comment._id);
+      const post = await Post.findById(rootComment.postId);
+      const community = await Community.findOne({name: post.community})
       const userDisabledCommunities =
         userWhoCreatedComment.disabledCommunities.map((c) => c.toString());
       if (userDisabledCommunities.includes(community._id.toString())) {
@@ -663,7 +646,6 @@ router.post(
         });
         await notification.save();
       }
-      //console.log(netVotes)
 
       res.status(200).send({
         votes: netVotes,
@@ -693,13 +675,11 @@ router.post(
       const downvotesCount = comment.downVotes.length;
       const upvotesCount = comment.upVotes.length;
       let netVotes = upvotesCount - downvotesCount;
-      //console.log(netVotes)
 
       const upvoteIndex = comment.upVotes.indexOf(userId);
       if (upvoteIndex !== -1) {
         comment.upVotes.splice(upvoteIndex, 1);
         netVotes = netVotes - 1;
-        //console.log(netVotes)
       }
 
       if (comment.downVotes.includes(userId)) {
@@ -709,7 +689,6 @@ router.post(
           await comment.save();
         }
         netVotes = netVotes + 1;
-        //console.log(netVotes)
         return res.status(400).send({
           votes: netVotes,
           message: "You have removed your downvote this comment",
@@ -717,7 +696,6 @@ router.post(
       }
 
       netVotes = netVotes - 1;
-      //console.log(netVotes)
 
       comment.downVotes.push(userId);
       await comment.save();

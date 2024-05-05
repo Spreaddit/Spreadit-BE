@@ -129,6 +129,7 @@ exports.getInboxMessages = async (req, res) => {
       recieverId: userId,
       isDeleted: false,
     });
+    console.log(inboxMessages);
     if (inboxMessages.length == 0) {
       return res.status(404).json({ error: "No messages found" });
     }
