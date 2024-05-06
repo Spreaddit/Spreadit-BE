@@ -48,7 +48,7 @@ exports.followUser = async (req, res) => {
     };
     if (user.newFollowers) {
       await Notification.sendNotification(
-        post.userId,
+        toFollowID.userId,
         "You have recieved a new notification",
         `${req.user.username} follow you `
       );
