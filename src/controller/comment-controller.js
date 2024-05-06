@@ -447,9 +447,6 @@ exports.createReply = async (req, res) => {
     await Comment.findByIdAndUpdate(parentCommentId, {
       $inc: { repliesCount: 1 },
     });
-    newReply = await Comment.findOne({
-      parentCommentId: newReply.parentCommentId,
-    });
     await Post.findByIdAndUpdate(rootComment.postId, {
       $inc: { commentsCount: 1 },
     });
