@@ -16,8 +16,8 @@ const userOne = {
   email: "farouqdiaa@gmail.com",
   password: "12345678",
   gender: "Male",
-  isVerified: true
-}
+  isVerified: true,
+};
 const userTwo = {
   _id: userTwoId,
   name: "Farouuuq",
@@ -26,8 +26,8 @@ const userTwo = {
   email: "farouqdiaa2@gmail.com",
   password: "12345678",
   gender: "Male",
-  isVerified: true
-}
+  isVerified: true,
+};
 
 beforeAll(async () => {
   try {
@@ -54,7 +54,9 @@ afterAll(() => {
 
 describe("Adding a rule", () => {
   test("It should add a new rule", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
 
     const token = logIn.body.access_token;
     const decoded = jwt.jwtDecode(token);
@@ -79,8 +81,9 @@ describe("Adding a rule", () => {
     expect(response.body.message).toBe("Rule added successfully");
   });
   test("It should return 'Invalid rule data' for status 400", async () => {
-
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
     const decoded = jwt.jwtDecode(token);
     const user = await User.findById(decoded._id);
@@ -93,14 +96,19 @@ describe("Adding a rule", () => {
       moderators: [user],
     });
     await createdCommunity.save();
-    const response = await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({}).expect(400);
+    const response = await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({})
+      .expect(400);
 
     expect(response.body.message).toBe("Invalid rule data");
   });
 
   test("It should return 'Error' for status 401", async () => {
-
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
 
     const response = await request(app)
       .post("/rule/add")
@@ -139,7 +147,9 @@ describe("Adding a rule", () => {
       })
       .expect(402);
 
-    expect(response.body.message).toBe("You are not a moderator of this community");
+    expect(response.body.message).toBe(
+      "You are not a moderator of this community"
+    );
   });
 
   test("It should return 'Title already used' for status 403", async () => {
@@ -160,10 +170,13 @@ describe("Adding a rule", () => {
     });
     await createdCommunity.save();
 
-    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
-      title: "myRule",
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "myRule",
+        communityName: "farouqfans",
+      });
 
     const response = await request(app)
       .post("/rule/add")
@@ -217,10 +230,13 @@ describe("Removing a rule", () => {
     });
     await createdCommunity.save();
 
-    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
-      title: "myRule",
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "myRule",
+        communityName: "farouqfans",
+      });
 
     const response = await request(app)
       .post("/rule/remove")
@@ -275,7 +291,6 @@ describe("Removing a rule", () => {
   });
 
   test("It should return 'Not a moderator' for status 402", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
@@ -286,7 +301,6 @@ describe("Removing a rule", () => {
       username: "farouquser2",
       password: "12345678",
     });
-     
 
     const token2 = logIn2.body.access_token;
     const decodedToken = jwt.jwtDecode(token);
@@ -300,10 +314,13 @@ describe("Removing a rule", () => {
     });
     await createdCommunity.save();
 
-    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
-      title: "myRule",
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "myRule",
+        communityName: "farouqfans",
+      });
 
     const response = await request(app)
       .post("/rule/remove")
@@ -318,13 +335,11 @@ describe("Removing a rule", () => {
   });
 
   test("It should return 'Rule not found' for status 404", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -352,13 +367,11 @@ describe("Removing a rule", () => {
 
 describe("Adding community to favorites", () => {
   test("It should add community to favorites", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -379,17 +392,17 @@ describe("Adding community to favorites", () => {
       })
       .expect(200);
 
-    expect(response.body.message).toBe("Community added to favorites successfully");
+    expect(response.body.message).toBe(
+      "Community added to favorites successfully"
+    );
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const response = await request(app)
       .post("/community/add-to-favourites")
@@ -401,13 +414,11 @@ describe("Adding community to favorites", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const response = await request(app)
       .post("/community/add-to-favourites")
@@ -421,13 +432,11 @@ describe("Adding community to favorites", () => {
   });
 
   test("It should return 'Community is already in favorites' for status 402", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -440,9 +449,12 @@ describe("Adding community to favorites", () => {
     });
     await createdCommunity.save();
 
-    await request(app).post("/community/add-to-favourites").set("Authorization", `Bearer ${token}`).send({
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/community/add-to-favourites")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
 
     const response = await request(app)
       .post("/community/add-to-favourites")
@@ -458,13 +470,11 @@ describe("Adding community to favorites", () => {
 
 describe("Removing community from favorites", () => {
   test("It should remove community from favorites", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -477,9 +487,12 @@ describe("Removing community from favorites", () => {
     });
     await createdCommunity.save();
 
-    await request(app).post("/community/add-to-favourites").set("Authorization", `Bearer ${token}`).send({
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/community/add-to-favourites")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
     const response = await request(app)
       .post("/community/remove-favourite")
       .set("Authorization", `Bearer ${token}`)
@@ -487,17 +500,17 @@ describe("Removing community from favorites", () => {
         communityName: "farouqfans",
       })
       .expect(200);
-    expect(response.body.message).toBe("Community removed from favorites successfully");
+    expect(response.body.message).toBe(
+      "Community removed from favorites successfully"
+    );
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const response = await request(app)
       .post("/community/remove-favourite")
@@ -509,13 +522,11 @@ describe("Removing community from favorites", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const response = await request(app)
       .post("/community/remove-favourite")
@@ -529,13 +540,11 @@ describe("Removing community from favorites", () => {
   });
 
   test("It should return 'Community is not in favorites' for status 402", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -659,13 +668,11 @@ describe("Checking if community is favorite", () => {
 */
 describe("Muting community", () => {
   test("It should mute community", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -689,13 +696,11 @@ describe("Muting community", () => {
     expect(response.body.message).toBe("Community muted successfully");
   });
   test("It should return 'Invalid parameters' for status 400", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -716,13 +721,11 @@ describe("Muting community", () => {
     expect(response.body.message).toBe("Invalid parameters");
   });
   test("It should return 'Community not found' for status 404", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -746,13 +749,11 @@ describe("Muting community", () => {
   });
 
   test("It should return 'Community is already muted' for status 402", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -764,9 +765,12 @@ describe("Muting community", () => {
       moderators: [user],
     });
     await createdCommunity.save();
-    await request(app).post("/community/mute").set("Authorization", `Bearer ${token}`).send({
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/community/mute")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
     const response = await request(app)
       .post("/community/mute")
       .set("Authorization", `Bearer ${token}`)
@@ -781,13 +785,11 @@ describe("Muting community", () => {
 
 describe("Unmuting community", () => {
   test("It should unmute community", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -800,9 +802,12 @@ describe("Unmuting community", () => {
     });
     await createdCommunity.save();
 
-    await request(app).post("/community/mute").set("Authorization", `Bearer ${token}`).send({
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/community/mute")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
     const response = await request(app)
       .post("/community/unmute")
       .set("Authorization", `Bearer ${token}`)
@@ -814,13 +819,11 @@ describe("Unmuting community", () => {
     expect(response.body.message).toBe("Community unmuted successfully");
   });
   test("It should return 'Invalid parameters' for status 400", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -842,13 +845,11 @@ describe("Unmuting community", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -872,13 +873,11 @@ describe("Unmuting community", () => {
   });
 
   test("It should return 'Community is not muted' for status 402", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1045,13 +1044,11 @@ describe("Subscribing to community", () => {
   });
 */
   test("It should return 'Invalid parameters' for status 400", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1072,13 +1069,11 @@ describe("Subscribing to community", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1135,13 +1130,11 @@ describe("Subscribing to community", () => {
   });
 */
   test("It should return 'User is already subscribed' for status 400", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1169,13 +1162,11 @@ describe("Subscribing to community", () => {
 
 describe("Unsubscribing from community", () => {
   test("It should unsubscribe from the community", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1198,17 +1189,17 @@ describe("Unsubscribing from community", () => {
       .send({ communityName: "farouqfans" })
       .expect(200);
 
-    expect(response.body.message).toBe("Unsubscribed from the community successfully");
+    expect(response.body.message).toBe(
+      "Unsubscribed from the community successfully"
+    );
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1229,13 +1220,11 @@ describe("Unsubscribing from community", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1257,13 +1246,11 @@ describe("Unsubscribing from community", () => {
   });
 
   test("It should return 'User isn't subscribed to community' for status 403", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1659,13 +1646,11 @@ describe("Getting community info", () => {
 */
 describe("Creating a community", () => {
   test("It should create a community", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const response = await request(app)
       .post("/community/create")
@@ -1681,13 +1666,11 @@ describe("Creating a community", () => {
   });
 
   test("It should return 'Community name is not available' for status 403", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const decodedToken = jwt.jwtDecode(token);
     const user = await User.findById(decodedToken._id);
@@ -1714,15 +1697,16 @@ describe("Creating a community", () => {
   });
 
   test("It should return 'Invalid request parameters' for status 400", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    const response = await request(app).post("/community/create").set("Authorization", `Bearer ${token}`).expect(400);
+    const response = await request(app)
+      .post("/community/create")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(400);
 
     expect(response.body.message).toBe("Invalid request parameters");
   });
@@ -1734,21 +1718,23 @@ describe("Creating a community", () => {
 // Test suite for getting user profile info
 describe("Getting user profile info", () => {
   test("It should return user profile info", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    const response = await request(app).get("/user/profile-info/farouquser").expect(200);
+    const response = await request(app)
+      .get("/user/profile-info/farouquser")
+      .expect(200);
 
     expect(response.body).toBeDefined();
   });
 
   test("It should return 'User not found' for status 404", async () => {
-    const response = await request(app).get("/user/profile-info/notfarouq").expect(404);
+    const response = await request(app)
+      .get("/user/profile-info/notfarouq")
+      .expect(404);
     expect(response.body.message).toBe("User not found");
   });
 });
@@ -1780,19 +1766,17 @@ describe("Updating user profile info", () => {
   });
 */
   test("It should return 'Username not available' for status 400", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
-     
+
     const logIn2 = await request(app).post("/login").send({
       username: "farouquser2",
       password: "12345678",
     });
-     
+
     const response = await request(app)
       .put("/user/profile-info")
       .set("Authorization", `Bearer ${token}`)
