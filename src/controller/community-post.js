@@ -236,7 +236,6 @@ exports.removePost = async (req, res) => {
         .json({ error: "Post has already been removed before" });
     }
     post.isRemoved = true;
-    //i need make new comment with removalReason as a content for this comment and add this comment to comments array
     const removalComment = new Comment({
       content: removalReason,
       userId: req.user._id,

@@ -210,7 +210,6 @@ exports.removeComment = async (req, res) => {
     comment.isRemoved = true;
     await comment.save();
 
-    //a3mel add new comment with the removal reason
     let removalComment = new Comment({
       content: removalReason,
       userId: req.user._id,
@@ -339,21 +338,17 @@ exports.getReportedComments = async (req, res) => {
     const posts = await Post.find({ community: communityName });
     const reportedComments = [];
     for (const post of posts) {
-      // Find all top-level comments for the current post that are not removed
       const topLevelComments = await Comment.find({
         postId: post._id,
         parentCommentId: null,
         isRemoved: false,
       }).populate("userId");
 
-      // Iterate through each top-level comment
       for (const topLevelComment of topLevelComments) {
-        // Find report for the current top-level comment
         const reports = await Report.find({
           commentId: topLevelComment._id,
         }).populate("userId");
 
-        // If report exists, add its details to the top-level comment object
         if (reports.length > 0) {
           const topLevelCommentObject = await Comment.getCommentObject(
             topLevelComment,
@@ -368,8 +363,6 @@ exports.getReportedComments = async (req, res) => {
           topLevelCommentObject.reports = reportsArray;
           reportedComments.push(topLevelCommentObject);
         }
-
-        // Push the top-level comment object to reportedComments array
       }
     }
     return res.status(200).json({ reportedComments: reportedComments });
