@@ -388,9 +388,17 @@ exports.createReply = async (req, res) => {
         message: "Comment not found",
       });
     }
-    if (existingComment.isLocked) {
+
+    const post = await Post.findById(rootComment.postId);
+    const communityName = post.community;
+    const isModerator = await Moderator.findOne({
+      username: req.user.username,
+      communityName,
+    });
+
+    if (existingComment.isLocked && !isModerator) {
       return res.status(400).send({
-        message: "Comment is Locked",
+        message: "Comment is Locked for this comment",
       });
     }
 
@@ -401,12 +409,7 @@ exports.createReply = async (req, res) => {
         message: "Root comment not found",
       });
     }
-    const communityName = post.community;
-    const isModerator = await Moderator.findOne({
-      username: req.user.username,
-      communityName,
-    });
-    const post = await Post.findById(rootComment.postId);
+
     if (post.isCommentsLocked && !isModerator) {
       return res.status(403).send({
         message: "Comments are locked for this post",
