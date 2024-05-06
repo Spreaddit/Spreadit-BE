@@ -32,7 +32,11 @@ exports.sortPostNew = async (req, res) => {
     const totalPages = Math.ceil(totalPosts / limit);
 
     const communities = await Community.find({
-      $or: [{ members: userId }, { communityType: "Public" }],
+      $or: [
+        { members: userId },
+        { communityType: "Public" },
+        { communityType: "Restricted" },
+      ],
     });
 
     const communityName = communities.map((community) => community.name);
@@ -70,7 +74,11 @@ exports.sortPostTop = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const communities = await Community.find({
-      $or: [{ members: userId }, { communityType: "Public" }],
+      $or: [
+        { members: userId },
+        { communityType: "Public" },
+        { communityType: "Restricted" },
+      ],
     });
 
     const communityName = communities.map((community) => community.name);
@@ -145,7 +153,7 @@ exports.sortPostTopCommunity = async (req, res) => {
 
     const userIsMember = communityExists.members.includes(userId);
 
-    if (!userIsMember && communityExists.communityType === "private") {
+    if (!userIsMember && communityExists.communityType === "Private") {
       return res.status(403).json({ message: "Unauthorized to see posts" });
     }
     if (isModeratorOrCreator) {
@@ -224,7 +232,7 @@ exports.sortPostNewCommunity = async (req, res) => {
 
     const userIsMember = communityExists.members.includes(userId);
 
-    if (!userIsMember && communityExists.communityType === "private") {
+    if (!userIsMember && communityExists.communityType === "Private") {
       return res.status(403).json({ message: "Unauthorized to see posts" });
     }
     if (isModeratorOrCreator) {
@@ -280,7 +288,11 @@ exports.sortPostViews = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const communities = await Community.find({
-      $or: [{ members: userId }, { communityType: "Public" }],
+      $or: [
+        { members: userId },
+        { communityType: "Public" },
+        { communityType: "Restricted" },
+      ],
     });
 
     const communityName = communities.map((community) => community.name);
@@ -330,7 +342,11 @@ exports.sortPostComment = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const communities = await Community.find({
-      $or: [{ members: userId }, { communityType: "Public" }],
+      $or: [
+        { members: userId },
+        { communityType: "Public" },
+        { communityType: "Restricted" },
+      ],
     });
 
     const communityName = communities.map((community) => community.name);
@@ -378,7 +394,11 @@ exports.sortPostBest = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const communities = await Community.find({
-      $or: [{ members: userId }, { communityType: "Public" }],
+      $or: [
+        { members: userId },
+        { communityType: "Public" },
+        { communityType: "Restricted" },
+      ],
     });
 
     const communityName = communities.map((community) => community.name);
@@ -438,7 +458,11 @@ exports.sortPostHot = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const communities = await Community.find({
-      $or: [{ members: userId }, { communityType: "Public" }],
+      $or: [
+        { members: userId },
+        { communityType: "Public" },
+        { communityType: "Restricted" },
+      ],
     });
 
     const communityName = communities.map((community) => community.name);
@@ -507,7 +531,7 @@ exports.sortPostHotCommunity = async (req, res) => {
 
     const userIsMember = communityExists.members.includes(userId);
 
-    if (!userIsMember && communityExists.communityType === "private") {
+    if (!userIsMember && communityExists.communityType === "Private") {
       return res.status(403).json({ message: "Unauthorized to see posts" });
     }
     if (isModeratorOrCreator) {
@@ -587,7 +611,7 @@ exports.sortPostRandomCommunity = async (req, res) => {
 
     const userIsMember = communityExists.members.includes(userId);
 
-    if (!userIsMember && communityExists.communityType === "private") {
+    if (!userIsMember && communityExists.communityType === "Private") {
       return res.status(403).json({ message: "Unauthorized to see posts" });
     }
     if (isModeratorOrCreator) {
@@ -674,7 +698,7 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
 
     const userIsMember = communityExists.members.includes(userId);
 
-    if (!userIsMember && communityExists.communityType === "private") {
+    if (!userIsMember && communityExists.communityType === "Private") {
       return res.status(403).json({ message: "Unauthorized to see posts" });
     }
     if (isModeratorOrCreator) {
@@ -756,7 +780,11 @@ exports.sortPostTopTime = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const communities = await Community.find({
-      $or: [{ members: userId }, { communityType: "Public" }],
+      $or: [
+        { members: userId },
+        { communityType: "Public" },
+        { communityType: "Restricted" },
+      ],
     });
 
     const communityName = communities.map((community) => community.name);
