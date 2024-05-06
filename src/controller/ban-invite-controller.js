@@ -31,7 +31,7 @@ exports.banUser = async (req, res) => {
     const moderator = await Moderator.findOne({
       username: req.user.username,
       communityName: communityName,
-      // isAccepted: true,
+      isAccepted: true,
     });
     if (!moderator) {
       return res.status(404).send({ message: "Moderator not found" });

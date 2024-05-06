@@ -6,6 +6,8 @@ const Message = require("../models/message");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const Conversation = require("../models/conversation");
+const Notification = require("../models/notification");
+const NotificationType = require("../../seed-data/constants/notificationType");
 const { message } = require("../../seed-data/constants/notificationType");
 
 exports.sendMessage = async (req, res) => {
