@@ -391,6 +391,12 @@ exports.getSearchSuggestions = async (req, res) => {
     ];
 
     const suggestedUsers = users.slice(0, 5);
+    const userResults = await Promise.all(
+      suggestedUsers.map((user) =>
+        User.getUserObjectSimplified(user)
+      )
+    );
+
     const suggestedCommunities = communities.slice(0, 5);
     const communityResults = await Promise.all(
       suggestedCommunities.map((community) =>
@@ -400,7 +406,7 @@ exports.getSearchSuggestions = async (req, res) => {
 
     return res.status(200).json({
       communities: communityResults,
-      users: suggestedUsers,
+      users: userResults,
     });
   } catch (err) {
     console.error("Error occurred while retrieving search suggestions:", err);

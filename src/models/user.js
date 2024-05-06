@@ -565,7 +565,7 @@ UserSchema.statics.getUserObjectSimplified = async function (
     userId: user._id,
     username: user.username,
     userProfilePic: user.avatar,
-    userinfo: user.about,
+    userinfo: user.about || null,
     followersCount: user.followers.length,
     isFollowing: isFollowing,
   };
