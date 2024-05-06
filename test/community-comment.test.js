@@ -16,12 +16,12 @@ const connectionUrl = "mongodb://localhost:27017/testDBCommentsCommuntiy";
 
 beforeAll(async () => {
     try {
-      await mongoose.connect(connectionUrl, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
+        await mongoose.connect(connectionUrl, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
     } catch (error) {
-      console.error("Mongoose connection error:", error);
+        console.error("Mongoose connection error:", error);
     }
 });
 
@@ -32,8 +32,8 @@ afterAll(() => {
 
 
 const AdminId = "6240cb6a412efa3d5d89c0af";
-id = new mongoose.Types.ObjectId();
-id2 = new mongoose.Types.ObjectId();
+const id = new mongoose.Types.ObjectId();
+const id2 = new mongoose.Types.ObjectId();
 const userOneId = new mongoose.Types.ObjectId();
 const userTwoId = new mongoose.Types.ObjectId();
 const userThreeId = new mongoose.Types.ObjectId();
@@ -41,7 +41,7 @@ const commentId = new mongoose.Types.ObjectId();
 const postId = new mongoose.Types.ObjectId();
 const moderatorId = new mongoose.Types.ObjectId();
 
-const post ={
+const post = {
     _id: postId,
     userId: userTwoId,
     username: "elgarf",
@@ -50,7 +50,7 @@ const post ={
     community: "testCommunity",
     type: "Post"
 }
-const comment ={
+const comment = {
     _id: commentId,
     userId: userTwoId,
     postId: postId,
@@ -104,32 +104,32 @@ const userThree = {
     isVerified: true,
     subscribedCommunities: [id]
 }
-const rule ={
+const rule = {
     _id: id2,
     title: "test Community Guidelines",
     description: "1. Respect the privacy and emotions of members when discussing mental health issues.",
     reportReason: "Violation of community guidelines",
     communityName: "testCommunity",
 }
-const community ={
+const community = {
 
     _id: id,
     name: "testCommunity",
     category: "Entertainment and Pop Culture",
-    rules: [id2], 
+    rules: [id2],
     description: "Discuss the latest movie releases, share reviews, recommendations, and indulge in lively debates about classic films.",
     is18plus: false,
     allowNfsw: true,
     allowSpoile: true,
     communityType: "Public",
-    creator: userOneId, 
+    creator: userOneId,
     members: [userOneId, userTwoId, userThreeId],
-    moderators: [userOneId], 
+    moderators: [userOneId],
     membersCount: 3,
 }
-const moderator ={
-    username: "maher", 
-    communityName: "testCommunity",  
+const moderator = {
+    username: "maher",
+    communityName: "testCommunity",
     isAccepted: true,
 }
 
@@ -152,7 +152,7 @@ beforeEach(async () => {
     await new Post(post).save();
 });
 
-afterEach(async() => {
+afterEach(async () => {
     await User.deleteMany({});
     await Community.deleteMany({});
     await Rule.deleteMany({});
@@ -181,9 +181,9 @@ it('should mark a comment as spam successfully', async () => {
         throw new Error("User not found");
     }
     const token = login.body.token;
-    const communityName ="testCommunity";
+    const communityName = "testCommunity";
     const response = await request(app)
-        .post('/community/moderation/'+ communityName + '/spam-comment/' + commentId)
+        .post('/community/moderation/' + communityName + '/spam-comment/' + commentId)
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .send();
 
@@ -271,7 +271,7 @@ it("should return 402 if user is not a moderator", async () => {
         .post("/login")
         .send({ username: "abbas", password: "12345678" })
         .expect(200);
-    
+
     const user = await getUser("abbas");
     if (!user) {
         throw new Error("User not found");
@@ -322,16 +322,16 @@ it("should return 200 and lock the comment", async () => {
     }
     const communityName = "testCommunity";
     const response = await request(app)
-        .post("/community/moderation/"+ communityName +"/"+ commentId +"/lock-comment")
+        .post("/community/moderation/" + communityName + "/" + commentId + "/lock-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(200);
 
-    
+
     expect(response.body.message).toBe("Comment locked successfully");
 });
 
 it("should return 402 if user is not a moderator", async () => {
-    
+
     const loginResponse = await request(app)
         .post("/login")
         .send({ username: "abbas", password: "12345678" })
@@ -343,7 +343,7 @@ it("should return 402 if user is not a moderator", async () => {
     }
     const communityName = "testCommunity";
     const response = await request(app)
-        .post("/community/moderation/"+ communityName +"/"+ commentId +"/lock-comment")
+        .post("/community/moderation/" + communityName + "/" + commentId + "/lock-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(402);
 
@@ -362,12 +362,12 @@ it('should return 200 and unlock the comment', async () => {
     }
     const communityName = "testCommunity";
     const lockResponse = await request(app)
-        .post("/community/moderation/"+ communityName +"/"+ commentId +"/lock-comment")
+        .post("/community/moderation/" + communityName + "/" + commentId + "/lock-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(200);
-    
+
     const response = await request(app)
-        .post("/community/moderation/"+ communityName +"/"+ commentId +"/unlock-comment")
+        .post("/community/moderation/" + communityName + "/" + commentId + "/unlock-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(200);
 
@@ -389,7 +389,7 @@ it('should return 402 if user is not a moderator', async () => {
         throw new Error("User not found");
     }
     const response = await request(app)
-        .post("/community/moderation/"+ communityName +"/"+ commentId +"/unlock-comment")
+        .post("/community/moderation/" + communityName + "/" + commentId + "/unlock-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(402);
 
@@ -410,7 +410,7 @@ it('should return 500 if internal server error occurs', async () => {
     }
     const communityName = "testCommunity";
     const response = await request(app)
-        .post("/community/moderation/"+ communityName +"/"+ commentId +"/unlock-comment")
+        .post("/community/moderation/" + communityName + "/" + commentId + "/unlock-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(500);
 
@@ -433,7 +433,7 @@ it('should return 200 and remove the comment', async () => {
     const communityName = "testCommunity";
     const removalReason = "This comment violates community guidelines";
     const response = await request(app)
-        .post("/community/moderation/"+ communityName +"/"+ commentId +"/remove-comment")
+        .post("/community/moderation/" + communityName + "/" + commentId + "/remove-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .send({ removalReason })
         .expect(200);
@@ -456,7 +456,7 @@ it('should return 400 if removal reason is not provided', async () => {
     const communityName = "testCommunity";
     let removalReason;
     const response = await request(app)
-        .post("/community/moderation/"+ communityName +"/"+ commentId +"/remove-comment")
+        .post("/community/moderation/" + communityName + "/" + commentId + "/remove-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .send({ removalReason })
         .expect(400);
@@ -477,7 +477,7 @@ it('should return 402 if user is not a moderator', async () => {
     const communityName = "testCommunity";
     const removalReason = "This comment violates community guidelines";
     const response = await request(app)
-        .post("/community/moderation/"+ communityName +"/"+ commentId +"/remove-comment")
+        .post("/community/moderation/" + communityName + "/" + commentId + "/remove-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .send({ removalReason })
         .expect(402);
@@ -498,7 +498,7 @@ it("should return 200 and approve the comment", async () => {
     }
     const communityName = "testCommunity";
     const response = await request(app)
-        .post("/community/moderation/"+ communityName +"/"+ commentId +"/approve-comment")
+        .post("/community/moderation/" + communityName + "/" + commentId + "/approve-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(200);
 
@@ -517,7 +517,7 @@ it("should return 402 if user is not a moderator", async () => {
     }
     const communityName = "testCommunity";
     const response = await request(app)
-        .post("/community/moderation/"+ communityName +"/"+ commentId +"/approve-comment")
+        .post("/community/moderation/" + communityName + "/" + commentId + "/approve-comment")
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(402);
 
@@ -625,7 +625,7 @@ it('should return 200 and reported comments', async () => {
         })
         .expect(201);
     const communityName = "testCommunity";
-    
+
     const response = await request(app)
         .get(`/community/moderation/${communityName}/get-reported-comments`)
         .set("Authorization", "Bearer " + user.tokens[0].token)
