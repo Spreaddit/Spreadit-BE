@@ -339,7 +339,7 @@ exports.getBannedUsersInCommunity = async (req, res) => {
         const user = await User.findById(bannedUser.userId);
         const banPeriod = bannedUser.isPermanent
           ? "Permanent"
-          : bannedUser.banDuration.toDateString();
+          : bannedUser.banDuration;
         return {
           username: user.username,
           userProfilePic: user.avatar,

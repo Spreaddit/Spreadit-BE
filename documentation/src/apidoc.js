@@ -10461,15 +10461,16 @@
  *     HTTP/1.1 200 OK
  *     [
  *         {
- *             "_id": "611d4ce99c9e4c3b84011f2a",
  *             "username": "moderator1",
  *             "communityName": "community1"
+ *             "manageSettings": true,
+ *             "managePostsAndComments": true,
+ *             "manageUsers": true,
+ *             "isAccepted": true
+ *             "moderationDate": "date",
+ *             "avatar": "Avatar URL",
+ *             "banner": "Banner URL",
  *         },
- *         {
- *             "_id": "611d4ce99c9e4c3b84011f2b",
- *             "username": "moderator2",
- *             "communityName": "community1"
- *         }
  *     ]
  *
  * @apiError (400) BadRequest Invalid request parameters.
@@ -10496,17 +10497,16 @@
  *     HTTP/1.1 200 OK
  *     [
  *         {
- *             "_id": "611d4ce99c9e4c3b84011f2b",
- *             "username": "moderator2",
- *             "communityName": "community1",
- *             "moderationDate": "2024-05-05T00:00:00.000Z"
- *         },
- *         {
- *             "_id": "611d4ce99c9e4c3b84011f2a",
  *             "username": "moderator1",
- *             "communityName": "community1",
- *             "moderationDate": "2024-05-04T00:00:00.000Z"
- *         }
+ *             "communityName": "community1"
+ *             "manageSettings": true,
+ *             "managePostsAndComments": true,
+ *             "manageUsers": true,
+ *             "isAccepted": true
+ *             "moderationDate": "date",
+ *             "avatar": "Avatar URL",
+ *             "banner": "Banner URL",
+ *         },
  *     ]
  *
  * @apiError (400) BadRequest Invalid request parameters.
@@ -10533,11 +10533,16 @@
  *     HTTP/1.1 200 OK
  *     [
  *         {
- *             "_id": "611d4ce99c9e4c3b84011f2a",
- *             "username": "invitedmoderator1",
- *             "communityName": "community1",
- *             "isAccepted": false
- *         }
+ *             "username": "moderator1",
+ *             "communityName": "community1"
+ *             "manageSettings": true,
+ *             "managePostsAndComments": true,
+ *             "manageUsers": true,
+ *             "isAccepted": true
+ *             "moderationDate": "date",
+ *             "avatar": "Avatar URL",
+ *             "banner": "Banner URL",
+ *         },
  *     ]
  *
  * @apiError (400) BadRequest Invalid request parameters.
@@ -10570,6 +10575,7 @@
  *
  * @apiError (400) BadRequest Invalid request parameters.
  * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) BadRequest No invitation sent for this user
  * @apiError (404) NotFound Community not found.
  * @apiError (406) NotAcceptable Moderator doesn't have permission.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
@@ -10672,7 +10678,6 @@
  *     HTTP/1.1 200 OK
  *     [
  *         {
- *             "_id": "611d4ce99c9e4c3b84011f2a",
  *             "is18plus": true,
  *             "name": "community1",
  *             "category": "General",
@@ -10768,14 +10773,16 @@
  *     HTTP/1.1 200 OK
  *     {
  *       "monthlyInsights": {
+ *           "month": date,
  *           "newMembers": 10,
- *           "posts": 50,
- *           "comments": 100
+ *           "leavingMembers": 50,
+ *           "views": 100
  *       },
  *       "last7DaysInsights": {
+ *           "month": date,
  *           "newMembers": 2,
- *           "posts": 10,
- *           "comments": 20
+ *           "leavingMembers": 10,
+ *           "views": 20
  *       }
  *     }
  *
