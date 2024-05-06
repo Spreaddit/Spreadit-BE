@@ -454,17 +454,12 @@ exports.logSearchActivity = async (req, res) => {
     const searchedByUser = await User.findOne({ username });
 
     if (type === "community" && !communityId) {
-      return res
-        .status(400)
-        .json({ error: "Community name is required for community search" });
+      return res.status(400).json({ error: "Community name is required for community search" });
     } else if (type === "user" && !searchedByUser) {
-      return res
-        .status(400)
-        .json({ error: "Username is required for user search" });
+      return res.status(400).json({ error: "Username is required for user search" });
     }
-    let existingSearchLogs = await SearchLog.find({
-      searchedByUserId: req.user._id,
-    });
+
+    let existingSearchLogs = await SearchLog.find({ searchedByUserId: req.user._id });
 
     if (existingSearchLogs.length >= 5) {
       // If there are already 5 or more search logs for the user, delete the oldest one
@@ -474,31 +469,47 @@ exports.logSearchActivity = async (req, res) => {
       await oldestSearchLog.deleteOne();
     }
 
-    let existingSearchLog = await SearchLog.findOne({ query, type });
+    const searchQuery = { query, type };
+    if (req.user) {
+      searchQuery.searchedByUserId = req.user._id;
+    }
+
+    let existingSearchLog = await SearchLog.findOne(searchQuery);
 
     if (existingSearchLog) {
-      existingSearchLog.communityId = type === "community" ? communityId : null;
-      existingSearchLog.userId = type === "user" ? searchedByUser._id : null;
-      existingSearchLog.searchedByUserId = req.user._id;
-      existingSearchLog.isInProfile = Boolean(isInProfile);
-      existingSearchLog.updatedAt = Date.now();
-      await existingSearchLog.save();
+      // Check if the existing search was made by the current user
+      if (existingSearchLog.searchedByUserId.equals(req.user._id)) {
+        existingSearchLog.communityId = type === "community" ? communityId : null;
+        existingSearchLog.userId = type === "user" ? searchedByUser._id : null;
+        existingSearchLog.isInProfile = Boolean(isInProfile);
+        existingSearchLog.updatedAt = Date.now();
+        await existingSearchLog.save();
+      } else {
+        // If the existing search was not made by the current user, create a new search log
+        const newSearchLog = new SearchLog({
+          query,
+          type,
+          communityId: type === "community" ? communityId : null,
+          userId: type === "user" ? searchedByUser._id : null,
+          searchedByUserId: req.user._id,
+          isInProfile: Boolean(isInProfile),
+        });
+        await newSearchLog.save();
+      }
     } else {
-      const searchLog = new SearchLog({
+      // If no existing search was found, create a new search log
+      const newSearchLog = new SearchLog({
         query,
         type,
         communityId: type === "community" ? communityId : null,
         userId: type === "user" ? searchedByUser._id : null,
-        searchedByUserId: req.user._id,
+        searchedByUserId: req.user ? req.user._id : null,
         isInProfile: Boolean(isInProfile),
       });
-
-      await searchLog.save();
+      await newSearchLog.save();
     }
 
-    return res
-      .status(200)
-      .json({ message: "Search activity logged successfully" });
+    return res.status(200).json({ message: "Search activity logged successfully" });
   } catch (err) {
     console.error("Error occurred while logging search activity:", err);
     res.status(500).json({ error: "Internal server error" });
