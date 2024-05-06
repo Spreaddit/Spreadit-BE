@@ -25,71 +25,36 @@ function calculatePostTime(post) {
 exports.sortPostNew = async (req, res) => {
   try {
     const userId = req.user._id;
-    const page = req.query.page || 1;
+    const page = req.query.page || 4;
     const limit = 20;
     const skip = (page - 1) * limit;
-
     const totalPosts = await Post.countDocuments();
     const totalPages = Math.ceil(totalPosts / limit);
 
-    const posts = await Post.find().sort({ date: -1 }).skip(skip).limit(limit);
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    })
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(limit);
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
     const user = await User.findById(userId);
-    const visiblePosts = posts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          link: post.link,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+      posts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
     res.status(200).json({
-      posts: postInfoArray,
+      posts: filteredPostInfoArray,
       totalPages: totalPages,
       currentPage: page,
     });
@@ -97,15 +62,27 @@ exports.sortPostNew = async (req, res) => {
     return res.status(500).json({ error: "internal server error" });
   }
 };
-
 exports.sortPostTop = async (req, res) => {
   try {
     const userId = req.user._id;
-    const posts = await Post.find();
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    });
 
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
+
+    // Sort the posts by the difference between upvotes and downvotes
     posts.sort((a, b) => {
       return (
         b.upVotes.length -
@@ -113,77 +90,76 @@ exports.sortPostTop = async (req, res) => {
         (a.upVotes.length - a.downVotes.length)
       );
     });
+
+    // Calculate total pages for pagination
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    // Paginate the sorted posts
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
-    const visiblePosts = posts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+      paginatedPosts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
   }
 };
-
 exports.sortPostTopCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
-
     const communityName = req.params.subspreaditname;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
-    const posts = await Post.find({
-      community: communityName,
-    }).exec();
-    if (posts.length == 0) {
-      return res.status(404).json({ error: "no posts found" });
+    if (!communityName) {
+      return res.status(400).json({ error: "Community name is required" });
     }
+
+    const communityExists = await Community.findOne({ name: communityName });
+
+    if (!communityExists) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    let posts;
+
+    const isModeratorOrCreator =
+      communityExists.moderators.includes(userId) ||
+      userId.equals(communityExists.creator);
+
+    const userIsMember = communityExists.members.includes(userId);
+
+    if (!userIsMember && communityExists.communityType === "private") {
+      return res.status(403).json({ message: "Unauthorized to see posts" });
+    }
+    if (isModeratorOrCreator) {
+      posts = await Post.find({ community: communityName });
+    } else {
+      posts = await Post.find({ community: communityName, isApproved: true });
+    }
+
+    if (!posts || posts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "no posts found in this community" });
+    }
+
     posts.sort((a, b) => {
       return (
         b.upVotes.length -
@@ -191,59 +167,31 @@ exports.sortPostTopCommunity = async (req, res) => {
         (a.upVotes.length - a.downVotes.length)
       );
     });
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
-    const visiblePosts = posts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
+      paginatedPosts.map(async (post) => {
+        if (post.isRemoved || post.isSpam) {
+          return null;
         }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          link: post.link,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -254,65 +202,71 @@ exports.sortPostNewCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
     const communityName = req.params.subspreaditname;
-    const posts = await Post.find({ community: communityName })
-      .sort({ date: -1 })
-      .exec();
-    if (posts.length == 0) {
-      return res.status(404).json({ error: "no posts found" });
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    if (!communityName) {
+      return res.status(400).json({ error: "Community name is required" });
     }
+
+    const communityExists = await Community.findOne({ name: communityName });
+
+    if (!communityExists) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    let posts;
+
+    const isModeratorOrCreator =
+      communityExists.moderators.includes(userId) ||
+      userId.equals(communityExists.creator);
+
+    const userIsMember = communityExists.members.includes(userId);
+
+    if (!userIsMember && communityExists.communityType === "private") {
+      return res.status(403).json({ message: "Unauthorized to see posts" });
+    }
+    if (isModeratorOrCreator) {
+      posts = await Post.find({ community: communityName })
+        .sort({ date: -1 })
+        .exec();
+    } else {
+      posts = await Post.find({ community: communityName, isApproved: true })
+        .sort({ date: -1 })
+        .exec();
+    }
+
+    if (!posts || posts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "no posts found in this community" });
+    }
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
-    const visiblePosts = posts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
+      paginatedPosts.map(async (post) => {
+        if (post.isRemoved || post.isSpam) {
+          return null;
         }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          link: post.link,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
   }
@@ -321,64 +275,48 @@ exports.sortPostNewCommunity = async (req, res) => {
 exports.sortPostViews = async (req, res) => {
   try {
     const userId = req.user._id;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
-    const posts = await Post.find().sort({ numberOfViews: -1 }).exec();
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    })
+      .sort({ numberOfViews: -1 })
+      .exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    const user = await User.findById(userId);
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
     const visiblePosts = posts.filter(
       (post) => !post.hiddenBy.includes(userId)
     );
+
+    const paginatedPosts = visiblePosts.slice(skip, skip + limit);
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          link: post.link,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+      paginatedPosts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
   }
@@ -387,63 +325,46 @@ exports.sortPostViews = async (req, res) => {
 exports.sortPostComment = async (req, res) => {
   try {
     const userId = req.user._id;
-    const posts = await Post.find().sort({ commentsCount: -1 }).exec();
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    })
+      .sort({ commentsCount: -1 })
+      .exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
-    const visiblePosts = posts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+      paginatedPosts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     return res.status(500).json({ error: "internal server error" });
   }
@@ -452,10 +373,23 @@ exports.sortPostComment = async (req, res) => {
 exports.sortPostBest = async (req, res) => {
   try {
     const userId = req.user._id;
-    const posts = await Post.find().exec();
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    }).exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
+
     posts.sort((a, b) => {
       const ratioA =
         a.downVotes.length !== 0
@@ -468,59 +402,28 @@ exports.sortPostBest = async (req, res) => {
 
       return ratioB - ratioA;
     });
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
-    const visiblePosts = posts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+      paginatedPosts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -530,147 +433,129 @@ exports.sortPostBest = async (req, res) => {
 exports.sortPostHot = async (req, res) => {
   try {
     const userId = req.user._id;
-    const posts = await Post.find().exec();
+    const page = req.query.page || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    }).exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    const postsWithScores = posts.map((post) => ({
-      ...post.toObject(),
-      hotnessScore: calculateHotnessScore(post),
-    }));
-    const sortedPosts = postsWithScores.sort((a, b) => {
-      return b.hotnessScore - a.hotnessScore;
+
+    const sortedPosts = posts.sort((a, b) => {
+      const hotnessScoreA = calculateHotnessScore(a);
+      const hotnessScoreB = calculateHotnessScore(b);
+      return hotnessScoreB - hotnessScoreA;
     });
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = sortedPosts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
-    const visiblePosts = sortedPosts.filter(
-      (post) => !post.hiddenBy.includes({ userId })
-    );
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+      paginatedPosts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
   }
 };
-
 exports.sortPostHotCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
     const communityName = req.params.subspreaditname;
-
-    const posts = await Post.find({
-      community: communityName,
-    }).exec();
-    if (posts.length == 0) {
-      return res.status(404).json({ error: "no posts found" });
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+    if (!communityName) {
+      return res.status(400).json({ error: "Community name is required" });
     }
-    const postsWithScores = posts.map((post) => ({
-      ...post.toObject(),
-      hotnessScore: calculateHotnessScore(post),
-    }));
-    const sortedPosts = postsWithScores.sort((a, b) => {
-      return b.hotnessScore - a.hotnessScore;
+
+    const communityExists = await Community.findOne({ name: communityName });
+
+    if (!communityExists) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    let posts;
+
+    const isModeratorOrCreator =
+      communityExists.moderators.includes(userId) ||
+      userId.equals(communityExists.creator);
+
+    const userIsMember = communityExists.members.includes(userId);
+
+    if (!userIsMember && communityExists.communityType === "private") {
+      return res.status(403).json({ message: "Unauthorized to see posts" });
+    }
+    if (isModeratorOrCreator) {
+      posts = await Post.find({ community: communityName })
+        .sort({ date: -1 })
+        .exec();
+    } else {
+      posts = await Post.find({ community: communityName, isApproved: true })
+        .sort({ date: -1 })
+        .exec();
+    }
+
+    if (!posts || posts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "no posts found in this community" });
+    }
+
+    const sortedPosts = posts.sort((a, b) => {
+      const hotnessScoreA = calculateHotnessScore(a);
+      const hotnessScoreB = calculateHotnessScore(b);
+      return hotnessScoreB - hotnessScoreA;
     });
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = sortedPosts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
-    const visiblePosts = sortedPosts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
+      paginatedPosts.map(async (post) => {
+        if (post.isRemoved || post.isSpam) {
+          return null;
         }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -680,75 +565,77 @@ exports.sortPostHotCommunity = async (req, res) => {
 exports.sortPostRandomCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
-
     const communityName = req.params.subspreaditname;
-
-    const posts = await Post.find({
-      community: communityName,
-    }).exec();
-    if (posts.length == 0) {
-      return res.status(404).json({ error: "no posts found" });
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+    if (!communityName) {
+      return res.status(400).json({ error: "Community name is required" });
     }
-    const pipeline = [
-      { $sample: { size: posts.length } }, // $sample stage to randomly select documents
-    ];
 
-    // Execute the aggregation pipeline
-    const randomPosts = await Post.aggregate(pipeline);
+    const communityExists = await Community.findOne({ name: communityName });
+
+    if (!communityExists) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    let posts;
+
+    const isModeratorOrCreator =
+      communityExists.moderators.includes(userId) ||
+      userId.equals(communityExists.creator);
+
+    const userIsMember = communityExists.members.includes(userId);
+
+    if (!userIsMember && communityExists.communityType === "private") {
+      return res.status(403).json({ message: "Unauthorized to see posts" });
+    }
+    if (isModeratorOrCreator) {
+      posts = await Post.find({ community: communityName })
+        .sort({ date: -1 })
+        .exec();
+    } else {
+      posts = await Post.find({ community: communityName, isApproved: true })
+        .sort({ date: -1 })
+        .exec();
+    }
+
+    if (!posts || posts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "no posts found in this community" });
+    }
+    const pipeline = [{ $sample: { size: posts.length } }];
+    const randomPostIds = await Post.aggregate(pipeline);
+
+    const postIds = randomPostIds.map((randomPost) => randomPost._id);
+
+    const randomPosts = await Post.find({ _id: { $in: postIds } });
 
     const user = await User.findById(userId);
-    const visiblePosts = randomPosts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = randomPosts.slice(skip, skip + limit);
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
+      paginatedPosts.map(async (post) => {
+        if (post.isRemoved || post.isSpam) {
+          return null;
         }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
@@ -758,6 +645,9 @@ exports.sortPostRandomCommunity = async (req, res) => {
 exports.sortPostTopTimeCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
     const communityName = req.params.subspreaditname;
     const time = req.params.time;
     let sortTime = 24;
@@ -766,26 +656,52 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
     else if (time === "week") sortTime = 24 * 7;
     else if (time === "month") sortTime = 24 * 30;
     else if (time === "year") sortTime = 365 * 24;
-    // console.log(sortTime);
-
-    const posts = await Post.find({
-      community: communityName,
-    }).exec();
-    if (posts.length == 0) {
-      return res.status(404).json({ error: "no posts found" });
+    if (!communityName) {
+      return res.status(400).json({ error: "Community name is required" });
     }
-    const postsWithTime = posts.map((post) => ({
-      ...post.toObject(),
-      postTime: calculatePostTime(post),
-    }));
-    //console.log(postsWithTime);
-    const postsToSort = postsWithTime.filter(
-      (post) => post.postTime <= sortTime
-    );
+
+    const communityExists = await Community.findOne({ name: communityName });
+
+    if (!communityExists) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    let posts;
+
+    const isModeratorOrCreator =
+      communityExists.moderators.includes(userId) ||
+      userId.equals(communityExists.creator);
+
+    const userIsMember = communityExists.members.includes(userId);
+
+    if (!userIsMember && communityExists.communityType === "private") {
+      return res.status(403).json({ message: "Unauthorized to see posts" });
+    }
+    if (isModeratorOrCreator) {
+      posts = await Post.find({ community: communityName })
+        .sort({ date: -1 })
+        .exec();
+    } else {
+      posts = await Post.find({ community: communityName, isApproved: true })
+        .sort({ date: -1 })
+        .exec();
+    }
+
+    if (!posts || posts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "no posts found in this community" });
+    }
+
+    const postsToSort = posts.filter((post) => {
+      const postTime = calculatePostTime(post);
+      return postTime <= sortTime;
+    });
+
     if (postsToSort.length == 0) {
       return res.status(404).json({ error: "no posts found" });
-      //console.log(postsToSort);
     }
+
     const sortedPosts = postsToSort.sort((a, b) => {
       return (
         b.upVotes.length -
@@ -793,68 +709,40 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
         (a.upVotes.length - a.downVotes.length)
       );
     });
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = sortedPosts.slice(skip, skip + limit);
+
     const user = await User.findById(userId);
-    const visiblePosts = sortedPosts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
+      paginatedPosts.map(async (post) => {
+        if (post.isRemoved || post.isSpam) {
+          return null;
         }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          link: post.link,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
   }
 };
-
 exports.sortPostTopTime = async (req, res) => {
   try {
     const userId = req.user._id;
+
     const time = req.params.time;
     let sortTime = 24;
     if (time === "now") sortTime = 1;
@@ -862,24 +750,32 @@ exports.sortPostTopTime = async (req, res) => {
     else if (time === "week") sortTime = 24 * 7;
     else if (time === "month") sortTime = 24 * 30;
     else if (time === "year") sortTime = 365 * 24;
-    // console.log(sortTime);
 
-    const posts = await Post.find().exec();
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    const communities = await Community.find({
+      $or: [{ members: userId }, { communityType: "Public" }],
+    });
+
+    const communityName = communities.map((community) => community.name);
+    const posts = await Post.find({
+      community: { $in: communityName },
+    }).exec();
+
     if (posts.length == 0) {
       return res.status(404).json({ error: "no posts found" });
     }
-    const postsWithTime = posts.map((post) => ({
-      ...post.toObject(),
-      postTime: calculatePostTime(post),
-    }));
-    //console.log(postsWithTime);
-    const postsToSort = postsWithTime.filter(
-      (post) => post.postTime <= sortTime
-    );
+    const postsToSort = posts.filter((post) => {
+      const postTime = calculatePostTime(post);
+      return postTime <= sortTime;
+    });
+
     if (postsToSort.length == 0) {
       return res.status(404).json({ error: "no posts found" });
-      //console.log(postsToSort);
     }
+
     const sortedPosts = postsToSort.sort((a, b) => {
       return (
         b.upVotes.length -
@@ -887,127 +783,71 @@ exports.sortPostTopTime = async (req, res) => {
         (a.upVotes.length - a.downVotes.length)
       );
     });
-    const user = await User.findById(userId);
-    const visiblePosts = sortedPosts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
+
+    const totalPosts = postsToSort.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const paginatedPosts = sortedPosts.slice(skip, skip + limit);
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          link: post.link,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+      paginatedPosts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
   }
 };
+
 exports.recentPosts = async (req, res) => {
   try {
     const userId = req.user._id;
-    const user = await User.findById(userId).populate("recentPosts");
+    const user = await User.findById(userId).populate({
+      path: "recentPosts",
+      options: { sort: { createdAt: -1 } },
+    });
 
     if (!user) {
       return res.status(404).json({ error: "user not found" });
     }
-    const Posts = user.recentPosts;
-    recentPosts = Posts.reverse();
-    const visiblePosts = recentPosts.filter(
-      (post) => !post.hiddenBy.includes(userId)
-    );
+
+    const posts = user.recentPosts;
+    const totalPosts = posts.length;
+
+    const page = req.query.page || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    const paginatedPosts = posts.slice(skip, skip + limit);
+
     const postInfoArray = await Promise.all(
-      visiblePosts.map(async (post) => {
-        post.numberOfViews++;
-        const postUser = await User.findById(post.userId);
-        const hasUpvoted = post.upVotes.includes(userId);
-        const hasDownvoted = post.downVotes.includes(userId);
-
-        let hasVotedOnPoll = false;
-        let userSelectedOption = null;
-        if (post.pollOptions.length > 0 && req.user.selectedPollOption) {
-          userSelectedOption = req.user.selectedPollOption;
-          hasVotedOnPoll = userSelectedOption !== null;
-        }
-
-        return {
-          _id: post._id,
-          userId: userId,
-          username: postUser.username,
-          userProfilePic: postUser.avatar,
-          hasUpvoted: hasUpvoted,
-          hasDownvoted: hasDownvoted,
-          hasVotedOnPoll: hasVotedOnPoll,
-          selectedPollOption: userSelectedOption,
-          numberOfViews: post.numberOfViews,
-          votesUpCount: post.upVotes ? post.upVotes.length : 0,
-          votesDownCount: post.downVotes ? post.downVotes.length : 0,
-          sharesCount: post.sharesCount,
-          commentsCount: post.commentsCount,
-          title: post.title,
-          content: post.content,
-          community: post.community,
-          type: post.type,
-          link: post.link,
-          pollExpiration: post.pollExpiration,
-          isPollEnabled: post.isPollEnabled,
-          pollVotingLength: post.pollVotingLength,
-          isSpoiler: post.isSpoiler,
-          isNsfw: post.isNsfw,
-          sendPostReplyNotification: post.sendPostReplyNotification,
-          isCommentsLocked: post.isCommentsLocked,
-          isSaved: user.savedPosts.includes(post._id.toString()), // Use user's savedPosts array
-          comments: post.comments,
-          date: post.date,
-          pollOptions: post.pollOptions,
-          attachments: post.attachments,
-        };
+      paginatedPosts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+        return postObject;
       })
     );
-    res.status(200).json(postInfoArray);
+
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
+
+    res.status(200).json({
+      posts: filteredPostInfoArray,
+      totalPages: totalPages,
+      currentPage: page,
+    });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error: "internal server error" });
   }
 };

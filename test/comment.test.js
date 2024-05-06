@@ -6,7 +6,11 @@ const mongoose = require("mongoose");
 const config = require("../src/configuration");
 const User = require("../src/models/user");
 const Report = require("../src/models/report");
-const connectionUrl = config.testConnectionString;
+const Community = require("../src/models/community");
+const Rule = require('../src/models/rule.js');
+const Moderator = require("../src/models/moderator.js");
+const UserRole = require("../src/models/constants/userRole.js")
+const connectionUrl = "mongodb://localhost:27017/testDBComments";
 
 
 beforeAll(async () => {
@@ -30,13 +34,51 @@ const userOneId = new mongoose.Types.ObjectId();
 const userTwoId = new mongoose.Types.ObjectId();
 const userThreeId = new mongoose.Types.ObjectId();
 
+const defaultRole = {
+    _id: "6240cb40ff875b3bd3e816c7",
+    name: "User",
+};
+  
+const adminRole = {
+    _id: "6240cb6a412efa3d5d89c0af",
+    name: "Admin",
+};
+
+const rule ={
+    _id: id2,
+    title: "test Community Guidelines",
+    description: "1. Respect the privacy and emotions of members when discussing mental health issues.",
+    reportReason: "Violation of community guidelines",
+    communityName: "testCommunity",
+}
+const community ={
+
+    _id: id,
+    name: "testCommunity",
+    category: "Entertainment and Pop Culture",
+    rules: [id2], 
+    description: "Discuss the latest movie releases, share reviews, recommendations, and indulge in lively debates about classic films.",
+    is18plus: false,
+    allowNfsw: true,
+    allowSpoile: true,
+    communityType: "Public",
+    creator: userOneId, 
+    members: [userOneId, userTwoId, userThreeId],
+    moderators: [userOneId], 
+    membersCount: 3,
+}
+const moderator ={
+    username: "maher", 
+    communityName: "testCommunity",  
+    isAccepted: true,
+}
 const post ={
     _id: id2,
     userId: userTwoId,
     username: "elgarf",
     title: "this is a post",
     content: "this is the content of the post",
-    community: "amira12amira",
+    community: "testCommunity",
     type: "Post"
 
 }
@@ -49,7 +91,6 @@ const comment1 = {
 }
 
 const comment2 = {
-    username: "elgarf",
     userId: userTwoId,
     postId: id2,
     parentId: id,
@@ -112,24 +153,33 @@ beforeEach(async () => {
     await Comment.deleteMany({});
     await new Comment(comment1).save();
     await new Comment(comment2).save();
+    await Community.deleteMany({});
+    await new Community(community).save();
+    await Rule.deleteMany({});
+    await new Rule(rule).save();
+    await Moderator.deleteMany({});
+    await new Moderator(moderator).save();
+    await UserRole.deleteMany({});
+    await new UserRole(defaultRole).save();
+    await new UserRole(adminRole).save();
     
 });
-
+afterEach(async() => {
+    await User.deleteMany({});
+    await Community.deleteMany({});
+    await Rule.deleteMany({});
+    await Comment.deleteMany({});
+    await Moderator.deleteMany({});
+    await Post.deleteMany({});
+});
 
 test("posting a comment", async()=>{
-    const signup = await request(app).post("/signup").send({
-        email: "amiraelgarf99@gmail.com",
-        username: "Aelgarf",
-        password: "myPassw@ord123"
-    }).expect(200);
-    await User.findOneAndUpdate({ username: "Aelgarf" }, { isVerified: true });
-
     const login = await request(app)
         .post("/login")
-        .send({ username: "Aelgarf", password: "myPassw@ord123" })
+        .send({ username: "elgarf", password: "TTFTTSTTD" })
         .expect(200);
 
-    const user = await getUser("Aelgarf");
+    const user = await getUser("elgarf");
     if (!user) {
         throw new Error("User not found");
     }
@@ -145,20 +195,12 @@ test("posting a comment", async()=>{
 })
 
 test("missing content field", async () => {
-    const signup = await request(app).post("/signup").send({
-        email: "amiraelgarf99@gmail.com",
-        username: "Aelgarf",
-        password: "myPassw@ord123"
-    }).expect(200);
-
-    await User.findOneAndUpdate({ username: "Aelgarf" }, { isVerified: true });
-
     const login = await request(app)
         .post("/login")
-        .send({ username: "Aelgarf", password: "myPassw@ord123" })
+        .send({ username: "elgarf", password: "TTFTTSTTD" })
         .expect(200);
 
-    const user = await getUser("Aelgarf");
+    const user = await getUser("elgarf");
     if (!user) {
         throw new Error("User not found");
     }
@@ -172,24 +214,15 @@ test("missing content field", async () => {
 });
 
 test("non-existent post ID", async () => {
-    const signup = await request(app).post("/signup").send({
-        email: "amiraelgarf99@gmail.com",
-        username: "Aelgarf",
-        password: "myPassw@ord123"
-    }).expect(200);
-
-    await User.findOneAndUpdate({ username: "Aelgarf" }, { isVerified: true });
-
     const login = await request(app)
         .post("/login")
-        .send({ username: "Aelgarf", password: "myPassw@ord123" })
+        .send({ username: "elgarf", password: "TTFTTSTTD" })
         .expect(200);
 
-    const user = await getUser("Aelgarf");
+    const user = await getUser("elgarf");
     if (!user) {
         throw new Error("User not found");
     }
-    const token = login.body.token;
     const nonExistentId = '661ebb4eb77c3f20e6998bf0';
 
     const response = await request(app)
@@ -204,9 +237,9 @@ test("non-existent post ID", async () => {
 
 test("deleting user's own comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.username, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.username, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
 
@@ -226,9 +259,9 @@ test("deleting user's own comment", async () => {
 
 test("deleting comment not owned by the user", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userTwo.email, password: userTwo.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userTwo.email, password: userTwo.password })
+        .expect(200);
 
     const user = await getUser(userTwo.username);
 
@@ -248,9 +281,9 @@ test("deleting comment not owned by the user", async () => {
 
 test("retrieve comments for a post", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userTwo.email, password: userTwo.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userTwo.email, password: userTwo.password })
+        .expect(200);
 
     const user = await getUser(userTwo.username);
 
@@ -266,9 +299,9 @@ test("retrieve comments for a post", async () => {
 
 test("no comments found for a post", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userTwo.email, password: userTwo.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userTwo.email, password: userTwo.password })
+        .expect(200);
 
     const user = await getUser(userTwo.username);
 
@@ -285,9 +318,9 @@ test("no comments found for a post", async () => {
 
 test("retrieve comments for a user", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
 
@@ -302,9 +335,9 @@ test("retrieve comments for a user", async () => {
 
 test("no comments found for a user", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userTwo.email, password: userTwo.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userTwo.email, password: userTwo.password })
+        .expect(200);
 
     const user = await getUser(userTwo.username);
 
@@ -317,9 +350,9 @@ test("no comments found for a user", async () => {
 
 test("edit user's own comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
 
@@ -340,9 +373,9 @@ test("edit user's own comment", async () => {
 
 test("edit comment not owned by the user", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userTwo.email, password: userTwo.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userTwo.email, password: userTwo.password })
+        .expect(200);
 
     const user = await getUser(userTwo.username);
 
@@ -363,9 +396,9 @@ test("edit comment not owned by the user", async () => {
 
 test("missing updated content", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
 
@@ -389,20 +422,14 @@ test("missing updated content", async () => {
 
 test("reply to existing comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
 
-    const parentComment = await Comment.create({
-        userId: userOneId,
-        postId: id2,
-        content: "This is a parent comment"
-    });
-
     const response = await request(app)
-        .post(`/comment/${parentComment._id}/reply`)
+        .post(`/comment/${comment1._id}/reply`)
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .send({ content: "This is a reply to the parent comment" })
         .expect(201);
@@ -413,9 +440,9 @@ test("reply to existing comment", async () => {
 
 test("reply to non-existent comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
 
@@ -431,9 +458,9 @@ test("reply to non-existent comment", async () => {
 
 test("missing reply content", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
 
@@ -456,9 +483,9 @@ test("missing reply content", async () => {
 
 test("get replies for existing comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     
@@ -489,9 +516,9 @@ test("get replies for existing comment", async () => {
 test("hide comment", async () => {
     
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
 
@@ -515,9 +542,9 @@ test("hide comment", async () => {
 test("unhide comment", async () => {
 
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     
@@ -541,9 +568,9 @@ test("unhide comment", async () => {
 
 test("hide non-existent comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     
@@ -559,35 +586,32 @@ test("hide non-existent comment", async () => {
 
 test("upvote comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userTwo.email, password: userTwo.password })
+        .expect(200);
 
-    const user = await getUser(userOne.username);
-    
-    const comment = await Comment.create({
-        userId: userOneId,
-        postId: id2,
-        content: "This is a test comment"
-    });
+    const user = await User.findById(userTwo._id);
+    if (!user) {
+        throw new Error("User not found");
+    }
 
     const response = await request(app)
-        .post(`/comments/${comment._id}/upvote`)
+        .post(`/comments/${comment1._id}/upvote`)
         .set("Authorization", "Bearer " + user.tokens[0].token)
         .expect(200);
 
     expect(response.body.message).toBe("Comment has been upvoted successfully");
 
-    const updatedComment = await Comment.findById(comment._id);
-    expect(updatedComment.upVotes.includes(userOneId)).toBeTruthy();
+    const updatedComment = await Comment.findById(comment1._id);
+    expect(updatedComment.upVotes.includes(userTwoId)).toBeTruthy();
 });
 
 test("remove upvote from comment", async () => {
 
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     
@@ -611,9 +635,9 @@ test("remove upvote from comment", async () => {
 
 test("upvote non-existent comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     const nonExistentId = '661ebb4eb77c3f20e6998bf0';
@@ -628,9 +652,9 @@ test("upvote non-existent comment", async () => {
 
 test("downvote comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     
@@ -653,9 +677,9 @@ test("downvote comment", async () => {
 
 test("remove downvote from comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     
@@ -679,9 +703,9 @@ test("remove downvote from comment", async () => {
 
 test("downvote non-existent comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     
@@ -696,9 +720,9 @@ test("downvote non-existent comment", async () => {
 
 test("save comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     
@@ -724,9 +748,9 @@ test("save comment", async () => {
 
 test("unsave comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     
@@ -755,9 +779,9 @@ test("unsave comment", async () => {
 
 test("save non-existent comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     
@@ -772,9 +796,9 @@ test("save non-existent comment", async () => {
   
 test("report comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     
@@ -804,9 +828,9 @@ test("report comment", async () => {
 
 test("report non-existent comment", async () => {
     const login = await request(app)
-    .post("/login")
-    .send({ username: userOne.email, password: userOne.password })
-    .expect(200);
+        .post("/login")
+        .send({ username: userOne.email, password: userOne.password })
+        .expect(200);
 
     const user = await getUser(userOne.username);
     

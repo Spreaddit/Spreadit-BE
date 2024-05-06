@@ -1,7 +1,28 @@
 const mongoose = require("mongoose");
-const { boolean } = require("yargs");
 const Schema = mongoose.Schema;
+const User = require("./user.js");
 
+require("./user");
+require("./removalReason.js");
+require("./rule");
+const InsightSchema = new Schema({
+  month: {
+    type: Date,
+    required: true,
+  },
+  views: {
+    type: Number,
+    default: 0,
+  },
+  newMembers: {
+    type: Number,
+    default: 0,
+  },
+  leavingMembers: {
+    type: Number,
+    default: 0,
+  },
+});
 const CommunitySchema = new Schema({
   name: {
     type: String,
@@ -19,6 +40,13 @@ const CommunitySchema = new Schema({
     type: [Schema.Types.ObjectId],
     ref: "rule",
     index: true,
+    maxlength: 15,
+  },
+  removalReasons: {
+    type: [Schema.Types.ObjectId],
+    ref: "removalreason",
+    index: true,
+    maxlength: 50,
   },
   dateCreated: {
     type: Date,
@@ -28,13 +56,15 @@ const CommunitySchema = new Schema({
     type: String,
     format: "url",
     description: "Link to the banner of the community",
-    default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713046574/uploads/WhatsApp_Image_2024-04-13_at_5.22.35_PM_f0yaln.jpg",
+    default:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713046574/uploads/WhatsApp_Image_2024-04-13_at_5.22.35_PM_f0yaln.jpg",
   },
   image: {
     type: String,
     format: "url",
     description: "Link to the image of the community",
-    default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+    default:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
   },
   description: {
     type: String,
@@ -61,16 +91,13 @@ const CommunitySchema = new Schema({
   },
   creator: {
     type: Schema.Types.ObjectId,
-    required: [true, "A community must have a creator."],
     ref: "user",
   },
   members: {
     type: [Schema.Types.ObjectId],
-    required: [true, "A community must have at least one member."],
     ref: "user",
     index: true,
   },
-  // Note: I didn't make it required for the community to have at least one moderator as the creator is the first moderator of the community. Moderators are supposed to have less privileges than creator of the community
   moderators: {
     type: [Schema.Types.ObjectId],
     ref: "user",
@@ -80,12 +107,137 @@ const CommunitySchema = new Schema({
     type: Number,
     default: 1,
   },
-
-  //TODO: add the community settings attributes
-  //TODO: Handling moderators and creator
-  //TODO: Community members
-  //TODO: helper function verfiying that the community
+  membersNickname: {
+    type: String,
+    default: "Members",
+    maxlength: 30,
+  },
+  contributors: {
+    type: [Schema.Types.ObjectId],
+    ref: "user",
+    index: true,
+  },
+  last7DaysInsights: {
+    type: [InsightSchema],
+    default: [],
+  },
+  monthlyInsights: {
+    type: [InsightSchema],
+    default: [],
+  },
+  settings: {
+    type: {
+      postTypeOptions: {
+        type: String,
+        enum: ["any", "links only", "text posts only"],
+        default: "any",
+      },
+      spoilerEnabled: {
+        type: Boolean,
+        default: true,
+      },
+      multipleImagesPerPostAllowed: {
+        type: Boolean,
+        default: true,
+      },
+      pollsAllowed: {
+        type: Boolean,
+        default: true,
+      },
+      commentSettings: {
+        type: {
+          mediaInCommentsAllowed: {
+            type: Boolean,
+            default: true,
+          },
+        },
+        default: {},
+      },
+    },
+    default: {},
+  },
 });
+
+CommunitySchema.statics.getCommunityObjectFiltered = async function (
+  community,
+  userId
+) {
+  const isFollowing = await this.isUserFollowingCommunity(
+    userId,
+    community._id
+  );
+  const communityObject = {
+    communityId: community._id,
+    communityName: community.name,
+    communityProfilePic: community.image,
+    membersCount: community.members.length,
+    communityInfo: community.description,
+    isFollowing: isFollowing,
+  };
+  return communityObject;
+};
+
+CommunitySchema.statics.isUserFollowingCommunity = async function (
+  userId,
+  communityId
+) {
+  const user = await this.model("user").findById(userId);
+  if (!user) {
+    return false;
+  }
+  return user.subscribedCommunities.includes(communityId);
+};
+
+CommunitySchema.statics.getCommunityObject = async function (
+  communityName,
+  userId
+) {
+  const user = await this.model("user").findById(userId);
+  const community = await Community.findOne({ name: communityName })
+    .select(
+      "name category rules removalReasons dateCreated communityBanner image description is18plus allowNfsw allowSpoile communityType creator members moderators membersCount membersNickname contributors settings"
+    )
+    .populate("rules", "title description reportReason appliesTo")
+    .populate("removalReasons", "title reasonMessage")
+    .populate("members", "username banner avatar")
+    .populate("moderators", "username banner avatar")
+    .populate("creator", "username banner avatar")
+    .populate("contributors", "username banner avatar");
+
+  if (!community) {
+    return null;
+  }
+
+  return {
+    name: community.name,
+    category: community.category,
+    rules: community.rules,
+    removalReasons: community.removalReasons,
+    dateCreated: community.dateCreated,
+    communityBanner: community.communityBanner,
+    image: community.image,
+    description: community.description,
+    is18plus: community.is18plus,
+    allowNfsw: community.allowNfsw,
+    allowSpoile: community.allowSpoile,
+    communityType: community.communityType,
+    creator: community.creator,
+    members: community.members,
+    moderators: community.moderators,
+    membersCount: community.members.length,
+    membersNickname: community.membersNickname,
+    contributors: community.contributors,
+    settings: community.settings,
+    isModerator: community.moderators.some((moderator) =>
+      moderator._id.equals(user._id)
+    ),
+    isCreator: community.creator && community.creator.equals(user._id),
+    isMember: community.members.some((member) => member._id.equals(user._id)),
+    isContributor: community.contributors.some((contributor) =>
+      contributor._id.equals(user._id)
+    ),
+  };
+};
 
 const Community = mongoose.model("community", CommunitySchema);
 

@@ -70,6 +70,7 @@
  * @apiError (400) {String} BadRequest  The server cannot or will not process the request due to something that is perceived to be a client error
  * @apiError (500) {String} InternalServerError  The server encountered an unexpected condition which prevented it from fulfilling the request
  * @apiError (401) {String} NotFound  The enetered credentials are invalid
+ * @apiError (402) {String} The user is banned
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 401 NotFound
  * {
@@ -111,34 +112,39 @@
  *     {
  *       "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
  *       "user": {
- *           "id": "607f1f77bcf86cd799439011",
- *           "name": "Amira El-Garf",
- *           "username": "amiraelgarf123",
- *           "email": "amiraelgarf99@gmail.com",
- *           "googleId": "google_user_id",
- *           "birth_date": "1990-01-01",
- *           "phone": "123456789",
- *           "avatar_url": "https://example.com/avatar.jpg",
- *           "background_picture_url": "https://example.com/background.jpg",
- *           "location": "City, Country",
- *           "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
- *           "followers_count": 100,
- *           "following_count": 50,
- *           "created_at": "2024-04-08T12:00:00Z",
- *           "role": "User",
- *           "nsfw": false,
- *           "activeInCommunityVisibility": true,
- *           "isVerified": true,
- *           "displayName": "Amiraelgarf123",
- *           "about": "Some information about the user",
- *           "cakeDay": "2022-04-08T12:00:00Z",
- *           "subscribedCommunities": ["community1", "community2"]
+ *              "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
+ *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
+ *               "displayName": "Amiraelgarf123",
+ *               "bio": "active",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *       },
  *       "token_expiration_date": "2024-04-08T12:00:00Z",
  *       "message": "User logged in successfully"
  *     }
  *
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiError (402) {String}  The user is banned
  *
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 500 Internal Server Error
@@ -422,11 +428,12 @@
  * @apiParam {String} emailToken Email verification token.
  *
  * @apiSuccess {String} message Success message indicating email verification success.
- *
+ * @apiSuccess {String} accessToken Generated user token.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "message": "Email verified successfully"
+ *       "accessToken": "AAAA%2FAAA%3DAAAAAAAAxxxxxx"
  *     }
  *
  * @apiError (401) Unauthorized Token is required.
@@ -563,7 +570,6 @@
  * @apiSuccess {String} comment.user.birth_date Birth date of the user who posted the comment.
  * @apiSuccess {String} comment.user.phone Phone number of the user who posted the comment.
  * @apiSuccess {String} comment.user.avatar_url URL of the user's avatar.
- * @apiSuccess {String} comment.user.background_picture_url URL of the user's background picture.
  * @apiSuccess {String} comment.user.location Location of the user who posted the comment.
  * @apiSuccess {String} comment.user.bio Bio of the user who posted the comment.
  * @apiSuccess {Number} comment.user.followers_count Number of followers of the user who posted the comment.
@@ -588,6 +594,9 @@
  * @apiSuccess {String} comment.community_title Title of the community where the post belongs.
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
  *
  * @apiSuccessExample {json} Success-Response:
@@ -607,11 +616,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -627,6 +647,9 @@
  *           "community_title": "Sample Community",
  *           "is_upvoted": true,
  *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "replies": []
  *       },
  *       "message": "Comment has been added successfully"
@@ -635,12 +658,19 @@
  * @apiError (400) BadRequest Missing or invalid parameters.
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound Post not found.
+ * @apiError (403) Comments are locked for this post.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "message": "Comment content is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Bad Request
+ *     {
+ *       "message": "Comments are locked for this post"
  *     }
  *
  * @apiErrorExample {json} Error-Response:
@@ -683,8 +713,10 @@
  * @apiSuccess {Date} comment.updatedAt Date and time when the deleted comment was last updated.
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
-
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -699,6 +731,9 @@
  *           "updatedAt": "2022-05-14T12:00:00.000Z",
  *           "is_upvoted": true,
  *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "replies": []
  *       },
  *       "message": "Comment deleted successfully"
@@ -757,6 +792,9 @@
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
  *
  * @apiSuccessExample {json} Success-Response:
@@ -777,11 +815,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -796,6 +845,9 @@
  *           "post_title": "Sample Post Title",
  *           "community_title": "Sample Community",
  *           "is_upvoted": true,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "is_downvoted": false,
  *           "replies": []
  *       }
@@ -850,6 +902,9 @@
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty
  *
  * @apiSuccessExample {json} Success-Response:
@@ -870,11 +925,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -890,6 +956,9 @@
  *           "community_title": "Sample Community",
  *           "is_upvoted": true,
  *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "replies": []
  *       },
  *       ],
@@ -942,6 +1011,9 @@
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
  * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
  * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
  *
  * @apiSuccessExample {json} Success-Response:
@@ -962,11 +1034,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -981,6 +1064,9 @@
  *           "post_title": "Sample Post Title",
  *           "community_title": "Sample Community",
  *           "is_upvoted": true,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "is_downvoted": false,
  *           "replies": []
  *       },
@@ -1092,7 +1178,6 @@
  * @apiSuccess {String} reply.user.birth_date Birth date of the user who posted the reply.
  * @apiSuccess {String} reply.user.phone Phone number of the user who posted the reply.
  * @apiSuccess {String} reply.user.avatar_url URL of the user's avatar.
- * @apiSuccess {String} reply.user.background_picture_url URL of the user's background picture.
  * @apiSuccess {String} reply.user.location Location of the user who posted the reply.
  * @apiSuccess {String} reply.user.bio Bio of the user who posted the reply.
  * @apiSuccess {Number} reply.user.followers_count Number of followers of the user who posted the reply.
@@ -1118,6 +1203,9 @@
  * @apiSuccess {String} message Success message indicating that the reply has been added successfully.
  * @apiSuccess {Boolean} reply.is_upvoted if the reply is upvoted by the user
  * @apiSuccess {Boolean} reply.is_downvoted if the reply is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {replyObject[]} reply.replies if the reply has a reply by default empty array
  *
  * @apiSuccessExample {json} Success-Response:
@@ -1137,11 +1225,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 0,
  *           "replies_count": 0,
@@ -1153,6 +1252,9 @@
  *           "post_title": "Example Post",
  *           "community_title": "Example Community",
  *           "is_upvoted": true,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "is_downvoted": false,
  *           "replies": []
  *       },
@@ -1161,12 +1263,18 @@
  *
  * @apiError (400) BadRequest Missing or invalid parameters.
  * @apiError (404) NotFound Parent comment not found.
+ * @apiError (403) Comments are locked for this post.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "message": "Reply content is required"
+ *     }
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Bad Request
+ *     {
+ *       "message": "Comments are locked for this post"
  *     }
  *
  * @apiErrorExample {json} Error-Response:
@@ -1211,6 +1319,9 @@
  * @apiSuccess {String} replies.community_title Title of the community to which the comment belongs.
  * @apiSuccess {String} message Success message indicating that replies have been retrieved successfully.
  * @apiSuccess {Boolean} replies.is_upvoted if the reply is upvoted by the user
+ * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
  * @apiSuccess {Boolean} replies.is_downvoted if the reply is upvoted by the user
  * @apiSuccess {repliesObject[]} replies.replies if the reply has a reply by default empty array
  *
@@ -1232,11 +1343,22 @@
  *               "created_at": "2022-01-01T12:00:00.000Z",
  *               "role": "User",
  *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
  *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
  *               "displayName": "Amiraelgarf123",
- *               "about": "Lorem ipsum dolor sit amet",
+ *               "bio": "active",
  *               "cakeDay": "2020-01-01",
  *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
  *           },
  *           "likes_count": 10,
  *           "replies_count": 5,
@@ -1251,6 +1373,9 @@
  *           "post_title": "Sample Post Title",
  *           "community_title": "Sample Community",
  *           "is_upvoted": true,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
  *           "is_downvoted": false,
  *           "replies": []
  *           },
@@ -1462,128 +1587,6 @@
  */
 
 //#endregion Comments
-
-//#region Rules
-
-/**
- * @api {post} /rule/add Add Rule to Community
- * @apiVersion 0.1.0
- * @apiName AddRuleToCommunity
- * @apiGroup Rules
- * @apiDescription Adds a rule to a community.
- * @apiSampleRequest off
- *
- * @apiHeader {String} Authorization User's authentication token.
- *
- * @apiParam {String} title Title of the rule.
- * @apiParam {String} description Description of the rule (optional).
- * @apiParam {String} reportReason Reason for reporting the rule (optional).
- * @apiParam {String} communityName Name of the community to which the rule will be added.
- *
- * @apiParamExample {json} Request-Example:
- * {
- *    "title": "No hate speech",
- *    "description": "This community does not tolerate hate speech.",
- *    "communityName": "Sample Community"
- * }
- *
- * @apiSuccess {String} message Success message indicating that the rule has been added successfully.
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "message": "Rule added successfully"
- *     }
- *
- * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (402) Forbidden User is not a moderator.
- * @apiError (403) UsedTitle Title already used.
- * @apiError (404) NotFound Community not found.
- * @apiError (500) InternalServerError An unexpected error occurred on the server.
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *       "message": "Invalid rule data"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 402 Forbidden
- *     {
- *       "message": "You are not a moderator of this community"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "message": "Community not found"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 500 Internal Server Error
- *     {
- *       "message": "Internal server error"
- *     }
- */
-
-/**
- * @api {post} /rule/remove Remove Rule from Community
- * @apiVersion 0.1.0
- * @apiName RemoveRuleFromCommunity
- * @apiGroup Rules
- * @apiDescription Removes a rule from a community.
- * @apiSampleRequest off
- *
- * @apiHeader {String} Authorization User's authentication token.
- *
- * @apiParam {String} communityName Name of the community from which the rule will be removed.
- * @apiParam {String} title Title of the rule to be removed.
- *
- * @apiParamExample {json} Request-Example:
- * {
- *    "communityName": "Sample Community",
- *    "title": "No hate speech"
- * }
- *
- * @apiSuccess {String} message Success message indicating that the rule has been removed successfully.
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "message": "Rule removed successfully"
- *     }
- *
- * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (402) Forbidden User is not a moderator of the community.
- * @apiError (404) NotFound Community not found.
- * @apiError (500) InternalServerError An unexpected error occurred on the server.
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *       "message": "Invalid request parameters"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 402 Forbidden
- *     {
- *       "message": "Not a moderator"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "message": "Community not found"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 500 Internal Server Error
- *     {
- *       "message": "Internal server error"
- *     }
- */
-//#endregion Rules
 
 //#region Community
 
@@ -2239,66 +2242,6 @@
  */
 
 /**
- * @api {get} /community/get-info Get Community Information
- * @apiVersion 0.1.0
- * @apiName GetCommunityInformation
- * @apiGroup Community
- * @apiDescription Retrieves information about a specific community.
- * @apiSampleRequest off
- *
- * @apiParam {String} communityName Name of the community to retrieve information.
- *
- * @apiSuccess {Object} community Information about the specified community.
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "name": "Sample Community",
- *       "category": "Sample Category",
- *       "communityType": "Public",
- *       "description": "Sample description",
- *       "image": "community_image.jpg",
- *       "membersCount": 1000,
- *       "rules": [
- *         {
- *           "title": "Rule 1",
- *           "description": "Description of rule 1",
- *           "reportReason": "Reason for reporting rule 1"
- *         },
- *         {
- *           "title": "Rule 2",
- *           "description": "Description of rule 2",
- *           "reportReason": "Reason for reporting rule 2"
- *         }
- *       ],
- *       "dateCreated": "2024-01-01T00:00:00.000Z",
- *       "communityBanner": "community_banner.jpg"
- *     }
- *
- * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (404) NotFound Community not found.
- * @apiError (500) InternalServerError An unexpected error occurred on the server.
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *       "message": "Invalid request parameters"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "message": "Community not found"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 500 Internal Server Error
- *     {
- *       "message": "Internal server error"
- *     }
- */
-
-/**
  * @api {post} /community/create Create Community
  * @apiVersion 0.1.0
  * @apiName CreateCommunity
@@ -2628,6 +2571,55 @@
  */
 
 /**
+ * @api {post} /unblock Unblock User
+ * @apiVersion 0.1.0
+ * @apiName UnblockUser
+ * @apiGroup User
+ * @apiDescription Unblocks a user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the user to unblock.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "username": "example_user"
+ * }
+ *
+ * @apiSuccess {String} description Success message indicating that the user has been unblocked successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "description": "User unblocked successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
  * @api {post} /users/unfollow Unfollow User
  * @apiVersion 0.1.0
  * @apiName UnfollowUser
@@ -2758,6 +2750,60 @@
  *     HTTP/1.1 404 Not Found
  *     {
  *       "error": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+/**
+ * @api {get} users/getfollowers Get Followers
+ * @apiVersion 0.1.0
+ * @apiName GetFollowers
+ * @apiGroup User
+ * @apiDescription Retrieves the list of followers for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} followers List of followers.
+ * @apiSuccess {Boolean} isFollowed Indicates whether the authenticated user is followed by the follower.
+ * @apiSuccess {String} username Username of the follower.
+ * @apiSuccess {String} avatar Avatar URL of the follower.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "followers": [
+ *            {
+ *            "isFollowed": true,
+ *            "username": "follower1",
+ *            "avatar": "http://example.com/avatar1.jpg"
+ *        },
+ *        {
+ *            "isFollowed": false,
+ *            "username": "follower2",
+ *            "avatar": "http://example.com/avatar2.jpg"
+ *        }
+ *       ]
+ *     }
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found or has no followers.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "error": "Authorization token is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "User not found or has no followers"
  *     }
  *
  * @apiErrorExample {json} Error-Response:
@@ -2902,42 +2948,55 @@
  * @apiHeader {String} Authorization User's authentication token.
  *
  * @apiSuccess {Object[]} posts List of posts sorted by top of all time.
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
+ *     {
+ *       "posts": [
+ *            {
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
  *       }
- *     ]
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -2976,41 +3035,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by top within the specified community.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3049,41 +3120,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by top of all time within the specified community.
  *
+ *@apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3122,112 +3205,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by newest within the specified community.
  *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
- *
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404) NotFound No posts found.
- * @apiError (500) InternalServerError An unexpected error occurred on the server.
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 401 Unauthorized
- *     {
- *       "error": "Authorization token is required"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "error": "No posts found"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 500 Internal Server Error
- *     {
- *       "error": "Internal server error"
- *     }
- */
-
-/**
- * @api {get} /home/views Sort Posts by Views
- * @apiVersion 0.1.0
- * @apiName SortPostsViews
- * @apiGroup Post
- * @apiDescription Retrieves posts sorted by number of views.
- * @apiSampleRequest off
- *
- * @apiHeader {String} Authorization User's authentication token.
- *
- * @apiSuccess {Object[]} posts List of posts sorted by number of views.
+ *@apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3264,41 +3288,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by number of comments.
  *
+ *@apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *         {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3335,42 +3371,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by best.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
- *
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
@@ -3406,42 +3453,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by hotness score.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
- *
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
@@ -3479,41 +3537,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by hotness score within the specified community.
  *
+ *@apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3552,41 +3622,53 @@
  *
  * @apiSuccess {Object[]} posts List of randomly sorted posts within the specified community.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *        {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3626,41 +3708,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by top within the specified community and time period.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3699,41 +3793,53 @@
  *
  * @apiSuccess {Object[]} posts List of posts sorted by top within the specified time period.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound No posts found.
@@ -3770,41 +3876,53 @@
  *
  * @apiSuccess {Object[]} recentPosts List of recent posts of the authenticated user.
  *
+ * @apiSuccess {Number} totalPages Total number of pages.
+ * @apiSuccess {Number} currentPage Current page number.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
- *          {
- *            "_id": "1234567890",
- *           "userId": "0987654321",
- *           "username": "example_user",
- *           "userProfilePic": "http://example.com/avatar.jpg",
- *           "hasUpvoted": false,
- *           "hasDownvoted": false,
- *           "hasVotedOnPoll": false,
- *           "selectedPollOption": null,
- *           "numberOfViews": 1080,
- *           "votesUpCount": 10,
- *           "votesDownCount": 2,
- *           "sharesCount": 5,
- *           "commentsCount": 15,
- *           "title": "Sample Title",
- *           "content": "Sample Content",
- *           "community": "Sample Community",
- *           "type": "Post",
- *           "link": "http://example.com",
- *           "pollExpiration": "2024-04-16T12:00:00.000Z",
- *           "isPollEnabled": true,
- *           "pollVotingLength": "7 days",
- *           "isSpoiler": false,
- *           "isNsfw": false,
- *           "sendPostReplyNotification": true,
- *           "isCommentsLocked": false,
- *           "isSaved": true,
- *           "date": "2024-04-16T10:00:00.000Z",
- *           "pollOptions": [],
- *           "attachments": []
- *       }
- *     ]
+ *     {
+ *       "posts": [
+ *            "_id": "624a6a677c8d9c9f5fd5eb5d",
+            "userId": "624a4a94c66738f13854b474",
+            "username": "farouq12",
+            "userProfilePic": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+            "hasUpvoted": false,
+            "hasDownvoted": false,
+            "hasVotedOnPoll": false,
+            "selectedPollOption": null,
+            "numberOfViews": 680,
+            "votesUpCount": 0,
+            "votesDownCount": 0,
+            "sharesCount": 0,
+            "commentsCount": 4,
+            "title": "Expressive Artistry: Painting with Emotions",
+            "content": [
+                "Discover the power of expressive artistry as artists paint with raw emotions, capturing the essence of human experiences on canvas."
+            ],
+            "community": "CreativeMindsCollective",
+            "communityIcon": "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713044122/uploads/voAwqXNBDO4JwIODmO4HXXkUJbnVo_mL_bENHeagDNo_knalps.png",
+            "type": "Post",
+            "pollExpiration": null,
+            "isPollEnabled": false,
+            "pollVotingLength": "3 Days",
+            "isSpoiler": false,
+            "isNsfw": false,
+            "sendPostReplyNotification": true,
+            "isCommentsLocked": false,
+            "isSaved": false,
+            "isRemoved": false,
+            "isApproved": true,
+            "isScheduled": false,
+            "isSpam": false,
+            "date": "2024-05-03T23:35:13.756Z",
+            "pollOptions": [],
+            "attachments": []
+        },
+ *       ],
+ *       "totalPages": 5,
+ *       "currentPage": 1
+ *     }
  *
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound User not found.
@@ -3876,61 +3994,100 @@
 //#region Post
 
 /**
- * @api {post} /post Create Post
+ * @api {post} /posts Create Post
  * @apiVersion 0.1.0
  * @apiName CreatePost
  * @apiGroup Post
  * @apiDescription Creates a new post.
- * @apiSampleRequest off
+ * This endpoint allows a user to create a new post with various types such as text, image/video, link, or poll.
  *
- * @apiHeader {String} Authorization User's authentication token.
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ * @apiHeader {String} Content-Type multipart/form-data
  *
  * @apiParam {String} title Title of the post.
- * @apiParam {String} content Content of the post.
+ * @apiParam {String} [content] Content of the post (for text posts).
  * @apiParam {String} community Name of the community where the post is created.
- * @apiParam {String} type Type of the post. Possible values are: "Post", "Images & Video", "Link", "Poll".
- * @apiParam {String} [pollOptions] Options for a poll post.
- * @apiParam {String} [pollVotingLength] Length of time for voting on a poll post.
- * @apiParam {String} [link] Link attached to the post (if applicable).
- * @apiParam {Boolean} [isSpoiler] Indicates if the post contains spoilers.
+ * @apiParam {String="Post","Images & Video","Link","Poll"} type Type of the post.
+ * @apiParam {Object[]} [pollOptions] Array of poll options for poll posts.
+ * @apiParam {String} pollOptions.option Option for the poll.
+ * @apiParam {Number} [pollOptions.votes] Number of votes for the option (default: 0).
+ * @apiParam {String} [pollVotingLength] Duration for voting on the poll (e.g., "7 days").
+ * @apiParam {String} [fileType] Type of file for image/video posts.
+ * @apiParam {String} [link] URL link for link posts.
+ * @apiParam {Boolean} [isSpoiler] Indicates if the post contains spoiler content.
  * @apiParam {Boolean} [isNsfw] Indicates if the post is not safe for work.
- * @apiParam {Boolean} [sendPostReplyNotification] Indicates if notifications should be sent for replies to this post.
- * @apiParam {File[]} [attachments] Array of images attached to the post (if applicable).
- * @apiParam {String} [fileType] (must sent it with attachments)Type of files attached to the post (if you send image in attachment send this fileType=image and if you send video in attachments make fileType=video )(if applicable).
+ * @apiParam {Boolean} [sendPostReplyNotification] Indicates if the user should receive notifications for post replies.
+ * @apiParam {String} [scheduledDate] Date and time to schedule the post (e.g., "2024-05-15T12:00:00Z").
+ * @apiParam {File[]} [attachments] Array of file attachments (for image/video posts).
  *
- * @apiParamExample {json} Request-Example:
+ * @apiParamExample {json} Text Post Example:
  * {
- *    "title": "Sample Title",
- *    "content": "Sample Content",
- *    "community": "Sample Community",
- *    "type": "Post"
+ *   "title": "My Text Post",
+ *   "content": "This is the content of my text post.",
+ *   "community": "community_name",
+ *   "type": "Post",
+ *   "sendPostReplyNotification": true
  * }
  *
- * @apiSuccess {String} message Success message indicating that the post has been created successfully.
- * @apiSuccess {String} postId ID of the created post.
+ * @apiParamExample {json} Image/Video Post Example:
+ * {
+ *   "title": "My Image/Video Post",
+ *   "community": "community_name",
+ *   "type": "Images & Video",
+ *   "fileType": "image",
+ *   "attachments": [
+ *     {
+ *       "type": "image",
+ *       "link": "https://example.com/image1.jpg"
+ *     },
+ *     {
+ *       "type": "image",
+ *       "link": "https://example.com/image2.jpg"
+ *     }
+ *   ],
+ *   "sendPostReplyNotification": true
+ * }
  *
+ * @apiParamExample {json} Link Post Example:
+ * {
+ *   "title": "My Link Post",
+ *   "community": "community_name",
+ *   "type": "Link",
+ *   "link": "https://example.com",
+ *   "sendPostReplyNotification": false
+ * }
+ *
+ * @apiParamExample {json} Poll Post Example:
+ * {
+ *   "title": "My Poll Post",
+ *   "community": "community_name",
+ *   "type": "Poll",
+ *   "pollOptions": [
+ *     { "option": "Option 1", "votes": 0 },
+ *     { "option": "Option 2", "votes": 0 },
+ *     { "option": "Option 3", "votes": 0 }
+ *   ],
+ *   "pollVotingLength": "3 days",
+ *   "sendPostReplyNotification": true
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating post created successfully.
+ * @apiSuccess {String} postId ID of the created post.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 Created
  *     {
  *       "message": "Post created successfully",
- *       "postId": "1234567890"
+ *       "postId": "607f1f77bcf86cd799439011"
  *     }
  *
- * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (401) Unauthorized Authorization token is required.
- * @apiError (404) NotFound User or community not found.
+ * @apiError (400) BadRequest Invalid post data.
+ * @apiError (403) Forbidden User is banned or not authorized to create posts.
+ * @apiError (404) NotFound Community not found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *       "error": "Invalid post data. Please provide title and community"
- *     }
- *
  * @apiErrorExample {json} Error-Response:
  *     HTTP/1.1 500 Internal Server Error
  *     {
- *       "error": "Internal server error"
+ *       "error": "Internal Server Error"
  *     }
  */
 
@@ -4105,7 +4262,7 @@
  * @apiSuccess {Object[]} posts Array of post objects saved by the authenticated user.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
+ *     posts: [
  *       {
  *           "_id": "1234567890",
  *           "userId": "0987654321",
@@ -4467,7 +4624,7 @@
  * @apiSuccess {Object[]} posts Array of post objects upvoted by the user.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
+ *     posts: [
  *       {
  *           "_id": "1234567890",
  *           "userId": "0987654321",
@@ -4530,7 +4687,7 @@
  * @apiSuccess {Object[]} posts Array of post objects downvoted by the user.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
+ *     posts: [
  *       {
  *           "_id": "1234567890",
  *           "userId": "0987654321",
@@ -4680,7 +4837,7 @@
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
+ *     posts: [
  *       {
  *           "_id": "1234567890",
  *           "userId": "0987654321",
@@ -4972,7 +5129,7 @@
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [
+ *     posts: [
  *       {
  *         "_id": "postId",
  *         "userId": "userId",
@@ -6194,3 +6351,4466 @@
  */
 
 //#endregion Mobile Settings
+
+//#region Moderation
+/**
+ * @api {post} /community/moderation/:communityName/spam-comment/:commentId Mark Comment as Spam
+ * @apiVersion 0.1.0
+ * @apiName MarkCommentAsSpam
+ * @apiGroup Moderation
+ *
+ * @apiDescription Marks a comment as spam by its ID.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} commentId ID of the comment to mark as spam.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Comment marked as spam successfully"
+ *     }
+ *
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community.
+ * @apiError NoPermission Moderator doesn't have permission.
+ * @apiError CommentNotFound The specified comment does not exist.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "comment not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/get-spam-comments Get Spam Comments
+ * @apiVersion 0.1.0
+ * @apiName GetSpamComments
+ * @apiGroup Moderation
+ *
+ * @apiDescription Retrieves all spam comments in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object} SpammedComments Object representing the Spammed comment.
+ * @apiSuccess {String} SpammedComments._id ID of the comment.
+ * @apiSuccess {String} SpammedComments.content Content of the comment.
+ * @apiSuccess {Object} SpammedComments.user User object representing the author of the comment.
+ * @apiSuccess {String} SpammedComments.user.id ID of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.name Name of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.username Username of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.email Email of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.googleId Google ID of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.birth_date Birth date of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.phone Phone number of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} SpammedComments.user.location Location of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.bio Bio of the user who posted the comment.
+ * @apiSuccess {Number} SpammedComments.user.followers_count Number of followers of the user who posted the comment.
+ * @apiSuccess {Number} SpammedComments.user.following_count Number of users followed by the user who posted the comment.
+ * @apiSuccess {Date} SpammedComments.user.created_at Date when the user who posted the comment was created.
+ * @apiSuccess {String} SpammedComments.user.role Role of the user who posted the comment.
+ * @apiSuccess {Boolean} SpammedComments.user.nsfw Flag indicating if the user who posted the comment has NSFW content.
+ * @apiSuccess {Boolean} SpammedComments.user.activeInCommunityVisibility Flag indicating if the user who posted the comment is active in community visibility.
+ * @apiSuccess {Boolean} SpammedComments.user.isVerified Flag indicating if the user who posted the comment is verified.
+ * @apiSuccess {String} SpammedComments.user.displayName Display name of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.about About information of the user who posted the comment.
+ * @apiSuccess {String} SpammedComments.user.cakeDay Cake day of the user who posted the comment.
+ * @apiSuccess {String[]} SpammedComments.user.subscribedCommunities List of communities subscribed by the user who posted the comment.
+ * @apiSuccess {Number} SpammedComments.likes_count Number of likes received by the comment.
+ * @apiSuccess {Number} SpammedComments.replies_count Number of replies to the comment.
+ * @apiSuccess {Boolean} SpammedComments.is_reply Indicates if the comment is a reply to another comment.
+ * @apiSuccess {String[]} SpammedComments.media Array of URLs of attached media files.
+ * @apiSuccess {Date} SpammedComments.created_at Date and time when the comment was created.
+ * @apiSuccess {Boolean} SpammedComments.is_hidden Indicates if the comment is hidden.
+ * @apiSuccess {Boolean} SpammedComments.is_saved Indicates if the comment is saved.
+ * @apiSuccess {String} SpammedComments.post_title Title of the post to which the comment belongs.
+ * @apiSuccess {String} SpammedComments.community_title Title of the community where the post belongs.
+ * @apiSuccess {Boolean} SpammedComments.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} SpammedComments.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} SpammedComments.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} SpammedComments.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} SpammedComments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {SpammedCommentsObject[]} SpammedComments.replies if the comment has a reply by default empty array
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "SpammedComments": {
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
+ *               "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
+ *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
+ *               "displayName": "Amiraelgarf123",
+ *               "bio": "active",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
+ *           ],
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
+ *           "replies": []
+ *       },
+ *     }
+ *
+ *
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:commentId/lock-comment Lock Comment
+ * @apiVersion 0.1.0
+ * @apiName LockComment
+ * @apiGroup Moderation
+ *
+ * @apiDescription Locks a comment in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} commentId ID of the comment to be locked.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Comment locked successfully"
+ *     }
+ *
+ * @apiError CommentNotFound The specified comment does not exist.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError CommentAlreadyLocked The comment is already locked.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Comment not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "Comment is already locked"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:commentId/unlock-comment Unlock Comment
+ * @apiVersion 0.1.0
+ * @apiName UnlockComment
+ * @apiGroup Moderation
+ *
+ * @apiDescription Unlocks a previously locked comment in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} commentId ID of the comment to be unlocked.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Comment unlocked successfully"
+ *     }
+ *
+ * @apiError CommentNotFound The specified comment does not exist.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError CommentNotLocked The comment is not locked.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Comment not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "Post is not locked"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:commentId/remove-comment Remove Comment
+ * @apiVersion 0.1.0
+ * @apiName RemoveComment
+ * @apiGroup Moderation
+ *
+ * @apiDescription Removes a comment from a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} commentId ID of the comment to be removed.
+ * @apiParam {Object} removalReason The reason for removing the comment.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Comment removed successfully"
+ *     }
+ *
+ * @apiError CommentNotFound The specified comment does not exist.
+ * @apiError BadRequest Missing removal reason.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Comment not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Must have a removal reason"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:commentId/approve-comment Approve Comment
+ * @apiVersion 0.1.0
+ * @apiName ApproveComment
+ * @apiGroup Moderation
+ *
+ * @apiDescription Approves a comment in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} commentId ID of the comment to be approved.
+ *
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Comment approved successfully"
+ *     }
+ *
+ * @apiError CommentNotFound The specified comment does not exist.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Comment not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/get-edited-comments Get Edited Comments History
+ * @apiVersion 0.1.0
+ * @apiName GetEditedCommentsHistory
+ * @apiGroup Moderation
+ *
+ * @apiDescription Retrieves the history of edited comments in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object} editedComment Object representing the edited comment.
+ * @apiSuccess {String} editedComment._id ID of the comment.
+ * @apiSuccess {String} editedComment.content Content of the comment.
+ * @apiSuccess {Object} editedComment.user User object representing the author of the comment.
+ * @apiSuccess {String} editedComment.user.id ID of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.name Name of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.username Username of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.email Email of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.googleId Google ID of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.birth_date Birth date of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.phone Phone number of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} editedComment.user.location Location of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.bio Bio of the user who posted the comment.
+ * @apiSuccess {Number} editedComment.user.followers_count Number of followers of the user who posted the comment.
+ * @apiSuccess {Number} editedComment.user.following_count Number of users followed by the user who posted the comment.
+ * @apiSuccess {Date} editedComment.user.created_at Date when the user who posted the comment was created.
+ * @apiSuccess {String} editedComment.user.role Role of the user who posted the comment.
+ * @apiSuccess {Boolean} editedComment.user.nsfw Flag indicating if the user who posted the comment has NSFW content.
+ * @apiSuccess {Boolean} editedComment.user.activeInCommunityVisibility Flag indicating if the user who posted the comment is active in community visibility.
+ * @apiSuccess {Boolean} editedComment.user.isVerified Flag indicating if the user who posted the comment is verified.
+ * @apiSuccess {String} editedComment.user.displayName Display name of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.about About information of the user who posted the comment.
+ * @apiSuccess {String} editedComment.user.cakeDay Cake day of the user who posted the comment.
+ * @apiSuccess {String[]} editedComment.user.subscribedCommunities List of communities subscribed by the user who posted the comment.
+ * @apiSuccess {Number} editedComment.likes_count Number of likes received by the comment.
+ * @apiSuccess {Number} editedComment.replies_count Number of replies to the comment.
+ * @apiSuccess {Boolean} editedComment.is_reply Indicates if the comment is a reply to another comment.
+ * @apiSuccess {String[]} editedComment.media Array of URLs of attached media files.
+ * @apiSuccess {Date} editedComment.created_at Date and time when the comment was created.
+ * @apiSuccess {Boolean} editedComment.is_hidden Indicates if the comment is hidden.
+ * @apiSuccess {Boolean} editedComment.is_saved Indicates if the comment is saved.
+ * @apiSuccess {String} editedComment.post_title Title of the post to which the comment belongs.
+ * @apiSuccess {String} editedComment.community_title Title of the community where the post belongs.
+ * @apiSuccess {Boolean} editedComment.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} editedComment.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} editedComment.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} editedComment.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} editedComment.is_locked if the comment is locked by the moderator
+ * @apiSuccess {editedCommentObject[]} editedComment.replies if the comment has a reply by default empty array
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "editedComment": {
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
+ *               "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
+ *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
+ *               "displayName": "Amiraelgarf123",
+ *               "bio": "active",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
+ *           ],
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
+ *           "replies": []
+ *       },
+ *     }
+ * @apiError CommunityNotFound The specified community does not exist.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError EditedCommentsNotFound No edited comments found in the community.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Community not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Edited comments not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/get-reported-comments Get Reported Comments
+ * @apiVersion 0.1.0
+ * @apiName GetReportedComments
+ * @apiGroup Moderation
+ *
+ * @apiDescription Retrieves reported comments in a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object} reportedComments Object representing the reported comment.
+ * @apiSuccess {String} reportedComments._id ID of the comment.
+ * @apiSuccess {String} reportedComments.content Content of the comment.
+ * @apiSuccess {Object} reportedComments.user User object representing the author of the comment.
+ * @apiSuccess {String} reportedComments.user.id ID of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.name Name of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.username Username of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.email Email of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.googleId Google ID of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.birth_date Birth date of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.phone Phone number of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} reportedComments.user.location Location of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.bio Bio of the user who posted the comment.
+ * @apiSuccess {Number} reportedComments.user.followers_count Number of followers of the user who posted the comment.
+ * @apiSuccess {Number} reportedComments.user.following_count Number of users followed by the user who posted the comment.
+ * @apiSuccess {Date} reportedComments.user.created_at Date when the user who posted the comment was created.
+ * @apiSuccess {String} reportedComments.user.role Role of the user who posted the comment.
+ * @apiSuccess {Boolean} reportedComments.user.nsfw Flag indicating if the user who posted the comment has NSFW content.
+ * @apiSuccess {Boolean} reportedComments.user.activeInCommunityVisibility Flag indicating if the user who posted the comment is active in community visibility.
+ * @apiSuccess {Boolean} reportedComments.user.isVerified Flag indicating if the user who posted the comment is verified.
+ * @apiSuccess {String} reportedComments.user.displayName Display name of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.about About information of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.cakeDay Cake day of the user who posted the comment.
+ * @apiSuccess {String[]} reportedComments.user.subscribedCommunities List of communities subscribed by the user who posted the comment.
+ * @apiSuccess {Number} reportedComments.likes_count Number of likes received by the comment.
+ * @apiSuccess {Number} reportedComments.replies_count Number of replies to the comment.
+ * @apiSuccess {Boolean} reportedComments.is_reply Indicates if the comment is a reply to another comment.
+ * @apiSuccess {String[]} reportedComments.media Array of URLs of attached media files.
+ * @apiSuccess {Date} reportedComments.created_at Date and time when the comment was created.
+ * @apiSuccess {Boolean} reportedComments.is_hidden Indicates if the comment is hidden.
+ * @apiSuccess {Boolean} reportedComments.is_saved Indicates if the comment is saved.
+ * @apiSuccess {String} reportedComments.post_title Title of the post to which the comment belongs.
+ * @apiSuccess {String} reportedComments.community_title Title of the community where the post belongs.
+ * @apiSuccess {Boolean} reportedComments.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} reportedComments.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} reportedComments.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} reportedComments.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} reportedComments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {reportedCommentsObject[]} reportedComments.replies if the comment has a reply by default empty array
+ * @apiSuccess {string} reportedComments.reports.username the user who reported the comennt
+ * @apiSuccess {string} reportedComments.reports.reason reason why the comment is reported
+ * @apiSuccess {string} reportedComments.reports.subreason subreason of why the comment is reported
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "reportedComments": {
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
+ *               "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
+ *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
+ *               "displayName": "Amiraelgarf123",
+ *               "bio": "active",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
+ *           ],
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
+ *           "replies": [],
+ *           "reports":[
+ *               {
+ *                 "username": "mimo12"
+ *                 "reason": "Spam",
+ *                 "subreason": "Irrelevant content"
+ *               }
+ *            ]
+ *       },
+ *     }
+ *
+ * @apiError CommunityNotFound The specified community does not exist.
+ * @apiError NotAuthorized The user is not authorized to perform this action.
+ * @apiError NotModerator User is not a moderator of the community or does not have permission.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Community not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Authorized
+ *     {
+ *       "message": "Not a moderator or does not have permission"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+//#endregion Moderation
+
+//#region Admin
+
+/**
+ * @api {post} /dashboard/ban Ban User
+ * @apiVersion 0.1.0
+ * @apiName BanUser
+ * @apiGroup Admin Dashboard
+ *
+ * @apiDescription Bans a user from posting.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} username Username of the user to be banned.
+ * @apiParam {String} banDuration Duration of the ban (if temporary).
+ * @apiParam {String} reason Reason for the ban.
+ * @apiParam {Boolean} isPermanent Indicates whether the ban is permanent.
+ *
+ * @apiSuccess {Object} user User object containing user details.
+ * @apiSuccess {String} user._id User's unique ID.
+ * @apiSuccess {String} user.name User's name.
+ * @apiSuccess {String} user.email User's email address.
+ * @apiSuccess {String} user.username User's username..
+ * @apiSuccess {String} message Success message indicating user signed in or signed up successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "user": {
+ *           "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
+ *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
+ *               "displayName": "Amiraelgarf123",
+ *               "bio": "active",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
+ *       },
+ *       "message": "User Banned successfully"
+ *     }
+ * @apiError Unauthorized The user is not authorized to perform this action.
+ * @apiError UserNotFound The specified user does not exist.
+ * @apiError InternalServerError Internal server error occurred.
+ * @apiError The User is already banned
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "message": "You are not authorized"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User is not found"
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 402 Not Found
+ *     {
+ *       "message": "the user already banned"
+ *     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /dashboard/unban Unban User
+ * @apiVersion 0.1.0
+ * @apiName UnbanUser
+ * @apiGroup Admin Dashboard
+ *
+ * @apiDescription Unbans a previously banned user.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiParam {String} username Username of the user to be unbanned.
+ *
+ * @apiSuccess {Object} user User object containing user details.
+ * @apiSuccess {String} user._id User's unique ID.
+ * @apiSuccess {String} user.name User's name.
+ * @apiSuccess {String} user.email User's email address.
+ * @apiSuccess {String} user.username User's username.
+ * @apiSuccess {String} message Success message indicating user signed in or signed up successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "user": {
+ *           "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
+ *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
+ *               "displayName": "Amiraelgarf123",
+ *               "bio": "active",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
+ *       },
+ *       "message": "User unbanned successfully"
+ *     }
+ *
+ * @apiError Unauthorized The user is not authorized to perform this action.
+ * @apiError UserNotFound The specified user does not exist.
+ * @apiError UserNotBanned The specified user is not banned.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "message": "You are not authorized"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User is not found"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User is not banned"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /dashboard/comments Get Reported Comments
+ * @apiVersion 0.1.0
+ * @apiName GetComments
+ * @apiGroup Admin Dashboard
+ *
+ * @apiDescription Retrieves comments for administrative purposes.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiSuccess {Object} reportedComments  Object representing the added comment.
+ * @apiSuccess {String} reportedComments._id ID of the comment.
+ * @apiSuccess {String} reportedComments.content Content of the comment.
+ * @apiSuccess {Object} reportedComments.user User object representing the author of the comment.
+ * @apiSuccess {String} reportedComments.user.id ID of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.name Name of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.username Username of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.email Email of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.googleId Google ID of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.birth_date Birth date of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.phone Phone number of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} reportedComments.user.location Location of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.bio Bio of the user who posted the comment.
+ * @apiSuccess {Number} reportedComments.user.followers_count Number of followers of the user who posted the comment.
+ * @apiSuccess {Number} reportedComments .user.following_count Number of users followed by the user who posted the comment.
+ * @apiSuccess {Date} reportedComments.user.created_at Date when the user who posted the comment was created.
+ * @apiSuccess {String} reportedComments.user.role Role of the user who posted the comment.
+ * @apiSuccess {Boolean} reportedComments.user.nsfw Flag indicating if the user who posted the comment has NSFW content.
+ * @apiSuccess {Boolean} reportedComments.user.activeInCommunityVisibility Flag indicating if the user who posted the comment is active in community visibility.
+ * @apiSuccess {Boolean} reportedComments.user.isVerified Flag indicating if the user who posted the comment is verified.
+ * @apiSuccess {String} reportedComments.user.displayName Display name of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.about About information of the user who posted the comment.
+ * @apiSuccess {String} reportedComments.user.cakeDay Cake day of the user who posted the comment.
+ * @apiSuccess {String[]} reportedComments.user.subscribedCommunities List of communities subscribed by the user who posted the comment.
+ * @apiSuccess {Number} reportedComments.likes_count Number of likes received by the comment.
+ * @apiSuccess {Number} reportedComments.replies_count Number of replies to the comment.
+ * @apiSuccess {Boolean} reportedComments.is_reply Indicates if the comment is a reply to another comment.
+ * @apiSuccess {String[]} reportedComments.media Array of URLs of attached media files.
+ * @apiSuccess {Date} reportedComments.created_at Date and time when the comment was created.
+ * @apiSuccess {Boolean} reportedComments.is_hidden Indicates if the comment is hidden.
+ * @apiSuccess {Boolean} reportedComments.is_saved Indicates if the comment is saved.
+ * @apiSuccess {String} reportedComments.post_title Title of the post to which the comment belongs.
+ * @apiSuccess {String} reportedComments.community_title Title of the community where the post belongs.
+ * @apiSuccess {Boolean} reportedComments.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} reportedComments.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} reportedComments.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} reportedComments.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} reportedComments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {commentObject[]} reportedComments.replies if the comment has a reply by default empty array
+ * @apiSuccess {string} reportedComments.reports.username the user who reported the comennt
+ * @apiSuccess {string} reportedComments.reports.reason reason why the comment is reported
+ * @apiSuccess {string} reportedComments.reports.subreason subreason of why the comment is reported
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "reportedComments ": {
+ *           "_id": "609d0f23c8b58f001d54ee1f",
+ *           "content": "This is a comment on the post",
+ *           "user": {
+ *               "id": "609cfff1c8b58f001d54ee1e",
+ *               "name": "Amira El-garf",
+ *               "username": "amira123",
+ *               "email": "amiraelgarf99@gmail.com",
+ *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "followers_count": 100,
+ *               "following_count": 50,
+ *               "created_at": "2022-01-01T12:00:00.000Z",
+ *               "role": "User",
+ *               "nsfw": false,
+ *               "activeInCommunityVisibility": true,
+ *               "isVerified": true,
+ *               "isVisible": false,
+ *               "isActive": true,
+ *               "isBanned": false,
+ *               "displayName": "Amiraelgarf123",
+ *               "bio": "active",
+ *               "cakeDay": "2020-01-01",
+ *               "subscribedCommunities": ["community1", "community2"]
+ *               "favouriteCommunities": [],
+ *               "socialLinks": [],
+ *               "commentsOnYourPost": true,
+ *               "commentsYouFollow": true,
+ *               "upvotes": true,
+ *               "selectedPollOption": "Predator-Prey Coevolution",
+ *               "allowFollow": true
+ *           },
+ *           "likes_count": 10,
+ *           "replies_count": 5,
+ *           "is_reply": false,
+ *           "media": [
+ *               { "type": "image", "link": "https://example.com/attachment1.jpg" },
+ *               { "type": "image", "link": "https://example.com/attachment2.jpg" }
+ *           ],
+ *           "created_at": "2022-05-14T12:00:00.000Z",
+ *           "is_hidden": false,
+ *           "is_saved": false,
+ *           "post_title": "Sample Post Title",
+ *           "community_title": "Sample Community",
+ *           "is_upvoted": true,
+ *           "is_downvoted": false,
+ *           "is_removed": false,
+ *           "is_approved": true,
+ *           "is_locked": false,
+ *           "replies": [],
+ *           "reports":[
+ *                 {
+ *                  "username": "mimo12"
+ *                  "reason": "Spam",
+ *                  "subreason": "Irrelevant content"
+ *                 }
+ *            ]
+ *       },
+ *       "message": "Comments have been retrieved successfully"
+ *     }
+ *
+ * @apiError Unauthorized The user is not authorized to perform this action.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 403 Unauthorized
+ *     {
+ *       "message": "You are not authorized"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /dashboard/posts Get Reported Posts
+ * @apiVersion 0.1.0
+ * @apiName GetReportedPosts
+ * @apiGroup Admin Dashboard
+ *
+ * @apiDescription Retrieves reported posts for administrative purposes.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiSuccess {Object[]} reportedPosts List of reported post objects.
+ * @apiSuccess {String} message Success message.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *         "reportedPosts": [
+ *          {
+ *               "_id": "1234567890",
+ *              "userId": "0987654321",
+ *              "username": "example_user",
+ *              "userProfilePic": "http://example.com/avatar.jpg",
+ *              "hasUpvoted": false,
+ *              "hasDownvoted": false,
+ *              "hasVotedOnPoll": false,
+ *              "selectedPollOption": null,
+ *              "numberOfViews": 1080,
+ *              "votesUpCount": 10,
+ *              "votesDownCount": 2,
+ *              "sharesCount": 5,
+ *              "commentsCount": 15,
+ *              "title": "Sample Title",
+ *              "content": "Sample Content",
+ *              "community": "Sample Community",
+ *              "type": "Post",
+ *              "link": "http://example.com",
+ *              "pollExpiration": "2024-04-16T12:00:00.000Z",
+ *              "isPollEnabled": true,
+ *              "pollVotingLength": "7 days",
+ *              "isSpoiler": false,
+ *              "isNsfw": false,
+ *              "sendPostReplyNotification": true,
+ *              "isCommentsLocked": false,
+ *              "isSaved": false,
+ *              "date": "2024-04-16T10:00:00.000Z",
+ *              "pollOptions": [],
+ *              "attachments": [],
+ *              "reports":[
+ *                 {
+ *                  "username": "mimo12"
+ *                  "reason": "Spam",
+ *                  "subreason": "Irrelevant content"
+ *                 }
+ *              ]
+ *
+ *          }
+ *      ],
+ *      "message": "Posts have been retrieved successfully"
+ *      }
+ *
+ * @apiError Unauthorized The user is not authorized to perform this action.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 403 Unauthorized
+ *     {
+ *       "message": "You are not authorized"
+ *     }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+//#endregion Admin
+
+//#region message
+/**
+ * @api {post} /message/compose/ Send a Message
+ * @apiVersion 0.1.0
+ * @apiName SendMessage
+ * @apiGroup Message
+ * @apiDescription Send a message to another user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the recipient.
+ * @apiParam {String} subject Subject of the message.
+ * @apiParam {String} content Content of the message.
+ *
+ * @apiSuccess {Object} messageContent Details of the sent message.
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "messageContent": {
+ *           "_id": "1234567890",
+ *           "conversationId": "0987654321",
+ *           "senderType": "user",
+ *           "relatedUserOrCommunity": "recipient_username",
+ *           "type": "text",
+ *           "content": "Message content",
+ *           "time": "2024-05-02T12:00:00.000Z",
+ *           "direction": "outgoing",
+ *           "isRead": false,
+ *           "isDeleted": false,
+ *           "subject": "Message subject"
+ *       },
+ *       "message": "Message sent successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User cannot message themselves.
+ * @apiError (404) NotFound Recipient user not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Username is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "User cannot message themselves"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Recipient user not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /message/reply/:messageId Reply to a Message
+ * @apiVersion 0.1.0
+ * @apiName ReplyToMessage
+ * @apiGroup Message
+ * @apiDescription Reply to a message.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} messageId ID of the message to reply to.
+ * @apiParam {String} content Content of the reply message.
+ *
+ * @apiSuccess {Object} messageContent Details of the sent reply message.
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User is not authorized to reply to this message.
+ * @apiError (404) NotFound Message not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Message content is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "You are not authorized to reply to this message"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Message not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /message/readmsg/:messageId Mark Message as Read
+ * @apiVersion 0.1.0
+ * @apiName MarkMessageAsRead
+ * @apiGroup Message
+ * @apiDescription Mark a message as read.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} messageId ID of the message to mark as read.
+ *
+ * @apiSuccess {Object} messageContent Details of the marked message.
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (400) BadRequest Message already marked as read.
+ * @apiError (403) Forbidden User is not authorized to mark message as read.
+ * @apiError (404) NotFound Message not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Message already marked as read"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "You are not authorized to mark message as read"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Message not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /message/unreadmsg/:messageId Mark Message as Unread
+ * @apiVersion 0.1.0
+ * @apiName MarkMessageAsUnread
+ * @apiGroup Message
+ * @apiDescription Mark a message as unread.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} messageId ID of the message to mark as unread.
+ *
+ * @apiSuccess {Object} messageContent Details of the marked message.
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (400) BadRequest Message already marked as unread.
+ * @apiError (403) Forbidden User is not authorized to mark message as unread.
+ * @apiError (404) NotFound Message not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Message already marked as unread"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "You are not authorized to mark message as unread"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Message not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /message/readallmessages/ Mark All Messages as Read
+ * @apiVersion 0.1.0
+ * @apiName MarkAllMessagesAsRead
+ * @apiGroup Message
+ * @apiDescription Mark all messages as read.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (404) NotFound No unread messages found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No unread messages found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/inbox/ Get Inbox Messages
+ * @apiVersion 0.1.0
+ * @apiName GetInboxMessages
+ * @apiGroup Message
+ * @apiDescription Retrieve all inbox messages of the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} messages List of inbox messages.
+ *
+ * @apiError (404) NotFound No messages found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No messages found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {delete} /message/deletemsg/:messageId Delete a Message
+ * @apiVersion 0.1.0
+ * @apiName DeleteMessage
+ * @apiGroup Message
+ * @apiDescription Delete a message with the given message ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (403) Forbidden User is not authorized to delete this message.
+ * @apiError (404) NotFound Message not found or already deleted.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "error": "You are not authorized to delete this message"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Message not found or already deleted"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /message/readallmessages/ Mark All Messages as Read
+ * @apiVersion 0.1.0
+ * @apiName MarkAllMessagesAsRead
+ * @apiGroup Message
+ * @apiDescription Mark all messages as read for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {String} message Message indicating the operation's success.
+ *
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/unread Get Unread Messages
+ * @apiVersion 0.1.0
+ * @apiName GetUnreadMessages
+ * @apiGroup Message
+ * @apiDescription Retrieve unread messages for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} unreadMessages List of unread messages.
+ * @apiSuccess {String} unreadMessages._id ID of the message.
+ * @apiSuccess {String} unreadMessages.conversationId ID of the conversation.
+ * @apiSuccess {String} unreadMessages.senderType Type of sender (user or community).
+ * @apiSuccess {String} unreadMessages.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} unreadMessages.type Content type of the message.
+ * @apiSuccess {String} unreadMessages.content Content of the message.
+ * @apiSuccess {Date} unreadMessages.time Timestamp of when the message was sent.
+ * @apiSuccess {String} unreadMessages.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} unreadMessages.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} unreadMessages.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} unreadMessages.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound No unread messages found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No unread messages found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/messages Get All Messages
+ * @apiVersion 0.1.0
+ * @apiName GetAllMessages
+ * @apiGroup Message
+ * @apiDescription Retrieve all messages for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} allMessages List of all messages.
+ * @apiSuccess {String} allMessages._id ID of the message.
+ * @apiSuccess {String} allMessages.conversationId ID of the conversation.
+ * @apiSuccess {String} allMessages.senderType Type of sender (user or community).
+ * @apiSuccess {String} allMessages.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} allMessages.type Content type of the message.
+ * @apiSuccess {String} allMessages.content Content of the message.
+ * @apiSuccess {Date} allMessages.time Timestamp of when the message was sent.
+ * @apiSuccess {String} allMessages.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} allMessages.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} allMessages.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} allMessages.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound No messages found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No messages found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/postreplies Get Post Replies
+ * @apiVersion 0.1.0
+ * @apiName GetPostReplies
+ * @apiGroup Message
+ * @apiDescription Retrieve replies to posts for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} postReplies List of post replies.
+ * @apiSuccess {String} postReplies._id ID of the reply.
+ * @apiSuccess {String} postReplies.conversationId ID of the conversation.
+ * @apiSuccess {String} postReplies.senderType Type of sender (user or community).
+ * @apiSuccess {String} postReplies.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} postReplies.type Content type of the message.
+ * @apiSuccess {String} postReplies.content Content of the message.
+ * @apiSuccess {Date} postReplies.time Timestamp of when the message was sent.
+ * @apiSuccess {String} postReplies.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} postReplies.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} postReplies.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} postReplies.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound No post replies found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No post replies found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/mentions Get User Mentions
+ * @apiVersion 0.1.0
+ * @apiName GetUserMentions
+ * @apiGroup Message
+ * @apiDescription Retrieve mentions for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} userMentions List of user mentions.
+ * @apiSuccess {String} userMentions._id ID of the mention.
+ * @apiSuccess {String} userMentions.conversationId ID of the conversation.
+ * @apiSuccess {String} userMentions.senderType Type of sender (user or community).
+ * @apiSuccess {String} userMentions.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} userMentions.type Content type of the message.
+ * @apiSuccess {String} userMentions.content Content of the message.
+ * @apiSuccess {Date} userMentions.time Timestamp of when the message was sent.
+ * @apiSuccess {String} userMentions.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} userMentions.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} userMentions.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} userMentions.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound No user mentions found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No user mentions found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/sent Get Sent Messages
+ * @apiVersion 0.1.0
+ * @apiName GetSentMessages
+ * @apiGroup Message
+ * @apiDescription Retrieve sent messages for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} sentMessages List of sent messages.
+ * @apiSuccess {String} sentMessages._id ID of the message.
+ * @apiSuccess {String} sentMessages.conversationId ID of the conversation.
+ * @apiSuccess {String} sentMessages.senderType Type of sender (user or community).
+ * @apiSuccess {String} sentMessages.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} sentMessages.type Content type of the message.
+ * @apiSuccess {String} sentMessages.content Content of the message.
+ * @apiSuccess {Date} sentMessages.time Timestamp of when the message was sent.
+ * @apiSuccess {String} sentMessages.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} sentMessages.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} sentMessages.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} sentMessages.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound No sent messages found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "No sent messages found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/unreadcount Get Unread Message Count
+ * @apiVersion 0.1.0
+ * @apiName GetUnreadMessageCount
+ * @apiGroup Message
+ * @apiDescription Get the count of unread messages for the authenticated user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Number} unreadCount Count of unread messages.
+ *
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /message/reportmsg/:messageId Report Message
+ * @apiVersion 0.1.0
+ * @apiName ReportMessage
+ * @apiGroup Message
+ * @apiDescription Report a message by its ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} messageId ID of the message to report.
+ *
+ * @apiSuccess {String} message Success message indicating the report operation's success.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Invalid message ID"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /message/:messageId Get Message by ID
+ * @apiVersion 0.1.0
+ * @apiName GetMessageById
+ * @apiGroup Message
+ * @apiDescription Get a message by its ID.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} messageId ID of the message to retrieve.
+ *
+ * @apiSuccess {Object} messageDetails Details of the retrieved message.
+ * @apiSuccess {String} messageDetails._id ID of the message.
+ * @apiSuccess {String} messageDetails.conversationId ID of the conversation.
+ * @apiSuccess {String} messageDetails.senderType Type of sender (user or community).
+ * @apiSuccess {String} messageDetails.relatedUserOrCommunity Username of related user or name of community.
+ * @apiSuccess {String} messageDetails.type Content type of the message.
+ * @apiSuccess {String} messageDetails.content Content of the message.
+ * @apiSuccess {Date} messageDetails.time Timestamp of when the message was sent.
+ * @apiSuccess {String} messageDetails.direction Direction of the message (incoming or outgoing).
+ * @apiSuccess {Boolean} messageDetails.isRead Indicates if the message has been read.
+ * @apiSuccess {Boolean} messageDetails.isDeleted Indicates if the message has been deleted.
+ * @apiSuccess {String} messageDetails.subject Subject of the conversation.
+ *
+ * @apiError (404) NotFound Message with the specified ID not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Message not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal server error"
+ *     }
+ */
+//#end region message
+
+//#region ban-invite
+/**
+ * @api {post} /community/moderation/:communityName/:username/invite Invite Moderator
+ * @apiVersion 0.1.0
+ * @apiName InviteModerator
+ * @apiGroup Moderator
+ * @apiDescription Invite a user to become a moderator of a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to invite the user as a moderator.
+ * @apiParam {String} username Username of the user to be invited as a moderator.
+ * @apiParam {Boolean} manageUsers Indicates whether the invited moderator can manage users.
+ * @apiParam {Boolean} managePostsAndComments Indicates whether the invited moderator can manage posts and comments.
+ * @apiParam {Boolean} manageSettings Indicates whether the invited moderator can manage community settings.
+ *
+ * @apiSuccess {String} message Success message indicating the moderator invite was sent successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User is not allowed to invite moderators.
+ * @apiError (404) NotFound Community or user not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission to manage users.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid moderator invite data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "You are not allowed to invite moderators"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission to manage users"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/accept-invite Accept Moderator Invite
+ * @apiVersion 0.1.0
+ * @apiName AcceptModeratorInvite
+ * @apiGroup Moderator
+ * @apiDescription Accept a moderator invitation for a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to accept the moderator invite.
+ *
+ * @apiSuccess {String} message Success message indicating the moderator invite was accepted successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (402) PaymentRequired Moderator invite not found.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Community name is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Payment Required
+ *     {
+ *       "message": "Moderator invite not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/decline-invite Decline Moderator Invite
+ * @apiVersion 0.1.0
+ * @apiName DeclineModeratorInvite
+ * @apiGroup Moderator
+ * @apiDescription Decline a moderator invitation for a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to decline the moderator invite.
+ *
+ * @apiSuccess {String} message Success message indicating the moderator invite was declined successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (402) PaymentRequired Moderator invite not found.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Community name is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Payment Required
+ *     {
+ *       "message": "Moderator invite not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:username/ban Ban User
+ * @apiVersion 0.1.0
+ * @apiName BanUser
+ * @apiGroup Moderator
+ * @apiDescription Ban a user from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community from which to ban the user.
+ * @apiParam {String} username Username of the user to ban.
+ * @apiParam {Date} banDuration Duration of the ban (optional).
+ * @apiParam {String} banMessage Message to be displayed to the banned user.
+ * @apiParam {String} reason Reason for the ban.
+ * @apiParam {Boolean} isPermanent Indicates whether the ban is permanent.
+ * @apiParam {String} [modNote=""] Moderator's note regarding the ban.
+ *
+ * @apiSuccess {Object} user Object containing details of the banned user.
+ * @apiSuccess {String} user.username Username of the banned user.
+ * @apiSuccess {String} user.avatar Avatar URL of the banned user.
+ * @apiSuccess {String} message Success message indicating the user was banned successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User is not allowed to ban users.
+ * @apiError (404) NotFound User, community, or ban record not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Please insert all data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "You are not allowed to manage users"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {patch} /community/moderation/:communityName/:username/ban Edit Ban
+ * @apiVersion 0.1.0
+ * @apiName EditBan
+ * @apiGroup Moderator
+ * @apiDescription Edit the ban details for a user in a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community in which the user is banned.
+ * @apiParam {String} username Username of the banned user.
+ * @apiParam {Date} banDuration New duration of the ban (optional).
+ * @apiParam {String} banMessage New message to be displayed to the banned user.
+ * @apiParam {String} reason New reason for the ban.
+ * @apiParam {Boolean} isPermanent Indicates whether the ban is permanent.
+ *
+ * @apiSuccess {Object} user Object containing details of the banned user.
+ * @apiSuccess {String} user.username Username of the banned user.
+ * @apiSuccess {String} user.avatar Avatar URL of the banned user.
+ * @apiSuccess {String} message Success message indicating the ban was edited successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User is not allowed to manage users.
+ * @apiError (404) NotFound User, community, or ban record not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Please insert all data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "You are not allowed to manage users"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:username/unban Unban User
+ * @apiVersion 0.1.0
+ * @apiName UnbanUser
+ * @apiGroup Moderator
+ * @apiDescription Unban a user from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community from which to unban the user.
+ * @apiParam {String} username Username of the user to unban.
+ *
+ * @apiSuccess {Object} user Object containing details of the unbanned user.
+ * @apiSuccess {String} user.username Username of the unbanned user.
+ * @apiSuccess {String} user.avatar Avatar URL of the unbanned user.
+ * @apiSuccess {String} message Success message indicating the user was unbanned successfully.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (403) Forbidden User is not allowed to unban users.
+ * @apiError (404) NotFound User, community, or ban record not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Please insert all data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "You are not allowed to manage users"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/:username/is-banned Check User Ban Status
+ * @apiVersion 0.1.0
+ * @apiName CheckUserBanStatus
+ * @apiGroup Moderator
+ * @apiDescription Check whether a user is banned from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to check the user's ban status.
+ * @apiParam {String} username Username of the user to check.
+ *
+ * @apiSuccess {Boolean} isBanned Indicates whether the user is banned from the community.
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (404) NotFound Community, user, or ban record not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "username and community name is required"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/banned-users Get Banned Users in Community
+ * @apiVersion 0.1.0
+ * @apiName GetBannedUsersInCommunity
+ * @apiGroup Moderator
+ * @apiDescription Get the list of users banned in a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to get banned users from.
+ *
+ * @apiSuccess {Object[]} bannedUsersDetails Array containing details of banned users.
+ * @apiSuccess {String} bannedUsersDetails.username Username of the banned user.
+ * @apiSuccess {String} bannedUsersDetails.userProfilePic Profile picture URL of the banned user.
+ * @apiSuccess {String} bannedUsersDetails.reasonForBan Reason for the ban.
+ * @apiSuccess {String} bannedUsersDetails.userWhoBan Username of the moderator who banned the user.
+ * @apiSuccess {String} bannedUsersDetails.banPeriod Duration of the ban.
+ * @apiSuccess {Boolean} bannedUsersDetails.isPermanent Indicates whether the ban is permanent.
+ * @apiSuccess {String} bannedUsersDetails.modNote Moderator's note regarding the ban.
+ *
+ * @apiError (403) Forbidden User is not a moderator of the community.
+ * @apiError (404) NotFound No users are banned in the community.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "You are not a moderator of this community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "No users are banned in this community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+//#endregion ban-invite
+
+//#region Notifications
+
+/**
+ * @api {put} /notifications/mark-all-as-read Mark All Notifications as Read
+ * @apiVersion 0.1.0
+ * @apiName MarkAllNotificationsAsRead
+ * @apiGroup Notifications
+ * @apiDescription Marks all notifications and messages as read for the authenticated user.
+ * This endpoint updates the `isRead` field to true for all notifications and messages belonging to the user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {String} message Success message indicating notifications marked as read successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Notifications marked as read successfully"
+ *     }
+ *
+ * @apiError (401) Unauthorized User is not authenticated.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {put} /notifications/read-notification/:notificationId Mark Notification as Read
+ * @apiVersion 0.1.0
+ * @apiName MarkNotificationAsRead
+ * @apiGroup Notifications
+ * @apiDescription Marks a specific notification as read for the authenticated user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} notificationId ID of the notification to mark as read.
+ * @apiParamExample {json} Example:
+ *     {
+ *       "notificationId": "609cfff1c8b58f001d54ee1e"
+ *     }
+ *
+ * @apiSuccess {String} message Success message indicating notification marked as read successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Notification has been marked as read successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Notification with the provided ID not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /notifications/unread/count Get Unread Notification Count
+ * @apiVersion 0.1.0
+ * @apiName GetUnreadNotificationCount
+ * @apiGroup Notifications
+ * @apiDescription Retrieves the count of unread notifications and messages for the authenticated user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {Number} unreadCount Total count of unread notifications and messages.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "unreadCount": 5
+ *     }
+ *
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /notifications Get All Notifications
+ * @apiVersion 0.1.0
+ * @apiName GetAllNotifications
+ * @apiGroup Notifications
+ * @apiDescription Retrieves all notifications for the authenticated user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {Object[]} notifications Array of notification objects.
+ * @apiSuccess {String} notifications._id Unique ID of the notification.
+ * @apiSuccess {String} notifications.userId ID of the user associated with the notification.
+ * @apiSuccess {String} notifications.postId ID of the post associated with the notification.
+ * @apiSuccess {String} notifications.commentId ID of the comment associated with the notification.
+ * @apiSuccess {String} notifications.content Content of the notification.
+ * @apiSuccess {String} notifications.notification_type Type of the notification.
+ * @apiSuccess {Object} notifications.related_user Related user details.
+ * @apiSuccess {String} notifications.related_user.username Username of the related user.
+ * @apiSuccess {String} notifications.related_user.avatar Avatar URL of the related user.
+ * @apiSuccess {Object} notifications.post Post details associated with the notification.
+ * @apiSuccess {String} notifications.post.title Title of the post.
+ * @apiSuccess {String} notifications.post.community Community of the post.
+ * @apiSuccess {Object} notifications.comment Comment details associated with the notification.
+ * @apiSuccess {String} notifications.comment.content Content of the comment.
+ * @apiSuccess {String} notifications.comment.postTitle Title of the post related to the comment.
+ * @apiSuccess {String} notifications.comment.communityTitle Community of the post related to the comment.
+ * @apiSuccess {Boolean} notifications.is_read Indicates if the notification has been read.
+ * @apiSuccess {Boolean} notifications.is_hidden Indicates if the notification is hidden.
+ * @apiSuccess {Date} notifications.created_at Date and time when the notification was created.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "609cfff1c8b58f001d54ee1e",
+ *         "userId": "609cfff1c8b58f001d54ee1f",
+ *         "postId": "609d0222c8b58f001d54ee20",
+ *         "commentId": "609d0222c8b58f001d54ee21",
+ *         "content": "Your post has a new comment",
+ *         "notification_type": "Comment",
+ *         "related_user": {
+ *           "username": "example_user",
+ *           "avatar": "https://example.com/avatar.jpg"
+ *         },
+ *         "post": {
+ *           "title": "Example Post",
+ *           "community": "Example Community"
+ *         },
+ *         "comment": {
+ *           "content": "This is a new comment",
+ *           "postTitle": "Example Post",
+ *           "communityTitle": "Example Community"
+ *         },
+ *         "is_read": false,
+ *         "is_hidden": false,
+ *         "created_at": "2024-05-04T12:00:00.000Z"
+ *       }
+ *     ]
+ *
+ * @apiError (404) NotFound No notifications found for the user.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /notifications/hide/:notificationId Hide Notification
+ * @apiVersion 0.1.0
+ * @apiName HideNotification
+ * @apiGroup Notifications
+ * @apiDescription Hides a specific notification for the authenticated user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} notificationId ID of the notification to hide.
+ * @apiParamExample {json} Example:
+ *     {
+ *       "notificationId": "609cfff1c8b58f001d54ee1e"
+ *     }
+ *
+ * @apiSuccess {String} message Success message indicating notification hidden successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Notification hidden successfully"
+ *     }
+ *
+ * @apiError (404) NotFound Notification with the provided ID not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/suggest Suggest Community
+ * @apiVersion 0.1.0
+ * @apiName SuggestCommunity
+ * @apiGroup Notifications
+ * @apiDescription Suggests a random community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {String} communityname Name of the suggested community.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "communityname": "example_community"
+ *     }
+ *
+ * @apiError (404) NotFound No communities found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/update/disable/:communityname Disable Community Updates
+ * @apiVersion 0.1.0
+ * @apiName DisableCommunityUpdates
+ * @apiGroup Notifications
+ * @apiDescription Disables updates for a specified community for the authenticated user.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityname Name of the community to disable updates for.
+ * @apiParamExample {json} Example:
+ *     {
+ *       "communityname": "example_community"
+ *     }
+ *
+ * @apiSuccess {String} message Success message indicating updates disabled for the specified community.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Updates disabled for the specified community"
+ *     }
+ *
+ * @apiError (404) NotFound Community with the provided name not found.
+ * @apiError (400) BadRequest Community updates are already disabled for the user.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /notifications/subscribe Subscribe to Notifications
+ * @apiVersion 0.1.0
+ * @apiName SubscribeToNotifications
+ * @apiGroup Notifications
+ * @apiDescription Subscribes the authenticated user to receive notifications via Firebase Cloud Messaging (FCM).
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} fcmToken Firebase Cloud Messaging token for subscription.
+ * @apiParamExample {json} Example:
+ *     {
+ *       "fcmToken": "example_fcm_token"
+ *     }
+ *
+ * @apiSuccess {String} message Success message indicating subscription added successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Subscription added successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Subscription already exists for the provided FCM token.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal Server Error"
+ *     }
+ */
+
+//#endregion
+
+//#region Search
+
+/**
+ * @api {get} /search Perform Search
+ * @apiVersion 0.1.0
+ * @apiName getSearch
+ * @apiGroup Search
+ * @apiDescription Performs a search based on the provided query parameters.
+ * This endpoint searches for users, posts, comments, communities, and hashtags based on the search query.
+ * The response includes search results based on the specified type and sort criteria.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} q Search query. Example: "John Doe"
+ * @apiParam {String} type Type of search (people, posts, comments, communities, hashtags). Example: "people"
+ * @apiParam {String} [sort] Sorting criteria for search results (hot, new, top, comment). Example: "hot"
+ *
+ * @apiSuccess {Object[]} results Array of search results.
+ * @apiSuccessExample {json} Success-People-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "userId": "609cfff1c8b58f001d54ee1f",
+ *           "username": "john_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "userinfo": "A software engineer",
+ *           "followersCount": 1000,
+ *           "isFollowing": true
+ *         },
+ *         {
+ *           "userId": "609d033ec8b58f001d54ee22",
+ *           "username": "jane_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "userinfo": "A web developer",
+ *           "followersCount": 500,
+ *           "isFollowing": false
+ *         }
+ *       ]
+ *     }
+ * @apiSuccessExample {json} Success-Posts-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "postId": "609d0222c8b58f001d54ee20",
+ *           "title": "New Product Launch",
+ *           "content":"Test Content",
+ *           "isnsfw": false,
+ *           "isSpoiler": false,
+ *           "votesCount": 50,
+ *           "commentsCount": 20,
+ *           "date": "2024-05-04T12:00:00.000Z",
+ *           "username": "john_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "attachments": [],
+ *           "communityname": "tech_community",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg"
+ *         },
+ *         {
+ *           "postId": "609d033ec8b58f001d54ee23",
+ *           "title": "Tech Talk",
+ *           "content":"Test Content",
+ *           "isnsfw": false,
+ *           "isSpoiler": false,
+ *           "votesCount": 30,
+ *           "commentsCount": 10,
+ *           "date": "2024-05-04T12:00:00.000Z",
+ *           "username": "jane_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "attachments": [],
+ *           "communityname": "tech_community",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg"
+ *         }
+ *       ]
+ *     }
+ * @apiSuccessExample {json} Success-Comments-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "commentId": "609cfff1c8b58f001d54ee1e",
+ *           "commentContent": "Great post!",
+ *           "commentVotes": 10,
+ *           "commentDate": "2024-05-04T12:00:00.000Z",
+ *           "communityName": "programming",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg",
+ *           "username": "jane_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "postId": "609d033ec8b58f001d54ee23",
+ *           "postDate": "2024-05-04T12:00:00.000Z",
+ *           "postVotes": 30,
+ *           "postCommentsCount": 15,
+ *           "postTitle": "New Feature Announcement",
+ *           "attachments": []
+ *         }
+ *       ]
+ *     }
+ * @apiSuccessExample {json} Success-Communities-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "communityId": "609d033ec8b58f001d54ee24",
+ *           "communityName": "programming",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg",
+ *           "membersCount": 10000,
+ *           "communityInfo": "A community for programmers",
+ *           "isFollowing": true
+ *         }
+ *       ]
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid search query or type.
+ * @apiError (404) NotFound No search results found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+/**
+ * @api {get} /search/profile Perform Profile Search
+ * @apiVersion 0.1.0
+ * @apiName PerformProfileSearch
+ * @apiGroup Search
+ * @apiDescription Performs a search within user profiles or community posts based on the provided query parameters.
+ * This endpoint allows searching for posts or comments within a specific user profile or community.
+ * The response includes search results based on the specified type and sort criteria.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} [username] Username of the user whose profile is being searched. Example: "john_doe"
+ * @apiParam {String} [communityname] Name of the community whose posts are being searched. Example: "programming"
+ * @apiParam {String} q Search query. Example: "New feature"
+ * @apiParam {String} type Type of search (posts, comments). Example: "posts"
+ * @apiParam {String} [sort] Sorting criteria for search results (hot, new, top, comment). Example: "new"
+ *
+ * @apiSuccess {Object[]} results Array of search results.
+ * @apiSuccessExample {json} Success-Posts-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "postId": "609d0222c8b58f001d54ee20",
+ *           "title": "New Product Launch",
+ *           "content":"Test Content",
+ *           "isnsfw": false,
+ *           "isSpoiler": false,
+ *           "votesCount": 50,
+ *           "commentsCount": 20,
+ *           "date": "2024-05-04T12:00:00.000Z",
+ *           "username": "john_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "attachments": [],
+ *           "communityname": "tech_community",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg"
+ *         },
+ *         {
+ *           "postId": "609d033ec8b58f001d54ee23",
+ *           "title": "Tech Talk",
+ *           "content":"Test Content",
+ *           "isnsfw": false,
+ *           "isSpoiler": false,
+ *           "votesCount": 30,
+ *           "commentsCount": 10,
+ *           "date": "2024-05-04T12:00:00.000Z",
+ *           "username": "jane_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "attachments": [],
+ *           "communityname": "tech_community",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg"
+ *         }
+ *       ]
+ *     }
+ * @apiSuccessExample {json} Success-Comments-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "commentId": "609cfff1c8b58f001d54ee1e",
+ *           "commentContent": "Great post!",
+ *           "commentVotes": 10,
+ *           "commentDate": "2024-05-04T12:00:00.000Z",
+ *           "communityName": "programming",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg",
+ *           "username": "jane_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "postId": "609d033ec8b58f001d54ee23",
+ *           "postDate": "2024-05-04T12:00:00.000Z",
+ *           "postVotes": 30,
+ *           "postCommentsCount": 15,
+ *           "postTitle": "New Feature Announcement",
+ *           "attachments": []
+ *         }
+ *       ]
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid search query or type.
+ * @apiError (404) NotFound No search results found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /search/suggestions Get Search Suggestions
+ * @apiVersion 0.1.0
+ * @apiName GetSearchSuggestions
+ * @apiGroup Search
+ * @apiDescription Retrieves search suggestions based on the provided query parameter.
+ * This endpoint returns suggested users and communities based on exact matches, starts with matches,
+ * and contains matches for the search query.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} q Search query. Example: "programming"
+ *
+ * @apiSuccess {Object[]} communities Array of suggested community objects.
+ * @apiSuccess {Object[]} users Array of suggested user objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "communities": [
+ *         {
+ *           "communityId": "609d0222c8b58f001d54ee20",
+ *           "communityName": "programming",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg",
+ *           "membersCount": 500,
+ *           "communityInfo": "A community for programmers",
+ *           "isFollowing": false
+ *         }
+ *       ],
+ *       "users": [
+ *         {
+ *           "userId": "609d033ec8b58f001d54ee23",
+ *           "username": "john_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "userinfo": "Software Engineer",
+ *           "followersCount": 100,
+ *           "isFollowing": false
+ *         }
+ *       ]
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid search query.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+//#region Trending Posts
+
+/**
+ * @api {get} /search/trending Get Trending Posts
+ * @apiVersion 0.1.0
+ * @apiName GetTrendingPosts
+ * @apiGroup Search
+ * @apiDescription Retrieves the top trending posts based on the number of comments.
+ * This endpoint returns the top 5 posts with the highest number of comments.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {Object[]} results Array of top trending post objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "results": [
+ *         {
+ *           "postId": "609d042ac8b58f001d54ee25",
+ *           "title": "The Future of Artificial Intelligence",
+ *           "content":"Test Content",
+ *           "isnsfw": false,
+ *           "isSpoiler": false,
+ *           "votesCount": 150,
+ *           "commentsCount": 200,
+ *           "date": "2024-05-01T10:30:00Z",
+ *           "username": "john_doe",
+ *           "userProfilePic": "https://example.com/profile_pic.jpg",
+ *           "attachments": ["https://example.com/post_attachment.jpg"],
+ *           "communityname": "technology",
+ *           "communityProfilePic": "https://example.com/community_pic.jpg"
+ *         }
+ *       ]
+ *     }
+ *
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /search/log Log Search Activity
+ * @apiVersion 0.1.0
+ * @apiName LogSearchActivity
+ * @apiGroup Search
+ * @apiDescription Logs search activity performed by users, including searches for posts, communities, and users.
+ * This endpoint records search queries, search type (normal, community, or user), and additional information like community name and username if applicable.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} query The search query entered by the user.
+ * @apiParam {String="normal","community","user"} type The type of search: "normal" for general search, "community" for community search, "user" for user search.
+ * @apiParam {String} [communityName] The name of the community if the search type is "community".
+ * @apiParam {String} [username] The username if the search type is "user".
+ * @apiParam {Boolean} [isInProfile] Indicates whether the search was performed from a user's profile page. Default is false.
+ *
+ * @apiSuccess {String} message Success message indicating search activity logged successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Search activity logged successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request body or missing required fields.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /search/history Get Search History
+ * @apiVersion 0.1.0
+ * @apiName GetSearchHistory
+ * @apiGroup Search
+ * @apiDescription Retrieves the search history of the authenticated user, including the most recent searches.
+ * This endpoint returns the search queries along with associated details such as community name, user name, and profile picture.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiSuccess {Object[]} history Array containing search history records.
+ * @apiSuccess {String} history.query The search query.
+ * @apiSuccess {String} history.type The type of search: "normal" for general search, "community" for community search, "user" for user search.
+ * @apiSuccess {String} [history.communityId] The ID of the community if the search type is "community".
+ * @apiSuccess {String} [history.communityName] The name of the community if the search type is "community".
+ * @apiSuccess {String} [history.communityProfilePic] The profile picture of the community if the search type is "community".
+ * @apiSuccess {String} [history.userId] The ID of the user if the search type is "user".
+ * @apiSuccess {String} [history.userName] The username of the user if the search type is "user".
+ * @apiSuccess {String} [history.userProfilePic] The profile picture of the user if the search type is "user".
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "query": "example",
+ *         "type": "normal"
+ *       },
+ *       {
+ *         "query": "community",
+ *         "type": "community",
+ *         "communityId": "609bd4c92b108c0015e3d456",
+ *         "communityName": "Example Community",
+ *         "communityProfilePic": "community_image_url"
+ *       },
+ *       {
+ *         "query": "user",
+ *         "type": "user",
+ *         "userId": "609bd4c92b108c0015e3d457",
+ *         "userName": "example_user",
+ *         "userProfilePic": "user_avatar_url"
+ *       }
+ *     ]
+ *
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {delete} /search/history Delete Search History
+ * @apiVersion 0.1.0
+ * @apiName DeleteSearchHistory
+ * @apiGroup Search
+ * @apiDescription Deletes a specific search history record based on the query provided.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} query The search query to be deleted from the search history.
+ *
+ * @apiSuccess {String} message Success message indicating search history record deleted successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Search history record deleted successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid or missing search query parameter.
+ * @apiError (404) NotFound Search history record not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+//#endregion
+//#region Post Moderation
+
+/**
+ * @api {post} /community/moderation/:communityName/spam-post/:postId Mark Post as Spam
+ * @apiVersion 0.1.0
+ * @apiName MarkPostAsSpam
+ * @apiGroup Post
+ * @apiDescription Marks a post as spam within a community.
+ * This endpoint is used by moderators to mark a specific post as spam within their community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community where the post belongs.
+ * @apiParam {String} postId ID of the post to be marked as spam.
+ *
+ * @apiSuccess {String} message Success message indicating post marked as spam successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post marked as spam successfully"
+ *     }
+ *
+ * @apiError (402) Forbidden User is not a moderator.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission to mark the post as spam.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/get-spam-posts Get Spam Posts
+ * @apiVersion 0.1.0
+ * @apiName GetSpamPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves a list of spam posts within a community.
+ * This endpoint returns the list of posts marked as spam within a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object[]} posts Array of spam post objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "609d0222c8b58f001d54ee20",
+ *         "userId": "609d033ec8b58f001d54ee23",
+ *         "username": "john_doe",
+ *         "userProfilePic": "https://example.com/profile_pic.jpg",
+ *         "hasUpvoted": true,
+ *         "hasDownvoted": false,
+ *         "hasVotedOnPoll": true,
+ *         "selectedPollOption": "Option A",
+ *         "numberOfViews": 100,
+ *         "votesUpCount": 50,
+ *         "votesDownCount": 10,
+ *         "sharesCount": 5,
+ *         "commentsCount": 20,
+ *         "title": "New Product Launch",
+ *         "content": "Lorem ipsum dolor sit amet...",
+ *         "community": "tech_community",
+ *         "communityIcon": "https://example.com/community_pic.jpg",
+ *         "type": "text",
+ *         "link": null,
+ *         "pollExpiration": "2024-05-05T12:00:00Z",
+ *         "isPollEnabled": true,
+ *         "pollVotingLength": 24,
+ *         "isSpoiler": false,
+ *         "isNsfw": false,
+ *         "sendPostReplyNotification": true,
+ *         "isCommentsLocked": false,
+ *         "isSaved": true,
+ *         "isRemoved": false,
+ *         "removalReason": null,
+ *         "isApproved": true,
+ *         "isScheduled": false,
+ *         "isSpam": true,
+ *         "date": "2024-05-04T12:00:00Z",
+ *         "pollOptions": ["Option A", "Option B"],
+ *         "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/get-edited-posts Get Edited Posts History
+ * @apiVersion 0.1.0
+ * @apiName GetEditedPostsHistory
+ * @apiGroup Post
+ * @apiDescription Retrieves the history of edited posts within a community.
+ * This endpoint returns a list of edited posts within a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object[]} posts Array of edited post objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "609d0222c8b58f001d54ee20",
+ *         "userId": "609d033ec8b58f001d54ee23",
+ *         "username": "john_doe",
+ *         "userProfilePic": "https://example.com/profile_pic.jpg",
+ *         "hasUpvoted": true,
+ *         "hasDownvoted": false,
+ *         "hasVotedOnPoll": true,
+ *         "selectedPollOption": "Option A",
+ *         "numberOfViews": 100,
+ *         "votesUpCount": 50,
+ *         "votesDownCount": 10,
+ *         "sharesCount": 5,
+ *         "commentsCount": 20,
+ *         "title": "New Product Launch",
+ *         "content": "Lorem ipsum dolor sit amet...",
+ *         "community": "tech_community",
+ *         "communityIcon": "https://example.com/community_pic.jpg",
+ *         "type": "text",
+ *         "link": null,
+ *         "pollExpiration": "2024-05-05T12:00:00Z",
+ *         "isPollEnabled": true,
+ *         "pollVotingLength": 24,
+ *         "isSpoiler": false,
+ *         "isNsfw": false,
+ *         "sendPostReplyNotification": true,
+ *         "isCommentsLocked": false,
+ *         "isSaved": true,
+ *         "isRemoved": false,
+ *         "removalReason": null,
+ *         "isApproved": true,
+ *         "isScheduled": false,
+ *         "isSpam": false,
+ *         "date": "2024-05-04T12:00:00Z",
+ *         "pollOptions": ["Option A", "Option B"],
+ *         "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (404) NotFound Edited posts not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:postId/remove-post Remove Post
+ * @apiVersion 0.1.0
+ * @apiName RemovePost
+ * @apiGroup Post
+ * @apiDescription Removes a post from a community.
+ * This endpoint is used by moderators to remove a specific post from their community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community where the post belongs.
+ * @apiParam {String} postId ID of the post to be removed.
+ *
+ * @apiParam {String} removalReason Reason for removing the post.
+ *
+ * @apiSuccess {String} message Success message indicating post removed successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post removed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Must has a removal reason.
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (403) Forbidden Post has already been removed before.
+ * @apiError (404) NotFound Post not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/unmoderated-posts Get Unmoderated Posts
+ * @apiVersion 0.1.0
+ * @apiName GetUnmoderatedPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves a list of unmoderated posts within a community.
+ * This endpoint returns a list of posts that are not yet moderated within a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object[]} posts Array of unmoderated post objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "609d0222c8b58f001d54ee20",
+ *         "userId": "609d033ec8b58f001d54ee23",
+ *         "username": "john_doe",
+ *         "userProfilePic": "https://example.com/profile_pic.jpg",
+ *         "hasUpvoted": true,
+ *         "hasDownvoted": false,
+ *         "hasVotedOnPoll": true,
+ *         "selectedPollOption": "Option A",
+ *         "numberOfViews": 100,
+ *         "votesUpCount": 50,
+ *         "votesDownCount": 10,
+ *         "sharesCount": 5,
+ *         "commentsCount": 20,
+ *         "title": "New Product Launch",
+ *         "content": "Lorem ipsum dolor sit amet...",
+ *         "community": "tech_community",
+ *         "communityIcon": "https://example.com/community_pic.jpg",
+ *         "type": "text",
+ *         "link": null,
+ *         "pollExpiration": "2024-05-05T12:00:00Z",
+ *         "isPollEnabled": true,
+ *         "pollVotingLength": 24,
+ *         "isSpoiler": false,
+ *         "isNsfw": false,
+ *         "sendPostReplyNotification": true,
+ *         "isCommentsLocked": false,
+ *         "isSaved": true,
+ *         "isRemoved": false,
+ *         "removalReason": null,
+ *         "isApproved": false,
+ *         "isScheduled": false,
+ *         "isSpam": false,
+ *         "date": "2024-05-04T12:00:00Z",
+ *         "pollOptions": ["Option A", "Option B"],
+ *         "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (404) NotFound No unmoderated posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/schedule-posts Get Scheduled Posts
+ * @apiVersion 0.1.0
+ * @apiName GetScheduledPosts
+ * @apiGroup Post
+ * @apiDescription Retrieves a list of scheduled posts within a community.
+ * This endpoint returns a list of posts that are scheduled for publishing within a specified community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community.
+ *
+ * @apiSuccess {Object[]} posts Array of scheduled post objects.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "609d0222c8b58f001d54ee20",
+ *         "userId": "609d033ec8b58f001d54ee23",
+ *         "username": "john_doe",
+ *         "userProfilePic": "https://example.com/profile_pic.jpg",
+ *         "hasUpvoted": true,
+ *         "hasDownvoted": false,
+ *         "hasVotedOnPoll": true,
+ *         "selectedPollOption": "Option A",
+ *         "numberOfViews": 100,
+ *         "votesUpCount": 50,
+ *         "votesDownCount": 10,
+ *         "sharesCount": 5,
+ *         "commentsCount": 20,
+ *         "title": "New Product Launch",
+ *         "content": "Lorem ipsum dolor sit amet...",
+ *         "community": "tech_community",
+ *         "communityIcon": "https://example.com/community_pic.jpg",
+ *         "type": "text",
+ *         "link": null,
+ *         "pollExpiration": "2024-05-05T12:00:00Z",
+ *         "isPollEnabled": true,
+ *         "pollVotingLength": 24,
+ *         "isSpoiler": false,
+ *         "isNsfw": false,
+ *         "sendPostReplyNotification": true,
+ *         "isCommentsLocked": false,
+ *         "isSaved": true,
+ *         "isRemoved": false,
+ *         "removalReason": null,
+ *         "isApproved": false,
+ *         "isScheduled": true,
+ *         "isSpam": false,
+ *         "date": "2024-05-04T12:00:00Z",
+ *         "pollOptions": ["Option A", "Option B"],
+ *         "attachments": []
+ *       }
+ *     ]
+ *
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (404) NotFound No scheduled posts found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:postId/approve-post Approve Post
+ * @apiVersion 0.1.0
+ * @apiName ApprovePost
+ * @apiGroup Post
+ * @apiDescription Approves a post within a community.
+ * This endpoint is used by moderators to approve a specific post within their community.
+ *
+ * @apiHeader {String} Authorization User's access token obtained after authentication.
+ *
+ * @apiParam {String} communityName Name of the community where the post belongs.
+ * @apiParam {String} postId ID of the post to be approved.
+ *
+ * @apiSuccess {String} message Success message indicating post approved successfully.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Post approved successfully"
+ *     }
+ *
+ * @apiError (402) Forbidden User is not a moderator or does not have permission.
+ * @apiError (404) NotFound Post or community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Internal Server Error"
+ *     }
+ */
+
+//#endregion
+
+//#region Moderation
+
+/**
+ * @api {post} /rule/add Add Rule to Community
+ * @apiVersion 0.1.0
+ * @apiName AddRuleToCommunity
+ * @apiGroup Moderation
+ * @apiDescription Adds a rule to a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} title Title of the rule.
+ * @apiParam {String} [description] Description of the rule.
+ * @apiParam {String} [reportReason] Reason for reporting.
+ * @apiParam {String} communityName Name of the community to add the rule to.
+ * @apiParam {String="posts","comments","both"} [appliesTo="both"] Specifies whether the rule applies to posts, comments, or both.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "title": "Sample Rule",
+ *    "description": "Sample description for the rule",
+ *    "communityName": "Sample Community",
+ *    "appliesTo": "posts",
+ *    "reportReason": "example reason"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the rule has been added successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Rule added successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden User is not a moderator of the community.
+ * @apiError (403) Forbidden Title already used.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (405) MethodNotAllowed Max number of rules reached.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission to manage settings.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid rule data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "You are not a moderator of this community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "Title already used"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 405 Method Not Allowed
+ *     {
+ *       "message": "Max number of rules reached"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission to manage settings"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /rule/remove Remove Rule from Community
+ * @apiVersion 0.1.0
+ * @apiName RemoveRuleFromCommunity
+ * @apiGroup Moderation
+ * @apiDescription Removes a rule from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to remove the rule from.
+ * @apiParam {String} title Title of the rule to remove.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community",
+ *    "title": "Sample Rule"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the rule has been removed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Rule removed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator.
+ * @apiError (404) NotFound Community or rule not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission to manage settings.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Rule not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /rule/edit Edit Rule in Community
+ * @apiVersion 0.1.0
+ * @apiName EditRuleInCommunity
+ * @apiGroup Moderation
+ * @apiDescription Edits a rule in a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to edit the rule in.
+ * @apiParam {String} oldTitle Title of the rule to be edited.
+ * @apiParam {Object} newRule New details of the rule.
+ * @apiParam {String} newRule.title New title of the rule.
+ * @apiParam {String} [newRule.description] New description of the rule.
+ * @apiParam {String} [newRule.reportReason] New reason for reporting.
+ * @apiParam {String="posts","comments","both"} [newRule.appliesTo="both"] New value specifying whether the rule applies to posts, comments, or both.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community",
+ *    "oldTitle": "Sample Rule",
+ *    "newRule": {
+ *        "title": "Updated Rule",
+ *        "description": "Updated description for the rule"
+ *    }
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the rule has been edited successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Rule edited successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid rule data.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator.
+ * @apiError (404) NotFound Community or rule not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission to manage settings.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid rule data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Rule not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/:communityName/rules Get Community Rules
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityRules
+ * @apiGroup Moderation
+ * @apiDescription Retrieves a list of rules for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve rules from.
+ *
+ * @apiSuccess {Object[]} rules List of rules for the specified community.
+ * @apiSuccess {String} rules.title Title of the rule.
+ * @apiSuccess {String} rules.description Description of the rule.
+ * @apiSuccess {String} rules.reportReason Reason for reporting.
+ * @apiSuccess {String} rules.appliesTo Specifies whether the rule applies to posts, comments, or both.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "title": "Sample Rule",
+ *             "description": "Description of the sample rule",
+ *             "reportReason": "Reason for reporting",
+ *             "appliesTo": "posts"
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Missing or invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /removal-reason/add Add Removal Reason to Community
+ * @apiVersion 0.1.0
+ * @apiName AddRemovalReasonToCommunity
+ * @apiGroup Moderation
+ * @apiDescription Adds a removal reason to a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} title Title of the removal reason.
+ * @apiParam {String} reasonMessage Message explaining the reason for removal.
+ * @apiParam {String} communityName Name of the community to add the removal reason to.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "title": "Sample Reason",
+ *    "reasonMessage": "Sample message for the removal reason",
+ *    "communityName": "Sample Community"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the removal reason has been added successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Removal reason added successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid removal reason data.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden You are not a moderator of this community.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (405) MethodNotAllowed Max number of removal reasons reached.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid removal reason data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "You are not a moderator of this community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 405 Method Not Allowed
+ *     {
+ *       "message": "Max number of removal reasons reached"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /removal-reason/remove Remove Removal Reason from Community
+ * @apiVersion 0.1.0
+ * @apiName RemoveRemovalReasonFromCommunity
+ * @apiGroup Moderation
+ * @apiDescription Removes a removal reason from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to remove the removal reason from.
+ * @apiParam {String} rId ID of the removal reason to be removed.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community",
+ *    "rId": "609be36ec33f5f00154298b1"
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the removal reason has been removed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Removal reason removed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator.
+ * @apiError (404) NotFound Community or removal reason not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Removal reason not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {put} /removal-reason/edit Edit Removal Reason from Community
+ * @apiVersion 0.1.0
+ * @apiName EditRemovalReasonFromCommunity
+ * @apiGroup Moderation
+ * @apiDescription Edits a removal reason in a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community containing the removal reason.
+ * @apiParam {String} rId ID of the removal reason to be edited.
+ * @apiParam {Object} newRemovalReason New data for the removal reason.
+ * @apiParam {String} newRemovalReason.title New title for the removal reason.
+ * @apiParam {String} newRemovalReason.reasonMessage New message explaining the reason for removal.
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "communityName": "Sample Community",
+ *    "rId": "609be36ec33f5f00154298b1",
+ *    "newRemovalReason": {
+ *        "title": "Updated Reason",
+ *        "reasonMessage": "Updated message for the removal reason"
+ *    }
+ * }
+ *
+ * @apiSuccess {String} message Success message indicating that the removal reason has been edited successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Removal reason edited successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Missing or invalid removal reason data.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden You are not a moderator of this community.
+ * @apiError (404) NotFound Community or removal reason not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid removal reason data"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "You are not a moderator of this community"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Removal Reason not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/:communityName/removal-reasons Get Community Removal Reasons
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityRemovalReasons
+ * @apiGroup Moderation
+ * @apiDescription Retrieves a list of removal reasons for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve removal reasons from.
+ *
+ * @apiSuccess {Object[]} removalReasons List of removal reasons for the specified community.
+ * @apiSuccess {String} removalReasons.title Title of the removal reason.
+ * @apiSuccess {String} removalReasons.reasonMessage Message explaining the reason for removal.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "title": "Sample Reason",
+ *             "reasonMessage": "Sample message for the removal reason"
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Missing or invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/:communityName/get-info Get Community Info
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityInfo
+ * @apiGroup Moderation
+ * @apiDescription Retrieves information about a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve information from.
+ *
+ * @apiSuccess {Object} communityObject Object containing community information.
+ * @apiSuccess {Boolean} communityObject.is18plus Indicates if the community is for users above 18 years old.
+ * @apiSuccess {String} communityObject.name Name of the community.
+ * @apiSuccess {String} [communityObject.category] Category of the community.
+ * @apiSuccess {String} communityObject.communityType Type of the community (Public, Restricted, Private).
+ * @apiSuccess {String} [communityObject.description] Description of the community.
+ * @apiSuccess {String} [communityObject.image] Link to the image of the community.
+ * @apiSuccess {Array} [communityObject.members] Array of members in the community.
+ * @apiSuccess {Number} communityObject.membersCount Total number of community members.
+ * @apiSuccess {Array} [communityObject.rules] Array of rules in the community.
+ * @apiSuccess {String} communityObject.rules.title Title of the rule.
+ * @apiSuccess {String} [communityObject.rules.description] Description of the rule.
+ * @apiSuccess {String} [communityObject.rules.reportReason] Reason for reporting the rule.
+ * @apiSuccess {String} communityObject.rules.appliesTo Type to which the rule applies (e.g., posts).
+ * @apiSuccess {Array} [communityObject.removalReasons] Array of removal reasons in the community.
+ * @apiSuccess {String} communityObject.removalReasons.title Title of the removal reason.
+ * @apiSuccess {String} [communityObject.removalReasons.reasonMessage] Message describing the reason for removal.
+ * @apiSuccess {Date} communityObject.dateCreated Date when the community was created.
+ * @apiSuccess {String} [communityObject.communityBanner] Link to the banner of the community.
+ * @apiSuccess {String} [communityObject.membersNickname] Nickname for the community members.
+ * @apiSuccess {Boolean} communityObject.isModerator Indicates if the user is a moderator in the community.
+ * @apiSuccess {Boolean} communityObject.isCreator Indicates if the user is the creator of the community.
+ * @apiSuccess {Boolean} communityObject.isMember Indicates if the user is a member of the community.
+ * @apiSuccess {Boolean} communityObject.isContributor Indicates if the user is a contributor to the community.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "is18plus": true,
+ *       "name": "string",
+ *       "category": "string",
+ *       "communityType": "Public",
+ *       "description": "string",
+ *       "image": "string",
+ *       "members": [
+ *         {}
+ *       ],
+ *       "membersCount": 0,
+ *       "rules": [
+ *         {
+ *           "title": "string",
+ *           "description": "string",
+ *           "reportReason": "string",
+ *           "appliesTo": "posts"
+ *         }
+ *       ],
+ *       "removalReasons": [
+ *         {
+ *           "title": "string",
+ *           "reasonMessage": "string"
+ *         }
+ *       ],
+ *       "dateCreated": "2024-05-05T20:00:26.288Z",
+ *       "communityBanner": "string",
+ *       "membersNickname": "string",
+ *       "isModerator": true,
+ *       "isCreator": true,
+ *       "isMember": true,
+ *       "isContributor": true
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+/**
+ * @api {post} /community/moderation/:communityName/:username/leave Leave Community Moderation
+ * @apiVersion 0.1.0
+ * @apiName LeaveCommunityModeration
+ * @apiGroup Moderation
+ * @apiDescription Allows a moderator to leave a community's moderation team.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} username Username of the moderator leaving the community.
+ *
+ * @apiSuccess {String} message Success message indicating that the moderator has left the community moderation successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Left moderator role successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid leave request.
+ * @apiError (404) NotFound User or community not found.
+ * @apiError (402) Forbidden User is not a moderator of the community.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid leave request"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "User or community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "User is not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/contributors Get Community Contributors
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityContributors
+ * @apiGroup Moderation
+ * @apiDescription Retrieves a list of contributors for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve contributors from.
+ *
+ * @apiSuccess {Object[]} contributors List of contributors for the specified community.
+ * @apiSuccess {String} contributors.username Username of the contributor.
+ * @apiSuccess {String} contributors.banner Banner image URL of the contributor.
+ * @apiSuccess {String} contributors.avatar Avatar image URL of the contributor.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "username": "user1",
+ *             "banner": "https://example.com/banner1.jpg",
+ *             "avatar": "https://example.com/avatar1.jpg"
+ *         },
+ *         {
+ *             "username": "user2",
+ *             "banner": "https://example.com/banner2.jpg",
+ *             "avatar": "https://example.com/avatar2.jpg"
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator of the community.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:username/add-contributor Add Contributor to Community
+ * @apiVersion 0.1.0
+ * @apiName AddContributorToCommunity
+ * @apiGroup Moderation
+ * @apiDescription Adds a contributor to a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to add the contributor to.
+ * @apiParam {String} username Username of the user to be added as a contributor.
+ *
+ * @apiSuccess {String} message Success message indicating that the user has been added as a contributor successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "User added as contributor successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator of the community.
+ * @apiError (404) NotFound Community or user not found.
+ * @apiError (405) MethodNotAllowed User is already a contributor.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 405 Method Not Allowed
+ *     {
+ *       "message": "User is already a contributor"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+/**
+ * @api {post} /community/moderation/:communityName/:username/remove-contributor Remove Contributor from Community
+ * @apiVersion 0.1.0
+ * @apiName RemoveContributorFromCommunity
+ * @apiGroup Moderation
+ * @apiDescription Removes a contributor from a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to remove the contributor from.
+ * @apiParam {String} username Username of the user to be removed as a contributor.
+ *
+ * @apiSuccess {String} message Success message indicating that the user has been removed as a contributor successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "User removed as contributor successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (402) Forbidden Not a moderator of the community.
+ * @apiError (404) NotFound Community or user not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Invalid request parameters"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 406 Not Acceptable
+ *     {
+ *       "message": "Moderator doesn't have permission"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+/**
+ * @api {post} /community/:communityName/edit-info Edit Community Info
+ * @apiVersion 0.1.0
+ * @apiName EditCommunityInfo
+ * @apiGroup Moderation
+ * @apiDescription Edits information about a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to edit information for.
+ * @apiParam {String} name New name for the community.
+ * @apiParam {Boolean} [is18plus] Indicates if the community is for users aged 18 and above.
+ * @apiParam {String} [communityType] Type of the community (e.g., public, private).
+ * @apiParam {String} [description] New description for the community.
+ * @apiParam {String} [fileType] Type of file being uploaded (e.g., image).
+ * @apiParam {String} [membersNickname] New nickname for community members.
+ * @apiParam {File} [image] New image for the community.
+ * @apiParam {File} [communityBanner] New banner image for the community.
+ *
+ * @apiSuccess {String} message Success message indicating that the community information has been updated successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Community information updated successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (402) DuplicateName Community name is already used.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/:communityName/settings Get Community Settings
+ * @apiVersion 0.1.0
+ * @apiName GetCommunitySettings
+ * @apiGroup Moderation
+ * @apiDescription Retrieves settings for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve settings for.
+ *
+ * @apiSuccess {Object} settings Settings for the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *         "postTypeOptions": "any",
+ *         "spoilerEnabled": true,
+ *         "multipleImagesPerPostAllowed": true,
+ *         "pollsAllowed": true,
+ *         "commentSettings": {
+ *             "mediaInCommentsAllowed": true
+ *         }
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {put} /community/:communityName/settings Update Community Settings
+ * @apiVersion 0.1.0
+ * @apiName UpdateCommunitySettings
+ * @apiGroup Moderation
+ * @apiDescription Updates settings for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to update settings for.
+ * @apiParam {String} postTypeOptions Options for post types (e.g., any, links only, text posts only).
+ * @apiParam {Boolean} spoilerEnabled Indicates if spoilers are enabled.
+ * @apiParam {Boolean} multipleImagesPerPostAllowed Indicates if multiple images per post are allowed.
+ * @apiParam {Boolean} pollsAllowed Indicates if polls are allowed.
+ * @apiParam {Boolean} commentSettings.mediaInCommentsAllowed Indicates if media is allowed in comments.
+ *
+ * @apiSuccess {String} message Success message indicating that the community settings have been updated successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Community settings updated successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (402) Forbidden Not a moderator.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/muted Get Muted Communities
+ * @apiVersion 0.1.0
+ * @apiName GetMutedCommunities
+ * @apiGroup Moderation
+ * @apiDescription Retrieves a list of muted communities for the current user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiSuccess {Object[]} mutedCommunities List of muted communities.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "name": "Community Name",
+ *             "description": "Community Description",
+ *             "image": "Community Image URL",
+ *             "membersCount": 100,
+ *             "communityBanner": "Community Banner URL"
+ *         }
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+/**
+ * @api {get} /community/moderation/:communityName/moderators Get Community Moderators
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityModerators
+ * @apiGroup Moderation
+ * @apiDescription Retrieves a list of moderators for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve moderators for.
+ *
+ * @apiSuccess {Object[]} moderators List of moderators for the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2a",
+ *             "username": "moderator1",
+ *             "communityName": "community1"
+ *         },
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2b",
+ *             "username": "moderator2",
+ *             "communityName": "community1"
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/moderators/editable Get Editable Community Moderators
+ * @apiVersion 0.1.0
+ * @apiName GetEditableCommunityModerators
+ * @apiGroup Moderation
+ * @apiDescription Retrieves a list of editable moderators for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve editable moderators for.
+ *
+ * @apiSuccess {Object[]} editableModerators List of editable moderators for the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2b",
+ *             "username": "moderator2",
+ *             "communityName": "community1",
+ *             "moderationDate": "2024-05-05T00:00:00.000Z"
+ *         },
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2a",
+ *             "username": "moderator1",
+ *             "communityName": "community1",
+ *             "moderationDate": "2024-05-04T00:00:00.000Z"
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/invited-moderators Get Invited Community Moderators
+ * @apiVersion 0.1.0
+ * @apiName GetInvitedCommunityModerators
+ * @apiGroup Moderation
+ * @apiDescription Retrieves a list of invited moderators for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve invited moderators for.
+ *
+ * @apiSuccess {Object[]} invitedModerators List of invited moderators for the specified community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2a",
+ *             "username": "invitedmoderator1",
+ *             "communityName": "community1",
+ *             "isAccepted": false
+ *         }
+ *     ]
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {delete} /community/moderation/:communityName/:username/remove-invite Remove Moderator Invite
+ * @apiVersion 0.1.0
+ * @apiName RemoveModeratorInvite
+ * @apiGroup Moderation
+ * @apiDescription Removes an invitation for a moderator from a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to remove the moderator invite from.
+ * @apiParam {String} username Username of the moderator to remove the invite for.
+ *
+ * @apiSuccess {String} message Success message indicating that the moderator invite has been removed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Moderator invite removed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (406) NotAcceptable Moderator doesn't have permission.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+/**
+ * @api {get} /community/moderation/:communityName/:username/is-moderator Check if User is Moderator
+ * @apiVersion 0.1.0
+ * @apiName CheckIfUserIsModerator
+ * @apiGroup Moderation
+ * @apiDescription Checks if a user is a moderator of a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to check moderator status for.
+ * @apiParam {String} username Username of the user to check moderator status for.
+ *
+ * @apiSuccess {Boolean} isModerator Indicates whether the user is a moderator of the community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "isModerator": true
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/moderation/:communityName/:username/is-invited Check if User is Invited as Moderator
+ * @apiVersion 0.1.0
+ * @apiName CheckIfUserIsInvited
+ * @apiGroup Moderation
+ * @apiDescription Checks if a user is invited as a moderator of a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to check moderator invitation for.
+ * @apiParam {String} username Username of the user to check moderator invitation for.
+ *
+ * @apiSuccess {Boolean} isInvited Indicates whether the user is invited as a moderator of the community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "isInvited": true
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/moderation/user/:username Get Moderated Communities of User
+ * @apiVersion 0.1.0
+ * @apiName GetModeratedCommunitiesOfUser
+ * @apiGroup Moderation
+ * @apiDescription Retrieves a list of communities moderated by a specific user.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} username Username of the user to retrieve moderated communities for.
+ *
+ * @apiSuccess {Object[]} moderatedCommunities List of moderated communities by the user.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "_id": "611d4ce99c9e4c3b84011f2a",
+ *             "is18plus": true,
+ *             "name": "community1",
+ *             "category": "General",
+ *             "communityType": "Public",
+ *             "description": "This is community 1",
+ *             "image": "https://example.com/community1.jpg",
+ *             "membersCount": 100,
+ *             "communityBanner": "https://example.com/community1/banner.jpg",
+ *             "membersNickname": "Community Members",
+ *             "dateCreated": "2024-05-05T00:00:00.000Z"
+ *         }
+ *     ]
+ *
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound User not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {put} /community/moderation/:communityName/:username/permissions Update Moderator Permissions
+ * @apiVersion 0.1.0
+ * @apiName UpdateModeratorPermissions
+ * @apiGroup Moderation
+ * @apiDescription Updates the permissions of a moderator in a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to update moderator permissions for.
+ * @apiParam {String} username Username of the moderator to update permissions for.
+ * @apiParam {Boolean} managePostsAndComments Indicates whether the moderator can manage posts and comments.
+ * @apiParam {Boolean} manageUsers Indicates whether the moderator can manage users.
+ * @apiParam {Boolean} manageSettings Indicates whether the moderator can manage community settings.
+ *
+ * @apiSuccess {String} message Success message indicating that the moderator permissions have been updated successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Moderator permissions changed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community or moderator not found.
+ * @apiError (406) NotAcceptable Not authorized to modify permissions.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {delete} /community/moderation/:communityName/moderators/:username Remove Moderator from Community
+ * @apiVersion 0.1.0
+ * @apiName RemoveModeratorFromCommunity
+ * @apiGroup Moderation
+ * @apiDescription Removes a moderator from a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to remove the moderator from.
+ * @apiParam {String} username Username of the moderator to remove from the community.
+ *
+ * @apiSuccess {String} message Success message indicating that the moderator has been removed successfully.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "Moderator removed successfully"
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community or moderator not found.
+ * @apiError (402) PaymentRequired Not the creator.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+
+/**
+ * @api {get} /community/:communityName/insights Get Community Insights
+ * @apiVersion 0.1.0
+ * @apiName GetCommunityInsights
+ * @apiGroup Moderation
+ * @apiDescription Retrieves insights data for a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to retrieve insights for.
+ *
+ * @apiSuccess {Object} insights Object containing insights data for the community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "monthlyInsights": {
+ *           "newMembers": 10,
+ *           "posts": 50,
+ *           "comments": 100
+ *       },
+ *       "last7DaysInsights": {
+ *           "newMembers": 2,
+ *           "posts": 10,
+ *           "comments": 20
+ *       }
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+/**
+ * @api {get} /community/moderation/:communityName/permissions/:username Get Moderator Permissions
+ * @apiVersion 0.1.0
+ * @apiName GetModeratorPermissions
+ * @apiGroup Moderation
+ * @apiDescription Retrieves the permissions of a moderator in a community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community.
+ * @apiParam {String} username Username of the moderator.
+ *
+ * @apiSuccess {Boolean} managePostsAndComments Ability to manage posts and comments.
+ * @apiSuccess {Boolean} manageUsers Ability to manage users.
+ * @apiSuccess {Boolean} manageSettings Ability to manage community settings.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "managePostsAndComments": true,
+ *       "manageUsers": false,
+ *       "manageSettings": true
+ *     }
+ *
+ * @apiError (404) NotFound Community or user not found.
+ * @apiError (402) Forbidden Not a moderator of the community.
+ * @apiError (403) Forbidden This user is not a moderator.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Community not found"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 402 Forbidden
+ *     {
+ *       "message": "Not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "This user is not a moderator"
+ *     }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "message": "Internal server error"
+ *     }
+ */
+
+//#endregion

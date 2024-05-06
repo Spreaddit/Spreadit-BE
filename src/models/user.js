@@ -30,7 +30,7 @@ const UserSchema = new Schema(
       type: String,
       required: false,
       trim: true,
-      unique: true,
+      //unique: true,
     },
     googleId: {
       type: String,
@@ -67,12 +67,6 @@ const UserSchema = new Schema(
         type: String,
       },
     ],
-    bio: {
-      type: String,
-      trim: true,
-      maxLength: 160,
-      default: "",
-    },
     followers: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
     followings: [{ type: Schema.Types.ObjectId, ref: "user", index: true }],
     reportedUsers: [
@@ -82,11 +76,6 @@ const UserSchema = new Schema(
         index: true,
       },
     ],
-    background_picture: {
-      type: String,
-      trim: true,
-      default: "",
-    },
     roleId: {
       type: Schema.Types.ObjectId,
       ref: "userRole",
@@ -224,12 +213,14 @@ const UserSchema = new Schema(
     avatar: {
       type: String,
       trim: true,
-      default: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+      default:
+        "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     },
     banner: {
       type: String,
       trim: true,
-      default: "",
+      default:
+        "https://res.cloudinary.com/dkkhtb4za/image/upload/v1713046574/uploads/WhatsApp_Image_2024-04-13_at_5.22.35_PM_f0yaln.jpg",
     },
     nsfw: {
       type: Boolean,
@@ -281,12 +272,12 @@ const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    communities: {
-      type: [String],
-      default: function () {
-        return [this.username];
-      },
-    },
+    /*     communities: {
+          type: [String],
+          default: function () {
+            return [this.username];
+          },
+        }, */
     savedPosts: [
       {
         type: Schema.Types.ObjectId,
@@ -342,6 +333,18 @@ const UserSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "Community",
+      },
+    ],
+    moderatedCommunities: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: Community,
+      },
+    ],
+    disabledCommunities: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: Community,
       },
     ],
     tokens: [
@@ -438,7 +441,6 @@ UserSchema.statics.verifyCredentials = async function (
   if (userByEmail) {
     user = userByEmail;
   }
-
   if (user && (await bcrypt.compare(password, user.password))) {
     return user;
   } else {
@@ -448,6 +450,7 @@ UserSchema.statics.verifyCredentials = async function (
 
 UserSchema.statics.generateUserObject = async function (user) {
   try {
+    //const banInfo = await banUserModel.findOne({ userId: user._id });
     const userObj = {
       id: user._id,
       name: user.name,
@@ -457,9 +460,7 @@ UserSchema.statics.generateUserObject = async function (user) {
       birth_date: user.birth_date,
       phone: user.phone_number,
       avatar_url: user.avatar,
-      background_picture_url: user.background_picture,
       location: user.location,
-      bio: user.bio,
       followers_count: user.followers.length,
       following_count: user.followings.length,
       created_at: user.createdAt,
@@ -469,9 +470,10 @@ UserSchema.statics.generateUserObject = async function (user) {
       isVerified: user.isVerified,
       isVisible: user.isVisible,
       isActive: user.isActive,
+      isBanned: user.isBanned,
       displayName: user.displayName,
-      about: user.about,
-      cakeDay: user.cakeDay,
+      bio: user.about,
+      cakeDay: user.createdAt,
       subscribedCommunities: user.subscribedCommunities,
       favouriteCommunities: user.favouriteCommunities,
       socialLinks: user.socialLinks,
@@ -481,6 +483,20 @@ UserSchema.statics.generateUserObject = async function (user) {
       selectedPollOption: user.selectedPollOption,
       allowFollow: user.allowFollow,
     };
+
+    const subscribedCommunitiesNames = [];
+    for (const communityId of user.subscribedCommunities) {
+      const community = await Community.findById(communityId);
+      if (community) {
+        subscribedCommunitiesNames.push(community.name);
+      }
+    }
+    userObj.subscribedCommunities = subscribedCommunitiesNames;
+
+    // if (banInfo) {
+    //   userObj.banDuration = banInfo.banDuration;
+    //   userObj.permanentBan = banInfo.isPermanent;
+    // }
 
     return userObj;
   } catch (err) {
@@ -537,6 +553,22 @@ UserSchema.methods.generateRandomString = function () {
   }
 
   return randomString;
+};
+
+UserSchema.statics.getUserObjectSimplified = async function (
+  user,
+  loggedInUserId
+) {
+  const isFollowing = user.followers.includes(loggedInUserId);
+
+  return {
+    userId: user._id,
+    username: user.username,
+    userProfilePic: user.avatar,
+    userinfo: user.about,
+    followersCount: user.followers.length,
+    isFollowing: isFollowing,
+  };
 };
 
 const User = mongoose.model("user", UserSchema);

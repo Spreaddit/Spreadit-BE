@@ -5,24 +5,33 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const config = require("./configuration");
 const authRoutes = require("./routes/auth");
-const userRoutes = require("./routes/user");
 const userActionRoutes = require("./routes/user-action");
 const postsRoutes = require("./routes/post");
-const uploadRoutes = require("./routes/upload-test");
 const settingsRoutes = require("./routes/settings");
 const mobileSettingsRoutes = require("./routes/mobile-settings");
 const communityRoutes = require("./routes/community");
+const moderatorRoutes = require("./routes/moderator");
 const commentRoutes = require("./routes/comment");
 const listingRoutes = require("./routes/listing");
 const messageRoutes = require("./routes/message");
+const startUnbanScheduler = require("./models/unbanScheduler");
+const searchRoutes = require("./routes/search");
+const communitiespostsRoutes = require("./routes/community-post");
+const adminRoutes = require("./routes/admin");
+const communityCommentsRoutes = require("./routes/community-comment");
+const notificationsRoutes = require("../src/routes/notifications");
+const banInviteRoutes = require("../src/routes/ban-invite");
 
 //seeding
 const UserRoleSeeder = require("../seeders/user-role.seeder");
+const notificationTypeSeeder = require("../seeders/notification-type.seeder");
 const PostSeeder = require("../seeders/post.seeder");
 const CommentSeeder = require("../seeders/comment.seeder");
 const CommunitySeeder = require("../seeders/community.seeder");
 const UserSeeder = require("../seeders/user.seeder");
 const RuleSeeder = require("../seeders/rule.seeder");
+const ModeratorSeeder = require("../seeders/moderator.seeder");
+const RemovalReasonSeeder = require("../seeders/removalreason.seeder");
 
 const app = express();
 const port = 80;
@@ -40,17 +49,23 @@ app.use(
     origin: "*",
   })
 );
-app.use("/api", userRoutes);
+startUnbanScheduler();
 app.use("/api", authRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/mobile/settings", mobileSettingsRoutes);
 app.use("/api/users", userActionRoutes);
 app.use("/api/posts", postsRoutes);
-app.use("/api", uploadRoutes);
 app.use("/api", listingRoutes);
 app.use("/api", communityRoutes);
 app.use("/api", commentRoutes);
 app.use("/api", messageRoutes);
+app.use("/api/search", searchRoutes);
+app.use("/api", communitiespostsRoutes);
+app.use("/api", moderatorRoutes);
+app.use("/api", adminRoutes);
+app.use("/api", communityCommentsRoutes);
+app.use("/api", notificationsRoutes);
+app.use("/api", banInviteRoutes);
 mongoose
   .connect(connectionurl, {
     useNewUrlParser: true,
@@ -62,11 +77,14 @@ mongoose
     // Seed the database
     const seeders = [
       new UserRoleSeeder(),
+      new notificationTypeSeeder(),
       new UserSeeder(),
       new CommunitySeeder(),
       new RuleSeeder(),
       new PostSeeder(),
       new CommentSeeder(),
+      new ModeratorSeeder(),
+      new RemovalReasonSeeder(),
     ];
     for (const seeder of seeders) {
       const shouldRun = await seeder.shouldRun();
@@ -75,9 +93,7 @@ mongoose
         await seeder.run();
         console.log(`${seeder.constructor.name} Seeder executed successfully`);
       } else {
-        console.log(
-          `${seeder.constructor.name} Seeder already executed, skipping...`
-        ); // Use backticks instead of single quotes
+        console.log(`${seeder.constructor.name} Seeder already executed, skipping...`); // Use backticks instead of single quotes
       }
     }
 

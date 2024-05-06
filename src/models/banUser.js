@@ -9,9 +9,12 @@ const BanUserSchema = new Schema(
       index: true,
       ref: "user",
     },
+    userWhoBan: {
+      type: String,
+      index: true,
+    },
     banDuration: {
       type: Date,
-      required: true,
     },
     reason: {
       type: String,
@@ -21,6 +24,19 @@ const BanUserSchema = new Schema(
     isPermanent: {
       type: Boolean,
       default: false,
+    },
+    communityName: {
+      type: String,
+      trim: true,
+    },
+    banMessage: {
+      type: String,
+      trim: true,
+    },
+    modNote: {
+      type: String,
+      trim: true,
+      default: "",
     },
   },
   {

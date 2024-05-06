@@ -17,6 +17,8 @@ const users = [
         subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1a", "624a6a677c8d9c9f5fd5eb20", "624a6a677c8d9c9f5fd5eb22", "624a6a677c8d9c9f5fd5eb29"], //[CodeCrafters, Writers' Haven, Mental Health Support Group, Movie Buffs Club ]
         followers: ["624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0b"],
         followings: ["624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0b"],
+        moderatedCommunities: ["624a6a677c8d9c9f5fd5eb1a", "624a6a677c8d9c9f5fd5eb20","624a6a677c8d9c9f5fd5eb22", "624a6a677c8d9c9f5fd5eb29"],
+        mutedCommunities: ["624a6a677c8d9c9f5fd5eb1a","624a6a677c8d9c9f5fd5eb20"],
     },
     {
         _id: "624a4fbf3f392aefdb4dd1c8", // farouq
@@ -34,6 +36,8 @@ const users = [
         subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1a", "624a6a677c8d9c9f5fd5eb1b", "624a6a677c8d9c9f5fd5eb1e", "624a6a677c8d9c9f5fd5eb24", "624a6a677c8d9c9f5fd5eb26", "624a6a677c8d9c9f5fd5eb1f" ], //[CodeCrafters, TechTalks, Creative Minds Collective, Globetrotters Community, Culinary Delights, Visual Arts Gallery]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a6a677c8d9c9f5fd5eb0b"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a6a677c8d9c9f5fd5eb0b"],
+        moderatedCommunities: ["624a6a677c8d9c9f5fd5eb1e", "624a6a677c8d9c9f5fd5eb24", "624a6a677c8d9c9f5fd5eb26"],
+        mutedCommunities: ["624a6a677c8d9c9f5fd5eb1a","624a6a677c8d9c9f5fd5eb20"],
     },
     {
         _id: "624a52d75ff69df002d25035", // mahmoud
@@ -51,6 +55,8 @@ const users = [
         subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1b", "624a6a677c8d9c9f5fd5eb1c"], //[TechTalks, CodeGeeks]
         followers: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0b"],
         followings: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0b"],
+        moderatedCommunities: ["624a6a677c8d9c9f5fd5eb1b", "624a6a677c8d9c9f5fd5eb1c", "624a48f143bd949036986953", "624a6a677c8d9c9f5fd5eb36", "624a6a677c8d9c9f5fd5eb28"],
+        mutedCommunities: ["624a6a677c8d9c9f5fd5eb1a","624a6a677c8d9c9f5fd5eb20"],
     },
     {
         _id: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
@@ -68,6 +74,7 @@ const users = [
         subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1c", "624a6a677c8d9c9f5fd5eb1a", "624a6a677c8d9c9f5fd5eb25", "624a6a677c8d9c9f5fd5eb27"], // [CodeGeeks, CodeCrafters, Adventurous Souls Society, Gourmet Adventures ]
         followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
         followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
+        moderatedCommunities: ["624a6a677c8d9c9f5fd5eb25"],
     },
     {
         _id: "624a6a677c8d9c9f5fd5eb0c", // Mimo
@@ -83,6 +90,7 @@ const users = [
         isVerified: true,
         avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
         subscribedCommunities: ["624a6a677c8d9c9f5fd5eb21", "624a6a677c8d9c9f5fd5eb25", "624a6a677c8d9c9f5fd5eb26", "624a6a677c8d9c9f5fd5eb28", "624a6a677c8d9c9f5fd5eb2a"], //[Mindfulness & Meditation Community, Adventurous Souls Society, Culinary Delights, Pop Culture Fanatics, Music Maniacs Lounge]
+        moderatedCommunities: ["624a6a677c8d9c9f5fd5eb21","624a6a677c8d9c9f5fd5eb2a"],
     },
     {
         _id: "624a6a677c8d9c9f5fd5eb0d", // Basem
@@ -113,6 +121,8 @@ const users = [
         isVerified: true,
         avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
         subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1b", "624a6a677c8d9c9f5fd5eb1c", "624a6a677c8d9c9f5fd5eb1d",  "624a6a677c8d9c9f5fd5eb1f", "624a6a677c8d9c9f5fd5eb20", "624a6a677c8d9c9f5fd5eb36", "624a6a677c8d9c9f5fd5eb24", "624a6a677c8d9c9f5fd5eb26", "624a6a677c8d9c9f5fd5eb28"], //[TechTalks, CodeGeeks, Biology Buffs Society, Visual Arts Gallery, Writers' Haven, Psychology Insights Circle, Globetrotters Community, Culinary Delights, Pop Culture Fanatics]
+        moderatedCommunities: ["624a6a677c8d9c9f5fd5eb1d","624a6a677c8d9c9f5fd5eb1f","624a6a677c8d9c9f5fd5eb27"],
+
     },
     {
         _id: "624a6a677c8d9c9f5fd5eb0f", // Farida
@@ -191,7 +201,7 @@ const users = [
         isVerified: true,
         avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
         subscribedCommunities: ["624a4052e28fb9d9c024671a", "624a6a677c8d9c9f5fd5eb27", "624a6a677c8d9c9f5fd5eb29","624a6a677c8d9c9f5fd5eb2a"], // [Space & Astronomy Lovers, Gourmet Adventures, Movie Buffs Club, Music Maniacs Lounge ]
-        
+        moderatedCommunities: ["624a4052e28fb9d9c024671a"],
     },
     {
         _id: "624a6a677c8d9c9f5fd5eb14", // Karim

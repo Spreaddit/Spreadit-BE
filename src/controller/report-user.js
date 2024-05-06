@@ -1,5 +1,6 @@
 const ReportUser = require("../models/user");
 const jwt = require("jsonwebtoken");
+const Report = require("../models/report.js");
 
 exports.reportUser = async (req, res) => {
   //const followerID = req.user;

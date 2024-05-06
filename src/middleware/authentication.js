@@ -1,24 +1,25 @@
 const { compareSync } = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const axios = require('axios');
+const axios = require("axios");
 const mongoose = require("mongoose");
 const User = require("../models/user");
 
 const authentication = async (req, res, next) => {
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
-    //console.log(token);
-    const decoded = jwt.verify(token, "Spreadit-access-token-CCEC-2024", { algorithms: ['HS256'] });
-    // console.log(decoded);
-    // console.log(decoded._id)
+    const decoded = jwt.verify(token, "Spreadit-access-token-CCEC-2024", {
+      algorithms: ["HS256"],
+    });
     const user = await User.findOne({
       _id: decoded._id,
       "tokens.token": token,
       isVerified: true,
     });
-    // console.log(user);
     if (!user) {
       throw new Error();
+    }
+    if (user.isBanned === true) {
+      res.status(401).send({ message: "The user is banned" });
     }
     //get all expired tokens
     const expiredTokens = user.tokens.filter(
@@ -39,7 +40,9 @@ const authentication = async (req, res, next) => {
       );
 
       //check if token is present in user tokens
-      const tokenExists = newUser.tokens.includes((token) => token.token === token);
+      const tokenExists = newUser.tokens.includes(
+        (token) => token.token === token
+      );
       if (!tokenExists) {
         throw new Error();
       }
@@ -54,29 +57,29 @@ const authentication = async (req, res, next) => {
   }
 };
 
-
 const verifyGoogleToken = async (req, res, next) => {
   const token = req.body.googleToken;
-  console.log(token);
   if (!token) {
     return res.status(401).json({ message: "unauthorized user" });
   }
 
   try {
-    const response = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json'
+    const response = await axios.get(
+      `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
       }
-    })
+    );
 
     req.decoded = response.data;
     next();
-
   } catch (error) {
     console.error("Error verifying the google token", error);
     return res.status(400).json({ message: "Invalid token" });
   }
-}
+};
 
 module.exports = { authentication, verifyGoogleToken };
