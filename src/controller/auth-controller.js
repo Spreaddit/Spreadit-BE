@@ -31,11 +31,7 @@ exports.signUp = async (req, res) => {
       } else {
         emailContent = `To confirm your email, click the link below: www.spreadit.me/verifyemail/${emailToken}`;
       }
-      await sendEmail(
-        savedUser.email,
-        "Please Confirm Your Email",
-        emailContent
-      );
+      await sendEmail(savedUser.email, "Please Confirm Your Email", emailContent);
 
       const userObj = await User.generateUserObject(savedUser);
 
@@ -75,10 +71,7 @@ exports.signUp = async (req, res) => {
   }
 };
 exports.logIn = async (req, res) => {
-  const user = await User.verifyCredentials(
-    req.body.username,
-    req.body.password
-  );
+  const user = await User.verifyCredentials(req.body.username, req.body.password);
 
   try {
     if (user) {
@@ -89,15 +82,10 @@ exports.logIn = async (req, res) => {
           Date.now() + 30 * 24 * 60 * 60 * 1000 //one month from the current time
         );
       } else {
-        authTokenInfo["token_expiration_date"] = new Date(
-          new Date().setHours(new Date().getHours() + 24)
-        );
+        authTokenInfo["token_expiration_date"] = new Date(new Date().setHours(new Date().getHours() + 24));
       }
       user.tokens = user.tokens.concat(authTokenInfo);
-      await User.updateOne(
-        { _id: user._id },
-        { $set: { tokens: user.tokens } }
-      );
+      await User.updateOne({ _id: user._id }, { $set: { tokens: user.tokens } });
       if (user.isBanned) {
         return res.status(402).send({ message: "The user is banned" });
       }
@@ -129,15 +117,10 @@ exports.googleOauth = async (req, res) => {
           Date.now() + 30 * 24 * 60 * 60 * 1000 //one month from the current time
         );
       } else {
-        authTokenInfo["token_expiration_date"] = new Date(
-          new Date().setHours(new Date().getHours() + 24)
-        );
+        authTokenInfo["token_expiration_date"] = new Date(new Date().setHours(new Date().getHours() + 24));
       }
       user.tokens = user.tokens.concat(authTokenInfo);
-      await User.updateOne(
-        { _id: user._id },
-        { $set: { tokens: user.tokens } }
-      );
+      await User.updateOne({ _id: user._id }, { $set: { tokens: user.tokens } });
       if (user.isBanned) {
         return res.status(402).send({ message: "The user is banned" });
       }
@@ -220,17 +203,11 @@ exports.addPasswordSendEmail = async (req, res) => {
       } else {
         emailContent = `To confirm your email, click the link below: www.spreadit.me/addpassword/${emailToken}`;
       }
-      await sendEmail(
-        user.connectedAccounts[0],
-        "Please Confirm Your Email",
-        emailContent
-      );
+      await sendEmail(user.connectedAccounts[0], "Please Confirm Your Email", emailContent);
 
-      res
-        .status(200)
-        .send({
-          message: "email for adding the passowrd is sent successfully",
-        });
+      res.status(200).send({
+        message: "email for adding the passowrd is sent successfully",
+      });
     }
   } catch (err) {
     console.log(err);
@@ -269,11 +246,7 @@ exports.forgotPassword = async (req, res) => {
     }
     const resetToken = await user.generateResetToken();
     const emailContent = `www.spreadit.me/password/${resetToken}`;
-    await sendEmail(
-      user.email,
-      "Ask and you shall receive.. a password reset",
-      emailContent
-    );
+    await sendEmail(user.email, "Ask and you shall receive.. a password reset", emailContent);
     res.status(200).send({ message: "Password reset link sent successfully" });
   } catch (err) {
     console.log(err);
@@ -296,11 +269,7 @@ exports.appForgotPassword = async (req, res) => {
     const resetToken = await user.generateResetToken();
 
     const emailContent = `app.spreadit.me/#/reset-password-by-token/${resetToken}`;
-    await sendEmail(
-      user.email,
-      "Ask and you shall receive.. a password reset",
-      emailContent
-    );
+    await sendEmail(user.email, "Ask and you shall receive.. a password reset", emailContent);
 
     res.status(200).send({ message: "Password reset link sent successfully" });
   } catch (err) {
@@ -320,9 +289,7 @@ exports.resetPasswordByToken = async (req, res) => {
       await user.save();
       res.status(200).send({ message: "Password reset successfully" });
     } else {
-      return res
-        .status(400)
-        .send({ message: "Invalid or expired reset token" });
+      return res.status(400).send({ message: "Invalid or expired reset token" });
     }
   } catch (err) {
     console.log(err);
@@ -384,12 +351,10 @@ exports.verifyEmail = async (req, res) => {
     const accessToken = await user.generateToken();
     user.isVerified = 1;
     await user.save();
-    res
-      .status(200)
-      .send({
-        message: "Email verified successfully",
-        accessToken: accessToken,
-      });
+    res.status(200).send({
+      message: "Email verified successfully",
+      accessToken: accessToken,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Internal server error" });
@@ -425,11 +390,7 @@ exports.forgotUsername = async (req, res) => {
     } else {
       emailContent = `Your username is ${user.username} you can login now: www.spreadit.me/login`;
     }
-    await sendEmail(
-      savedUser.email,
-      "So you wanna know your username, huh?",
-      emailContent
-    );
+    await sendEmail(savedUser.email, "So you wanna know your username, huh?", emailContent);
     res.status(200).send({ message: "Username sent successfully" });
   } catch (err) {
     console.error(err);
@@ -442,9 +403,7 @@ exports.getUserInfo = async (req, res) => {
     const user1 = await User.getUserByEmailOrUsername(username);
 
     const user = await User.findById(user1._id)
-      .select(
-        "username name avatar banner about createdAt subscribedCommunities isVisible isActive socialLinks"
-      )
+      .select("username name avatar banner about createdAt subscribedCommunities isVisible isActive socialLinks")
       .populate({
         path: "subscribedCommunities",
         select: "name image communityBanner membersCount",
@@ -475,17 +434,15 @@ exports.getUserInfo = async (req, res) => {
 exports.updateUserInfo = async (req, res) => {
   try {
     const userId = req.user._id;
-    const {
-      name,
-      about,
-      socialLinks,
-      username,
-      isVisible,
-      isActive,
-      fileType,
-    } = req.body;
-    const avatar = req.files["avatar"] ? req.files["avatar"][0] : null;
-    const banner = req.files["banner"] ? req.files["banner"][0] : null;
+    const { name, about, socialLinks, username, isVisible, isActive, fileType } = req.body;
+    let avatar = null;
+    let banner = null;
+    if (req.files && req.files["avatar"]) {
+      avatar = req.files["avatar"][0];
+    }
+    if (req.files && req.files["banner"] && req.files["banner"][0]) {
+      banner = req.files["banner"][0];
+    }
     let avatarUrl, bannerUrl;
 
     if (avatar) {
@@ -496,7 +453,10 @@ exports.updateUserInfo = async (req, res) => {
       const bannerResult = await uploadMedia(banner, "image");
       bannerUrl = bannerResult.secure_url;
     }
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate(
+      "subscribedCommunities",
+      "name description image communityBanner membersCount"
+    );
 
     if (username) {
       const exists = await User.getUserByEmailOrUsername(username);
@@ -505,14 +465,15 @@ exports.updateUserInfo = async (req, res) => {
       }
     }
 
-    user.name = name;
-    user.avatar = avatarUrl;
-    user.banner = bannerUrl;
-    user.about = about;
-    user.socialLinks = socialLinks;
-    user.username = username;
-    user.isVisible = isVisible;
-    user.isActive = isActive;
+    if (name) user.name = name;
+    if (avatarUrl) user.avatar = avatarUrl;
+    if (bannerUrl) user.banner = bannerUrl;
+    if (about) user.about = about;
+    if (socialLinks) user.socialLinks = socialLinks;
+    if (username) user.username = username;
+    if (typeof isVisible === "boolean") user.isVisible = isVisible;
+    if (typeof isActive === "boolean") user.isActive = isActive;
+
     await user.save();
 
     res.status(200).json({
