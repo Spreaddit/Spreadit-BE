@@ -12,6 +12,8 @@ const Report = require("../models/report");
 const Notification = require("./../models/notification");
 const NotificationType = require("./../../seed-data/constants/notificationType");
 require("./../models/constants/notificationType");
+const Moderator = require("../models/moderator.js");
+
 
 exports.createComment = async (req, res) => {
   try {
@@ -24,6 +26,7 @@ exports.createComment = async (req, res) => {
         message: "Comment content is required",
       });
     }
+    const communityName = post.community;
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).send({
@@ -31,8 +34,11 @@ exports.createComment = async (req, res) => {
       });
     }
     const recieverId = post.userId;
-
-    if (post.isCommentsLocked) {
+    const isModerator = await Moderator.findOne({
+      username: req.user.username,
+      communityName,
+    });
+    if (post.isCommentsLocked && !isModerator) {
       return res.status(403).send({
         message: "Comments are locked for this post",
       });
@@ -44,7 +50,6 @@ exports.createComment = async (req, res) => {
       postId,
     });
 
-    const communityName = post.community;
     const community = await Community.findOne({
       name: communityName,
     });
@@ -400,9 +405,13 @@ exports.createReply = async (req, res) => {
         message: "Root comment not found",
       });
     }
-
+    const communityName = post.community;
+    const isModerator = await Moderator.findOne({
+      username: req.user.username,
+      communityName,
+    });
     const post = await Post.findById(rootComment.postId);
-    if (post.isCommentsLocked) {
+    if (post.isCommentsLocked && !isModerator) {
       return res.status(403).send({
         message: "Comments are locked for this post",
       });
@@ -542,9 +551,8 @@ exports.hideComment = async (req, res) => {
     }
 
     res.status(200).send({
-      message: `Comment has been ${
-        isHidden ? "unhidden" : "hidden"
-      } successfully`,
+      message: `Comment has been ${isHidden ? "unhidden" : "hidden"
+        } successfully`,
     });
   } catch (err) {
     res.status(500).send(err.toString());
