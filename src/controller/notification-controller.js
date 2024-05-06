@@ -6,6 +6,7 @@ const Community = require("../models/community.js");
 const mongoose = require("mongoose");
 const Notification = require("../models/notification");
 const Message = require("../models/message.js");
+const NotificationSubscription = require("../models/notificationSub.js");
 
 exports.subscribe = async (req, res) => {
   try {
