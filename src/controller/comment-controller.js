@@ -26,13 +26,13 @@ exports.createComment = async (req, res) => {
         message: "Comment content is required",
       });
     }
-    const communityName = post.community;
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).send({
         message: "Post not found",
       });
     }
+    const communityName = post.community;
     const recieverId = post.userId;
     const isModerator = await Moderator.findOne({
       username: req.user.username,
