@@ -82,9 +82,10 @@ MessageSchema.statics.getMessageObject = async function (message, userId) {
     direction = "incoming";
   }
   let username;
-  if (message.senderType == "user")
+
+  if (message.senderType == "user") {
     username = relatedUser ? relatedUser.username : null;
-  else {
+  } else if (message.senderType == "community") {
     username = relatedUser ? relatedUser.name : null;
   }
   const type = message.contentType;
