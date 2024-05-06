@@ -25,9 +25,9 @@ exports.signUp = async (req, res) => {
       const emailToken = await savedUser.generateEmailToken();
       let emailContent;
       if (isCross) {
-        emailContent = `To confirm your email, click the link below: app.spreadit.me/#/home/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: app.spreaddit.me/#/home/${emailToken}`;
       } else {
-        emailContent = `To confirm your email, click the link below: www.spreadit.me/verifyemail/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: www.spreaddit.me/verifyemail/${emailToken}`;
       }
       await sendEmail(
         savedUser.email,
@@ -211,9 +211,9 @@ exports.addPasswordSendEmail = async (req, res) => {
       const emailToken = await user.generateEmailToken();
       let emailContent;
       if (isCross) {
-        emailContent = `To confirm your email, click the link below: app.spreadit.me/#/settings/account-settings/add-password/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: app.spreaddit.me/#/settings/account-settings/add-password/${emailToken}`;
       } else {
-        emailContent = `To confirm your email, click the link below: www.spreadit.me/addpassword/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: www.spreaddit.me/addpassword/${emailToken}`;
       }
       await sendEmail(
         user.connectedAccounts[0],
@@ -261,7 +261,7 @@ exports.forgotPassword = async (req, res) => {
       return res.status(400).send({ message: "Error, wrong email" });
     }
     const resetToken = await user.generateResetToken();
-    const emailContent = `www.spreadit.me/password/${resetToken}`;
+    const emailContent = `www.spreaddit.me/password/${resetToken}`;
     await sendEmail(
       user.email,
       "Ask and you shall receive.. a password reset",
@@ -288,7 +288,7 @@ exports.appForgotPassword = async (req, res) => {
 
     const resetToken = await user.generateResetToken();
 
-    const emailContent = `app.spreadit.me/#/reset-password-by-token/${resetToken}`;
+    const emailContent = `app.spreaddit.me/#/reset-password-by-token/${resetToken}`;
     await sendEmail(
       user.email,
       "Ask and you shall receive.. a password reset",
@@ -412,9 +412,9 @@ exports.forgotUsername = async (req, res) => {
     }
     let emailContent;
     if (isCross) {
-      emailContent = `Your username is ${user.username} you can login now: app.spreadit.me/login`;
+      emailContent = `Your username is ${user.username} you can login now: app.spreaddit.me/login`;
     } else {
-      emailContent = `Your username is ${user.username} you can login now: www.spreadit.me/login`;
+      emailContent = `Your username is ${user.username} you can login now: www.spreaddit.me/login`;
     }
     await sendEmail(
       savedUser.email,
