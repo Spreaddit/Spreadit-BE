@@ -170,7 +170,6 @@ exports.editBan = async (req, res) => {
       banMessage: req.body.banMessage,
     };
 
-    // Update the ban record
     const updatedBan = await BanUser.findOneAndUpdate(
       {
         userId: userToBeBanned._id,
@@ -274,7 +273,6 @@ exports.unbanUser = async (req, res) => {
       return res.status(404).send({ message: "User is not banned" });
     }
 
-    // Send response
     const userObj = await User.generateUserObject(userToBeUnbanned);
     res.status(200).send({
       user: userObj,

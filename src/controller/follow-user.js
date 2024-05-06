@@ -6,7 +6,6 @@ require("./../models/constants/notificationType");
 const jwt = require("jsonwebtoken");
 
 exports.followUser = async (req, res) => {
-  //const followerID = req.user;
   try {
     const username = req.body.username;
     if (!username) {
@@ -17,7 +16,7 @@ exports.followUser = async (req, res) => {
       console.error("User not found");
       return res.status(404).json({ error: "User not found" });
     }
-    const toFollowID = user._id; //notification to it
+    const toFollowID = user._id;
     const followerID = req.user._id;
 
     if (toFollowID.equals(followerID)) {
@@ -29,15 +28,15 @@ exports.followUser = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
     const followerUser = await FollowUser.findByIdAndUpdate(
-      followerID, // User being followed
-      { $addToSet: { followings: toFollowID } }, // Add follower's ID to the followers array, using $addToSet to ensure uniqueness
-      { new: true } // To return the updated document after the update operation
+      followerID,
+      { $addToSet: { followings: toFollowID } },
+      { new: true }
     );
 
     const tofollowUser = await FollowUser.findByIdAndUpdate(
-      toFollowID, // User being followed
-      { $addToSet: { followers: followerID } }, // Add follower's ID to the followers array, using $addToSet to ensure uniqueness
-      { new: true } // To return the updated document after the update operation
+      toFollowID,
+      { $addToSet: { followers: followerID } },
+      { new: true }
     );
 
     if (!followerUser) {
@@ -68,7 +67,6 @@ exports.followUser = async (req, res) => {
 };
 
 exports.isFollowed = async (req, res) => {
-  //const followerID = req.user;
   try {
     const username = req.params.username;
 
@@ -107,7 +105,6 @@ exports.getFollowers = async (req, res) => {
       avatar: follower.avatar,
     }));
 
-    // Send the followers data in the response
     res.status(200).json({ followers });
   } catch (err) {
     console.error("Internal server error", err);

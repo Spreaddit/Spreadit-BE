@@ -14,13 +14,13 @@ cloudinary.config({
 
 const uploadMedia = function (file, fileType) {
   return new Promise((resolve, reject) => {
-    const resourceType = fileType === "image" ? "image" : "video"; // Determine resource type based on fileType
+    const resourceType = fileType === "image" ? "image" : "video";
     cloudinary.uploader.upload(
       file.path,
       {
-        folder: "uploads", // Optional folder in Cloudinary where the file will be uploaded
-        public_id: file.filename, // Optional public ID for the file
-        resource_type: resourceType, // Specify the resource type (image or video)
+        folder: "uploads",
+        public_id: file.filename,
+        resource_type: resourceType,
       },
       (error, result) => {
         if (error) {
@@ -36,7 +36,6 @@ const uploadMedia = function (file, fileType) {
 };
 
 const downloadMedia = function (fileKey) {
-  // Construct the URL for downloading the media file from Cloudinary
   const url = cloudinary.url(fileKey);
   return url;
 };

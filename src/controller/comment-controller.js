@@ -14,10 +14,8 @@ const NotificationType = require("./../../seed-data/constants/notificationType")
 require("./../models/constants/notificationType");
 const Moderator = require("../models/moderator.js");
 
-
 exports.createComment = async (req, res) => {
   try {
-    //verify that the post id exists in the post collections
     const postId = req.params.postId;
     const userId = req.user._id;
     const { content, fileType } = req.body;
@@ -171,7 +169,6 @@ exports.deleteComment = async (req, res) => {
       });
     }
 
-    //const comment = await Comment.findByIdAndDelete(req.params.commentId);
     const adminId = await UserRole.find({
       name: "Admin",
     }).select("_id");
@@ -376,7 +373,6 @@ exports.editComment = async (req, res) => {
 exports.createReply = async (req, res) => {
   try {
     const parentCommentId = req.params.parentCommentId;
-    //const postId = req.params.postId;
     const userId = req.user._id;
     const { content, fileType } = req.body;
     if (!content) {
@@ -438,7 +434,6 @@ exports.createReply = async (req, res) => {
     if (req.files) {
       for (let i = 0; i < req.files.length; i++) {
         const result = await uploadMedia(req.files[i], fileType);
-        //const url = `${config.baseUrl}/media/${result.Key}`;
         const url = result.secure_url;
         const attachmentObj = { type: fileType, link: url };
         newReply.attachments.push(attachmentObj);
@@ -486,7 +481,6 @@ exports.createReply = async (req, res) => {
       message: "Reply has been added successfully",
     });
   } catch (err) {
-    // Handle errors
     res.status(500).send(err.toString());
   }
 };
@@ -551,8 +545,9 @@ exports.hideComment = async (req, res) => {
     }
 
     res.status(200).send({
-      message: `Comment has been ${isHidden ? "unhidden" : "hidden"
-        } successfully`,
+      message: `Comment has been ${
+        isHidden ? "unhidden" : "hidden"
+      } successfully`,
     });
   } catch (err) {
     res.status(500).send(err.toString());
@@ -723,7 +718,6 @@ exports.saveComment = async (req, res) => {
     await user.save();
     await comment.save();
 
-    // Send a response indicating success
     if (isSaved) {
       res.status(200).send({
         message: "Comment has been unsaved successfully",
