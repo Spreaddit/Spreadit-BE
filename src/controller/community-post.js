@@ -94,7 +94,7 @@ exports.getSpamPosts = async (req, res) => {
       })
     );
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({ filteredPostInfoArray });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

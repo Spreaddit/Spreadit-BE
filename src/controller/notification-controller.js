@@ -165,7 +165,10 @@ exports.suggestCommunity = async (req, res) => {
       return res.status(404).send({ error_message: "No community found" });
     }
 
-    res.status(200).json({ communityname: randomCommunity.name });
+    res.status(200).json({
+      communityname: randomCommunity.name,
+      communityProfilePic: randomCommunity.image
+    });
   } catch (error) {
     console.error("Error suggesting random community:", error);
     res.status(500).send({ error: "Internal Server Error" });
