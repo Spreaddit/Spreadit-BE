@@ -170,7 +170,6 @@ exports.editBan = async (req, res) => {
       banMessage: req.body.banMessage,
     };
 
-    // Update the ban record
     const updatedBan = await BanUser.findOneAndUpdate(
       {
         userId: userToBeBanned._id,

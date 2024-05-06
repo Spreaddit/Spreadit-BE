@@ -27,6 +27,9 @@ exports.sendMessage = async (req, res) => {
       return res.status(400).json({ error: "message content is required" });
     }
     const recieverUser = await User.getUserByEmailOrUsername(recieverUsername);
+    if (!recieverUser) {
+      return res.status(400).json({ error: "User not found" });
+    }
     const recieverId = recieverUser._id;
     if (recieverId.toString() === userId.toString())
       return res.status(400).json({ error: "user cannot message himself" });
