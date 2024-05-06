@@ -6,6 +6,7 @@ const Community = require("../models/community.js");
 const mongoose = require("mongoose");
 const Notification = require("../models/notification");
 const Message = require("../models/message.js");
+const NotificationSubscription = require("../models/notificationSub.js");
 
 exports.subscribe = async (req, res) => {
   try {
@@ -165,7 +166,10 @@ exports.suggestCommunity = async (req, res) => {
       return res.status(404).send({ error_message: "No community found" });
     }
 
-    res.status(200).json({ communityname: randomCommunity.name });
+    res.status(200).json({
+      communityname: randomCommunity.name,
+      communityProfilePic: randomCommunity.image
+    });
   } catch (error) {
     console.error("Error suggesting random community:", error);
     res.status(500).send({ error: "Internal Server Error" });

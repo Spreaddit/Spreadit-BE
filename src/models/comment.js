@@ -218,7 +218,8 @@ CommentSchema.statics.findRootComment = async (commentId) => {
     return null;
   }
   if (comment.parentCommentId) {
-    return findRootComment(comment.parentCommentId);
+    //return findRootComment(comment.parentCommentId);
+    return Comment.findRootComment(comment.parentCommentId);
   }
   return comment;
 };

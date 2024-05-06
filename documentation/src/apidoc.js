@@ -10602,6 +10602,32 @@
  */
 
 /**
+ * @api {get} /community/moderation/:communityName/:username/is-contributor Check if User is Contributor
+ * @apiVersion 0.1.0
+ * @apiName CheckIfUserIsContributor
+ * @apiGroup Moderation
+ * @apiDescription Checks if a user is a contributor of a specific community.
+ * @apiSampleRequest off
+ *
+ * @apiHeader {String} Authorization User's authentication token.
+ *
+ * @apiParam {String} communityName Name of the community to check moderator status for.
+ * @apiParam {String} username Username of the user to check moderator status for.
+ *
+ * @apiSuccess {Boolean} isContributor Indicates whether the user is a moderator of the community.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "isContributor": true
+ *     }
+ *
+ * @apiError (400) BadRequest Invalid request parameters.
+ * @apiError (401) Unauthorized Authorization token is required.
+ * @apiError (404) NotFound Community not found.
+ * @apiError (500) InternalServerError An unexpected error occurred on the server.
+ */
+/**
  * @api {get} /community/moderation/:communityName/:username/is-invited Check if User is Invited as Moderator
  * @apiVersion 0.1.0
  * @apiName CheckIfUserIsInvited
