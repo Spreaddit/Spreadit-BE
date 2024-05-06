@@ -118,4 +118,8 @@ router
   .route("/community/:communityName/insights")
   .get(auth.authentication, modController.getCommunityInsights);
 
+router
+  .route("/community/:communityName/:username/get-permissions")
+  .get(auth.authentication, modController.getPermissions);
+
 module.exports = router;

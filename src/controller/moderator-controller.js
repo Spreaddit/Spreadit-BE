@@ -1163,3 +1163,35 @@ exports.getCommunityInsights = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getPermissions = async (req, res) => {
+  try {
+    const communityName = req.params.communityName;
+    const username = req.params.username;
+    const community = await Community.findOne({ name: communityName });
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    const user = await User.findOne({ username: req.user.username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const moderator = await Moderator.findOne({ communityName, username: req.user.username });
+    if (!moderator) {
+      return res.status(402).json({ message: "Not a moderator" });
+    }
+    const moderatorPermissions = await Moderator.findOne({ communityName, username });
+    if (!moderatorPermissions) {
+      return res.status(403).json({ message: "This user is not a moderator" });
+    }
+    res.status(200).json({
+      managePostsAndComments: moderatorPermissions.managePostsAndComments,
+      manageUsers: moderatorPermissions.manageUsers,
+      manageSettings: moderatorPermissions.manageSettings,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

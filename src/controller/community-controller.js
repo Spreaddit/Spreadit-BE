@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const router = express.Router();
 const Community = require("../models/community.js");
+const Moderator = require("../models/moderator.js");
 router.use(passport.initialize());
 router.use(cookieParser("spreaditsecret"));
 
@@ -558,6 +559,11 @@ exports.createCommunity = async (req, res) => {
       moderators: [user],
     });
 
+    const newModerator = new Moderator({
+      username: user.username,
+      communityName: createdCommunity.name,
+      isAccepted: true,
+    });
     const existingCommunity = await Community.findOne({
       name: name,
     });
@@ -567,6 +573,8 @@ exports.createCommunity = async (req, res) => {
         .json({ message: "Community name is not available" });
     }
     user.subscribedCommunities.push(createdCommunity._id);
+    user.moderatedCommunities.push(createdCommunity._id);
+    await newModerator.save();
     await user.save();
     await createdCommunity.save();
     return res.status(200).send({ message: "Community created successfully" });
