@@ -156,7 +156,6 @@ exports.modifyEmailSetting = async (req, res) => {
     const { newFollowerEmail, chatRequestEmail, unsubscribeAllEmails } =
       req.body;
 
-    // Create an object to store only the fields that are provided in the request body
     const updatedFields = {};
     if (newFollowerEmail !== undefined) {
       updatedFields.newFollowerEmail = newFollowerEmail;

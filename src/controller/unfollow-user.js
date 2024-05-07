@@ -27,14 +27,14 @@ exports.unfollowUser = async (req, res) => {
 
     const unfollowerUser = await UnfollowUser.findByIdAndUpdate(
       unfollowerID,
-      { $pull: { followings: toUnfollowID } }, // Add to follow ID to the followers array, using $addToSet to ensure uniqueness
-      { new: true } // To return the updated document after the update operation
+      { $pull: { followings: toUnfollowID } },
+      { new: true }
     );
 
     const tounfollowUser = await UnfollowUser.findByIdAndUpdate(
-      toUnfollowID, // User being followed
-      { $pull: { followers: unfollowerID } }, // Add follower's ID to the followers array, using $addToSet to ensure uniqueness
-      { new: true } // To return the updated document after the update operation
+      toUnfollowID, 
+      { $pull: { followers: unfollowerID } }, 
+      { new: true } 
     );
     const response = {
       description: "User unfollowed successfully",
