@@ -794,12 +794,12 @@
  * @apiSuccess {Boolean} comments.is_saved Indicates if the comment is saved.
  * @apiSuccess {String} comments.post_title Title of the post to which the comment belongs.
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
- * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
- * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
- * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
- * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
- * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
- * @apiSuccess {Boolean} comment.is_removal if the comment is a removal reason
+ * @apiSuccess {Boolean} comments.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comments.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comments.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comments.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} comments.is_removal if the comment is a removal reason
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
  *
  * @apiSuccessExample {json} Success-Response:
