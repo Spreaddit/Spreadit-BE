@@ -391,8 +391,8 @@ UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
   }
 };
 
-UserSchema.methods.generateToken = async function () {
-  user = this;
+UserSchema.statics.generateToken = async function () {
+  const user = this;
 
   const token = jwt.sign(
     {
@@ -404,8 +404,8 @@ UserSchema.methods.generateToken = async function () {
   return token;
 };
 
-UserSchema.methods.generateEmailToken = async function () {
-  user = this;
+UserSchema.statics.generateEmailToken = async function () {
+  const user = this;
 
   const token = jwt.sign(
     {
