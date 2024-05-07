@@ -227,10 +227,16 @@ PostSchema.statics.getPostObject = async function (
   };
 };
 
-PostSchema.statics.getPostResultObject = async function (post) {
+PostSchema.statics.getPostResultObject = async function (post, userId) {
   const User = mongoose.model("user");
   const Community = mongoose.model("community");
-
+  const isHiddenByUser = post.hiddenBy.includes(userId);
+  if (isHiddenByUser && !includeHidden) {
+    return null;
+  }
+  if (post.isScheduled) {
+    return null;
+  }
   const user = await User.findById(post.userId).lean();
   const username = user ? user.username : null;
   const userProfilePic = user && user.avatar ? user.avatar : null;
