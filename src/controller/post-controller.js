@@ -1270,34 +1270,6 @@ exports.voteInPoll = async (req, res) => {
   }
 };
 
-exports.deleteRecentPost = async (req, res) => {
-  try {
-    const postId = req.params.postId;
-    if (!postId || postId.length !== 24) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-    const userId = req.user._id;
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res.status(404).json({ error: "Post not found" });
-    }
-    const user = await User.findById(userId);
-    const isRecent = user.recentPosts.includes(postId);
-    if (!isRecent) {
-      return res.status(404).json({ error: "Post is not in recent posts" });
-    }
-    const deleteRecent = await User.findByIdAndUpdate(
-      userId,
-      { $pull: { recentPosts: postId } },
-      { new: true }
-    );
-    res.status(200).json({ message: "Post deleted from recent successfully" });
-  } catch (err) {
-    console.error("Error deleting post:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
 exports.getReportedPostsInCommunity = async (req, res) => {
   try {
     const { communityName } = req.params;
