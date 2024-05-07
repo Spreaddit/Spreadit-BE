@@ -117,6 +117,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -570,6 +571,7 @@
  * @apiSuccess {String} comment.user.birth_date Birth date of the user who posted the comment.
  * @apiSuccess {String} comment.user.phone Phone number of the user who posted the comment.
  * @apiSuccess {String} comment.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} comment.user.banner URL of the user's banner.
  * @apiSuccess {String} comment.user.location Location of the user who posted the comment.
  * @apiSuccess {String} comment.user.bio Bio of the user who posted the comment.
  * @apiSuccess {Number} comment.user.followers_count Number of followers of the user who posted the comment.
@@ -612,6 +614,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -815,6 +818,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -927,6 +931,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -1038,6 +1043,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -1188,6 +1194,7 @@
  * @apiSuccess {String} reply.user.birth_date Birth date of the user who posted the reply.
  * @apiSuccess {String} reply.user.phone Phone number of the user who posted the reply.
  * @apiSuccess {String} reply.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} reply.user.banner URL of the user's banner.
  * @apiSuccess {String} reply.user.location Location of the user who posted the reply.
  * @apiSuccess {String} reply.user.bio Bio of the user who posted the reply.
  * @apiSuccess {Number} reply.user.followers_count Number of followers of the user who posted the reply.
@@ -1231,6 +1238,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -1351,6 +1359,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -6498,6 +6507,7 @@
  * @apiSuccess {String} SpammedComments.user.birth_date Birth date of the user who posted the comment.
  * @apiSuccess {String} SpammedComments.user.phone Phone number of the user who posted the comment.
  * @apiSuccess {String} SpammedComments.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} SpammedComments.user.banner URL of the user's banner.
  * @apiSuccess {String} SpammedComments.user.location Location of the user who posted the comment.
  * @apiSuccess {String} SpammedComments.user.bio Bio of the user who posted the comment.
  * @apiSuccess {Number} SpammedComments.user.followers_count Number of followers of the user who posted the comment.
@@ -6540,6 +6550,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -6828,6 +6839,7 @@
  * @apiSuccess {String} editedComment.user.birth_date Birth date of the user who posted the comment.
  * @apiSuccess {String} editedComment.user.phone Phone number of the user who posted the comment.
  * @apiSuccess {String} editedComment.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} editedComment.user.banner URL of the user's banner.
  * @apiSuccess {String} editedComment.user.location Location of the user who posted the comment.
  * @apiSuccess {String} editedComment.user.bio Bio of the user who posted the comment.
  * @apiSuccess {Number} editedComment.user.followers_count Number of followers of the user who posted the comment.
@@ -6870,6 +6882,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -6968,6 +6981,7 @@
  * @apiSuccess {String} reportedComments.user.birth_date Birth date of the user who posted the comment.
  * @apiSuccess {String} reportedComments.user.phone Phone number of the user who posted the comment.
  * @apiSuccess {String} reportedComments.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} reportedComments.user.banner URL of the user's banner.
  * @apiSuccess {String} reportedComments.user.location Location of the user who posted the comment.
  * @apiSuccess {String} reportedComments.user.bio Bio of the user who posted the comment.
  * @apiSuccess {Number} reportedComments.user.followers_count Number of followers of the user who posted the comment.
@@ -7013,6 +7027,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -7122,6 +7137,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -7201,6 +7217,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
@@ -7278,6 +7295,7 @@
  * @apiSuccess {String} reportedComments.user.birth_date Birth date of the user who posted the comment.
  * @apiSuccess {String} reportedComments.user.phone Phone number of the user who posted the comment.
  * @apiSuccess {String} reportedComments.user.avatar_url URL of the user's avatar.
+ * @apiSuccess {String} reportedComments.user.banner URL of the user's banner.
  * @apiSuccess {String} reportedComments.user.location Location of the user who posted the comment.
  * @apiSuccess {String} reportedComments.user.bio Bio of the user who posted the comment.
  * @apiSuccess {Number} reportedComments.user.followers_count Number of followers of the user who posted the comment.
@@ -7323,6 +7341,7 @@
  *               "username": "amira123",
  *               "email": "amiraelgarf99@gmail.com",
  *               "avatar_url": "https://example.com/avatar.jpg",
+ *               "banner": "https://example.com/avatar.jpg",
  *               "followers_count": 100,
  *               "following_count": 50,
  *               "created_at": "2022-01-01T12:00:00.000Z",
