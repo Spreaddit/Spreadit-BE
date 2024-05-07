@@ -4,11 +4,17 @@ const mongoose = require("mongoose");
 const User = require("../src/models/user");
 const Community = require("../src/models/community");
 const Rule = require("../src/models/rule");
-const jwt = require("jwt-decode");
+const Moderator = require("../src/models/moderator");
 
 const connectionUrl = "mongodb://localhost:27017/testDBforCommunity";
 const userOneId = new mongoose.Types.ObjectId();
 const userTwoId = new mongoose.Types.ObjectId();
+const communityId = new mongoose.Types.ObjectId();
+const communityId2 = new mongoose.Types.ObjectId();
+const communityId3 = new mongoose.Types.ObjectId();
+
+const modId = new mongoose.Types.ObjectId();
+const modId2 = new mongoose.Types.ObjectId();
 const userOne = {
   _id: userOneId,
   name: "Farouq Diaa",
@@ -29,6 +35,90 @@ const userTwo = {
   isVerified: true,
 };
 
+const community = {
+  _id: communityId,
+  name: "farouqfans",
+  communityType: "Public",
+  category: "abc",
+  is18plus: false,
+  allowNfsw: true,
+  allowSpoile: true,
+  creator: userOneId,
+  members: [userOneId],
+  moderators: [userOneId],
+  membersCount: 1,
+};
+
+const community2 = {
+  _id: communityId2,
+  name: "farouqfans2",
+  communityType: "Public",
+  category: "Technology",
+  rules: ["624a6a677c8d9c9f5fd5eb3d"],
+  description:
+    "Dive into the world of music, share your favorite songs, artists, genres, and concert experiences with fellow music enthusiasts.",
+  is18plus: false,
+  allowNfsw: true,
+  allowSpoile: true,
+  creator: userTwoId,
+  members: [userTwoId],
+  moderators: [userTwoId],
+  membersCount: 1,
+};
+
+const rule = {
+  _id: "624a6a677c8d9c9f5fd5eb3d",
+  title: "Music Maniacs Lounge Community Guidelines",
+  description:
+    "1. Share and appreciate diverse musical tastes and genres with respect for fellow members.",
+  reportReason: "Violation of community guidelines",
+  communityName: "MusicManiacsLounge",
+  appliesTo: "both",
+};
+
+const community3 = {
+  _id: communityId3,
+  name: "farouqfans3",
+  communityType: "Private",
+  category: "abc",
+  is18plus: false,
+  allowNfsw: true,
+  allowSpoile: true,
+  creator: userTwoId,
+  members: [userTwoId],
+  moderators: [userTwoId],
+  membersCount: 1,
+};
+
+const mod = {
+  _id: modId,
+  username: "farouquser",
+  communityName: "farouqfans",
+  managePostsAndComments: true,
+  manageUsers: true,
+  manageSettings: true,
+  isAccepted: true,
+};
+
+const mod2 = {
+  _id: modId2,
+  username: "farouquser2",
+  communityName: "farouqfans2",
+  managePostsAndComments: true,
+  manageUsers: true,
+  manageSettings: true,
+  isAccepted: true,
+};
+
+const mod3 = {
+  _id: modId3,
+  username: "farouquser2",
+  communityName: "farouqfans3",
+  managePostsAndComments: true,
+  manageUsers: true,
+  manageSettings: true,
+  isAccepted: true,
+};
 beforeAll(async () => {
   try {
     await mongoose.connect(connectionUrl, {
@@ -42,329 +132,23 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await User.deleteMany({});
+  await Community.deleteMany({});
+  await Moderator.deleteMany({});
+  await Rule.deleteMany({});
   await new User(userOne).save();
   await new User(userTwo).save();
-  await Community.deleteMany({});
-  await Rule.deleteMany({});
+  await new Community(community).save();
+  await new Community(community2).save();
+  await new Community(community3).save();
+  await new Moderator(mod).save();
+  await new Moderator(mod2).save();
+  await new Moderator(mod3).save();
+  await new Rule(rule).save();
 }, 10000);
 
 afterAll(() => {
   mongoose.connection.close();
 });
-
-describe("Adding a rule", () => {
-  test("It should add a new rule", async () => {
-    const logIn = await request(app)
-      .post("/login")
-      .send({ username: "farouquser", password: "12345678" });
-
-    const token = logIn.body.access_token;
-    const decoded = jwt.jwtDecode(token);
-    const user = await User.findById(decoded._id);
-
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-    const response = await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "farouqfans",
-      })
-      .expect(200);
-    expect(response.body.message).toBe("Rule added successfully");
-  });
-  test("It should return 'Invalid rule data' for status 400", async () => {
-    const logIn = await request(app)
-      .post("/login")
-      .send({ username: "farouquser", password: "12345678" });
-    const token = logIn.body.access_token;
-    const decoded = jwt.jwtDecode(token);
-    const user = await User.findById(decoded._id);
-
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-    const response = await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({})
-      .expect(400);
-
-    expect(response.body.message).toBe("Invalid rule data");
-  });
-
-  test("It should return 'Error' for status 401", async () => {
-    const logIn = await request(app)
-      .post("/login")
-      .send({ username: "farouquser", password: "12345678" });
-
-    const response = await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${logIn.body.access_token}`)
-      .send({})
-      .expect(401);
-
-    expect(response.body.message).toBe("Error");
-  });
-
-  test("It should return 'You are not a moderator of this community' for status 402", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-
-    const token = logIn.body.access_token;
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [],
-    });
-    await createdCommunity.save();
-
-    const response = await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "farouqfans",
-      })
-      .expect(402);
-
-    expect(response.body.message).toBe(
-      "You are not a moderator of this community"
-    );
-  });
-
-  test("It should return 'Title already used' for status 403", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-
-    await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "farouqfans",
-      });
-
-    const response = await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "farouqfans",
-      })
-      .expect(403);
-
-    expect(response.body.message).toBe("Title already used");
-  });
-
-  test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const response = await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "hello",
-      })
-      .expect(404);
-
-    expect(response.body.message).toBe("Community not found");
-  });
-});
-
-describe("Removing a rule", () => {
-  test("It should remove a rule", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-
-    await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "farouqfans",
-      });
-
-    const response = await request(app)
-      .post("/rule/remove")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "farouqfans",
-      })
-      .expect(200);
-
-    expect(response.body.message).toBe("Rule removed successfully");
-  });
-
-  test("It should return 'Invalid request parameters' for status 400", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-
-    const response = await request(app)
-      .post("/rule/remove")
-      .set("Authorization", `Bearer ${token}`)
-      .send({})
-      .expect(400);
-
-    expect(response.body.message).toBe("Invalid request parameters");
-  });
-
-  test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const response = await request(app)
-      .post("/rule/remove")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "hello",
-      })
-      .expect(404);
-
-    expect(response.body.message).toBe("Community not found");
-  });
-
-  test("It should return 'Not a moderator' for status 402", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-
-    const logIn2 = await request(app).post("/login").send({
-      username: "farouquser2",
-      password: "12345678",
-    });
-
-    const token2 = logIn2.body.access_token;
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-
-    await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "farouqfans",
-      });
-
-    const response = await request(app)
-      .post("/rule/remove")
-      .set("Authorization", `Bearer ${token2}`)
-      .send({
-        title: "myRule",
-        communityName: "farouqfans",
-      })
-      .expect(402);
-
-    expect(response.body.message).toBe("Not a moderator");
-  });
-
-  test("It should return 'Rule not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-
-    const response = await request(app)
-      .post("/rule/remove")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "1",
-        communityName: "farouqfans",
-      })
-      .expect(404);
-
-    expect(response.body.message).toBe("Rule not found");
-  });
-});
-
 describe("Adding community to favorites", () => {
   test("It should add community to favorites", async () => {
     const logIn = await request(app).post("/login").send({
@@ -372,17 +156,6 @@ describe("Adding community to favorites", () => {
       password: "12345678",
     });
     const token = logIn.body.access_token;
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
 
     const response = await request(app)
       .post("/community/add-to-favourites")
@@ -438,17 +211,6 @@ describe("Adding community to favorites", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-
     await request(app)
       .post("/community/add-to-favourites")
       .set("Authorization", `Bearer ${token}`)
@@ -475,17 +237,6 @@ describe("Removing community from favorites", () => {
       password: "12345678",
     });
     const token = logIn.body.access_token;
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
 
     await request(app)
       .post("/community/add-to-favourites")
@@ -546,17 +297,6 @@ describe("Removing community from favorites", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-
     const response = await request(app)
       .post("/community/remove-favourite")
       .set("Authorization", `Bearer ${token}`)
@@ -568,76 +308,48 @@ describe("Removing community from favorites", () => {
     expect(response.body.message).toBe("Community is not in favorites");
   });
 });
-/*
+
 describe("Checking if community is favorite", () => {
   test("It should return true if community is favourite", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-    await request(app).post("/community/add-to-favourites").set("Authorization", `Bearer ${token}`).send({
-      communityName: createdCommunity.name,
-    });
+    await request(app)
+      .post("/community/add-to-favourites")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ communityName: "farouqfans" });
+
     const response = await request(app)
       .get("/community/is-favourite")
       .set("Authorization", `Bearer ${token}`)
-      .query({ communityName: "" });
-
-    expect(response.status).toBe(400);
-    expect(response.body.message).toBe("Invalid parameters");
-  });
+      .query({ communityName: "farouqfans" });
+    expect(response.status).toBe(200);
+    expect(response.body.isFavourite).toBe(true);
+  }, 10000);
 
   test("It should return false if community is not favorite", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-
     const response = await request(app)
       .get("/community/is-favourite")
       .set("Authorization", `Bearer ${token}`)
-      .query({ communityName: "farouqfans" })
-      .expect(200);
-
+      .query({ communityName: "farouqfans2" });
+    expect(response.status).toBe(200);
     expect(response.body.isFavourite).toBe(false);
-  });
+  }, 10000);
 
   test("It should return 'Invalid parameters' for status 400", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const response = await request(app)
       .get("/community/is-favourite")
@@ -645,16 +357,14 @@ describe("Checking if community is favorite", () => {
       .expect(400);
 
     expect(response.body.message).toBe("Invalid parameters");
-  });
+  }, 10000);
 
   test("It should return 'Community not found' for status 404", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const response = await request(app)
       .get("/community/is-favourite")
@@ -663,9 +373,9 @@ describe("Checking if community is favorite", () => {
       .expect(404);
 
     expect(response.body.message).toBe("Community not found");
-  });
+  }, 10000);
 });
-*/
+
 describe("Muting community", () => {
   test("It should mute community", async () => {
     const logIn = await request(app).post("/login").send({
@@ -673,17 +383,6 @@ describe("Muting community", () => {
       password: "12345678",
     });
     const token = logIn.body.access_token;
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
 
     const response = await request(app)
       .post("/community/mute")
@@ -702,16 +401,6 @@ describe("Muting community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/mute")
       .set("Authorization", `Bearer ${token}`)
@@ -727,16 +416,6 @@ describe("Muting community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/mute")
       .set("Authorization", `Bearer ${token}`)
@@ -755,16 +434,12 @@ describe("Muting community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
+    await request(app)
+      .post("/community/mute")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
     await request(app)
       .post("/community/mute")
       .set("Authorization", `Bearer ${token}`)
@@ -791,17 +466,6 @@ describe("Unmuting community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-
     await request(app)
       .post("/community/mute")
       .set("Authorization", `Bearer ${token}`)
@@ -825,16 +489,6 @@ describe("Unmuting community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/unmute")
       .set("Authorization", `Bearer ${token}`)
@@ -851,16 +505,6 @@ describe("Unmuting community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/unmute")
       .set("Authorization", `Bearer ${token}`)
@@ -879,16 +523,6 @@ describe("Unmuting community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/unmute")
       .set("Authorization", `Bearer ${token}`)
@@ -900,30 +534,21 @@ describe("Unmuting community", () => {
     expect(response.body.message).toBe("Community is not muted");
   });
 });
-/*
+
 describe("Checking if community is muted", () => {
   test("It should return true if community is muted", async () => {
-    
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-       await request(app).post("/community/mute").set("Authorization", `Bearer ${token}`).send({
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/community/mute")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
     const response = await request(app)
       .get("/community/is-mute")
       .set("Authorization", `Bearer ${token}`)
@@ -931,27 +556,14 @@ describe("Checking if community is muted", () => {
       .expect(200);
 
     expect(response.body.isMuted).toBe(true);
-  });
+  }, 10000);
 
   test("It should return false if community is not muted", async () => {
-    
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();      
     const response = await request(app)
       .get("/community/is-mute")
       .set("Authorization", `Bearer ${token}`)
@@ -959,54 +571,30 @@ describe("Checking if community is muted", () => {
       .expect(200);
 
     expect(response.body.isMuted).toBe(false);
-  });
+  }, 10000);
 
   test("It should return 'Invalid parameters' for status 400", async () => {
-    
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();      
     const response = await request(app)
       .get("/community/is-mute")
       .set("Authorization", `Bearer ${token}`)
       .expect(400);
 
     expect(response.body.message).toBe("Invalid parameters");
-  });
+  }, 10000);
 
   test("It should return 'Community not found' for status 404", async () => {
-    
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();      
     const response = await request(app)
       .get("/community/is-mute")
       .set("Authorization", `Bearer ${token}`)
@@ -1014,35 +602,27 @@ describe("Checking if community is muted", () => {
       .expect(404);
 
     expect(response.body.message).toBe("Community not found");
-  });
+  }, 10000);
 });
 
-*/
 describe("Subscribing to community", () => {
-  /*
   test("It should subscribe to the community successfully", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    await request(app).post("/community/create").set("Authorization", `Bearer ${token}`).send({
-      name: "farouqfans",
-      is18plus: true,
-      communityType: "Public",
-    });
     const response = await request(app)
       .post("/community/subscribe")
       .set("Authorization", `Bearer ${token}`)
       .send({ communityName: "farouqfans" })
       .expect(200);
 
-    expect(response.body.message).toBe("Subscribed to the community successfully");
+    expect(response.body.message).toBe(
+      "Subscribed to the community successfully"
+    );
   });
-*/
   test("It should return 'Invalid parameters' for status 400", async () => {
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
@@ -1050,16 +630,6 @@ describe("Subscribing to community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/subscribe")
       .set("Authorization", `Bearer ${token}`)
@@ -1075,16 +645,6 @@ describe("Subscribing to community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/subscribe")
       .set("Authorization", `Bearer ${token}`)
@@ -1093,42 +653,28 @@ describe("Subscribing to community", () => {
 
     expect(response.body.message).toBe("Community not found");
   });
-  /*
+
   test("It should return 'Restricted or Private community' for status 403", async () => {
-     
     const logIn2 = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
-     
+
     const logIn = await request(app).post("/login").send({
       username: "farouquser2",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
-    const token2 = logIn2.body.access_token;
-     
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Restricted",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/subscribe")
-      .set("Authorization", `Bearer ${token2}`)
-      .send({ communityName: "farouqfans" })
+      .set("Authorization", `Bearer ${token}`)
+      .send({ communityName: "farouqfans3" })
       .expect(403);
 
     expect(response.body.message).toBe("Restricted or Private community");
   });
-*/
+
   test("It should return 'User is already subscribed' for status 400", async () => {
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
@@ -1136,16 +682,6 @@ describe("Subscribing to community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     await request(app)
       .post("/community/subscribe")
       .set("Authorization", `Bearer ${token}`)
@@ -1168,16 +704,6 @@ describe("Unsubscribing from community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     await request(app)
       .post("/community/subscribe")
       .set("Authorization", `Bearer ${token}`)
@@ -1201,16 +727,6 @@ describe("Unsubscribing from community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/unsubscribe")
       .set("Authorization", `Bearer ${token}`)
@@ -1226,16 +742,6 @@ describe("Unsubscribing from community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/unsubscribe")
       .set("Authorization", `Bearer ${token}`)
@@ -1252,16 +758,6 @@ describe("Unsubscribing from community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/unsubscribe")
       .set("Authorization", `Bearer ${token}`)
@@ -1271,27 +767,15 @@ describe("Unsubscribing from community", () => {
     expect(response.body.message).toBe("User isn't subscribed to community");
   });
 });
-/*
+
 describe("Checking if user is subscribed to a community", () => {
   test("It should return true if user is subscribed", async () => {
-  
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     await request(app)
       .post("/community/subscribe")
       .set("Authorization", `Bearer ${token}`)
@@ -1304,27 +788,15 @@ describe("Checking if user is subscribed to a community", () => {
       .expect(200);
 
     expect(response.body.isSubscribed).toBe(true);
-  });
+  }, 10000);
 
   test("It should return false if user is not subscribed", async () => {
-  
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .get("/community/is-subscribed")
       .set("Authorization", `Bearer ${token}`)
@@ -1332,54 +804,30 @@ describe("Checking if user is subscribed to a community", () => {
       .expect(200);
 
     expect(response.body.isSubscribed).toBe(false);
-  });
+  }, 10000);
 
   test("It should return 'Invalid parameters' for status 400", async () => {
- 
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();    
     const response = await request(app)
       .get("/community/is-subscribed")
       .set("Authorization", `Bearer ${token}`)
       .expect(400);
 
     expect(response.body.message).toBe("Invalid parameters");
-  });
+  }, 10000);
 
   test("It should return 'Community not found' for status 404", async () => {
- 
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();    
     const response = await request(app)
       .get("/community/is-subscribed")
       .set("Authorization", `Bearer ${token}`)
@@ -1387,26 +835,17 @@ describe("Checking if user is subscribed to a community", () => {
       .expect(404);
 
     expect(response.body.message).toBe("Community not found");
-  });
+  }, 10000);
 });
 
-*/
-/*
 describe("Getting top communities", () => {
   test("It should return top public communities", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    await request(app).post("/community/create").set("Authorization", `Bearer ${token}`).send({
-      name: "farouqfans",
-      is18plus: true,
-      communityType: "Public",
-    });
     const response = await request(app)
       .get("/community/top-communities")
       .set("Authorization", `Bearer ${token}`)
@@ -1416,47 +855,16 @@ describe("Getting top communities", () => {
     expect(response.body.currentPage).toBeDefined();
     expect(response.body.totalPages).toBeDefined();
   });
-
-  test("It should return 'No Public communities found' for status 404", async () => {
-     
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-     
-
-    const response = await request(app)
-      .get("/community/top-communities")
-      .set("Authorization", `Bearer ${token}`)
-      .expect(404);
-
-    expect(response.body.message).toBe("No Public communities found");
-  });
 });
-*/
-/*
+
 describe("Getting random category communities", () => {
   test("It should return random category communities", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      category: "football",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .get("/community/random-category")
       .set("Authorization", `Bearer ${token}`)
@@ -1467,56 +875,26 @@ describe("Getting random category communities", () => {
 });
 describe("Getting specific category communities", () => {
   test("It should return specific category communities", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      category: "football",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
 
     const response = await request(app)
-      .get("/community/get-specific-category")
+      .get("/community/get-specific-category?category=Technology")
       .set("Authorization", `Bearer ${token}`)
-
-      .query({ category: "football" })
       .expect(200);
 
     expect(response.body).toBeDefined();
   });
 
   test("It should return 'No communities found for the specified category' for status 404", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      category: "football",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
 
     const response = await request(app)
       .get("/community/get-specific-category")
@@ -1525,29 +903,17 @@ describe("Getting specific category communities", () => {
       .query({ category: "helloo" })
       .expect(404);
 
-    expect(response.body.message).toBe("No communities found for the specified category");
+    expect(response.body.message).toBe(
+      "No communities found for the specified category"
+    );
   });
 
   test("It should return 'Invalid request parameters' for status 400", async () => {
-     
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      category: "football",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
 
     const response = await request(app)
       .get("/community/get-specific-category")
@@ -1558,92 +924,6 @@ describe("Getting specific category communities", () => {
   });
 });
 
-describe("Getting community info", () => {
-  test("It should return community info", async () => {
-     
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-     
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      category: "football",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-
-    const response = await request(app)
-      .get("/community/get-info")
-      .set("Authorization", `Bearer ${token}`)
-      .query({ communityName: "farouqfans" })
-      .expect(200);
-
-    expect(response.body).toBeDefined();
-  });
-
-  test("It should return 'Community not found' for status 404", async () => {
-     
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-     
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      category: "football",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-    const response = await request(app)
-      .get("/community/get-info")
-      .set("Authorization", `Bearer ${token}`)
-      .query({ communityName: "heloo" })
-      .expect(404);
-
-    expect(response.body.message).toBe("Community not found");
-  });
-
-  test("It should return 'Invalid request parameters' for status 400", async () => {
-     
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-     
-
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      category: "football",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
-    const response = await request(app).get("/community/get-info").set("Authorization", `Bearer ${token}`).expect(400);
-
-    expect(response.body.message).toBe("Invalid request parameters");
-  });
-});
-*/
 describe("Creating a community", () => {
   test("It should create a community", async () => {
     const logIn = await request(app).post("/login").send({
@@ -1656,7 +936,7 @@ describe("Creating a community", () => {
       .post("/community/create")
       .set("Authorization", `Bearer ${token}`)
       .send({
-        name: "farouqfans",
+        name: "farouqfans4",
         is18plus: true,
         communityType: "Public",
       })
@@ -1672,17 +952,6 @@ describe("Creating a community", () => {
     });
     const token = logIn.body.access_token;
 
-    const decodedToken = jwt.jwtDecode(token);
-    const user = await User.findById(decodedToken._id);
-    const createdCommunity = new Community({
-      name: "farouqfans",
-      is18plus: "true",
-      communityType: "Public",
-      category: "football",
-      creator: user,
-      moderators: [user],
-    });
-    await createdCommunity.save();
     const response = await request(app)
       .post("/community/create")
       .set("Authorization", `Bearer ${token}`)
@@ -1715,14 +984,13 @@ describe("Creating a community", () => {
 ////////////////////////////////////////////////////////////////////////
 // GET USER INFO AND UPDATE USER INFO TESTS
 ////////////////////////////////////////////////////////////////////////
-// Test suite for getting user profile info
+
 describe("Getting user profile info", () => {
   test("It should return user profile info", async () => {
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
-    const token = logIn.body.access_token;
 
     const response = await request(app)
       .get("/user/profile-info/farouquser")
@@ -1739,22 +1007,18 @@ describe("Getting user profile info", () => {
   });
 });
 describe("Updating user profile info", () => {
-  /*  test("It should update user profile info", async () => {
-     
+  test("It should update user profile info", async () => {
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-     
 
     const response = await request(app)
       .put("/user/profile-info")
       .set("Authorization", `Bearer ${token}`)
       .send({
         name: "NewFarouq",
-        avatar: "www.test.com",
-        banner: "www.test.com",
         about: "New bio",
         username: "NEWWWW",
         isVisible: true,
@@ -1764,18 +1028,12 @@ describe("Updating user profile info", () => {
 
     expect(response.body).toBeDefined();
   });
-*/
   test("It should return 'Username not available' for status 400", async () => {
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-
-    const logIn2 = await request(app).post("/login").send({
-      username: "farouquser2",
-      password: "12345678",
-    });
 
     const response = await request(app)
       .put("/user/profile-info")

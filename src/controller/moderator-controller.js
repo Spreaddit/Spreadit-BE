@@ -1098,17 +1098,27 @@ exports.removeModerator = async (req, res) => {
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-    if (community.creator) {
-      if (!community.creator.equals(req.user._id)) {
-        return res.status(402).json({ message: "Not the creator" });
-      }
-    }
+
     const user = await User.findOne({ _id: req.user._id });
 
     const moderator = await Moderator.findOne({ communityName, username });
     if (!moderator) {
       return res.status(404).json({ message: "Moderator not found" });
     }
+    const userModerator = await Moderator.findOne({
+      communityName,
+      username: user.username,
+    });
+    if (!userModerator) {
+      return res.status(402).json({ message: "User is not a moderator" });
+    }
+
+    if (userModerator.createdAt > moderator.createdAt) {
+      return res
+        .status(403)
+        .json({ message: "Moderator doesn't have permission" });
+    }
+
     const index = user.moderatedCommunities.indexOf(community._id);
     if (index !== -1) {
       user.moderatedCommunities.splice(index, 1);
