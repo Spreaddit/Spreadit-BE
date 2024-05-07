@@ -22,7 +22,6 @@ exports.signUp = async (req, res) => {
       if (!savedUser) {
         return res.status(400).send({ error: "User not saved" });
       }
-      const token = await savedUser.generateToken();
       const emailToken = await savedUser.generateEmailToken();
       let emailContent;
       if (isCross) {
@@ -35,12 +34,7 @@ exports.signUp = async (req, res) => {
         "Please Confirm Your Email",
         emailContent
       );
-
-      const userObj = await User.generateUserObject(savedUser);
-
       res.status(200).send({
-        user: userObj,
-        access_token: token,
         message: "User signed up successfully",
       });
     } else {
@@ -51,12 +45,7 @@ exports.signUp = async (req, res) => {
         if (!savedUser) {
           return res.status(400).send({ error: "User not saved" });
         } else {
-          const token = await savedUser.generateToken();
-          const userObj = await User.generateUserObject(savedUser);
-
           res.status(200).send({
-            user: userObj,
-            access_token: token,
             message: "User signed up successfully",
           });
         }
