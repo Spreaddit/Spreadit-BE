@@ -6,7 +6,7 @@ const Community = require("../src/models/community");
 const Rule = require("../src/models/rule");
 const Moderator = require("../src/models/moderator");
 
-const connectionUrl = "mongodb://localhost:27017/testDBforCommunity";
+const connectionUrl = "mongodb://localhost:27017/testDBforModerator";
 const userOneId = new mongoose.Types.ObjectId();
 const userTwoId = new mongoose.Types.ObjectId();
 const communityId = new mongoose.Types.ObjectId();
@@ -15,7 +15,7 @@ const communityId3 = new mongoose.Types.ObjectId();
 
 const modId = new mongoose.Types.ObjectId();
 const modId2 = new mongoose.Types.ObjectId();
-const modId3 = new mongoos.Types.ObjectId();
+const modId3 = new mongoose.Types.ObjectId();
 const userOne = {
   _id: userOneId,
   name: "Farouq Diaa",
@@ -70,8 +70,7 @@ const community2 = {
 const rule = {
   _id: "624a6a677c8d9c9f5fd5eb3d",
   title: "Music Maniacs Lounge Community Guidelines",
-  description:
-    "1. Share and appreciate diverse musical tastes and genres with respect for fellow members.",
+  description: "1. Share and appreciate diverse musical tastes and genres with respect for fellow members.",
   reportReason: "Violation of community guidelines",
   communityName: "MusicManiacsLounge",
   appliesTo: "both",
@@ -154,9 +153,7 @@ afterAll(() => {
 
 describe("Adding a rule", () => {
   test("It should add a new rule", async () => {
-    const logIn = await request(app)
-      .post("/login")
-      .send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
 
     const token = logIn.body.access_token;
     const response = await request(app)
@@ -170,16 +167,10 @@ describe("Adding a rule", () => {
     expect(response.body.message).toBe("Rule added successfully");
   });
   test("It should return 'Invalid rule data' for status 400", async () => {
-    const logIn = await request(app)
-      .post("/login")
-      .send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
-    const response = await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({})
-      .expect(400);
+    const response = await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({}).expect(400);
 
     expect(response.body.message).toBe("Invalid rule data");
   });
@@ -201,9 +192,7 @@ describe("Adding a rule", () => {
       })
       .expect(402);
 
-    expect(response.body.message).toBe(
-      "You are not a moderator of this community"
-    );
+    expect(response.body.message).toBe("You are not a moderator of this community");
   });
 
   test("It should return 'Title already used' for status 403", async () => {
@@ -213,13 +202,10 @@ describe("Adding a rule", () => {
     });
     const token = logIn.body.access_token;
 
-    await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "farouqfans",
-      });
+    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
+      title: "myRule",
+      communityName: "farouqfans",
+    });
 
     const response = await request(app)
       .post("/rule/add")
@@ -260,13 +246,10 @@ describe("Removing a rule", () => {
     });
     const token = logIn.body.access_token;
 
-    await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "farouqfans",
-      });
+    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
+      title: "myRule",
+      communityName: "farouqfans",
+    });
 
     const response = await request(app)
       .post("/rule/remove")
@@ -326,13 +309,10 @@ describe("Removing a rule", () => {
     });
     const token2 = logIn2.body.access_token;
 
-    await request(app)
-      .post("/rule/add")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        title: "myRule",
-        communityName: "farouqfans",
-      });
+    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
+      title: "myRule",
+      communityName: "farouqfans",
+    });
 
     const response = await request(app)
       .post("/rule/remove")
@@ -367,49 +347,32 @@ describe("Removing a rule", () => {
 });
 
 describe("Getting community info", () => {
-  test("It should return community info", async () => {
+  test("It should return community info for a valid community name", async () => {
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-
+    const communityName = "farouqfans";
     const response = await request(app)
-      .get("/community/get-info")
+      .get(`/community/${communityName}/get-info`)
       .set("Authorization", `Bearer ${token}`)
-      .query({ communityName: "farouqfans" })
       .expect(200);
-
-    expect(response.body).toBeDefined();
+    expect(response.body.name).toBe(communityName);
   });
 
-  test("It should return 'Community not found' for status 404", async () => {
+  test("It should return 'Community not found' for non-existing community name", async () => {
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
+    const nonExistingCommunityName = "nonexistingcommunity";
     const response = await request(app)
-      .get("/community/get-info")
+      .get(`/community/${nonExistingCommunityName}/get-info`)
       .set("Authorization", `Bearer ${token}`)
-      .query({ communityName: "heloo" })
       .expect(404);
 
     expect(response.body.message).toBe("Community not found");
-  });
-
-  test("It should return 'Invalid request parameters' for status 400", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-
-    const response = await request(app)
-      .get("/community/get-info")
-      .set("Authorization", `Bearer ${token}`)
-      .expect(400);
-
-    expect(response.body.message).toBe("Invalid request parameters");
   });
 });
