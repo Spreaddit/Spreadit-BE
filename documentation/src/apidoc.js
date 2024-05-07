@@ -597,6 +597,7 @@
  * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
  * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
  * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} comment.is_removal if the comment is a removal reason
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
  *
  * @apiSuccessExample {json} Success-Response:
@@ -650,6 +651,7 @@
  *           "is_removed": false,
  *           "is_approved": true,
  *           "is_locked": false,
+ *           "is_removal": false,
  *           "replies": []
  *       },
  *       "message": "Comment has been added successfully"
@@ -716,6 +718,7 @@
  * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
  * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
  * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} comment.is_removal if the comment is a removal reason
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty array
  *
  * @apiSuccessExample {json} Success-Response:
@@ -734,6 +737,7 @@
  *           "is_removed": false,
  *           "is_approved": true,
  *           "is_locked": false,
+ *           "is_removal": false,
  *           "replies": []
  *       },
  *       "message": "Comment deleted successfully"
@@ -790,11 +794,12 @@
  * @apiSuccess {Boolean} comments.is_saved Indicates if the comment is saved.
  * @apiSuccess {String} comments.post_title Title of the post to which the comment belongs.
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
- * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
- * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
- * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
- * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
- * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} comments.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comments.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comments.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comments.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} comments.is_removal if the comment is a removal reason
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
  *
  * @apiSuccessExample {json} Success-Response:
@@ -848,6 +853,7 @@
  *           "is_removed": false,
  *           "is_approved": true,
  *           "is_locked": false,
+ *           "is_removal": false,
  *           "is_downvoted": false,
  *           "replies": []
  *       }
@@ -900,11 +906,12 @@
  * @apiSuccess {Boolean} comments.is_saved Indicates if the comment is saved.
  * @apiSuccess {String} comments.post_title Title of the post to which the comment belongs.
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
- * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
- * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
- * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
- * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
- * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} comments.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comments.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comments.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comments.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} comments.is_removal if the comment is a removal reason
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply by default empty
  *
  * @apiSuccessExample {json} Success-Response:
@@ -959,6 +966,7 @@
  *           "is_removed": false,
  *           "is_approved": true,
  *           "is_locked": false,
+ *           "is_removal": false,
  *           "replies": []
  *       },
  *       ],
@@ -1009,11 +1017,12 @@
  * @apiSuccess {Boolean} comments.is_saved Indicates if the comment is saved.
  * @apiSuccess {String} comments.post_title Title of the post to which the comment belongs.
  * @apiSuccess {String} comments.community_title Title of the community where the post belongs.
- * @apiSuccess {Boolean} comment.is_upvoted if the comment is upvoted by the user
- * @apiSuccess {Boolean} comment.is_downvoted if the comment is upvoted by the user
- * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
- * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
- * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} comments.is_upvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comments.is_downvoted if the comment is upvoted by the user
+ * @apiSuccess {Boolean} comments.is_removed if the comment is removed by the moderator
+ * @apiSuccess {Boolean} comments.is_approved if the comment is approved by the moderator
+ * @apiSuccess {Boolean} comments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} comments.is_removal if the comment is a removal reason
  * @apiSuccess {commentObject[]} comment.replies if the comment has a reply only if includes_reply=true
  *
  * @apiSuccessExample {json} Success-Response:
@@ -1067,6 +1076,7 @@
  *           "is_removed": false,
  *           "is_approved": true,
  *           "is_locked": false,
+ *           "is_removal": false,
  *           "is_downvoted": false,
  *           "replies": []
  *       },
@@ -1203,9 +1213,10 @@
  * @apiSuccess {String} message Success message indicating that the reply has been added successfully.
  * @apiSuccess {Boolean} reply.is_upvoted if the reply is upvoted by the user
  * @apiSuccess {Boolean} reply.is_downvoted if the reply is upvoted by the user
- * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
- * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
- * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} reply.is_removed if the reply is removed by the moderator
+ * @apiSuccess {Boolean} reply.is_approved if the reply is approved by the moderator
+ * @apiSuccess {Boolean} reply.is_locked if the reply is locked by the moderator
+ * @apiSuccess {Boolean} reply.is_removal if the reply is a removal reason
  * @apiSuccess {replyObject[]} reply.replies if the reply has a reply by default empty array
  *
  * @apiSuccessExample {json} Success-Response:
@@ -1255,6 +1266,7 @@
  *           "is_removed": false,
  *           "is_approved": true,
  *           "is_locked": false,
+ *           "is_removal": false,
  *           "is_downvoted": false,
  *           "replies": []
  *       },
@@ -1319,9 +1331,10 @@
  * @apiSuccess {String} replies.community_title Title of the community to which the comment belongs.
  * @apiSuccess {String} message Success message indicating that replies have been retrieved successfully.
  * @apiSuccess {Boolean} replies.is_upvoted if the reply is upvoted by the user
- * @apiSuccess {Boolean} comment.is_removed if the comment is removed by the moderator
- * @apiSuccess {Boolean} comment.is_approved if the comment is approved by the moderator
- * @apiSuccess {Boolean} comment.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} replies.is_removed if the  reply is removed by the moderator
+ * @apiSuccess {Boolean} replies.is_approved if the reply is approved by the moderator
+ * @apiSuccess {Boolean} replies.is_locked if the reply is locked by the moderator
+ * @apiSuccess {Boolean} replies.is_removal if the reply is a removal reason
  * @apiSuccess {Boolean} replies.is_downvoted if the reply is upvoted by the user
  * @apiSuccess {repliesObject[]} replies.replies if the reply has a reply by default empty array
  *
@@ -1376,6 +1389,7 @@
  *           "is_removed": false,
  *           "is_approved": true,
  *           "is_locked": false,
+ *           "is_removal": false,
  *           "is_downvoted": false,
  *           "replies": []
  *           },
@@ -6456,6 +6470,7 @@
  * @apiSuccess {Boolean} SpammedComments.is_removed if the comment is removed by the moderator
  * @apiSuccess {Boolean} SpammedComments.is_approved if the comment is approved by the moderator
  * @apiSuccess {Boolean} SpammedComments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} SpammedComments.is_removal if the comment is a removal reason
  * @apiSuccess {SpammedCommentsObject[]} SpammedComments.replies if the comment has a reply by default empty array
  *
  * @apiSuccessExample {json} Success-Response:
@@ -6509,6 +6524,7 @@
  *           "is_removed": false,
  *           "is_approved": true,
  *           "is_locked": false,
+ *           "is_removal": false,
  *           "replies": []
  *       },
  *     }
@@ -6784,6 +6800,7 @@
  * @apiSuccess {Boolean} editedComment.is_removed if the comment is removed by the moderator
  * @apiSuccess {Boolean} editedComment.is_approved if the comment is approved by the moderator
  * @apiSuccess {Boolean} editedComment.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} editedComment.is_removal if the comment is a removal reason
  * @apiSuccess {editedCommentObject[]} editedComment.replies if the comment has a reply by default empty array
  *
  * @apiSuccessExample {json} Success-Response:
@@ -6837,6 +6854,7 @@
  *           "is_removed": false,
  *           "is_approved": true,
  *           "is_locked": false,
+ *           "is_removal": false,
  *           "replies": []
  *       },
  *     }
@@ -6922,6 +6940,7 @@
  * @apiSuccess {Boolean} reportedComments.is_removed if the comment is removed by the moderator
  * @apiSuccess {Boolean} reportedComments.is_approved if the comment is approved by the moderator
  * @apiSuccess {Boolean} reportedComments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} reportedComments.is_removal if the comment is a removal reason
  * @apiSuccess {reportedCommentsObject[]} reportedComments.replies if the comment has a reply by default empty array
  * @apiSuccess {string} reportedComments.reports.username the user who reported the comennt
  * @apiSuccess {string} reportedComments.reports.reason reason why the comment is reported
@@ -6978,6 +6997,7 @@
  *           "is_removed": false,
  *           "is_approved": true,
  *           "is_locked": false,
+ *           "is_removal": false,
  *           "replies": [],
  *           "reports":[
  *               {
@@ -7230,6 +7250,7 @@
  * @apiSuccess {Boolean} reportedComments.is_removed if the comment is removed by the moderator
  * @apiSuccess {Boolean} reportedComments.is_approved if the comment is approved by the moderator
  * @apiSuccess {Boolean} reportedComments.is_locked if the comment is locked by the moderator
+ * @apiSuccess {Boolean} reportedComments.is_removal if the comment is a removal reason
  * @apiSuccess {commentObject[]} reportedComments.replies if the comment has a reply by default empty array
  * @apiSuccess {string} reportedComments.reports.username the user who reported the comennt
  * @apiSuccess {string} reportedComments.reports.reason reason why the comment is reported
@@ -7286,6 +7307,7 @@
  *           "is_removed": false,
  *           "is_approved": true,
  *           "is_locked": false,
+ *           "is_removal": false,
  *           "replies": [],
  *           "reports":[
  *                 {
@@ -9602,12 +9624,11 @@
  *
  * @apiParamExample {json} Request-Example:
  * {
- *    "communityName": "Sample Community",
- *    "oldTitle": "Sample Rule",
- *    "newRule": {
- *        "title": "Updated Rule",
- *        "description": "Updated description for the rule"
- *    }
+ *      "communityName": "Sample Community",
+ *      "oldTitle": "Sample Rule",
+ *      "newRule": {
+ *      "title": "Updated Rule",
+ *      "description": "Updated description for the rule"
  * }
  *
  * @apiSuccess {String} message Success message indicating that the rule has been edited successfully.
@@ -10711,6 +10732,12 @@
  * @apiParam {Boolean} managePostsAndComments Indicates whether the moderator can manage posts and comments.
  * @apiParam {Boolean} manageUsers Indicates whether the moderator can manage users.
  * @apiParam {Boolean} manageSettings Indicates whether the moderator can manage community settings.
+ * @apiParamExample {json} Request-Body-Example:
+ * {
+ *   "managePostsAndComments": true,
+ *   "manageUsers": false,
+ *   "manageSettings": true
+ * }
  *
  * @apiSuccess {String} message Success message indicating that the moderator permissions have been updated successfully.
  *
