@@ -241,18 +241,17 @@ exports.addPasswordConnectedAccounts = async (req, res) => {
 };
 exports.forgotPassword = async (req, res) => {
   try {
-    const { usernameOremail } = req.body;
+    const { email, password } = req.body;
 
-    if (!usernameOremail) {
+    if (!email || !password) {
       return res.status(400).send({ message: "Email or username is required" });
     }
 
-    const user = await User.getUserByEmailOrUsername(usernameOremail);
+    const user = await User.getUserByEmailOrUsername(email);
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-
-    const temp = await User.getUserByEmailOrUsername(user.email);
+    const temp = await User.getUserByEmailOrUsername(email);
     if (!temp || temp.username !== user.username) {
       return res.status(400).send({ message: "Error, wrong email" });
     }
