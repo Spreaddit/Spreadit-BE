@@ -11,7 +11,7 @@ const userRole = require("../seed-data/constants/userRole.js");
 const Rule = require("../src/models/rule.js");
 const config = require("../src/configuration.js");
 
-const connectionUrl = "mongodb://localhost:27017/testDBCommentsCommuntiy";
+const connectionUrl = "mongodb://localhost:27017/testDBPosts";
 
 beforeAll(async () => {
   try {
