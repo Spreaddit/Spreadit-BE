@@ -97,7 +97,6 @@ exports.markNotificationAsRead = async (req, res) => {
       { isRead: true },
       { new: true, runValidators: true }
     );
-    // const notificationObject = await Notification.getNotificationObject(notificationRead);
     res.status(200).send({
       message: "Notification has been marked as read successfully",
     });

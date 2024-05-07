@@ -54,7 +54,7 @@ exports.getPostById = async (req, res) => {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    const user = await User.findById(post.userId); // Fetch user who made the post
+    const user = await User.findById(post.userId); 
 
     await User.findByIdAndUpdate(
       userId,
@@ -247,7 +247,6 @@ exports.createPost = async (req, res) => {
     if (req.files) {
       for (let i = 0; i < req.files.length; i++) {
         const result = await uploadMedia(req.files[i], fileType);
-        //const url = `${config.baseUrl}/media/${result.Key}`;
         const url = result.secure_url;
         const attachmentObj = { type: fileType, link: url };
         attachments.push(attachmentObj);
@@ -1084,7 +1083,7 @@ exports.getHiddenPosts = async (req, res) => {
     const hiddenPosts = user.hiddenPosts;
     const postInfoArray = await Promise.all(
       hiddenPosts.map(async (post) => {
-        const postObject = await Post.getPostObject(post, userId, true); // Include hidden posts
+        const postObject = await Post.getPostObject(post, userId, true);
         return postObject;
       })
     );

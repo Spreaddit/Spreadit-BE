@@ -2,8 +2,6 @@ const UnfollowUser = require("../models/user");
 const jwt = require("jsonwebtoken");
 
 exports.unfollowUser = async (req, res) => {
-  //const followerID = req.user;
-
   try {
     const username = req.body.username;
     if (!username) {

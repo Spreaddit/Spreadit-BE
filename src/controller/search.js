@@ -273,12 +273,10 @@ exports.getProfileSearch = async (req, res) => {
     } else if (communityname) {
       query = { community: communityname };
     } else {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Invalid search: You must provide either username or communityname",
-        });
+      return res.status(400).json({
+        error:
+          "Invalid search: You must provide either username or communityname",
+      });
     }
 
     if (!q || !type) {
@@ -392,9 +390,7 @@ exports.getSearchSuggestions = async (req, res) => {
 
     const suggestedUsers = users.slice(0, 5);
     const userResults = await Promise.all(
-      suggestedUsers.map((user) =>
-        User.getUserObjectSimplified(user)
-      )
+      suggestedUsers.map((user) => User.getUserObjectSimplified(user))
     );
 
     const suggestedCommunities = communities.slice(0, 5);
@@ -454,12 +450,18 @@ exports.logSearchActivity = async (req, res) => {
     const searchedByUser = await User.findOne({ username });
 
     if (type === "community" && !communityId) {
-      return res.status(400).json({ error: "Community name is required for community search" });
+      return res
+        .status(400)
+        .json({ error: "Community name is required for community search" });
     } else if (type === "user" && !searchedByUser) {
-      return res.status(400).json({ error: "Username is required for user search" });
+      return res
+        .status(400)
+        .json({ error: "Username is required for user search" });
     }
 
-    let existingSearchLogs = await SearchLog.find({ searchedByUserId: req.user._id });
+    let existingSearchLogs = await SearchLog.find({
+      searchedByUserId: req.user._id,
+    });
 
     if (existingSearchLogs.length >= 5) {
       // If there are already 5 or more search logs for the user, delete the oldest one
@@ -479,7 +481,8 @@ exports.logSearchActivity = async (req, res) => {
     if (existingSearchLog) {
       // Check if the existing search was made by the current user
       if (existingSearchLog.searchedByUserId.equals(req.user._id)) {
-        existingSearchLog.communityId = type === "community" ? communityId : null;
+        existingSearchLog.communityId =
+          type === "community" ? communityId : null;
         existingSearchLog.userId = type === "user" ? searchedByUser._id : null;
         existingSearchLog.isInProfile = Boolean(isInProfile);
         existingSearchLog.updatedAt = Date.now();
@@ -509,7 +512,9 @@ exports.logSearchActivity = async (req, res) => {
       await newSearchLog.save();
     }
 
-    return res.status(200).json({ message: "Search activity logged successfully" });
+    return res
+      .status(200)
+      .json({ message: "Search activity logged successfully" });
   } catch (err) {
     console.error("Error occurred while logging search activity:", err);
     res.status(500).json({ error: "Internal server error" });
