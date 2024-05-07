@@ -466,7 +466,7 @@ exports.createReply = async (req, res) => {
         `${req.user.username} replied on your comment`
       );
       const notification = new Notification({
-        userId: newReply.userId,
+        userId: existingComment.userId,
         content: `${req.user.username} replied on your comment`,
         relatedUserId: req.user._id,
         notificationTypeId: NotificationType.commentReply._id,

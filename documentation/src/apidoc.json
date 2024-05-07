@@ -1,27 +1,24 @@
 {
-    "name": "Sreadit API Documentation",
-    "version": "0.1.0",
-    "title": "Sreadit  API Doc",
-    "description": "This is the api documentation for our Sreadit project",
-    "output": "/out",
-    "input": [
-      "./apidoc.js"
-    ],
-    "order": [
-      "Authentication",
-      "User",
-      "Account Settings",
-      "posts",
-      "comments",
-      "UserInfo",
-      "Timeline",
-      "Media"
-    ],
-    "template": {
-      "showRequiredLabels": false,
-      "withCompare": true,
-      "withGenerator": true,
-      "aloneDisplay": false
-    }
+  "name": "Sreadit API Documentation",
+  "version": "0.1.0",
+  "title": "Sreadit  API Doc",
+  "description": "This is the api documentation for our Sreadit project",
+  "output": "/out",
+  "input": ["./apidoc.js"],
+  "order": [
+    "Authentication",
+    "User",
+    "Account Settings",
+    "posts",
+    "comments",
+    "UserInfo",
+    "Timeline",
+    "Media"
+  ],
+  "template": {
+    "showRequiredLabels": false,
+    "withCompare": true,
+    "withGenerator": true,
+    "aloneDisplay": false
   }
-  
+}

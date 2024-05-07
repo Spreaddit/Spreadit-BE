@@ -120,7 +120,6 @@ exports.getAllNotifications = async (req, res) => {
       .populate("commentId")
       .populate("postId")
       .populate("userId");
-
     if (!result || result.length === 0) {
       return res.status(404).send({ error_message: "Notifications not found" });
     }
@@ -168,7 +167,7 @@ exports.suggestCommunity = async (req, res) => {
 
     res.status(200).json({
       communityname: randomCommunity.name,
-      communityProfilePic: randomCommunity.image
+      communityProfilePic: randomCommunity.image,
     });
   } catch (error) {
     console.error("Error suggesting random community:", error);
