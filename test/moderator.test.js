@@ -6,7 +6,7 @@ const Community = require("../src/models/community");
 const Rule = require("../src/models/rule");
 const Moderator = require("../src/models/moderator");
 
-const connectionUrl = "mongodb://localhost:27017/testDBforCommunity";
+const connectionUrl = "mongodb://localhost:27017/testDBforModerator";
 const userOneId = new mongoose.Types.ObjectId();
 const userTwoId = new mongoose.Types.ObjectId();
 const communityId = new mongoose.Types.ObjectId();
@@ -15,7 +15,7 @@ const communityId3 = new mongoose.Types.ObjectId();
 
 const modId = new mongoose.Types.ObjectId();
 const modId2 = new mongoose.Types.ObjectId();
-const modId3 = new mongoos.Types.ObjectId();
+const modId3 = new mongoose.Types.ObjectId();
 const userOne = {
   _id: userOneId,
   name: "Farouq Diaa",
@@ -347,46 +347,32 @@ describe("Removing a rule", () => {
 });
 
 describe("Getting community info", () => {
-  test("It should return community info", async () => {
+  test("It should return community info for a valid community name", async () => {
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
-
+    const communityName = "farouqfans";
     const response = await request(app)
-      .get("/community/get-info")
+      .get(`/community/${communityName}/get-info`)
       .set("Authorization", `Bearer ${token}`)
-      .query({ communityName: "farouqfans" })
       .expect(200);
-
-    expect(response.body).toBeDefined();
+    expect(response.body.name).toBe(communityName);
   });
 
-  test("It should return 'Community not found' for status 404", async () => {
+  test("It should return 'Community not found' for non-existing community name", async () => {
     const logIn = await request(app).post("/login").send({
       username: "farouquser",
       password: "12345678",
     });
     const token = logIn.body.access_token;
+    const nonExistingCommunityName = "nonexistingcommunity";
     const response = await request(app)
-      .get("/community/get-info")
+      .get(`/community/${nonExistingCommunityName}/get-info`)
       .set("Authorization", `Bearer ${token}`)
-      .query({ communityName: "heloo" })
       .expect(404);
 
     expect(response.body.message).toBe("Community not found");
-  });
-
-  test("It should return 'Invalid request parameters' for status 400", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "farouquser",
-      password: "12345678",
-    });
-    const token = logIn.body.access_token;
-
-    const response = await request(app).get("/community/get-info").set("Authorization", `Bearer ${token}`).expect(400);
-
-    expect(response.body.message).toBe("Invalid request parameters");
   });
 });
