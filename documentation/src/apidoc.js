@@ -4031,7 +4031,7 @@
  * @apiParam {Boolean} [isSpoiler] Indicates if the post contains spoiler content.
  * @apiParam {Boolean} [isNsfw] Indicates if the post is not safe for work.
  * @apiParam {Boolean} [sendPostReplyNotification] Indicates if the user should receive notifications for post replies.
- * @apiParam {String} [scheduledDate] Date and time to schedule the post (e.g., "2024-05-15T12:00:00Z").
+ * @apiParam {String} [scheduledDate] Date and time to schedule the post (e.g., "2024-05-07 12:00").
  * @apiParam {File[]} [attachments] Array of file attachments (for image/video posts).
  *
  * @apiParamExample {json} Text Post Example:
