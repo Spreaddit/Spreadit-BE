@@ -1379,11 +1379,6 @@ describe("sort post by top in community week", () => {
 
 describe("sort post by top in community month", () => {
   test("It should sort by top", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "maher",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
       username: "maher",
       password: "12345678",
@@ -1409,11 +1404,6 @@ describe("sort post by top in community month", () => {
 
 describe("sort post by top in community year", () => {
   test("It should sort by top", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "maher",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
       username: "maher",
       password: "12345678",
@@ -1439,11 +1429,6 @@ describe("sort post by top in community year", () => {
 
 describe("sort post by top now", () => {
   test("It should sort by top now", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "maher",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
       username: "maher",
       password: "12345678",
@@ -1468,11 +1453,6 @@ describe("sort post by top now", () => {
 });
 describe("sort post by top alltime", () => {
   test("It should sort by top alltime", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "maher",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
       username: "maher",
       password: "12345678",
@@ -1498,11 +1478,6 @@ describe("sort post by top alltime", () => {
 
 describe("sort post by top today", () => {
   test("It should sort by top today", async () => {
-    await request(app).post("/signup").send({
-      email: "mahmoudaly@gmail.com",
-      username: "maher",
-      password: "12345678",
-    });
     const logIn = await request(app).post("/login").send({
       username: "maher",
       password: "12345678",

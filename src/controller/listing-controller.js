@@ -877,3 +877,17 @@ exports.recentPosts = async (req, res) => {
     return res.status(500).json({ error: "internal server error" });
   }
 };
+exports.deleteRecentPost = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    user.recentPosts = [];
+    await user.save();
+    res
+      .status(200)
+      .json({ message: "All posts deleted from recent successfully" });
+  } catch (err) {
+    console.error("Error deleting post:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

@@ -75,65 +75,32 @@ exports.getPostById = async (req, res) => {
 exports.getAllUserPosts = async (req, res) => {
   try {
     const username = req.params.username;
-
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
     const userId = user._id;
-
-    const posts = await Post.find({ userId });
+    let query = { userId };
+    if (!user.nsfw) {
+      query.isNsfw = false;
+    }
+    const posts = await Post.find(query).sort({ createdAt: -1 }).lean();
 
     if (!posts || posts.length === 0) {
       return res.status(404).json({ error: "User has no posts" });
     }
-
-    const postInfoArray = await Promise.all(
-      posts.map(async (post) => {
-        const postObject = await Post.getPostObject(post, userId);
-
-        return postObject;
-      })
-    );
-    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+    const postObjects = [];
+    for (const post of posts) {
+      const postObject = await Post.getPostObject(post, userId);
+      postObjects.push(postObject);
+    }
+    res.status(200).json({ posts: postObjects });
   } catch (err) {
     console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-exports.getAllUserPosts = async (req, res) => {
-  try {
-    const username = req.params.username;
-
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    const userId = user._id;
-
-    const posts = await Post.find({ userId });
-
-    if (!posts || posts.length === 0) {
-      return res.status(404).json({ error: "User has no posts" });
-    }
-
-    const postInfoArray = await Promise.all(
-      posts.map(async (post) => {
-        const postObject = await Post.getPostObject(post, userId);
-
-        return postObject;
-      })
-    );
-
-    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json({ posts: filteredPostInfoArray });
-  } catch (err) {
-    console.error("Error fetching posts:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
 function scheduleScheduledPost(post, scheduledDate) {
   const [date, time] = scheduledDate.split(" ");
   const [year, month, day] = date.split("-");
@@ -358,6 +325,7 @@ exports.createPost = async (req, res) => {
       sendPostReplyNotification,
       isApproved,
       isScheduled: !!scheduledDate,
+      date: scheduledDate,
     });
     if (scheduledDate) {
       await newPost.save();
@@ -432,7 +400,7 @@ exports.getAllPostsInCommunity = async (req, res) => {
     );
 
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({ posts: filteredPostInfoArray });
   } catch (err) {
     console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -1270,34 +1238,6 @@ exports.voteInPoll = async (req, res) => {
   }
 };
 
-exports.deleteRecentPost = async (req, res) => {
-  try {
-    const postId = req.params.postId;
-    if (!postId || postId.length !== 24) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-    const userId = req.user._id;
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res.status(404).json({ error: "Post not found" });
-    }
-    const user = await User.findById(userId);
-    const isRecent = user.recentPosts.includes(postId);
-    if (!isRecent) {
-      return res.status(404).json({ error: "Post is not in recent posts" });
-    }
-    const deleteRecent = await User.findByIdAndUpdate(
-      userId,
-      { $pull: { recentPosts: postId } },
-      { new: true }
-    );
-    res.status(200).json({ message: "Post deleted from recent successfully" });
-  } catch (err) {
-    console.error("Error deleting post:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
 exports.getReportedPostsInCommunity = async (req, res) => {
   try {
     const { communityName } = req.params;
@@ -1328,7 +1268,7 @@ exports.getReportedPostsInCommunity = async (req, res) => {
         .json({ message: "No reported posts found in the community" });
     }
 
-    res.status(200).json({ reportedPosts });
+    res.status(200).json({ posts: reportedPosts });
   } catch (error) {
     console.error("Error fetching reported posts:", error);
     res.status(500).json({ error: "Internal server error" });

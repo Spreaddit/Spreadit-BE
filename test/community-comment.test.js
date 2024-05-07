@@ -333,10 +333,10 @@ it("should return 200 and lock the comment", async () => {
   const response = await request(app)
     .post(
       "/community/moderation/" +
-      communityName +
-      "/" +
-      commentId +
-      "/lock-comment"
+        communityName +
+        "/" +
+        commentId +
+        "/lock-comment"
     )
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .expect(200);
@@ -358,10 +358,10 @@ it("should return 402 if user is not a moderator", async () => {
   const response = await request(app)
     .post(
       "/community/moderation/" +
-      communityName +
-      "/" +
-      commentId +
-      "/lock-comment"
+        communityName +
+        "/" +
+        commentId +
+        "/lock-comment"
     )
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .expect(402);
@@ -385,10 +385,10 @@ it("should return 200 and unlock the comment", async () => {
   const lockResponse = await request(app)
     .post(
       "/community/moderation/" +
-      communityName +
-      "/" +
-      commentId +
-      "/lock-comment"
+        communityName +
+        "/" +
+        commentId +
+        "/lock-comment"
     )
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .expect(200);
@@ -396,10 +396,10 @@ it("should return 200 and unlock the comment", async () => {
   const response = await request(app)
     .post(
       "/community/moderation/" +
-      communityName +
-      "/" +
-      commentId +
-      "/unlock-comment"
+        communityName +
+        "/" +
+        commentId +
+        "/unlock-comment"
     )
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .expect(200);
@@ -424,10 +424,10 @@ it("should return 402 if user is not a moderator", async () => {
   const response = await request(app)
     .post(
       "/community/moderation/" +
-      communityName +
-      "/" +
-      commentId +
-      "/unlock-comment"
+        communityName +
+        "/" +
+        commentId +
+        "/unlock-comment"
     )
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .expect(402);
@@ -455,10 +455,10 @@ it("should return 500 if internal server error occurs", async () => {
   const response = await request(app)
     .post(
       "/community/moderation/" +
-      communityName +
-      "/" +
-      commentId +
-      "/unlock-comment"
+        communityName +
+        "/" +
+        commentId +
+        "/unlock-comment"
     )
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .expect(500);
@@ -483,10 +483,10 @@ it("should return 200 and remove the comment", async () => {
   const response = await request(app)
     .post(
       "/community/moderation/" +
-      communityName +
-      "/" +
-      commentId +
-      "/remove-comment"
+        communityName +
+        "/" +
+        commentId +
+        "/remove-comment"
     )
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send({ removalReason })
@@ -512,10 +512,10 @@ it("should return 400 if removal reason is not provided", async () => {
   const response = await request(app)
     .post(
       "/community/moderation/" +
-      communityName +
-      "/" +
-      commentId +
-      "/remove-comment"
+        communityName +
+        "/" +
+        commentId +
+        "/remove-comment"
     )
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send({ removalReason })
@@ -539,10 +539,10 @@ it("should return 402 if user is not a moderator", async () => {
   const response = await request(app)
     .post(
       "/community/moderation/" +
-      communityName +
-      "/" +
-      commentId +
-      "/remove-comment"
+        communityName +
+        "/" +
+        commentId +
+        "/remove-comment"
     )
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send({ removalReason })
@@ -567,10 +567,10 @@ it("should return 200 and approve the comment", async () => {
   const response = await request(app)
     .post(
       "/community/moderation/" +
-      communityName +
-      "/" +
-      commentId +
-      "/approve-comment"
+        communityName +
+        "/" +
+        commentId +
+        "/approve-comment"
     )
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .expect(200);
@@ -592,10 +592,10 @@ it("should return 402 if user is not a moderator", async () => {
   const response = await request(app)
     .post(
       "/community/moderation/" +
-      communityName +
-      "/" +
-      commentId +
-      "/approve-comment"
+        communityName +
+        "/" +
+        commentId +
+        "/approve-comment"
     )
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .expect(402);

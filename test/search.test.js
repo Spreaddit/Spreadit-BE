@@ -57,7 +57,7 @@ const search1 = {
   userId: null,
   searchedByUserId: userTwoId,
   isInProfile: false,
-}
+};
 
 const search2 = {
   query: "test2",
@@ -66,7 +66,7 @@ const search2 = {
   userId: null,
   searchedByUserId: userOneId,
   isInProfile: false,
-}
+};
 
 const notification1 = {
   _id: notificationId,
@@ -274,7 +274,6 @@ afterEach(async () => {
   await SearchLog.deleteMany({});
 });
 
-
 it("should get history of serach", async () => {
   const login = await request(app)
     .post("/login")
@@ -292,7 +291,6 @@ it("should get history of serach", async () => {
 
   expect(response.status).toBe(200);
 });
-
 
 it("should search for people", async () => {
   const login = await request(app)
@@ -312,8 +310,6 @@ it("should search for people", async () => {
   expect(response.status).toBe(200);
 });
 
-
-
 it("should search for posts", async () => {
   const login = await request(app)
     .post("/login")
@@ -332,7 +328,6 @@ it("should search for posts", async () => {
   expect(response.status).toBe(200);
 });
 
-
 it("should search for comments", async () => {
   const login = await request(app)
     .post("/login")
@@ -350,7 +345,6 @@ it("should search for comments", async () => {
 
   expect(response.status).toBe(200);
 });
-
 
 it("should search for communities", async () => {
   const login = await request(app)
@@ -580,8 +574,7 @@ it("should return 400 if no q", async () => {
   const token = login.body.token;
   const response = await request(app)
     .get("/suggestions")
-    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .set("Authorization", "Bearer " + user.tokens[0].token);
 
   expect(response.status).toBe(400);
 });
-
