@@ -26,7 +26,7 @@ exports.sortPostNew = async (req, res) => {
   try {
     const userId = req.user._id;
     const page = req.query.page || 4;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
     const totalPosts = await Post.countDocuments();
     const totalPages = Math.ceil(totalPosts / limit);
@@ -70,7 +70,7 @@ exports.sortPostTop = async (req, res) => {
   try {
     const userId = req.user._id;
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
 
     const communities = await Community.find({
@@ -132,7 +132,7 @@ exports.sortPostTopCommunity = async (req, res) => {
     const userId = req.user._id;
     const communityName = req.params.subspreaditname;
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
 
     if (!communityName) {
@@ -211,7 +211,7 @@ exports.sortPostNewCommunity = async (req, res) => {
     const userId = req.user._id;
     const communityName = req.params.subspreaditname;
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
 
     if (!communityName) {
@@ -284,7 +284,7 @@ exports.sortPostViews = async (req, res) => {
   try {
     const userId = req.user._id;
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
 
     const communities = await Community.find({
@@ -338,7 +338,7 @@ exports.sortPostComment = async (req, res) => {
   try {
     const userId = req.user._id;
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
 
     const communities = await Community.find({
@@ -390,7 +390,7 @@ exports.sortPostBest = async (req, res) => {
   try {
     const userId = req.user._id;
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
 
     const communities = await Community.find({
@@ -511,7 +511,7 @@ exports.sortPostHotCommunity = async (req, res) => {
     const userId = req.user._id;
     const communityName = req.params.subspreaditname;
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
     if (!communityName) {
       return res.status(400).json({ error: "Community name is required" });
@@ -591,7 +591,7 @@ exports.sortPostRandomCommunity = async (req, res) => {
     const userId = req.user._id;
     const communityName = req.params.subspreaditname;
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
     if (!communityName) {
       return res.status(400).json({ error: "Community name is required" });
@@ -670,7 +670,7 @@ exports.sortPostTopTimeCommunity = async (req, res) => {
   try {
     const userId = req.user._id;
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
     const communityName = req.params.subspreaditname;
     const time = req.params.time;
@@ -776,7 +776,7 @@ exports.sortPostTopTime = async (req, res) => {
     else if (time === "year") sortTime = 365 * 24;
 
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
 
     const communities = await Community.find({
@@ -851,7 +851,7 @@ exports.recentPosts = async (req, res) => {
     const totalPosts = posts.length;
 
     const page = req.query.page || 1;
-    const limit = 20;
+    const limit = 10;
     const skip = (page - 1) * limit;
 
     const paginatedPosts = posts.slice(skip, skip + limit);
