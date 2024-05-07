@@ -444,6 +444,45 @@ exports.topCommunities = async (req, res) => {
   }
 };
 
+exports.getAllCommunities = async (req, res) => {
+  try {
+    const communities = await Community.aggregate([
+      {
+        $lookup: {
+          from: "rules",
+          localField: "rules",
+          foreignField: "_id",
+          as: "populatedRules",
+        },
+      },
+      { $unwind: "$populatedRules" },
+      {
+        $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
+          category: { $first: "$category" },
+          communityType: { $first: "$communityType" },
+          description: { $first: "$description" },
+          image: { $first: "$image" },
+          membersCount: { $first: "$membersCount" },
+          rules: { $push: "$populatedRules" },
+          dateCreated: { $first: "$dateCreated" },
+          communityBanner: { $first: "$communityBanner" },
+        },
+      },
+    ]);
+
+    if (communities.length === 0) {
+      return res.status(404).json({ message: "No communities found" });
+    }
+
+    res.status(200).json(communities);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 exports.randomCategory = async (req, res) => {
   try {
     let randomCommunity,

@@ -56,6 +56,10 @@ router
   .get(auth.authentication, communityController.randomCategory);
 
 router
+  .route("/community/list")
+  .get(auth.authentication, communityController.getAllCommunities);
+
+router
   .route("/community/get-specific-category")
   .get(auth.authentication, communityController.specificCategory);
 

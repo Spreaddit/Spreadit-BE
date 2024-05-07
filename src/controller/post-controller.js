@@ -72,7 +72,6 @@ exports.getPostById = async (req, res) => {
   }
 };
 
-
 exports.getAllUserPosts = async (req, res) => {
   try {
     const username = req.params.username;
@@ -85,9 +84,7 @@ exports.getAllUserPosts = async (req, res) => {
     if (!user.nsfw) {
       query.isNsfw = false;
     }
-    const posts = await Post.find(query)
-      .sort({ createdAt: -1 })
-      .lean();
+    const posts = await Post.find(query).sort({ createdAt: -1 }).lean();
     if (!posts || posts.length === 0) {
       return res.status(404).json({ error: "User has no posts" });
     }
@@ -97,7 +94,6 @@ exports.getAllUserPosts = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 function scheduleScheduledPost(post, scheduledDate) {
   const [date, time] = scheduledDate.split(" ");
@@ -323,7 +319,7 @@ exports.createPost = async (req, res) => {
       sendPostReplyNotification,
       isApproved,
       isScheduled: !!scheduledDate,
-      date: scheduledDate
+      date: scheduledDate,
     });
     if (scheduledDate) {
       await newPost.save();
