@@ -286,7 +286,7 @@ exports.appForgotPassword = async (req, res) => {
       return res.status(404).send({ message: "User not found" });
     }
 
-    const resetToken = await user.generateResetToken();
+    const resetToken = await user.generateEmailToken();
 
     const emailContent = `app.spreaddit.me/#/forget-password-verification/${resetToken}`;
     await sendEmail(
