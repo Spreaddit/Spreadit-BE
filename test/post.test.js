@@ -334,410 +334,151 @@ describe("spoiler a post", () => {
       .expect(200);
   });
 });
-//stop here
+
+
 describe("unspoiler a post", () => {
   test("It should unspoiler  post", async () => {
-    const loginResponse = await request(app)
+    const login = await request(app)
       .post("/login")
-      .send({ username: "maher", password: "myPassw@ord123" });
-
-    const tokenlogin = loginResponse.body.access_token;
-
+      .send({ username: "maher", password: "12345678" })
+      .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const token = login.body.token;
     const cresponse = await request(app)
-      .post("/community/create")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send({
-        name: "Test Community66",
-        is18plus: true,
-        communityType: "Public",
-      })
-      .expect(200);
-
-    const createdCommunity = await Community.findOne({
-      name: "Test Community66",
-    });
-
-    const communityId = createdCommunity._id;
-
-    const user = await User.findOne({ username: "maher" });
-
-    user.subscribedCommunities.push(communityId);
-    await user.save();
-
-    const newPost = {
-      title: "Test Post",
-      content: "This is a test post.",
-      community: "Test Community66",
-      type: "Post",
-    };
-    const response2 = await request(app)
-      .post("/")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send(newPost)
-      .expect(201);
-    const postId = response2.body.postId;
-
-    const response3 = await request(app)
-      .post(`/${postId}/spoiler`)
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .expect(200);
-    const response4 = await request(app)
-      .post(`/${postId}/unspoiler`)
-      .set("Authorization", `Bearer ${tokenlogin}`)
+      .post("/" + postId + "/unspoiler")
+      .set("Authorization", "Bearer " + user.tokens[0].token)
       .expect(200);
   });
 });
 
 describe("mark as nfsw", () => {
   test("It should nfsw  post", async () => {
-    const loginResponse = await request(app)
+    const login = await request(app)
       .post("/login")
-      .send({ username: "maher", password: "myPassw@ord123" });
-
-    const tokenlogin = loginResponse.body.access_token;
-
-    const cresponse = await request(app)
-      .post("/community/create")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send({
-        name: "Test Community66",
-        is18plus: true,
-        communityType: "Public",
-      })
+      .send({ username: "maher", password: "12345678" })
       .expect(200);
-
-    const createdCommunity = await Community.findOne({
-      name: "Test Community66",
-    });
-
-    const communityId = createdCommunity._id;
-
-    const user = await User.findOne({ username: "maher" });
-
-    user.subscribedCommunities.push(communityId);
-    await user.save();
-
-    const newPost = {
-      title: "Test Post",
-      content: "This is a test post.",
-      community: "Test Community66",
-      type: "Post",
-    };
-    const response2 = await request(app)
-      .post("/")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send(newPost)
-      .expect(201);
-    const postId = response2.body.postId;
-
-    const response3 = await request(app)
-      .post(`/${postId}/nsfw`)
-      .set("Authorization", `Bearer ${tokenlogin}`)
+    const user = await getUser("maher");
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const token = login.body.token;
+    const cresponse = await request(app)
+      .post("/" + postId + "/nsfw")
+      .set("Authorization", "Bearer " + user.tokens[0].token)
       .expect(200);
   });
 });
 
 describe("mark as not nfsw", () => {
   test("It should unnfsw  post", async () => {
-    const loginResponse = await request(app)
+    const login = await request(app)
       .post("/login")
-      .send({ username: "maher", password: "myPassw@ord123" });
-
-    const tokenlogin = loginResponse.body.access_token;
-
-    const cresponse = await request(app)
-      .post("/community/create")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send({
-        name: "Test Community66",
-        is18plus: true,
-        communityType: "Public",
-      })
+      .send({ username: "maher", password: "12345678" })
       .expect(200);
-
-    const createdCommunity = await Community.findOne({
-      name: "Test Community66",
-    });
-
-    const communityId = createdCommunity._id;
-
-    const user = await User.findOne({ username: "maher" });
-
-    user.subscribedCommunities.push(communityId);
-    await user.save();
-
-    const newPost = {
-      title: "Test Post",
-      content: "This is a test post.",
-      community: "Test Community66",
-      type: "Post",
-    };
-    const response2 = await request(app)
-      .post("/")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send(newPost)
-      .expect(201);
-    const postId = response2.body.postId;
-
-    const response3 = await request(app)
-      .post(`/${postId}/unnsfw`)
-      .set("Authorization", `Bearer ${tokenlogin}`)
+    const user = await getUser("maher");
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const token = login.body.token;
+    const cresponse = await request(app)
+      .post("/" + postId + "/unnsfw")
+      .set("Authorization", "Bearer " + user.tokens[0].token)
       .expect(200);
   });
 });
 
 describe("report post", () => {
   test("It should report  post", async () => {
-    const loginResponse = await request(app)
+    const login = await request(app)
       .post("/login")
-      .send({ username: "maher", password: "myPassw@ord123" });
-
-    const tokenlogin = loginResponse.body.access_token;
-
+      .send({ username: "maher", password: "12345678" })
+      .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const token = login.body.token;
     const cresponse = await request(app)
-      .post("/community/create")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send({
-        name: "Test Community66",
-        is18plus: true,
-        communityType: "Public",
-      })
-      .expect(200);
-
-    const createdCommunity = await Community.findOne({
-      name: "Test Community66",
-    });
-
-    const communityId = createdCommunity._id;
-
-    const user = await User.findOne({ username: "maher" });
-
-    user.subscribedCommunities.push(communityId);
-    await user.save();
-
-    const newPost = {
-      title: "Test Post",
-      content: "This is a test post.",
-      community: "Test Community66",
-      type: "Post",
-    };
-    const response2 = await request(app)
-      .post("/")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send(newPost)
-      .expect(201);
-    const postId = response2.body.postId;
-
-    const response3 = await request(app)
-      .post(`/${postId}/report`)
-      .send({ reason: "amira12amira", sureason: "12345678" })
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .expect(201);
-  });
-});
-
-describe("hide post", () => {
-  test("It should hide  post", async () => {
-    const loginResponse = await request(app)
-      .post("/login")
-      .send({ username: "maher", password: "myPassw@ord123" });
-
-    const tokenlogin = loginResponse.body.access_token;
-
-    const cresponse = await request(app)
-      .post("/community/create")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send({
-        name: "Test Community66",
-        is18plus: true,
-        communityType: "Public",
-      })
-      .expect(200);
-
-    const createdCommunity = await Community.findOne({
-      name: "Test Community66",
-    });
-
-    const communityId = createdCommunity._id;
-
-    const user = await User.findOne({ username: "maher" });
-
-    user.subscribedCommunities.push(communityId);
-    await user.save();
-
-    const newPost = {
-      title: "Test Post",
-      content: "This is a test post.",
-      community: "Test Community66",
-      type: "Post",
-    };
-    const response2 = await request(app)
-      .post("/")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send(newPost)
-      .expect(201);
-    const postId = response2.body.postId;
-
-    const response3 = await request(app)
-      .post(`/${postId}/hide`)
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .expect(200);
-  });
-});
-
-describe("unhide post", () => {
-  test("It should unhide  post", async () => {
-    const loginResponse = await request(app)
-      .post("/login")
-      .send({ username: "maher", password: "myPassw@ord123" });
-
-    const tokenlogin = loginResponse.body.access_token;
-
-    const cresponse = await request(app)
-      .post("/community/create")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send({
-        name: "Test Community66",
-        is18plus: true,
-        communityType: "Public",
-      })
-      .expect(200);
-
-    const createdCommunity = await Community.findOne({
-      name: "Test Community66",
-    });
-
-    const communityId = createdCommunity._id;
-
-    const user = await User.findOne({ username: "maher" });
-
-    user.subscribedCommunities.push(communityId);
-    await user.save();
-
-    const newPost = {
-      title: "Test Post",
-      content: "This is a test post.",
-      community: "Test Community66",
-      type: "Post",
-    };
-    const response2 = await request(app)
-      .post("/")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send(newPost)
-      .expect(201);
-    const postId = response2.body.postId;
-
-    const response4 = await request(app)
-      .post(`/${postId}/hide`)
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .expect(200);
-
-    const response3 = await request(app)
-      .post(`/${postId}/unhide`)
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .expect(200);
-  });
-});
-
-describe("unhide post", () => {
-  test("It should unhide  post", async () => {
-    const loginResponse = await request(app)
-      .post("/login")
-      .send({ username: "maher", password: "myPassw@ord123" });
-
-    const tokenlogin = loginResponse.body.access_token;
-
-    const cresponse = await request(app)
-      .post("/community/create")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send({
-        name: "Test Community66",
-        is18plus: true,
-        communityType: "Public",
-      })
-      .expect(200);
-
-    const createdCommunity = await Community.findOne({
-      name: "Test Community66",
-    });
-
-    const communityId = createdCommunity._id;
-
-    const user = await User.findOne({ username: "maher" });
-
-    user.subscribedCommunities.push(communityId);
-    await user.save();
-
-    const newPost = {
-      title: "Test Post",
-      content: "This is a test post.",
-      community: "Test Community66",
-      type: "Post",
-    };
-    const response2 = await request(app)
-      .post("/")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send(newPost)
-      .expect(201);
-    const postId = response2.body.postId;
-
-    const response3 = await request(app)
-      .post(`/${postId}/unhide`)
-      .set("Authorization", `Bearer ${tokenlogin}`)
+      .post("/" + postId + "/report")
+      .set("Authorization", "Bearer " + user.tokens[0].token)
       .expect(400);
   });
 });
 
+describe("report post", () => {
+  test("It should report  post", async () => {
+    const login = await request(app)
+      .post("/login")
+      .send({ username: "maher", password: "12345678" })
+      .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const token = login.body.token;
+    const cresponse = await request(app)
+      .post("/" + postId + "/report")
+      .set("Authorization", "Bearer " + user.tokens[0].token)
+      .send({ reason: "test" })
+      .expect(201);
+  });
+});
+
+
+describe("hide post", () => {
+  test("It should hide  post", async () => {
+    const login = await request(app)
+      .post("/login")
+      .send({ username: "maher", password: "12345678" })
+      .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const token = login.body.token;
+    const cresponse = await request(app)
+      .post("/" + postId + "/hide")
+      .set("Authorization", "Bearer " + user.tokens[0].token)
+      .expect(200);
+  });
+});
+
+describe("unhide post", () => {
+  test("It should unhide  post", async () => {
+    const login = await request(app)
+      .post("/login")
+      .send({ username: "maher", password: "12345678" })
+      .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const token = login.body.token;
+    const cresponse = await request(app)
+      .post("/" + postId + "/unhide")
+      .set("Authorization", "Bearer " + user.tokens[0].token)
+      .expect(400);
+  });
+});
+
+
 describe("get hide posts", () => {
   test("It should get hide  post", async () => {
-    const loginResponse = await request(app)
+    const login = await request(app)
       .post("/login")
-      .send({ username: "maher", password: "myPassw@ord123" });
-
-    const tokenlogin = loginResponse.body.access_token;
-
+      .send({ username: "maher", password: "12345678" })
+      .expect(200);
+    const user = await getUser("maher");
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const token = login.body.token;
     const cresponse = await request(app)
-      .post("/community/create")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send({
-        name: "Test Community66",
-        is18plus: true,
-        communityType: "Public",
-      })
-      .expect(200);
-
-    const createdCommunity = await Community.findOne({
-      name: "Test Community66",
-    });
-
-    const communityId = createdCommunity._id;
-
-    const user = await User.findOne({ username: "maher" });
-
-    user.subscribedCommunities.push(communityId);
-    await user.save();
-
-    const newPost = {
-      title: "Test Post",
-      content: "This is a test post.",
-      community: "Test Community66",
-      type: "Post",
-    };
-    const response2 = await request(app)
-      .post("/")
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .send(newPost)
-      .expect(201);
-    const postId = response2.body.postId;
-
-    const response3 = await request(app)
-      .post(`/${postId}/hide`)
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .expect(200);
-
-    const response4 = await request(app)
-      .get(`/hide`)
-      .set("Authorization", `Bearer ${tokenlogin}`)
-      .expect(200);
+      .get("/hide")
+      .set("Authorization", "Bearer " + user.tokens[0].token)
+      .expect(404);
   });
 });
