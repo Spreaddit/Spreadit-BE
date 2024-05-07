@@ -287,9 +287,6 @@ exports.modifyProfileSettings = async (req, res) => {
       const parsedSocialLinks = JSON.parse(socialLinks);
       user.socialLinks = parsedSocialLinks;
     }
-    /*  if (avatar !== undefined) {
-             updatedFields.avatar = avatar;
-         } */
     if (avatar) {
       const avatarResult = await uploadMedia(avatar, "image");
       const avatarUrl = avatarResult.secure_url;
