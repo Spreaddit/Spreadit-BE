@@ -380,7 +380,7 @@ exports.verifyEmail = async (req, res) => {
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-    const accessToken = await User.generateToken();
+    const accessToken = await user.generateToken();
     user.isVerified = 1;
     await user.save();
     const userObj = await User.generateUserObject(user);
