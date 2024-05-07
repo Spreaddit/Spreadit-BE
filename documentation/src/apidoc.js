@@ -2148,6 +2148,61 @@
  */
 
 /**
+ * @api {get} /community/random-category Get Random Community by Category
+ * @apiName GetRandomCommunityByCategory
+ * @apiGroup Community
+ *
+ * @apiDescription Retrieves a random community based on category.
+ *
+ * @apiHeader {String} Authorization User's access token.
+ *
+ * @apiSuccess {Object[]} communities List of communities.
+ * @apiSuccess {String} communities._id Community ID.
+ * @apiSuccess {String} communities.name Community name.
+ * @apiSuccess {String} communities.category Community category.
+ * @apiSuccess {String} communities.communityType Community type.
+ * @apiSuccess {String} communities.description Community description.
+ * @apiSuccess {String} communities.image Community image URL.
+ * @apiSuccess {Number} communities.membersCount Number of members in the community.
+ * @apiSuccess {Object[]} communities.rules List of rules in the community.
+ * @apiSuccess {String} communities.rules._id Rule ID.
+ * @apiSuccess {String} communities.rules.name Rule name.
+ * @apiSuccess {Date} communities.dateCreated Date when the community was created.
+ * @apiSuccess {String} communities.communityBanner Community banner image URL.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "_id": "6098e62f18fde431a421aaff",
+ *         "name": "Sample Community",
+ *         "category": "Technology",
+ *         "communityType": "Public",
+ *         "description": "This is a sample community.",
+ *         "image": "https://example.com/sample.jpg",
+ *         "membersCount": 100,
+ *         "rules": [
+ *           {
+ *             "_id": "6098e62f18fde431a421ab00",
+ *             "name": "Be respectful to others"
+ *           }
+ *         ],
+ *         "dateCreated": "2021-05-10T12:00:00.000Z",
+ *         "communityBanner": "https://example.com/banner.jpg"
+ *       }
+ *     ]
+ *
+ * @apiError Unauthorized The user is not authenticated or the access token is invalid.
+ * @apiError NotFound No random communities found.
+ * @apiError InternalServerError Internal server error occurred.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "No random communities found"
+ *     }
+ */
+/**
  * @api {get} /community/random-category Get Random Category Communities
  * @apiVersion 0.1.0
  * @apiName GetRandomCategoryCommunities
