@@ -8088,7 +8088,7 @@
  * @apiSuccess {String} message Success message indicating the moderator invite was accepted successfully.
  *
  * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (402) PaymentRequired Moderator invite not found.
+ * @apiError (402) Unacceptable Moderator invite not found.
  * @apiError (404) NotFound Community not found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
@@ -8099,7 +8099,7 @@
  *     }
  *
  * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 402 Payment Required
+ *     HTTP/1.1 402 Unacceptable
  *     {
  *       "message": "Moderator invite not found"
  *     }
@@ -8132,7 +8132,7 @@
  * @apiSuccess {String} message Success message indicating the moderator invite was declined successfully.
  *
  * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (402) PaymentRequired Moderator invite not found.
+ * @apiError (402) Unacceptable Moderator invite not found.
  * @apiError (404) NotFound Community not found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
@@ -8143,7 +8143,7 @@
  *     }
  *
  * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 402 Payment Required
+ *     HTTP/1.1 402 Unacceptable
  *     {
  *       "message": "Moderator invite not found"
  *     }
@@ -10778,7 +10778,8 @@
  * @apiError (400) BadRequest Invalid request parameters.
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound Community or moderator not found.
- * @apiError (402) PaymentRequired Not the creator.
+ * @apiError (402) Unacceptable User is not a moderator.
+ * @apiError (403) Unacceptable Moderator doesn't have permission.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  */
 

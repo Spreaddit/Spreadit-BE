@@ -26,17 +26,13 @@ exports.addToFavourites = async (req, res) => {
     }
 
     if (user.favouriteCommunities.includes(community._id)) {
-      return res
-        .status(402)
-        .json({ message: "Community is already in favorites" });
+      return res.status(402).json({ message: "Community is already in favorites" });
     }
 
     user.favouriteCommunities.push(community._id);
     await user.save();
 
-    res
-      .status(200)
-      .json({ message: "Community added to favorites successfully" });
+    res.status(200).json({ message: "Community added to favorites successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -68,9 +64,7 @@ exports.removeFavourite = async (req, res) => {
     user.favouriteCommunities.splice(index, 1);
     await user.save();
 
-    res
-      .status(200)
-      .json({ message: "Community removed from favorites successfully" });
+    res.status(200).json({ message: "Community removed from favorites successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -232,13 +226,8 @@ exports.subscribeToCommunity = async (req, res) => {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    if (
-      community.communityType == "Private" ||
-      community.communityType == "Restriced"
-    ) {
-      return res
-        .status(403)
-        .json({ message: "Restriced or Private community" });
+    if (community.communityType == "Private" || community.communityType == "Restriced") {
+      return res.status(403).json({ message: "Restricted or Private community" });
     }
 
     if (user.subscribedCommunities.includes(community._id)) {
@@ -246,22 +235,13 @@ exports.subscribeToCommunity = async (req, res) => {
     }
 
     const currentDate = new Date();
-    const currentMonthStart = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      1
-    );
+    const currentMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 
-    const lastMonthlyInsight =
-      community.monthlyInsights[community.monthlyInsights.length - 1];
+    const lastMonthlyInsight = community.monthlyInsights[community.monthlyInsights.length - 1];
 
-    const last7DaysInsight =
-      community.last7DaysInsights[community.last7DaysInsights.length - 1];
+    const last7DaysInsight = community.last7DaysInsights[community.last7DaysInsights.length - 1];
 
-    if (
-      !lastMonthlyInsight ||
-      lastMonthlyInsight.month.getMonth() !== currentMonthStart.getMonth()
-    ) {
+    if (!lastMonthlyInsight || lastMonthlyInsight.month.getMonth() !== currentMonthStart.getMonth()) {
       const newMonthlyInsight = {
         month: new Date(currentMonthStart),
         views: 0,
@@ -294,9 +274,7 @@ exports.subscribeToCommunity = async (req, res) => {
     community.membersCount += 1;
     community.members.push(user._id);
     await community.save();
-    res
-      .status(200)
-      .json({ message: "Subscribed to the community successfully" });
+    res.status(200).json({ message: "Subscribed to the community successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -321,28 +299,17 @@ exports.unsubscribeFromCommunity = async (req, res) => {
     }
 
     if (!user.subscribedCommunities.includes(community._id)) {
-      return res
-        .status(403)
-        .json({ message: "User isn't subscribed to community" });
+      return res.status(403).json({ message: "User isn't subscribed to community" });
     }
 
     const currentDate = new Date();
-    const currentMonthStart = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      1
-    );
+    const currentMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 
-    const lastMonthlyInsight =
-      community.monthlyInsights[community.monthlyInsights.length - 1];
+    const lastMonthlyInsight = community.monthlyInsights[community.monthlyInsights.length - 1];
 
-    const last7DaysInsight =
-      community.last7DaysInsights[community.last7DaysInsights.length - 1];
+    const last7DaysInsight = community.last7DaysInsights[community.last7DaysInsights.length - 1];
 
-    if (
-      !lastMonthlyInsight ||
-      lastMonthlyInsight.month.getMonth() !== currentMonthStart.getMonth()
-    ) {
+    if (!lastMonthlyInsight || lastMonthlyInsight.month.getMonth() !== currentMonthStart.getMonth()) {
       const newMonthlyInsight = {
         month: new Date(currentMonthStart),
         views: 0,
@@ -376,9 +343,7 @@ exports.unsubscribeFromCommunity = async (req, res) => {
     community.members.splice(community.members.indexOf(user._id), 1);
     await community.save();
 
-    res
-      .status(200)
-      .json({ message: "Unsubscribed from the community successfully" });
+    res.status(200).json({ message: "Unsubscribed from the community successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -416,16 +381,14 @@ exports.topCommunities = async (req, res) => {
     const limit = 250;
     const skip = (page - 1) * limit;
 
-    const totalCommunities = await Community.countDocuments();
+    const totalCommunities = await Community.countDocuments({ communityType: "Public" });
     const totalPages = Math.ceil(totalCommunities / limit);
 
     const communities = await Community.find({ communityType: "Public" })
       .sort({ membersCount: -1 })
       .skip(skip)
       .limit(limit)
-      .select(
-        "name category communityType description image membersCount rules dateCreated communityBanner"
-      )
+      .select("name category communityType description image membersCount rules dateCreated communityBanner")
       .populate("rules", "title description reportReason");
 
     if (communities.length == 0) {
@@ -449,9 +412,7 @@ exports.randomCategory = async (req, res) => {
     do {
       randomCommunity = await Community.aggregate([{ $sample: { size: 1 } }]);
       attempts++;
-    } while (
-      !randomCommunity[0].category /*&& attempts != Community.countDocuments()*/
-    );
+    } while (!randomCommunity[0].category /*&& attempts != Community.countDocuments()*/);
     let communities;
     if (randomCommunity[0].category) {
       const randomCategory = randomCommunity[0].category;
@@ -500,7 +461,7 @@ exports.specificCategory = async (req, res) => {
     if (!category) {
       return res.status(400).json({ message: "Invalid request parameters" });
     }
-
+    
     const communities = await Community.aggregate([
       { $match: { category } },
       {
@@ -521,9 +482,23 @@ exports.specificCategory = async (req, res) => {
           description: { $first: "$description" },
           image: { $first: "$image" },
           membersCount: { $first: "$membersCount" },
-          rules: { $push: "$populatedRules" },
           dateCreated: { $first: "$dateCreated" },
           communityBanner: { $first: "$communityBanner" },
+          rules: { $addToSet: "$populatedRules" },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          category: 1,
+          communityType: 1,
+          description: { $cond: { if: { $eq: ["$description", null] }, then: "", else: "$description" } },
+          image: { $cond: { if: { $eq: ["$image", null] }, then: "", else: "$image" } },
+          membersCount: 1,
+          dateCreated: { $cond: { if: { $eq: ["$dateCreated", null] }, then: new Date(), else: "$dateCreated" } },
+          communityBanner: { $cond: { if: { $eq: ["$communityBanner", null] }, then: "", else: "$communityBanner" } },
+          rules: { $cond: { if: { $eq: [{ $size: "$rules" }, 0] }, then: [], else: "$rules" } },
         },
       },
     ]);
@@ -568,9 +543,7 @@ exports.createCommunity = async (req, res) => {
       name: name,
     });
     if (existingCommunity) {
-      return res
-        .status(403)
-        .json({ message: "Community name is not available" });
+      return res.status(403).json({ message: "Community name is not available" });
     }
     user.subscribedCommunities.push(createdCommunity._id);
     user.moderatedCommunities.push(createdCommunity._id);

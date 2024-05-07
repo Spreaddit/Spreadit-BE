@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const User = require("./user.js");
+const Moderator = require("./moderator.js");
 
 require("./user");
 require("./removalReason.js");
@@ -158,14 +159,8 @@ const CommunitySchema = new Schema({
   },
 });
 
-CommunitySchema.statics.getCommunityObjectFiltered = async function (
-  community,
-  userId
-) {
-  const isFollowing = await this.isUserFollowingCommunity(
-    userId,
-    community._id
-  );
+CommunitySchema.statics.getCommunityObjectFiltered = async function (community, userId) {
+  const isFollowing = await this.isUserFollowingCommunity(userId, community._id);
   const communityObject = {
     communityId: community._id,
     communityName: community.name,
@@ -177,10 +172,7 @@ CommunitySchema.statics.getCommunityObjectFiltered = async function (
   return communityObject;
 };
 
-CommunitySchema.statics.isUserFollowingCommunity = async function (
-  userId,
-  communityId
-) {
+CommunitySchema.statics.isUserFollowingCommunity = async function (userId, communityId) {
   const user = await this.model("user").findById(userId);
   if (!user) {
     return false;
@@ -188,10 +180,7 @@ CommunitySchema.statics.isUserFollowingCommunity = async function (
   return user.subscribedCommunities.includes(communityId);
 };
 
-CommunitySchema.statics.getCommunityObject = async function (
-  communityName,
-  userId
-) {
+CommunitySchema.statics.getCommunityObject = async function (communityName, userId) {
   const user = await this.model("user").findById(userId);
   const community = await Community.findOne({ name: communityName })
     .select(
@@ -207,6 +196,9 @@ CommunitySchema.statics.getCommunityObject = async function (
   if (!community) {
     return null;
   }
+
+  const isUserModerator = await this.isModerator(userId, communityName);
+  const isUserCreator = await this.isCreator(userId, communityName);
 
   return {
     name: community.name,
@@ -228,17 +220,30 @@ CommunitySchema.statics.getCommunityObject = async function (
     membersNickname: community.membersNickname,
     contributors: community.contributors,
     settings: community.settings,
-    isModerator: community.moderators.some((moderator) =>
-      moderator._id.equals(user._id)
-    ),
-    isCreator: community.creator && community.creator.equals(user._id),
+    isModerator: isUserModerator,
+    isCreator: isUserCreator,
     isMember: community.members.some((member) => member._id.equals(user._id)),
-    isContributor: community.contributors.some((contributor) =>
-      contributor._id.equals(user._id)
-    ),
+    isContributor: community.contributors.some((contributor) => contributor._id.equals(user._id)),
   };
 };
+CommunitySchema.statics.isModerator = async function (userId, communityName) {
+  const user = await this.model("user").findById(userId);
+  if (!user) {
+    return false;
+  }
 
+  const moderator = await Moderator.findOne({
+    username: user.username,
+    communityName: communityName,
+    isAccepted: true,
+  });
+
+  return !!moderator;
+};
+CommunitySchema.statics.isCreator = async function (userId, communityName) {
+  const community = await this.findOne({ name: communityName, creator: userId });
+  return !!community;
+};
 const Community = mongoose.model("community", CommunitySchema);
 
 module.exports = Community;
