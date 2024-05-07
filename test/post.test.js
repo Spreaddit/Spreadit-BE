@@ -1,4 +1,3 @@
-//begin post
 const Post = require("../src/models/post");
 const request = require("supertest");
 const app = require("./testApp");
@@ -43,7 +42,6 @@ afterAll(() => {
 
 describe("POST /api/posts", () => {
   test("It should create a new post", async () => {
-    // Create a new community
     const loginResponse = await request(app)
       .post("/login")
       .send({ username: "maher", password: "myPassw@ord123" });
@@ -135,7 +133,7 @@ describe("GET /api/posts", () => {
 describe("GET /api/posts/:id", () => {
   test("It should return 404 if post is not found", async () => {
     await request(app)
-      .get("/api/posts/123456789012345678901234") // Invalid ID
+      .get("/api/posts/123456789012345678901234") 
       .expect(404);
   });
 });
@@ -143,7 +141,7 @@ describe("GET /api/posts/:id", () => {
 describe("PUT /api/posts/:id", () => {
   test("It should return 404 if post is not found", async () => {
     await request(app)
-      .put("/api/posts/123456789012345678901234") // Invalid ID
+      .put("/api/posts/123456789012345678901234") 
       .expect(404);
   });
 });
@@ -151,7 +149,7 @@ describe("PUT /api/posts/:id", () => {
 describe("DELETE /api/posts/:id", () => {
   test("It should return 404 if post is not found", async () => {
     await request(app)
-      .delete("/api/posts/123456789012345678901234") // Invalid ID
+      .delete("/api/posts/123456789012345678901234") 
       .expect(404);
   });
 });
@@ -211,9 +209,7 @@ describe(" save post", () => {
       .set("Authorization", `Bearer ${tokenlogin}`)
       .send(newPost)
       .expect(201);
-    console.log(response2.body);
     const postId = response2.body.postId;
-    console.log(postId);
 
     const response = await request(app)
       .post(`/${postId}/save`)
@@ -313,9 +309,7 @@ describe(" unsave post", () => {
       .set("Authorization", `Bearer ${tokenlogin}`)
       .send(newPost)
       .expect(201);
-    console.log(response2.body);
     const postId = response2.body.postId;
-    console.log(postId);
 
     const response4 = await request(app)
       .post(`/${postId}/unsave`)
@@ -524,7 +518,6 @@ describe("mark as not nfsw", () => {
   });
 });
 
-//.send({ username: "amira12amira", password: "12345678" });
 
 describe("report post", () => {
   test("It should report  post", async () => {
@@ -726,7 +719,7 @@ describe("unhide post", () => {
     const response3 = await request(app)
       .post(`/${postId}/unhide`)
       .set("Authorization", `Bearer ${tokenlogin}`)
-      .expect(200); //as this post  hidden by someone
+      .expect(200); 
   });
 });
 
@@ -775,7 +768,7 @@ describe("unhide post", () => {
     const response3 = await request(app)
       .post(`/${postId}/unhide`)
       .set("Authorization", `Bearer ${tokenlogin}`)
-      .expect(400); //as this post not hidden by anyone
+      .expect(400); 
   });
 });
 
