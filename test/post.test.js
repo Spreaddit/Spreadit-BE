@@ -40,7 +40,6 @@ afterAll(() => {
   mongoose.connection.close();
 });
 
-
 describe("POST /api/posts", () => {
   test("It should create a new post", async () => {
     const loginResponse = await request(app)
@@ -86,17 +85,13 @@ describe("GET /api/posts", () => {
 
 describe("GET /api/posts/:id", () => {
   test("It should return 404 if post is not found", async () => {
-    await request(app)
-      .get("/api/posts/123456789012345678901234")
-      .expect(404);
+    await request(app).get("/api/posts/123456789012345678901234").expect(404);
   });
 });
 
 describe("PUT /api/posts/:id", () => {
   test("It should return 404 if post is not found", async () => {
-    await request(app)
-      .put("/api/posts/123456789012345678901234")
-      .expect(404);
+    await request(app).put("/api/posts/123456789012345678901234").expect(404);
   });
 });
 
@@ -472,7 +467,6 @@ describe("mark as not nfsw", () => {
   });
 });
 
-
 describe("report post", () => {
   test("It should report  post", async () => {
     const loginResponse = await request(app)
@@ -522,7 +516,6 @@ describe("report post", () => {
       .expect(201);
   });
 });
-
 
 describe("hide post", () => {
   test("It should hide  post", async () => {
