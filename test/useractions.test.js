@@ -1,12 +1,9 @@
-const Post = require("../src/models/post");
 const request = require("supertest");
 const app = require("./testApp");
 const mongoose = require("mongoose");
 const config = require("../src/configuration");
 const User = require("../src/models/user");
 const jwt = require("jwt-decode");
-const Message = require("../src/models/message");
-const Conversation = require("../src/models/conversation");
 const connectionUrl = "mongodb://localhost:27017/testDBforuseraction";
 const userOneId = new mongoose.Types.ObjectId();
 const userTwoId = new mongoose.Types.ObjectId();
