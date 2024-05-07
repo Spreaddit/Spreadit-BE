@@ -103,7 +103,6 @@ exports.getAllUserPosts = async (req, res) => {
   }
 };
 
-
 function scheduleScheduledPost(post, scheduledDate) {
   const [date, time] = scheduledDate.split(" ");
   const [year, month, day] = date.split("-");
