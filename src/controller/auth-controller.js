@@ -374,7 +374,7 @@ exports.verifyEmail = async (req, res) => {
       algorithms: ["HS256"],
     });
     const user = await User.findOne({
-      _id: decoded._id,
+      email: decoded.email,
       isVerified: true,
     });
     
