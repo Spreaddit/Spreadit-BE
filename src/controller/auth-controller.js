@@ -369,10 +369,14 @@ exports.verifyEmail = async (req, res) => {
     if (!emailToken) {
       return res.status(401).json({ message: "Token is required" });
     }
-    const decodedToken = jwt.jwtDecode(emailToken);
-    const email = decodedToken.email;
-    const user = await User.getUserByEmailOrUsername(email);
-
+    const decoded = jwt.verify(token, "Spreadit-access-token-CCEC-2024", {
+      algorithms: ["HS256"],
+    });
+    const user = await User.findOne({
+      _id: decoded._id,
+      isVerified: true,
+    });
+    
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
