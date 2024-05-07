@@ -270,7 +270,7 @@
  *
  * @apiParamExample {json} Request-Example:
  * {
- *    "resetToken": "valid_reset_token",
+ *    "emailToken": "valid_reset_token",
  *    "password": "newPassword123"
  * }
  *
