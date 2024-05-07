@@ -4,13 +4,18 @@ const communitySeedData = [
     name: "CodeCrafters",
     category: "Technology",
     rules: ["624a6a677c8d9c9f5fd5eb2b"],
-    description: "A community for coding enthusiasts to share knowledge, projects, and programming tips.",
+    description:
+      "A community for coding enthusiasts to share knowledge, projects, and programming tips.",
     is18plus: false,
     allowNfsw: true,
     allowSpoile: true,
     communityType: "Public",
     creator: "624a4a94c66738f13854b474", // Amira
-    members: ["624a4a94c66738f13854b474", "624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0b"], // Amira, Farouq, Abdullah
+    members: [
+      "624a4a94c66738f13854b474",
+      "624a4fbf3f392aefdb4dd1c8",
+      "624a6a677c8d9c9f5fd5eb0b",
+    ], // Amira, Farouq, Abdullah
     moderators: ["624a4a94c66738f13854b474"], // Amira
     membersCount: 3,
   },
@@ -19,13 +24,18 @@ const communitySeedData = [
     name: "TechTalks",
     category: "Technology",
     rules: ["624a6a677c8d9c9f5fd5eb2c"],
-    description: "Engage in discussions about the latest trends, innovations, and breakthroughs in the tech industry.",
+    description:
+      "Engage in discussions about the latest trends, innovations, and breakthroughs in the tech industry.",
     is18plus: false,
     allowNfsw: true,
     allowSpoile: true,
     communityType: "Public",
     creator: "624a52d75ff69df002d25035", // Mahmoud
-    members: ["624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e"], // Mahmoud, Farouq, Basma
+    members: [
+      "624a52d75ff69df002d25035",
+      "624a4fbf3f392aefdb4dd1c8",
+      "624a6a677c8d9c9f5fd5eb0e",
+    ], // Mahmoud, Farouq, Basma
     moderators: ["624a52d75ff69df002d25035"], // Mahmoud
     membersCount: 3,
   },
@@ -34,13 +44,18 @@ const communitySeedData = [
     name: "CodeGeeks",
     category: "Technology",
     rules: ["624a6a677c8d9c9f5fd5eb2d"],
-    description: "Connect with fellow coders, collaborate on projects, and solve coding challenges together.",
+    description:
+      "Connect with fellow coders, collaborate on projects, and solve coding challenges together.",
     is18plus: false,
     allowNfsw: true,
     allowSpoile: true,
     communityType: "Public",
     creator: "624a52d75ff69df002d25035", // Mahmoud
-    members: ["624a52d75ff69df002d25035", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0b"], // Mahmoud, Basma, Abdullah
+    members: [
+      "624a52d75ff69df002d25035",
+      "624a6a677c8d9c9f5fd5eb0e",
+      "624a6a677c8d9c9f5fd5eb0b",
+    ], // Mahmoud, Basma, Abdullah
     moderators: ["624a52d75ff69df002d25035"], // Mahmoud
     membersCount: 3,
   },
@@ -49,13 +64,18 @@ const communitySeedData = [
     name: "ScienceExplorersClub",
     category: "Science",
     rules: ["624a6a677c8d9c9f5fd5eb2e"],
-    description: "Dive into the fascinating world of science with discussions on physics, chemistry, and more.",
+    description:
+      "Dive into the fascinating world of science with discussions on physics, chemistry, and more.",
     is18plus: false,
     allowNfsw: true,
     allowSpoile: true,
     communityType: "Public",
     creator: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    members: ["624a6a677c8d9c9f5fd5eb16", "624a6a677c8d9c9f5fd5eb0f", "624a6a677c8d9c9f5fd5eb14"], // Mahmoud, Farida, Karim
+    members: [
+      "624a6a677c8d9c9f5fd5eb16",
+      "624a6a677c8d9c9f5fd5eb0f",
+      "624a6a677c8d9c9f5fd5eb14",
+    ], // Mahmoud, Farida, Karim
     moderators: ["624a6a677c8d9c9f5fd5eb16"], // Mahmoud
     membersCount: 3,
   },
@@ -71,7 +91,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a6a677c8d9c9f5fd5eb13", // Galal
-    members: ["624a6a677c8d9c9f5fd5eb13", "624a6a677c8d9c9f5fd5eb14", "624a6a677c8d9c9f5fd5eb11"], // Galal, Karim, Rehab
+    members: [
+      "624a6a677c8d9c9f5fd5eb13",
+      "624a6a677c8d9c9f5fd5eb14",
+      "624a6a677c8d9c9f5fd5eb11",
+    ], // Galal, Karim, Rehab
     moderators: ["624a6a677c8d9c9f5fd5eb13"], // Galal
     membersCount: 3,
   },
@@ -87,8 +111,16 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    members: ["624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0f", "624a6a677c8d9c9f5fd5eb12"], // Basma, Farida, Youssef
-    contributors: ["624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0f", "624a6a677c8d9c9f5fd5eb12"], // Basma, Farida, Youssef
+    members: [
+      "624a6a677c8d9c9f5fd5eb0e",
+      "624a6a677c8d9c9f5fd5eb0f",
+      "624a6a677c8d9c9f5fd5eb12",
+    ], // Basma, Farida, Youssef
+    contributors: [
+      "624a6a677c8d9c9f5fd5eb0e",
+      "624a6a677c8d9c9f5fd5eb0f",
+      "624a6a677c8d9c9f5fd5eb12",
+    ], // Basma, Farida, Youssef
     moderators: ["624a6a677c8d9c9f5fd5eb0e"], // Basma
     membersCount: 3,
   },
@@ -104,8 +136,16 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a4fbf3f392aefdb4dd1c8", // Farouq
-    members: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14"], // Farouq, Basma, Karim
-    contributors: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14"], // Farouq, Basma, Karim
+    members: [
+      "624a4fbf3f392aefdb4dd1c8",
+      "624a6a677c8d9c9f5fd5eb0e",
+      "624a6a677c8d9c9f5fd5eb14",
+    ], // Farouq, Basma, Karim
+    contributors: [
+      "624a4fbf3f392aefdb4dd1c8",
+      "624a6a677c8d9c9f5fd5eb0e",
+      "624a6a677c8d9c9f5fd5eb14",
+    ], // Farouq, Basma, Karim
     moderators: ["624a4fbf3f392aefdb4dd1c8"], // Farouq
     membersCount: 3,
     removalReasons: ["6633ddb655d6bba0f4023c40"],
@@ -115,13 +155,18 @@ const communitySeedData = [
     name: "VisualArtsGallery",
     category: "Art and Creativity",
     rules: ["624a6a677c8d9c9f5fd5eb32"],
-    description: "Showcase and discuss visual arts, including drawings, paintings, sculptures, and digital art.",
+    description:
+      "Showcase and discuss visual arts, including drawings, paintings, sculptures, and digital art.",
     is18plus: false,
     allowNfsw: true,
     allowSpoile: true,
     communityType: "Public",
     creator: "624a6a677c8d9c9f5fd5eb0e", // Basma
-    members: ["624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14", "624a4fbf3f392aefdb4dd1c8"], // Basma, Karim, Farouq
+    members: [
+      "624a6a677c8d9c9f5fd5eb0e",
+      "624a6a677c8d9c9f5fd5eb14",
+      "624a4fbf3f392aefdb4dd1c8",
+    ], // Basma, Karim, Farouq
     moderators: ["624a6a677c8d9c9f5fd5eb0e"], // Basma
     membersCount: 3,
   },
@@ -137,7 +182,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a4a94c66738f13854b474", // Amira
-    members: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0f"], // Amira, Basma, Farida
+    members: [
+      "624a4a94c66738f13854b474",
+      "624a6a677c8d9c9f5fd5eb0e",
+      "624a6a677c8d9c9f5fd5eb0f",
+    ], // Amira, Basma, Farida
     moderators: ["624a4a94c66738f13854b474"], // Amira
     membersCount: 3,
   },
@@ -153,7 +202,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    members: ["624a6a677c8d9c9f5fd5eb0c", "624a6a677c8d9c9f5fd5eb0d", "624a6a677c8d9c9f5fd5eb0f"], // Mimo, Basem, Farida
+    members: [
+      "624a6a677c8d9c9f5fd5eb0c",
+      "624a6a677c8d9c9f5fd5eb0d",
+      "624a6a677c8d9c9f5fd5eb0f",
+    ], // Mimo, Basem, Farida
     moderators: ["624a6a677c8d9c9f5fd5eb0c"], // Mimo
     membersCount: 3,
   },
@@ -169,7 +222,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a4a94c66738f13854b474", // Amira
-    members: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0f", "624a6a677c8d9c9f5fd5eb0d"], // Amira, Farida, Basem
+    members: [
+      "624a4a94c66738f13854b474",
+      "624a6a677c8d9c9f5fd5eb0f",
+      "624a6a677c8d9c9f5fd5eb0d",
+    ], // Amira, Farida, Basem
     moderators: ["624a4a94c66738f13854b474"], // Amira
     membersCount: 3,
   },
@@ -185,7 +242,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    members: ["624a6a677c8d9c9f5fd5eb16", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14"], // Mahmoud, Basma, Karim
+    members: [
+      "624a6a677c8d9c9f5fd5eb16",
+      "624a6a677c8d9c9f5fd5eb0e",
+      "624a6a677c8d9c9f5fd5eb14",
+    ], // Mahmoud, Basma, Karim
     moderators: ["624a6a677c8d9c9f5fd5eb16"], // Mahmoud
     membersCount: 3,
   },
@@ -201,7 +262,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a4fbf3f392aefdb4dd1c8", // Farouq
-    members: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0f"], // Farouq, Basma, Farida
+    members: [
+      "624a4fbf3f392aefdb4dd1c8",
+      "624a6a677c8d9c9f5fd5eb0e",
+      "624a6a677c8d9c9f5fd5eb0f",
+    ], // Farouq, Basma, Farida
     moderators: ["624a4fbf3f392aefdb4dd1c8"], // Farouq
     membersCount: 3,
   },
@@ -217,7 +282,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
-    members: ["624a6a677c8d9c9f5fd5eb0b", "624a6a677c8d9c9f5fd5eb16", "624a6a677c8d9c9f5fd5eb0c"], // Abdullah, Mahmoud, Mimo
+    members: [
+      "624a6a677c8d9c9f5fd5eb0b",
+      "624a6a677c8d9c9f5fd5eb16",
+      "624a6a677c8d9c9f5fd5eb0c",
+    ], // Abdullah, Mahmoud, Mimo
     moderators: ["624a6a677c8d9c9f5fd5eb0b"], // Abdullah
     membersCount: 3,
   },
@@ -233,7 +302,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a4fbf3f392aefdb4dd1c8", // Farouq
-    members: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0c"], // Farouq, Basma, Mimo
+    members: [
+      "624a4fbf3f392aefdb4dd1c8",
+      "624a6a677c8d9c9f5fd5eb0e",
+      "624a6a677c8d9c9f5fd5eb0c",
+    ], // Farouq, Basma, Mimo
     moderators: ["624a4fbf3f392aefdb4dd1c8"], // Farouq
     membersCount: 3,
   },
@@ -249,7 +322,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a6a677c8d9c9f5fd5eb0d", // Basem
-    members: ["624a6a677c8d9c9f5fd5eb0d", "624a6a677c8d9c9f5fd5eb0b", "624a6a677c8d9c9f5fd5eb13"], // Basem, Abdullah, Galal
+    members: [
+      "624a6a677c8d9c9f5fd5eb0d",
+      "624a6a677c8d9c9f5fd5eb0b",
+      "624a6a677c8d9c9f5fd5eb13",
+    ], // Basem, Abdullah, Galal
     moderators: ["624a6a677c8d9c9f5fd5eb0d"], // Basem
     membersCount: 3,
   },
@@ -265,7 +342,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
-    members: ["624a6a677c8d9c9f5fd5eb16", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0c"], // Mahmoud, Basma, Mimo
+    members: [
+      "624a6a677c8d9c9f5fd5eb16",
+      "624a6a677c8d9c9f5fd5eb0e",
+      "624a6a677c8d9c9f5fd5eb0c",
+    ], // Mahmoud, Basma, Mimo
     moderators: ["624a6a677c8d9c9f5fd5eb16"], // Mahmoud
     membersCount: 3,
   },
@@ -281,7 +362,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a4a94c66738f13854b474", // Amira
-    members: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0d", "624a6a677c8d9c9f5fd5eb13"], // Amira, Basem, Galal
+    members: [
+      "624a4a94c66738f13854b474",
+      "624a6a677c8d9c9f5fd5eb0d",
+      "624a6a677c8d9c9f5fd5eb13",
+    ], // Amira, Basem, Galal
     moderators: ["624a4a94c66738f13854b474"], // Amira
     membersCount: 3,
   },
@@ -297,7 +382,11 @@ const communitySeedData = [
     allowSpoile: true,
     communityType: "Public",
     creator: "624a6a677c8d9c9f5fd5eb0c", // Mimo
-    members: ["624a6a677c8d9c9f5fd5eb0c", "624a6a677c8d9c9f5fd5eb16", "624a6a677c8d9c9f5fd5eb13"], // Mimo, Mahmoud, Galal
+    members: [
+      "624a6a677c8d9c9f5fd5eb0c",
+      "624a6a677c8d9c9f5fd5eb16",
+      "624a6a677c8d9c9f5fd5eb13",
+    ], // Mimo, Mahmoud, Galal
     moderators: ["624a6a677c8d9c9f5fd5eb0c"], // Mimo
     membersCount: 3,
   },

@@ -2,11 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const admin = require("firebase-admin");
 const NotificationSub = require("./notificationSub");
-//const notificationTypeId = require("./../../seed-data/constants/notificationType");
 require("./user");
 require("./post");
 require("./comment");
-//require("./constants/notificationType");
 
 const serviceAccount = require("./../../spreadit-b8b53-firebase-adminsdk-3ka4j-3ba29720af.json");
 
@@ -91,8 +89,10 @@ NotificationSchema.statics.getNotificationObject = async function (
     rootComment = await Comment.findRootComment(notification.commentId);
     comment = {
       content: rootComment ? rootComment.content : null,
-      postTitle: rootComment && rootComment.postId ? rootComment.postId.title : null,
-      communityTitle: rootComment && rootComment.postId ? rootComment.postId.community : null,
+      postTitle:
+        rootComment && rootComment.postId ? rootComment.postId.title : null,
+      communityTitle:
+        rootComment && rootComment.postId ? rootComment.postId.community : null,
     };
   }
 
@@ -100,7 +100,11 @@ NotificationSchema.statics.getNotificationObject = async function (
     _id: notification._id,
     userId: notification.userId ? notification.userId._id : null,
     postId: notification.postId ? notification.postId._id : null,
-    commentId: rootComment ? (notification.commentId ? notification.commentId._id : null) : null,
+    commentId: rootComment
+      ? notification.commentId
+        ? notification.commentId._id
+        : null
+      : null,
     content: notification.content,
     notification_type: notification.notificationTypeId.name,
     related_user: user,
@@ -117,7 +121,6 @@ NotificationSchema.statics.getNotificationObject = async function (
   return notificationObject;
 };
 
-//  commentId: rootComment._id ? notification.commentId?._id : null,
 NotificationSchema.statics.sendNotification = async function (
   userId,
   title,
@@ -140,10 +143,10 @@ NotificationSchema.statics.sendNotification = async function (
       console.log("Notification sent to:", subs[i].fcmToken);
     } catch (error) {
       console.error("Error sending FCM message:", error);
-      return error; // Return the error to indicate failure
+      return error;
     }
   }
-  return true; // Return true to indicate success
+  return true;
 };
 
 const Notification = mongoose.model("notification", NotificationSchema);

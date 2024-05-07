@@ -102,7 +102,6 @@ exports.modifyChatAndMessagingSetting = async (req, res) => {
     const { sendYouFriendRequests, sendYouPrivateMessages, approvedUsers } =
       req.body;
 
-    // Create an object to store only the fields that are provided in the request body
     const updatedFields = {};
     if (sendYouFriendRequests !== undefined) {
       updatedFields.sendYouFriendRequests = sendYouFriendRequests;
@@ -157,7 +156,6 @@ exports.modifyEmailSetting = async (req, res) => {
     const { newFollowerEmail, chatRequestEmail, unsubscribeAllEmails } =
       req.body;
 
-    // Create an object to store only the fields that are provided in the request body
     const updatedFields = {};
     if (newFollowerEmail !== undefined) {
       updatedFields.newFollowerEmail = newFollowerEmail;
@@ -358,10 +356,8 @@ exports.modifySafetyAndPrivacySettings = async (req, res) => {
       if (blockedUser) {
         const index = user.blockedUsers.indexOf(blockedUser._id);
         if (index !== -1) {
-          // Remove the user from the blocklist
           user.blockedUsers.splice(index, 1);
         } else {
-          // Add the user to the blocklist
           user.blockedUsers.push(blockedUser._id);
         }
       } else {
@@ -376,10 +372,8 @@ exports.modifySafetyAndPrivacySettings = async (req, res) => {
       if (mutedCommunity) {
         const index = user.mutedCommunities.indexOf(mutedCommunity._id);
         if (index !== -1) {
-          // Remove the community from the muted communities list
           user.mutedCommunities.splice(index, 1);
         } else {
-          // Add the community to the muted communities list
           user.mutedCommunities.push(mutedCommunity._id);
         }
       } else {

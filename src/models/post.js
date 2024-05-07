@@ -157,8 +157,14 @@ const PostSchema = new Schema(
 PostSchema.statics.getPostObject = async function (
   post,
   userId,
-  includeHidden = false
+  includeHidden = false,
+  includeScheduled = false
 ) {
+  if (!includeScheduled && post.isScheduled) {
+    return null;
+  } else if (includeScheduled && !post.isScheduled) {
+    return null;
+  }
   const User = mongoose.model("user");
   const Community = mongoose.model("community");
   const loginUser = await User.findById(userId);
@@ -166,7 +172,7 @@ PostSchema.statics.getPostObject = async function (
   const postcommunity = await Community.findOne({ name: post.community });
   const hasUpvoted = post.upVotes.includes(userId);
   const hasDownvoted = post.downVotes.includes(userId);
-  const savedPostIds = postUser.savedPosts || [];
+  const savedPostIds = loginUser.savedPosts || [];
   let hasVotedOnPoll = false;
   let userSelectedOption = null;
   if (post.pollOptions.length > 0 && loginUser.selectedPollOption) {
@@ -215,16 +221,22 @@ PostSchema.statics.getPostObject = async function (
     isApproved: post.isApproved,
     isScheduled: post.isScheduled,
     isSpam: post.isSpam,
-    date: post.date,
+    date: post.updatedAt,
     pollOptions: post.pollOptions,
     attachments: post.attachments,
   };
 };
 
-PostSchema.statics.getPostResultObject = async function (post) {
+PostSchema.statics.getPostResultObject = async function (post, userId) {
   const User = mongoose.model("user");
   const Community = mongoose.model("community");
-
+  const isHiddenByUser = post.hiddenBy.includes(userId);
+  if (isHiddenByUser && !includeHidden) {
+    return null;
+  }
+  if (post.isScheduled) {
+    return null;
+  }
   const user = await User.findById(post.userId).lean();
   const username = user ? user.username : null;
   const userProfilePic = user && user.avatar ? user.avatar : null;
@@ -241,7 +253,7 @@ PostSchema.statics.getPostResultObject = async function (post) {
     isSpoiler: post.isSpoiler || false,
     votesCount: (post.upVotes.length || 0) - (post.downVotes.length || 0),
     commentsCount: post.commentsCount || 0,
-    date: post.createdAt,
+    date: post.updatedAt,
     username: username,
     userProfilePic: userProfilePic,
     attachments: post.attachments || [],

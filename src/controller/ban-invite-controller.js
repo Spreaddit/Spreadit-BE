@@ -95,10 +95,10 @@ exports.banUser = async (req, res) => {
 
     const newMessage = new Message({
       conversationId: newConversation._id,
-      senderId: community._id, // Provide the ID of the sender
+      senderId: community._id,
       senderType: "community",
       conversationSubject: newConversation.subject,
-      recieverId: userToBeBanned._id, // Provide the ID of the receiver
+      recieverId: userToBeBanned._id,
       contentType: "text",
       content: banMessage,
     });
@@ -170,7 +170,6 @@ exports.editBan = async (req, res) => {
       banMessage: req.body.banMessage,
     };
 
-    // Update the ban record
     const updatedBan = await BanUser.findOneAndUpdate(
       {
         userId: userToBeBanned._id,
@@ -202,10 +201,10 @@ exports.editBan = async (req, res) => {
 
     const newMessage = new Message({
       conversationId: newConversation._id,
-      senderId: community._id, // Provide the ID of the sender
+      senderId: community._id,
       senderType: "community",
       conversationSubject: newConversation.subject,
-      recieverId: userToBeBanned._id, // Provide the ID of the receiver
+      recieverId: userToBeBanned._id,
       contentType: "text",
       content: banMessage,
     });
@@ -274,7 +273,6 @@ exports.unbanUser = async (req, res) => {
       return res.status(404).send({ message: "User is not banned" });
     }
 
-    // Send response
     const userObj = await User.generateUserObject(userToBeUnbanned);
     res.status(200).send({
       user: userObj,

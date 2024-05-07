@@ -13,7 +13,6 @@ const CommentSchema = new Schema(
     },
     userId: {
       type: Schema.Types.ObjectId,
-      //required: true,
       index: true,
       ref: "user",
     },
@@ -218,7 +217,6 @@ CommentSchema.statics.findRootComment = async (commentId) => {
     return null;
   }
   if (comment.parentCommentId) {
-    //return findRootComment(comment.parentCommentId);
     return Comment.findRootComment(comment.parentCommentId);
   }
   return comment;

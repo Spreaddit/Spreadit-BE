@@ -21,17 +21,15 @@ exports.signUp = async (req, res) => {
       if (!savedUser) {
         return res.status(400).send({ error: "User not saved" });
       }
-      //const userObj = await User.generateUserObject(savedUser);
       const token = await savedUser.generateToken();
       const emailToken = await savedUser.generateEmailToken();
       let emailContent;
       if (isCross) {
-        //emailContent = `To confirm your email, click the link below: app.spreadit.me/#/home/${emailToken}`;
-        emailContent = `To confirm your email, click the link below: app.spreadit.me/#/home/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: app.spreaddit.me/#/home/${emailToken}`;
       } else {
-        emailContent = `To confirm your email, click the link below: www.spreadit.me/verifyemail/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: www.spreaddit.me/verifyemail/${emailToken}`;
       }
-      //await sendEmail(savedUser.email, "Please Confirm Your Email", emailContent);
+      await sendEmail(savedUser.email, "Please Confirm Your Email", emailContent);
 
       const userObj = await User.generateUserObject(savedUser);
 
@@ -48,7 +46,6 @@ exports.signUp = async (req, res) => {
         if (!savedUser) {
           return res.status(400).send({ error: "User not saved" });
         } else {
-          //const userObj = await User.generateUserObject(savedUser);
           const token = await savedUser.generateToken();
           const userObj = await User.generateUserObject(savedUser);
 
@@ -162,7 +159,6 @@ exports.googleConnectedAccounts = async (req, res) => {
     const userId = req.user._id;
     let user = await User.findById(userId);
 
-    //let user = await User.findOne({ googleId: userData.id });
     if (user) {
       user.googleId = userData.id;
       user.connectedAccounts = [userData.email];
@@ -198,10 +194,9 @@ exports.addPasswordSendEmail = async (req, res) => {
       const emailToken = await user.generateEmailToken();
       let emailContent;
       if (isCross) {
-        //localhost:1234/#/settings/account-settings/add-password/${emailToken}
-        emailContent = `To confirm your email, click the link below: app.spreadit.me/#/settings/account-settings/add-password/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: app.spreaddit.me/#/settings/account-settings/add-password/${emailToken}`;
       } else {
-        emailContent = `To confirm your email, click the link below: www.spreadit.me/addpassword/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: www.spreaddit.me/addpassword/${emailToken}`;
       }
       await sendEmail(user.connectedAccounts[0], "Please Confirm Your Email", emailContent);
 
@@ -245,7 +240,7 @@ exports.forgotPassword = async (req, res) => {
       return res.status(400).send({ message: "Error, wrong email" });
     }
     const resetToken = await user.generateResetToken();
-    const emailContent = `www.spreadit.me/password/${resetToken}`;
+    const emailContent = `www.spreaddit.me/password/${resetToken}`;
     await sendEmail(user.email, "Ask and you shall receive.. a password reset", emailContent);
     res.status(200).send({ message: "Password reset link sent successfully" });
   } catch (err) {
@@ -266,9 +261,9 @@ exports.appForgotPassword = async (req, res) => {
       return res.status(404).send({ message: "User not found" });
     }
 
-    const resetToken = await user.generateResetToken();
+    const resetToken = await user.generateEmailToken();
 
-    const emailContent = `app.spreadit.me/#/reset-password-by-token/${resetToken}`;
+    const emailContent = `app.spreaddit.me/#/forget-password-verification/${resetToken}`;
     await sendEmail(user.email, "Ask and you shall receive.. a password reset", emailContent);
 
     res.status(200).send({ message: "Password reset link sent successfully" });
@@ -279,13 +274,15 @@ exports.appForgotPassword = async (req, res) => {
 };
 exports.resetPasswordByToken = async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    const user = await User.getUserByResetToken(newUser.resetToken);
+    const { emailToken } = req.body;
+    const decodedToken = jwt.jwtDecode(emailToken);
+    const email = decodedToken.email;
+    const user = await User.getUserByEmailOrUsername(email);
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-    if (newUser && user.resetTokenExpiration > Date.now()) {
-      user.password = newUser.password;
+    if (user) {
+      user.password = req.body.password;
       await user.save();
       res.status(200).send({ message: "Password reset successfully" });
     } else {
@@ -351,7 +348,9 @@ exports.verifyEmail = async (req, res) => {
     const accessToken = await user.generateToken();
     user.isVerified = 1;
     await user.save();
+    const userObj = await User.generateUserObject(user);
     res.status(200).send({
+      user: userObj,
       message: "Email verified successfully",
       accessToken: accessToken,
     });
@@ -386,11 +385,11 @@ exports.forgotUsername = async (req, res) => {
     }
     let emailContent;
     if (isCross) {
-      emailContent = `Your username is ${user.username} you can login now: app.spreadit.me/login`;
+      emailContent = `Your username is ${user.username} you can login now: app.spreaddit.me/login`;
     } else {
-      emailContent = `Your username is ${user.username} you can login now: www.spreadit.me/login`;
+      emailContent = `Your username is ${user.username} you can login now: www.spreaddit.me/login`;
     }
-    await sendEmail(savedUser.email, "So you wanna know your username, huh?", emailContent);
+    await sendEmail(user.email, "So you wanna know your username, huh?", emailContent);
     res.status(200).send({ message: "Username sent successfully" });
   } catch (err) {
     console.error(err);
@@ -458,11 +457,11 @@ exports.updateUserInfo = async (req, res) => {
 
     if (username) {
       const exists = await User.getUserByEmailOrUsername(username);
-      if(exists) {
-      if (exists.username != user.username || username.length > 14) {
-        return res.status(400).json({ message: "Username not available" });
+      if (exists) {
+        if (exists.username != user.username || username.length > 14) {
+          return res.status(400).json({ message: "Username not available" });
+        }
       }
-    }
     }
 
     if (name) user.name = name;

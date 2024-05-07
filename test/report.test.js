@@ -9,7 +9,6 @@ const ReportUser = require("../src/models/user");
 const jwt = require("jsonwebtoken");
 const connectionurl = config.testConnectionString;
 
-// Mock dependencies
 jest.mock("../src/models/user");
 jest.mock("jsonwebtoken");
 
@@ -25,7 +24,7 @@ describe("ReportUser function", () => {
     }
   });
   afterEach(() => {
-    jest.clearAllMocks(); // Clear mocks after each test
+    jest.clearAllMocks();
   });
 
   afterAll(() => {
@@ -33,7 +32,6 @@ describe("ReportUser function", () => {
   });
 
   it("should return error in report user if there is no username", async () => {
-    // Mock req and res objects
     const req = {
       body: {
         token: "mocktoken",
@@ -45,17 +43,13 @@ describe("ReportUser function", () => {
       json: jest.fn(),
     };
 
-    // Mock functions to return desired values
     ReportUser.getUserByEmailOrUsername.mockResolvedValueOnce({
       _id: "userToreportId",
     });
     jwt.decode.mockReturnValueOnce({ _id: "reporterId" });
     ReportUser.findByIdAndUpdate.mockResolvedValueOnce({});
-
-    // Call the function
     await reportUser(req, res);
 
-    // Check if the response is as expected
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({
       error: "Username is required",
@@ -63,7 +57,6 @@ describe("ReportUser function", () => {
   });
 
   it("should report user successfully", async () => {
-    // Mock req and res objects
     const req = {
       body: {
         username: "amira12",
@@ -77,17 +70,14 @@ describe("ReportUser function", () => {
       json: jest.fn(),
     };
 
-    // Mock functions to return desired values
     ReportUser.getUserByEmailOrUsername.mockResolvedValueOnce({
       _id: "userToreportId",
     });
     jwt.decode.mockReturnValueOnce({ _id: "reporterId" });
     ReportUser.findByIdAndUpdate.mockResolvedValueOnce({});
 
-    // Call the function
     await reportUser(req, res);
 
-    // Check if the response is as expected
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       description: "User reported successfully",
@@ -95,7 +85,6 @@ describe("ReportUser function", () => {
   });
 
   it("should return error in report user if there is no token", async () => {
-    // Mock req and res objects
     const req = {
       body: {
         username: "userToreport",
@@ -107,7 +96,6 @@ describe("ReportUser function", () => {
       json: jest.fn(),
     };
 
-    // Mock functions to return desired values
     ReportUser.getUserByEmailOrUsername.mockResolvedValueOnce({
       _id: "userToreportId",
     });

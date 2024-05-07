@@ -1,8 +1,6 @@
 const BlockUser = require("../models/user");
 const jwt = require("jsonwebtoken");
 exports.blockUser = async (req, res) => {
-  //const followerID = req.user;
-
   try {
     const username = req.body.username;
     if (!username) {

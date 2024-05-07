@@ -24,6 +24,8 @@ const userOne = {
   gender: "Male",
   isVerified: true,
 };
+  isVerified: true,
+};
 const userTwo = {
   _id: userTwoId,
   name: "Farouuuq",
@@ -164,7 +166,9 @@ describe("Adding community to favorites", () => {
       })
       .expect(200);
 
-    expect(response.body.message).toBe("Community added to favorites successfully");
+    expect(response.body.message).toBe(
+      "Community added to favorites successfully"
+    );
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
@@ -208,9 +212,12 @@ describe("Adding community to favorites", () => {
     });
     const token = logIn.body.access_token;
 
-    await request(app).post("/community/add-to-favourites").set("Authorization", `Bearer ${token}`).send({
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/community/add-to-favourites")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
 
     const response = await request(app)
       .post("/community/add-to-favourites")
@@ -232,9 +239,12 @@ describe("Removing community from favorites", () => {
     });
     const token = logIn.body.access_token;
 
-    await request(app).post("/community/add-to-favourites").set("Authorization", `Bearer ${token}`).send({
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/community/add-to-favourites")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
     const response = await request(app)
       .post("/community/remove-favourite")
       .set("Authorization", `Bearer ${token}`)
@@ -242,7 +252,9 @@ describe("Removing community from favorites", () => {
         communityName: "farouqfans",
       })
       .expect(200);
-    expect(response.body.message).toBe("Community removed from favorites successfully");
+    expect(response.body.message).toBe(
+      "Community removed from favorites successfully"
+    );
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
@@ -449,9 +461,12 @@ describe("Unmuting community", () => {
     });
     const token = logIn.body.access_token;
 
-    await request(app).post("/community/mute").set("Authorization", `Bearer ${token}`).send({
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/community/mute")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
     const response = await request(app)
       .post("/community/unmute")
       .set("Authorization", `Bearer ${token}`)
@@ -687,7 +702,9 @@ describe("Unsubscribing from community", () => {
       .send({ communityName: "farouqfans" })
       .expect(200);
 
-    expect(response.body.message).toBe("Unsubscribed from the community successfully");
+    expect(response.body.message).toBe(
+      "Unsubscribed from the community successfully"
+    );
   });
 
   test("It should return 'Invalid parameters' for status 400", async () => {
@@ -963,7 +980,9 @@ describe("Getting user profile info", () => {
   });
 
   test("It should return 'User not found' for status 404", async () => {
-    const response = await request(app).get("/user/profile-info/notfarouq").expect(404);
+    const response = await request(app)
+      .get("/user/profile-info/notfarouq")
+      .expect(404);
     expect(response.body.message).toBe("User not found");
   });
 });

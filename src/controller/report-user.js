@@ -3,8 +3,6 @@ const jwt = require("jsonwebtoken");
 const Report = require("../models/report.js");
 
 exports.reportUser = async (req, res) => {
-  //const followerID = req.user;
-
   try {
     const username = req.body.username;
     if (!username) {
@@ -41,14 +39,6 @@ exports.reportUser = async (req, res) => {
     });
 
     await report.save();
-
-    // const reporterUser = await ReportUser.findByIdAndUpdate(
-    //   reporterID,
-    //   { $addToSet: { reportedUsers: { id: toReportID, reason: reason } } },
-    //   { new: true }
-    // );
-    // const toReportUser = await ReportUser.findById(toReportID);
-
     const response = {
       description: "User reported successfully",
     };

@@ -27,6 +27,9 @@ exports.sendMessage = async (req, res) => {
       return res.status(400).json({ error: "message content is required" });
     }
     const recieverUser = await User.getUserByEmailOrUsername(recieverUsername);
+    if (!recieverUser) {
+      return res.status(400).json({ error: "User not found" });
+    }
     const recieverId = recieverUser._id;
     if (recieverId.toString() === userId.toString())
       return res.status(400).json({ error: "user cannot message himself" });
@@ -67,12 +70,10 @@ exports.replyMessage = async (req, res) => {
     const userId = req.user._id;
     const messageId = req.params.messageId;
 
-    // Check if the message being replied to exists
     const messageToReply = await Message.findById(messageId);
     if (!messageToReply)
       return res.status(404).json({ error: "Message not found" });
 
-    // Check if the user is authorized to reply to this message
     const senderId = messageToReply.recieverId;
     if (senderId.toString() !== userId.toString()) {
       return res
@@ -85,7 +86,6 @@ exports.replyMessage = async (req, res) => {
       return res.status(400).json({ error: "Message content is required" });
     }
 
-    // Ensure the user is not replying to themselves
     const recieverId = messageToReply.senderId;
     if (recieverId.toString() === userId.toString())
       return res.status(400).json({ error: "User cannot reply to themselves" });
@@ -96,7 +96,6 @@ exports.replyMessage = async (req, res) => {
       return res.status(404).json({ error: "Conversation not found" });
     }
 
-    // Create the new reply message
     const conversationSubject = conversation.subject;
     const newReply = new Message({
       conversationId: conversationId,
@@ -175,7 +174,6 @@ exports.deleteMessage = async (req, res) => {
         .status(403)
         .json({ error: "You are not authorized to delete this message" });
     }
-    // Find the conversation associated with the message
     const conversation = await Conversation.findById(
       existMessage.conversationId
     );
@@ -185,21 +183,17 @@ exports.deleteMessage = async (req, res) => {
       parent.isDeleted = true;
       await parent.save();
 
-      // Save the updated conversation
       await conversation.save();
     } else {
-      // Find all child messages (replies) associated with the parent message
       const childrenMessages = await Message.find({
         conversationId: existMessage.conversationId,
       });
 
-      // Delete each child message and remove its ID from the conversation
       for (const childMessage of childrenMessages) {
         const deletedMessage = await Message.findById(childMessage._id);
         deletedMessage.isDeleted = true;
         await deletedMessage.save();
       }
-      // Save the updated conversation
       await conversation.save();
     }
 
@@ -216,7 +210,6 @@ exports.getAllMessages = async (req, res) => {
     const conversations = await Conversation.find().populate("messages");
 
     const userConversations = conversations.filter((conversation) => {
-      // Check if the user is the sender or receiver in any message of the conversation
       return conversation.messages.some((message) => {
         return (
           message.senderId.equals(userId) || message.recieverId.equals(userId)
@@ -230,7 +223,6 @@ exports.getAllMessages = async (req, res) => {
 
     const allMessages = [];
 
-    // Iterate over each conversation and extract messages
     for (const conversation of userConversations) {
       for (const message of conversation.messages) {
         const messageObj = await Message.getMessageObject(message, userId);
@@ -416,7 +408,6 @@ exports.markAllAsRead = async (req, res) => {
     }
 
     inboxMessages.map(async (message) => {
-      // Set isRead to true for each inbox message and save
       message.isRead = true;
       await message.save();
     });

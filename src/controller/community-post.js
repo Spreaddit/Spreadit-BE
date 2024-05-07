@@ -5,7 +5,6 @@ const Report = require("../models/report.js");
 const Community = require("../models/community.js");
 const mongoose = require("mongoose");
 const Moderator = require("../models/moderator.js");
-
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -236,7 +235,6 @@ exports.removePost = async (req, res) => {
         .json({ error: "Post has already been removed before" });
     }
     post.isRemoved = true;
-    //i need make new comment with removalReason as a content for this comment and add this comment to comments array
     const removalComment = new Comment({
       content: removalReason,
       userId: req.user._id,
@@ -316,7 +314,12 @@ exports.getScheduledPosts = async (req, res) => {
     }
     const postInfoArray = await Promise.all(
       scheduledPosts.map(async (post) => {
-        const postObject = await Post.getPostObject(post, req.user._id);
+        const postObject = await Post.getPostObject(
+          post,
+          req.user._id,
+          false,
+          true
+        );
         return postObject;
       })
     );

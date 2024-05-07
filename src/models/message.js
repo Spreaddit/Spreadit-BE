@@ -42,7 +42,7 @@ const MessageSchema = new Schema(
     },
     contentType: {
       type: String,
-      enum: ["text", "comment", "mention"], // Enum for different content types
+      enum: ["text", "comment", "mention"],
       required: true,
     },
     content: {
@@ -69,7 +69,6 @@ MessageSchema.statics.getMessageObject = async function (message, userId) {
   let relatedUser;
   let direction;
 
-  // Check if the user is the sender or receiver of the message
   if (message.senderId.equals(userId)) {
     relatedUser = await User.findById(message.recieverId);
     direction = "outgoing";
@@ -82,9 +81,10 @@ MessageSchema.statics.getMessageObject = async function (message, userId) {
     direction = "incoming";
   }
   let username;
-  if (message.senderType == "user")
+
+  if (message.senderType == "user") {
     username = relatedUser ? relatedUser.username : null;
-  else {
+  } else if (message.senderType == "community") {
     username = relatedUser ? relatedUser.name : null;
   }
   const type = message.contentType;
