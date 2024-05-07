@@ -1020,9 +1020,8 @@ exports.removeModerator = async (req, res) => {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    const user = await User.findOne({ _id: req.user._id });
-
-    const moderator = await Moderator.findOne({ communityName, username });
+    const user = await User.findOne({ username: username });
+    const moderator = await Moderator.findOne({ communityName, username: username });
     if (!moderator) {
       return res.status(404).json({ message: "Moderator not found" });
     }
