@@ -89,7 +89,9 @@ mongoose
         await seeder.run();
         console.log(`${seeder.constructor.name} Seeder executed successfully`);
       } else {
-        console.log(`${seeder.constructor.name} Seeder already executed, skipping...`);
+        console.log(
+          `${seeder.constructor.name} Seeder already executed, skipping...`
+        );
       }
     }
 
