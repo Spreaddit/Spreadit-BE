@@ -9,7 +9,6 @@ const FollowUser = require("../src/models/user");
 const jwt = require("jsonwebtoken");
 const connectionurl = config.testConnectionString;
 
-// Mock dependencies
 jest.mock("../src/models/user");
 jest.mock("jsonwebtoken");
 
@@ -25,7 +24,7 @@ describe("FollowUser function", () => {
     }
   });
   afterEach(() => {
-    jest.clearAllMocks(); // Clear mocks after each test
+    jest.clearAllMocks();
   });
 
   afterAll(() => {
@@ -33,7 +32,6 @@ describe("FollowUser function", () => {
   });
 
   it("should return error in follow user if there is no username", async () => {
-    // Mock req and res objects
     const req = {
       body: {
         token: "mocktoken",
@@ -44,17 +42,14 @@ describe("FollowUser function", () => {
       json: jest.fn(),
     };
 
-    // Mock functions to return desired values
     FollowUser.getUserByEmailOrUsername.mockResolvedValueOnce({
       _id: "userTofollowId",
     });
     jwt.decode.mockReturnValueOnce({ _id: "followerId" });
     FollowUser.findByIdAndUpdate.mockResolvedValueOnce({});
 
-    // Call the function
     await followUser(req, res);
 
-    // Check if the response is as expected
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({
       error: "Username is required",
@@ -62,7 +57,6 @@ describe("FollowUser function", () => {
   });
 
   it("should follow user successfully", async () => {
-    // Mock req and res objects
     const req = {
       body: {
         token:
@@ -75,17 +69,14 @@ describe("FollowUser function", () => {
       json: jest.fn(),
     };
 
-    // Mock functions to return desired values
     FollowUser.getUserByEmailOrUsername.mockResolvedValueOnce({
       _id: "userTofollowId",
     });
     jwt.decode.mockReturnValueOnce({ _id: "followerId" });
     FollowUser.findByIdAndUpdate.mockResolvedValueOnce({});
 
-    // Call the function
     await followUser(req, res);
 
-    // Check if the response is as expected
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       description: "User followed successfully",
@@ -93,7 +84,6 @@ describe("FollowUser function", () => {
   });
 
   it("should return error in follow user if there is no token", async () => {
-    // Mock req and res objects
     const req = {
       body: {
         username: "userTofollow",
@@ -104,7 +94,6 @@ describe("FollowUser function", () => {
       json: jest.fn(),
     };
 
-    // Mock functions to return desired values
     FollowUser.getUserByEmailOrUsername.mockResolvedValueOnce({
       _id: "userTofollowId",
     });

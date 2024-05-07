@@ -1291,7 +1291,7 @@ exports.deleteRecentPost = async (req, res) => {
     const deleteRecent = await User.findByIdAndUpdate(
       userId,
       { $pull: { recentPosts: postId } },
-      { new: true } // To return the updated document after the update operation
+      { new: true }
     );
     res.status(200).json({ message: "Post deleted from recent successfully" });
   } catch (err) {

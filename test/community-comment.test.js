@@ -468,7 +468,6 @@ it("should return 500 if internal server error occurs", async () => {
   Comment.findById.mockRestore();
 });
 
-//t3aly hena tany
 it("should return 200 and remove the comment", async () => {
   const login = await request(app)
     .post("/login")
@@ -744,7 +743,6 @@ it("should return 402 if user is not a moderator", async () => {
   if (!user) {
     throw new Error("User not found");
   }
-  console.log(user.tokens[0].token);
   const communityName = "testCommunity";
   const response = await request(app)
     .get(`/community/moderation/${communityName}/get-reported-comments`)

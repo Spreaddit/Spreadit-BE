@@ -248,10 +248,7 @@ exports.getSearch = async (req, res) => {
         )
       );
       return res.status(200).json({ results: communityResults });
-    } else if (type === "hashtags") {
-      // Search for hashtags
-      // Implement your logic here
-    } else {
+    }  else {
       return res.status(400).json({ error: "Invalid search type" });
     }
   } catch (err) {
@@ -464,7 +461,7 @@ exports.logSearchActivity = async (req, res) => {
     });
 
     if (existingSearchLogs.length >= 5) {
-      // If there are already 5 or more search logs for the user, delete the oldest one
+
       const oldestSearchLog = existingSearchLogs.sort(
         (a, b) => a.createdAt - b.createdAt
       )[0];
@@ -479,7 +476,6 @@ exports.logSearchActivity = async (req, res) => {
     let existingSearchLog = await SearchLog.findOne(searchQuery);
 
     if (existingSearchLog) {
-      // Check if the existing search was made by the current user
       if (existingSearchLog.searchedByUserId.equals(req.user._id)) {
         existingSearchLog.communityId =
           type === "community" ? communityId : null;
@@ -488,7 +484,6 @@ exports.logSearchActivity = async (req, res) => {
         existingSearchLog.updatedAt = Date.now();
         await existingSearchLog.save();
       } else {
-        // If the existing search was not made by the current user, create a new search log
         const newSearchLog = new SearchLog({
           query,
           type,
@@ -500,7 +495,6 @@ exports.logSearchActivity = async (req, res) => {
         await newSearchLog.save();
       }
     } else {
-      // If no existing search was found, create a new search log
       const newSearchLog = new SearchLog({
         query,
         type,
