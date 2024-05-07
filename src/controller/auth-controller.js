@@ -22,7 +22,6 @@ exports.signUp = async (req, res) => {
       if (!savedUser) {
         return res.status(400).send({ error: "User not saved" });
       }
-      const token = await savedUser.generateToken();
       const emailToken = await savedUser.generateEmailToken();
       let emailContent;
       if (isCross) {
@@ -35,12 +34,7 @@ exports.signUp = async (req, res) => {
         "Please Confirm Your Email",
         emailContent
       );
-
-      const userObj = await User.generateUserObject(savedUser);
-
       res.status(200).send({
-        user: userObj,
-        access_token: token,
         message: "User signed up successfully",
       });
     } else {
@@ -51,12 +45,7 @@ exports.signUp = async (req, res) => {
         if (!savedUser) {
           return res.status(400).send({ error: "User not saved" });
         } else {
-          const token = await savedUser.generateToken();
-          const userObj = await User.generateUserObject(savedUser);
-
           res.status(200).send({
-            user: userObj,
-            access_token: token,
             message: "User signed up successfully",
           });
         }
@@ -252,13 +241,18 @@ exports.addPasswordConnectedAccounts = async (req, res) => {
 };
 exports.forgotPassword = async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    const user = await User.getUserByEmailOrUsername(newUser.username);
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).send({ message: "Email or username is required" });
+    }
+
+    const user = await User.getUserByEmailOrUsername(email);
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-    const temp = await User.getUserByEmailOrUsername(newUser.email);
-    if (!temp || temp.username !== newUser.username) {
+    const temp = await User.getUserByEmailOrUsername(email);
+    if (!temp || temp.username !== user.username) {
       return res.status(400).send({ message: "Error, wrong email" });
     }
     const resetToken = await user.generateResetToken();
@@ -376,7 +370,7 @@ exports.verifyEmail = async (req, res) => {
     const user = await User.findOne({
       email: decoded.email,
     });
-    
+
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }

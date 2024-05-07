@@ -70,7 +70,8 @@ const community2 = {
 const rule = {
   _id: "624a6a677c8d9c9f5fd5eb3d",
   title: "Music Maniacs Lounge Community Guidelines",
-  description: "1. Share and appreciate diverse musical tastes and genres with respect for fellow members.",
+  description:
+    "1. Share and appreciate diverse musical tastes and genres with respect for fellow members.",
   reportReason: "Violation of community guidelines",
   communityName: "MusicManiacsLounge",
   appliesTo: "both",
@@ -153,7 +154,9 @@ afterAll(() => {
 
 describe("Adding a rule", () => {
   test("It should add a new rule", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
 
     const token = logIn.body.access_token;
     const response = await request(app)
@@ -167,10 +170,16 @@ describe("Adding a rule", () => {
     expect(response.body.message).toBe("Rule added successfully");
   });
   test("It should return 'Invalid rule data' for status 400", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
-    const response = await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({}).expect(400);
+    const response = await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({})
+      .expect(400);
 
     expect(response.body.message).toBe("Invalid rule data");
   });
@@ -192,7 +201,9 @@ describe("Adding a rule", () => {
       })
       .expect(402);
 
-    expect(response.body.message).toBe("You are not a moderator of this community");
+    expect(response.body.message).toBe(
+      "You are not a moderator of this community"
+    );
   });
 
   test("It should return 'Title already used' for status 403", async () => {
@@ -202,10 +213,13 @@ describe("Adding a rule", () => {
     });
     const token = logIn.body.access_token;
 
-    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
-      title: "myRule",
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "myRule",
+        communityName: "farouqfans",
+      });
 
     const response = await request(app)
       .post("/rule/add")
@@ -246,10 +260,13 @@ describe("Removing a rule", () => {
     });
     const token = logIn.body.access_token;
 
-    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
-      title: "myRule",
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "myRule",
+        communityName: "farouqfans",
+      });
 
     const response = await request(app)
       .post("/rule/remove")
@@ -309,10 +326,13 @@ describe("Removing a rule", () => {
     });
     const token2 = logIn2.body.access_token;
 
-    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
-      title: "myRule",
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "myRule",
+        communityName: "farouqfans",
+      });
 
     const response = await request(app)
       .post("/rule/remove")
@@ -343,6 +363,409 @@ describe("Removing a rule", () => {
       .expect(404);
 
     expect(response.body.message).toBe("Rule not found");
+  });
+});
+
+describe("Edit rule", () => {
+  test("It should edit a rule", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ title: "myRule", communityName: "farouqfans" });
+
+    const response = await request(app)
+      .put("/rule/edit")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+        oldTitle: "myRule",
+        newRule: {
+          title: "updatedRule",
+          description: "Updated rule description",
+          reportReason: "Violation of community guidelines",
+          appliesTo: "posts",
+        },
+      })
+      .expect(200);
+
+    expect(response.body.message).toBe("Rule edited successfully");
+  });
+
+  test("It should return 'Invalid request parameters' for status 400", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .put("/rule/edit")
+      .set("Authorization", `Bearer ${token}`)
+      .send({})
+      .expect(400);
+
+    expect(response.body.message).toBe("Invalid request parameters");
+  });
+
+  test("It should return 'Community not found' for status 404", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .put("/rule/edit")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "nonexistentCommunity",
+        oldTitle: "myRule",
+        newRule: {
+          title: "updatedRule",
+          description: "Updated rule description",
+          reportReason: "Violation of community guidelines",
+          appliesTo: "posts",
+        },
+      })
+      .expect(404);
+
+    expect(response.body.message).toBe("Community not found");
+  });
+
+  test("It should return 'Not a moderator' for status 402", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .put("/rule/edit")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+        oldTitle: "myRule",
+        newRule: {
+          title: "updatedRule",
+          description: "Updated rule description",
+          reportReason: "Violation of community guidelines",
+          appliesTo: "posts",
+        },
+      })
+      .expect(402);
+
+    expect(response.body.message).toBe("Not a moderator");
+  });
+
+  test("It should return 'Rule not found' for status 404", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .put("/rule/edit")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+        oldTitle: "nonexistentRule",
+        newRule: {
+          title: "updatedRule",
+          description: "Updated rule description",
+          reportReason: "Violation of community guidelines",
+          appliesTo: "posts",
+        },
+      })
+      .expect(404);
+
+    expect(response.body.message).toBe("Rule not found");
+  });
+});
+
+describe("Get rules", () => {
+  test("It should get rules of a community", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+    const response = await request(app)
+      .get("/community/farouqfans/rules")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(200);
+
+    expect(response.body).toHaveLength(0);
+  });
+
+  test("It should return 'Community not found' for status 404", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+    const response = await request(app)
+      .get("/community/nonexistentCommunity/rules")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+
+    expect(response.body.message).toBe("Community not found");
+  });
+});
+
+describe("Adding a removal reason", () => {
+  test("It should add a new removal reason", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .post("/removal-reason/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "Test Reason",
+        reasonMessage: "This is a test removal reason",
+        communityName: "Test Community",
+      })
+      .expect(200);
+
+    expect(response.body.message).toBe("Removal reason added successfully");
+  });
+
+  test("It should return 'Invalid removal reason data' for status 400", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .post("/removal-reason/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({})
+      .expect(400);
+
+    expect(response.body.message).toBe("Invalid removal reason data");
+  });
+
+  test("It should return 'Community not found' for status 404", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .post("/removal-reason/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "Test Reason",
+        reasonMessage: "This is a test removal reason",
+        communityName: "Nonexistent Community",
+      })
+      .expect(404);
+
+    expect(response.body.message).toBe("Community not found");
+  });
+
+  test("It should return 'You are not a moderator of this community' for status 402", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .post("/removal-reason/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "Test Reason",
+        reasonMessage: "This is a test removal reason",
+        communityName: "Test Community",
+      })
+      .expect(402);
+
+    expect(response.body.message).toBe(
+      "You are not a moderator of this community"
+    );
+  });
+
+  test("It should return 'Max number of removal reasons reached' for status 405", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    await Community.findByIdAndUpdate(communityId, {
+      removalReasons: Array(50).fill(removalReasonId),
+    });
+
+    const response = await request(app)
+      .post("/removal-reason/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "Test Reason",
+        reasonMessage: "This is a test removal reason",
+        communityName: "Test Community",
+      })
+      .expect(405);
+
+    expect(response.body.message).toBe("Max number of removal reasons reached");
+  });
+
+  test("It should return 'Moderator doesn't have permission' for status 406", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    await Moderator.findOneAndUpdate(
+      { username: "farouquser" },
+      { manageSettings: false }
+    );
+
+    const response = await request(app)
+      .post("/removal-reason/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "Test Reason",
+        reasonMessage: "This is a test removal reason",
+        communityName: "Test Community",
+      })
+      .expect(406);
+
+    expect(response.body.message).toBe("Moderator doesn't have permission");
+  });
+});
+
+describe("Removing a removal reason", () => {
+  test("It should remove a removal reason", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const removalReasonResponse = await request(app)
+      .post("/removal-reason/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "Test Reason",
+        reasonMessage: "This is a test removal reason",
+        communityName: "Test Community",
+      });
+
+    const removalReasonId = removalReasonResponse.body._id;
+
+    const response = await request(app)
+      .post("/removal-reason/remove")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "Test Community",
+        rId: removalReasonId,
+      })
+      .expect(200);
+
+    expect(response.body.message).toBe("Removal reason removed successfully");
+  });
+
+  test("It should return 'Invalid request parameters' for status 400", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .post("/removal-reason/remove")
+      .set("Authorization", `Bearer ${token}`)
+      .send({})
+      .expect(400);
+
+    expect(response.body.message).toBe("Invalid request parameters");
+  });
+
+  test("It should return 'Community not found' for status 404", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .post("/removal-reason/remove")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "Nonexistent Community",
+        rId: mongoose.Types.ObjectId().toString(),
+      })
+      .expect(404);
+
+    expect(response.body.message).toBe("Community not found");
+  });
+
+  test("It should return 'Not a moderator' for status 402", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .post("/removal-reason/remove")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "Test Community",
+        rId: mongoose.Types.ObjectId().toString(),
+      })
+      .expect(402);
+
+    expect(response.body.message).toBe("Not a moderator");
+  });
+
+  test("It should return 'Removal reason not found' for status 404", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    const response = await request(app)
+      .post("/removal-reason/remove")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "Test Community",
+        rId: mongoose.Types.ObjectId().toString(),
+      })
+      .expect(404);
+
+    expect(response.body.message).toBe("Removal reason not found");
+  });
+
+  test("It should return 'Moderator doesn't have permission' for status 406", async () => {
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
+    const token = logIn.body.access_token;
+
+    await Moderator.findOneAndUpdate(
+      { username: "farouquser" },
+      { manageSettings: false }
+    );
+
+    const removalReasonResponse = await request(app)
+      .post("/removal-reason/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "Test Reason",
+        reasonMessage: "This is a test removal reason",
+        communityName: "Test Community",
+      });
+
+    const removalReasonId = removalReasonResponse.body._id;
+
+    const response = await request(app)
+      .post("/removal-reason/remove")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "Test Community",
+        rId: removalReasonId,
+      })
+      .expect(406);
+
+    expect(response.body.message).toBe("Moderator doesn't have permission");
   });
 });
 

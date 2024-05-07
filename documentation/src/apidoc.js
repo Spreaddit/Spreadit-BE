@@ -29,7 +29,7 @@
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * {
- *      "user" : {user-object},
+ *       message: "User signed up successfully"
  * }
  * @apiError (400) {String} BadRequest  The server cannot or will not process the request due to something that is perceived to be a client error
  * @apiError (409) {String} Conflict  Indicates that the request could not be processed because of conflict in the current state of the resource

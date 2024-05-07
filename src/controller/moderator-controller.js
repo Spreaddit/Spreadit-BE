@@ -138,6 +138,9 @@ exports.editRule = async (req, res) => {
   try {
     const { communityName, oldTitle, newRule } = req.body;
 
+    if (!communityName || !oldTitle || !newRule) {
+      return res.status(400).json({ message: "Invalid request parameters" });
+    }
     const { title, description, reportReason, appliesTo } = newRule;
     if (!title || !communityName) {
       return res.status(400).json({ message: "Invalid rule data" });
@@ -1099,9 +1102,8 @@ exports.removeModerator = async (req, res) => {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    const user = await User.findOne({ _id: req.user._id });
-
-    const moderator = await Moderator.findOne({ communityName, username });
+    const user = await User.findOne({ username: username });
+    const moderator = await Moderator.findOne({ communityName, username: username });
     if (!moderator) {
       return res.status(404).json({ message: "Moderator not found" });
     }
@@ -1189,7 +1191,11 @@ exports.getPermissions = async (req, res) => {
       username,
     });
     if (!moderatorPermissions) {
-      return res.status(403).json({ message: "This user is not a moderator" });
+      return res.status(200).json({
+        managePostsAndComments: false,
+        manageUsers: false,
+        manageSettings: false,
+      });
     }
     res.status(200).json({
       managePostsAndComments: moderatorPermissions.managePostsAndComments,
