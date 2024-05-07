@@ -840,16 +840,14 @@ exports.sortPostTopTime = async (req, res) => {
 exports.recentPosts = async (req, res) => {
   try {
     const userId = req.user._id;
-    const user = await User.findById(userId).populate({
-      path: "recentPosts",
-      options: { sort: { createdAt: -1 } },
-    });
+    const user = await User.findById(userId).populate("recentPosts");
 
     if (!user) {
       return res.status(404).json({ error: "user not found" });
     }
 
-    const posts = user.recentPosts;
+    const post = user.recentPosts;
+    const posts = post.reverse();
     const totalPosts = posts.length;
 
     const page = req.query.page || 1;
@@ -877,5 +875,19 @@ exports.recentPosts = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "internal server error" });
+  }
+};
+exports.deleteRecentPost = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    user.recentPosts = [];
+    await user.save();
+    res
+      .status(200)
+      .json({ message: "All posts deleted from recent successfully" });
+  } catch (err) {
+    console.error("Error deleting post:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

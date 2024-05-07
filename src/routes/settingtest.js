@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const messageController = require("../controller/message-controller");
 
 ///////////////////////////////////////////////
 //settings test
@@ -55,7 +56,7 @@ router
   .route("/chat-and-messaging", auth)
   .get(chatandmessagingController.getChatAndMessagingSetting)
   .put(chatandmessagingController.modifyChatAndMessagingSetting)
-  .post(chatandmessagingController.makeAllAsRead); //needs to be handled by mahmoud
+  .post(messageController.markAllAsRead); //needs to be handled by mahmoud
 
 const contactSettingsController = require("../controller/mobile-settings");
 router
