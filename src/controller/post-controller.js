@@ -1268,7 +1268,7 @@ exports.getReportedPostsInCommunity = async (req, res) => {
         .json({ message: "No reported posts found in the community" });
     }
 
-    res.status(200).json({ reportedPosts });
+    res.status(200).json({ posts: reportedPosts });
   } catch (error) {
     console.error("Error fetching reported posts:", error);
     res.status(500).json({ error: "Internal server error" });
