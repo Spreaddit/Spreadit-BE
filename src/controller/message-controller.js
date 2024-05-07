@@ -6,6 +6,8 @@ const Message = require("../models/message");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const Conversation = require("../models/conversation");
+const Notification = require("../models/notification");
+const NotificationType = require("../../seed-data/constants/notificationType");
 const { message } = require("../../seed-data/constants/notificationType");
 
 exports.sendMessage = async (req, res) => {
@@ -25,6 +27,9 @@ exports.sendMessage = async (req, res) => {
       return res.status(400).json({ error: "message content is required" });
     }
     const recieverUser = await User.getUserByEmailOrUsername(recieverUsername);
+    if (!recieverUser) {
+      return res.status(400).json({ error: "User not found" });
+    }
     const recieverId = recieverUser._id;
     if (recieverId.toString() === userId.toString())
       return res.status(400).json({ error: "user cannot message himself" });

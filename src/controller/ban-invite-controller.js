@@ -31,7 +31,7 @@ exports.banUser = async (req, res) => {
     const moderator = await Moderator.findOne({
       username: req.user.username,
       communityName: communityName,
-      // isAccepted: true,
+      isAccepted: true,
     });
     if (!moderator) {
       return res.status(404).send({ message: "Moderator not found" });
@@ -170,7 +170,6 @@ exports.editBan = async (req, res) => {
       banMessage: req.body.banMessage,
     };
 
-    // Update the ban record
     const updatedBan = await BanUser.findOneAndUpdate(
       {
         userId: userToBeBanned._id,
@@ -274,7 +273,6 @@ exports.unbanUser = async (req, res) => {
       return res.status(404).send({ message: "User is not banned" });
     }
 
-    // Send response
     const userObj = await User.generateUserObject(userToBeUnbanned);
     res.status(200).send({
       user: userObj,
@@ -339,7 +337,7 @@ exports.getBannedUsersInCommunity = async (req, res) => {
         const user = await User.findById(bannedUser.userId);
         const banPeriod = bannedUser.isPermanent
           ? "Permanent"
-          : bannedUser.banDuration.toDateString();
+          : bannedUser.banDuration;
         return {
           username: user.username,
           userProfilePic: user.avatar,

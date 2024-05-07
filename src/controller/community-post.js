@@ -94,7 +94,7 @@ exports.getSpamPosts = async (req, res) => {
       })
     );
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({ filteredPostInfoArray });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -236,7 +236,6 @@ exports.removePost = async (req, res) => {
         .json({ error: "Post has already been removed before" });
     }
     post.isRemoved = true;
-    //i need make new comment with removalReason as a content for this comment and add this comment to comments array
     const removalComment = new Comment({
       content: removalReason,
       userId: req.user._id,

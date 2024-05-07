@@ -12,10 +12,10 @@ const Report = require("../models/report");
 const Notification = require("./../models/notification");
 const NotificationType = require("./../../seed-data/constants/notificationType");
 require("./../models/constants/notificationType");
+const Moderator = require("../models/moderator.js");
 
 exports.createComment = async (req, res) => {
   try {
-    //verify that the post id exists in the post collections
     const postId = req.params.postId;
     const userId = req.user._id;
     const { content, fileType } = req.body;
@@ -30,9 +30,13 @@ exports.createComment = async (req, res) => {
         message: "Post not found",
       });
     }
+    const communityName = post.community;
     const recieverId = post.userId;
-
-    if (post.isCommentsLocked) {
+    const isModerator = await Moderator.findOne({
+      username: req.user.username,
+      communityName,
+    });
+    if (post.isCommentsLocked && !isModerator) {
       return res.status(403).send({
         message: "Comments are locked for this post",
       });
@@ -44,7 +48,6 @@ exports.createComment = async (req, res) => {
       postId,
     });
 
-    const communityName = post.community;
     const community = await Community.findOne({
       name: communityName,
     });
@@ -166,7 +169,6 @@ exports.deleteComment = async (req, res) => {
       });
     }
 
-    //const comment = await Comment.findByIdAndDelete(req.params.commentId);
     const adminId = await UserRole.find({
       name: "Admin",
     }).select("_id");
@@ -371,7 +373,6 @@ exports.editComment = async (req, res) => {
 exports.createReply = async (req, res) => {
   try {
     const parentCommentId = req.params.parentCommentId;
-    //const postId = req.params.postId;
     const userId = req.user._id;
     const { content, fileType } = req.body;
     if (!content) {
@@ -387,12 +388,6 @@ exports.createReply = async (req, res) => {
         message: "Comment not found",
       });
     }
-    if (existingComment.isLocked) {
-      return res.status(400).send({
-        message: "Comment is Locked",
-      });
-    }
-
     const rootComment = await Comment.findRootComment(parentCommentId);
 
     if (!rootComment) {
@@ -402,7 +397,19 @@ exports.createReply = async (req, res) => {
     }
 
     const post = await Post.findById(rootComment.postId);
-    if (post.isCommentsLocked) {
+    const communityName = post.community;
+    const isModerator = await Moderator.findOne({
+      username: req.user.username,
+      communityName,
+    });
+
+    if (existingComment.isLocked && !isModerator) {
+      return res.status(400).send({
+        message: "Comment is Locked for this comment",
+      });
+    }
+
+    if (post.isCommentsLocked && !isModerator) {
       return res.status(403).send({
         message: "Comments are locked for this post",
       });
@@ -429,7 +436,6 @@ exports.createReply = async (req, res) => {
     if (req.files) {
       for (let i = 0; i < req.files.length; i++) {
         const result = await uploadMedia(req.files[i], fileType);
-        //const url = `${config.baseUrl}/media/${result.Key}`;
         const url = result.secure_url;
         const attachmentObj = { type: fileType, link: url };
         newReply.attachments.push(attachmentObj);
@@ -440,9 +446,6 @@ exports.createReply = async (req, res) => {
 
     await Comment.findByIdAndUpdate(parentCommentId, {
       $inc: { repliesCount: 1 },
-    });
-    newReply = await Comment.findOne({
-      parentCommentId: newReply.parentCommentId,
     });
     await Post.findByIdAndUpdate(rootComment.postId, {
       $inc: { commentsCount: 1 },
@@ -463,7 +466,7 @@ exports.createReply = async (req, res) => {
         `${req.user.username} replied on your comment`
       );
       const notification = new Notification({
-        userId: newReply.userId,
+        userId: existingComment.userId,
         content: `${req.user.username} replied on your comment`,
         relatedUserId: req.user._id,
         notificationTypeId: NotificationType.commentReply._id,
@@ -477,7 +480,6 @@ exports.createReply = async (req, res) => {
       message: "Reply has been added successfully",
     });
   } catch (err) {
-    // Handle errors
     res.status(500).send(err.toString());
   }
 };
@@ -715,7 +717,6 @@ exports.saveComment = async (req, res) => {
     await user.save();
     await comment.save();
 
-    // Send a response indicating success
     if (isSaved) {
       res.status(200).send({
         message: "Comment has been unsaved successfully",

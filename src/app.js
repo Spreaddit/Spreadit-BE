@@ -1,5 +1,3 @@
-//const https = require('https');
-//const fs = require('fs');
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -32,16 +30,12 @@ const UserSeeder = require("../seeders/user.seeder");
 const RuleSeeder = require("../seeders/rule.seeder");
 const ModeratorSeeder = require("../seeders/moderator.seeder");
 const RemovalReasonSeeder = require("../seeders/removalreason.seeder");
+const MessageSeeder = require("../seeders/message.seeder");
+const ConversationSeeder = require("../seeders/conversation.seeder");
 
 const app = express();
 const port = 80;
-//const port = 443;
 const connectionurl = config.cloudConnectString;
-
-// const options = {
-//   key: fs.readFileSync('path/to/private.key'),
-//   cert: fs.readFileSync('path/to/certificate.crt')
-// };
 
 app.use(express.json());
 app.use(
@@ -85,6 +79,8 @@ mongoose
       new CommentSeeder(),
       new ModeratorSeeder(),
       new RemovalReasonSeeder(),
+      new ConversationSeeder(),
+      new MessageSeeder(),
     ];
     for (const seeder of seeders) {
       const shouldRun = await seeder.shouldRun();
@@ -93,7 +89,9 @@ mongoose
         await seeder.run();
         console.log(`${seeder.constructor.name} Seeder executed successfully`);
       } else {
-        console.log(`${seeder.constructor.name} Seeder already executed, skipping...`); // Use backticks instead of single quotes
+        console.log(
+          `${seeder.constructor.name} Seeder already executed, skipping...`
+        ); // Use backticks instead of single quotes
       }
     }
 

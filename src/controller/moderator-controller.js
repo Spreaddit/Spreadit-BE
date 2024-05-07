@@ -672,10 +672,6 @@ exports.isContributor = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (!community.moderators.includes(req.user._id)) {
-      return res.status(402).json({ message: "Not a moderator" });
-    }
-
     const isContributor = community.contributors.includes(contributorUser._id);
 
     res.status(200).json({ isContributor });

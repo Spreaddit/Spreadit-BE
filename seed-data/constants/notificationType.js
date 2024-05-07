@@ -1,17 +1,3 @@
-//follow
-//upvote comment/post
-//post a comment or reply on one
-//message
-//post a post on a community
-//invitation (revise with the other two teams)
-//"comments": true,
-//"upvotesComments": true,
-//"upvotesPosts": true,
-//"replies": true,
-//"newFollowers": true,
-//"invitations": true,
-//"posts": true
-
 const upvoteComments = {
   _id: "6240cd218b70b6ccc7a22cdf",
   name: "Upvote Comments",

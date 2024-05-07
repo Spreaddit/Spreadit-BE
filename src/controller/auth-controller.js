@@ -21,15 +21,13 @@ exports.signUp = async (req, res) => {
       if (!savedUser) {
         return res.status(400).send({ error: "User not saved" });
       }
-      //const userObj = await User.generateUserObject(savedUser);
       const token = await savedUser.generateToken();
       const emailToken = await savedUser.generateEmailToken();
       let emailContent;
       if (isCross) {
-        //emailContent = `To confirm your email, click the link below: app.spreadit.me/#/home/${emailToken}`;
-        emailContent = `To confirm your email, click the link below: app.spreadit.me/#/home/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: app.spreaddit.me/#/home/${emailToken}`;
       } else {
-        emailContent = `To confirm your email, click the link below: www.spreadit.me/verifyemail/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: www.spreaddit.me/verifyemail/${emailToken}`;
       }
       await sendEmail(
         savedUser.email,
@@ -52,7 +50,6 @@ exports.signUp = async (req, res) => {
         if (!savedUser) {
           return res.status(400).send({ error: "User not saved" });
         } else {
-          //const userObj = await User.generateUserObject(savedUser);
           const token = await savedUser.generateToken();
           const userObj = await User.generateUserObject(savedUser);
 
@@ -179,7 +176,6 @@ exports.googleConnectedAccounts = async (req, res) => {
     const userId = req.user._id;
     let user = await User.findById(userId);
 
-    //let user = await User.findOne({ googleId: userData.id });
     if (user) {
       user.googleId = userData.id;
       user.connectedAccounts = [userData.email];
@@ -215,10 +211,9 @@ exports.addPasswordSendEmail = async (req, res) => {
       const emailToken = await user.generateEmailToken();
       let emailContent;
       if (isCross) {
-        //localhost:1234/#/settings/account-settings/add-password/${emailToken}
-        emailContent = `To confirm your email, click the link below: app.spreadit.me/#/settings/account-settings/add-password/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: app.spreaddit.me/#/settings/account-settings/add-password/${emailToken}`;
       } else {
-        emailContent = `To confirm your email, click the link below: www.spreadit.me/addpassword/${emailToken}`;
+        emailContent = `To confirm your email, click the link below: www.spreaddit.me/addpassword/${emailToken}`;
       }
       await sendEmail(
         user.connectedAccounts[0],
@@ -226,11 +221,9 @@ exports.addPasswordSendEmail = async (req, res) => {
         emailContent
       );
 
-      res
-        .status(200)
-        .send({
-          message: "email for adding the passowrd is sent successfully",
-        });
+      res.status(200).send({
+        message: "email for adding the passowrd is sent successfully",
+      });
     }
   } catch (err) {
     console.log(err);
@@ -268,7 +261,7 @@ exports.forgotPassword = async (req, res) => {
       return res.status(400).send({ message: "Error, wrong email" });
     }
     const resetToken = await user.generateResetToken();
-    const emailContent = `www.spreadit.me/password/${resetToken}`;
+    const emailContent = `www.spreaddit.me/password/${resetToken}`;
     await sendEmail(
       user.email,
       "Ask and you shall receive.. a password reset",
@@ -295,7 +288,7 @@ exports.appForgotPassword = async (req, res) => {
 
     const resetToken = await user.generateResetToken();
 
-    const emailContent = `app.spreadit.me/#/reset-password-by-token/${resetToken}`;
+    const emailContent = `app.spreaddit.me/#/reset-password-by-token/${resetToken}`;
     await sendEmail(
       user.email,
       "Ask and you shall receive.. a password reset",
@@ -384,12 +377,10 @@ exports.verifyEmail = async (req, res) => {
     const accessToken = await user.generateToken();
     user.isVerified = 1;
     await user.save();
-    res
-      .status(200)
-      .send({
-        message: "Email verified successfully",
-        accessToken: accessToken,
-      });
+    res.status(200).send({
+      message: "Email verified successfully",
+      accessToken: accessToken,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Internal server error" });
@@ -421,9 +412,9 @@ exports.forgotUsername = async (req, res) => {
     }
     let emailContent;
     if (isCross) {
-      emailContent = `Your username is ${user.username} you can login now: app.spreadit.me/login`;
+      emailContent = `Your username is ${user.username} you can login now: app.spreaddit.me/login`;
     } else {
-      emailContent = `Your username is ${user.username} you can login now: www.spreadit.me/login`;
+      emailContent = `Your username is ${user.username} you can login now: www.spreaddit.me/login`;
     }
     await sendEmail(
       savedUser.email,
@@ -484,8 +475,14 @@ exports.updateUserInfo = async (req, res) => {
       isActive,
       fileType,
     } = req.body;
-    const avatar = req.files["avatar"] ? req.files["avatar"][0] : null;
-    const banner = req.files["banner"] ? req.files["banner"][0] : null;
+    let avatar = null;
+    let banner = null;
+    if (req.files && req.files["avatar"]) {
+      avatar = req.files["avatar"][0];
+    }
+    if (req.files && req.files["banner"] && req.files["banner"][0]) {
+      banner = req.files["banner"][0];
+    }
     let avatarUrl, bannerUrl;
 
     if (avatar) {
@@ -496,7 +493,10 @@ exports.updateUserInfo = async (req, res) => {
       const bannerResult = await uploadMedia(banner, "image");
       bannerUrl = bannerResult.secure_url;
     }
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate(
+      "subscribedCommunities",
+      "name description image communityBanner membersCount"
+    );
 
     if (username) {
       const exists = await User.getUserByEmailOrUsername(username);
@@ -505,14 +505,15 @@ exports.updateUserInfo = async (req, res) => {
       }
     }
 
-    user.name = name;
-    user.avatar = avatarUrl;
-    user.banner = bannerUrl;
-    user.about = about;
-    user.socialLinks = socialLinks;
-    user.username = username;
-    user.isVisible = isVisible;
-    user.isActive = isActive;
+    if (name) user.name = name;
+    if (avatarUrl) user.avatar = avatarUrl;
+    if (bannerUrl) user.banner = bannerUrl;
+    if (about) user.about = about;
+    if (socialLinks) user.socialLinks = socialLinks;
+    if (username) user.username = username;
+    if (typeof isVisible === "boolean") user.isVisible = isVisible;
+    if (typeof isActive === "boolean") user.isActive = isActive;
+
     await user.save();
 
     res.status(200).json({

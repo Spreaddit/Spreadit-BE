@@ -11,57 +11,56 @@ const connectionUrl = "mongodb://localhost:27017/testDBforsearch";
 const userOneId = new mongoose.Types.ObjectId();
 const userTwoId = new mongoose.Types.ObjectId();
 const userOne = {
-    _id: userOneId,
-    name: "Mohamed Maher",
-    username: "maher",
-    email: "moahmedmaher4@gmail.com",
-    password: "myPassw@ord123",
-    gender: "Male",
-    isVerified: true,
+  _id: userOneId,
+  name: "Mohamed Maher",
+  username: "maher",
+  email: "moahmedmaher4@gmail.com",
+  password: "myPassw@ord123",
+  gender: "Male",
+  isVerified: true,
 };
 const userTwo = {
-    _id: userTwoId,
-    name: "mahmoud aly",
-    username: "mahmoud",
-    email: "mahmoud66@gmail.com",
-    password: "12345678",
-    gender: "Male",
-    isVerified: true,
+  _id: userTwoId,
+  name: "mahmoud aly",
+  username: "mahmoud",
+  email: "mahmoud66@gmail.com",
+  password: "12345678",
+  gender: "Male",
+  isVerified: true,
 };
 
 beforeAll(async () => {
-    try {
-        await mongoose.connect(connectionUrl, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-    } catch (error) {
-        console.error("Mongoose connection error:", error);
-    }
+  try {
+    await mongoose.connect(connectionUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+  } catch (error) {
+    console.error("Mongoose connection error:", error);
+  }
 });
 
-beforeEach(async () => {
-}, 10000);
+beforeEach(async () => {}, 10000);
 
 afterAll(() => {
-    mongoose.connection.close();
+  mongoose.connection.close();
 });
 
 describe("get history", () => {
-    test("It get search history", async () => {
-        const logIn = await request(app).post("/login").send({
-            username: "maher",
-            password: "myPassw@ord123",
-        });
-        console.log(userOne);
-        const token = logIn.body.access_token;
-        const newUser = await User.findOneAndUpdate(
-            { username: "maher" },
-            { isVerified: true }
-        );
-        await request(app)
-            .get("/history")
-            .set("Authorization", `Bearer ${token}`)
-            .expect(404);
+  test("It get search history", async () => {
+    const logIn = await request(app).post("/login").send({
+      username: "maher",
+      password: "myPassw@ord123",
     });
+    console.log(userOne);
+    const token = logIn.body.access_token;
+    const newUser = await User.findOneAndUpdate(
+      { username: "maher" },
+      { isVerified: true }
+    );
+    await request(app)
+      .get("/history")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
+  });
 });

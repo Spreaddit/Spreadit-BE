@@ -28,8 +28,8 @@ const userOne = {
   email: "elgarf@gmail.com",
   password: "12345678",
   gender: "Female",
-  isVerified: true
-}
+  isVerified: true,
+};
 
 beforeAll(async () => {
   try {

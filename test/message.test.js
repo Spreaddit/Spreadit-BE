@@ -8,8 +8,8 @@ const jwt = require("jwt-decode");
 const Message = require("../src/models/message");
 const Conversation = require("../src/models/conversation");
 const connectionUrl = "mongodb://localhost:27017/testDBformessage";
-const userOneId = new mongoose.Types.ObjectId();
-const userTwoId = new mongoose.Types.ObjectId();
+const userOneId = new mongoose.Types.ObjectId("624a4a94c66738f13854b474");
+const userTwoId = new mongoose.Types.ObjectId("624a4a94c66738f13854b475");
 const userOne = {
   _id: userOneId,
   name: "Mohamed Maher",
@@ -40,8 +40,14 @@ beforeAll(async () => {
   }
 });
 
-beforeEach(async () => {}, 10000);
-
+beforeEach(async () => {
+  await User.deleteMany({});
+  await User(userOne).save();
+  await User(userTwo).save();
+}, 10000);
+afterEach(async () => {
+  await User.deleteMany({});
+});
 afterAll(() => {
   mongoose.connection.close();
 });
@@ -184,28 +190,26 @@ describe("send messages", () => {
   });
 });
 
-describe("reply messages", () => {
-  test("It should returm bad request content not found", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "maher",
-      password: "myPassw@ord123",
-    });
-    console.log(userOne);
-    const token = logIn.body.access_token;
-    const newUser = await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
-    await request(app)
-      .post("/message/reply/6637691b112648a47fe7521d")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        username: "mahmoud",
-        content: "real madrid",
-        subject: "football",
-      })
-      .expect(403);
+test("It should returm bad request content not found", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "maher",
+    password: "myPassw@ord123",
   });
+  console.log(userOne);
+  const token = logIn.body.access_token;
+  const newUser = await User.findOneAndUpdate(
+    { username: "maher" },
+    { isVerified: true }
+  );
+  await request(app)
+    .post("/message/reply/6637691b112648a47fe7521d")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "mahmoud",
+      content: "real madrid",
+      subject: "football",
+    })
+    .expect(404);
 });
 
 describe("reply messages", () => {
@@ -221,7 +225,7 @@ describe("reply messages", () => {
       { isVerified: true }
     );
     await request(app)
-      .post("/message/reply/6637a183680030d60f6fe436")
+      .post("/message/reply/6638cb54f5b9ea12b1837e95")
       .set("Authorization", `Bearer ${token}`)
       .send({
         username: "mahmoud",
@@ -267,7 +271,7 @@ describe("reply messages", () => {
       { isVerified: true }
     );
     await request(app)
-      .post("/message/reply/6637a183680030d60f6fe436")
+      .post("/message/reply/6638cb54f5b9ea12b1837e95")
       .set("Authorization", `Bearer ${token}`)
       .send({
         username: "mahmoud",
@@ -277,28 +281,26 @@ describe("reply messages", () => {
   });
 });
 
-describe("reply messages", () => {
-  test("it send 401 unauthorized", async () => {
-    const logIn = await request(app).post("/login").send({
-      username: "mahmoud",
-      password: "12345678",
-    });
-    console.log(userOne);
-    const token = logIn.body.access_token;
-    const newUser = await User.findOneAndUpdate(
-      { username: "maher" },
-      { isVerified: true }
-    );
-    await request(app)
-      .post("/message/reply/6637a183680030d60f6fe436")
-      .set("Authorization", `Bearer `)
-      .send({
-        username: "mahmoud",
-        content: "real madrid",
-        subject: "football",
-      })
-      .expect(401);
+test("it send 401 unauthorized", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud",
+    password: "12345678",
   });
+  console.log(userOne);
+  const token = logIn.body.access_token;
+  const newUser = await User.findOneAndUpdate(
+    { username: "maher" },
+    { isVerified: true }
+  );
+  await request(app)
+    .post("/message/reply/6638cb54f5b9ea12b1837e95")
+    .set("Authorization", `Bearer `)
+    .send({
+      username: "mahmoud",
+      content: "real madrid",
+      subject: "football",
+    })
+    .expect(401);
 });
 
 describe("get inbox messages", () => {
@@ -484,7 +486,7 @@ describe("read messages", () => {
       { isVerified: true }
     );
     await request(app)
-      .post("/message/readmsg/6637a183680030d60f6fe436")
+      .post("/message/readmsg/6638cb54f5b9ea12b1837e95")
       .set("Authorization", `Bearer ${token}`)
       .send({
         username: "mahmoud",
@@ -530,7 +532,7 @@ describe("read messages", () => {
       { isVerified: true }
     );
     await request(app)
-      .post("/message/readmsg/6637a183680030d60f6fe436")
+      .post("/message/readmsg/6638cb54f5b9ea12b1837e95")
       .set("Authorization", `Bearer `)
       .send({
         username: "mahmoud",
@@ -554,7 +556,7 @@ describe("unread messages", () => {
       { isVerified: true }
     );
     await request(app)
-      .post("/message/unreadmsg/6637a183680030d60f6fe436")
+      .post("/message/unreadmsg/6638cb54f5b9ea12b1837e95")
       .set("Authorization", `Bearer ${token}`)
       .send({
         username: "mahmoud",
@@ -600,7 +602,7 @@ describe("unread messages", () => {
       { isVerified: true }
     );
     await request(app)
-      .post("/message/unreadmsg/6637a183680030d60f6fe436")
+      .post("/message/unreadmsg/6638cb54f5b9ea12b1837e95")
       .set("Authorization", `Bearer `)
       .send({
         username: "mahmoud",
@@ -623,7 +625,7 @@ test("It get  message by id", async () => {
     { isVerified: true }
   );
   await request(app)
-    .get("/message/6637a183680030d60f6fe436")
+    .get("/message/6638cb54f5b9ea12b1837e95")
     .set("Authorization", `Bearer ${token}`)
     .send({
       username: "mahmoud",
@@ -645,7 +647,7 @@ test("It get  message by id", async () => {
     { isVerified: true }
   );
   await request(app)
-    .get("/message/6637a183680030d60f6fe436")
+    .get("/message/6638cb54f5b9ea12b1837e95")
     .set("Authorization", `Bearer `)
     .send({
       username: "mahmoud",
@@ -710,7 +712,7 @@ test("It   report message", async () => {
     { isVerified: true }
   );
   await request(app)
-    .post("/message/reportmsg/6637a183680030d60f6fe436")
+    .post("/message/reportmsg/6638cb54f5b9ea12b1837e95")
     .set("Authorization", `Bearer ${token}`)
     .send({
       reason: "spam",
@@ -731,7 +733,7 @@ test("It   report message", async () => {
     { isVerified: true }
   );
   await request(app)
-    .post("/message/reportmsg/6637a183680030d60f6fe436")
+    .post("/message/reportmsg/6638cb54f5b9ea12b1837e95")
     .set("Authorization", `Bearer ${token}`)
     .send({
       reason: "spam",
@@ -751,7 +753,7 @@ test("It   report message", async () => {
     { isVerified: true }
   );
   await request(app)
-    .post("/message/reportmsg/6637a183680030d60f6fe436")
+    .post("/message/reportmsg/6638cb54f5b9ea12b1837e95")
     .set("Authorization", `Bearer ${token}`)
     .send({
       subreason: "comment",

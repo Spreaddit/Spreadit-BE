@@ -90,9 +90,11 @@ NotificationSchema.statics.getNotificationObject = async function (
     const Comment = mongoose.model("comment");
     rootComment = await Comment.findRootComment(notification.commentId);
     comment = {
-      content: notification.commentId.content,
-      postTitle: notification.commentId.postId.title,
-      communityTitle: notification.commentId.postId.community,
+      content: rootComment ? rootComment.content : null,
+      postTitle:
+        rootComment && rootComment.postId ? rootComment.postId.title : null,
+      communityTitle:
+        rootComment && rootComment.postId ? rootComment.postId.community : null,
     };
   }
 
@@ -100,7 +102,11 @@ NotificationSchema.statics.getNotificationObject = async function (
     _id: notification._id,
     userId: notification.userId ? notification.userId._id : null,
     postId: notification.postId ? notification.postId._id : null,
-    commentId: rootComment._id ? notification.commentId?._id : null,
+    commentId: rootComment
+      ? notification.commentId
+        ? notification.commentId._id
+        : null
+      : null,
     content: notification.content,
     notification_type: notification.notificationTypeId.name,
     related_user: user,
@@ -117,6 +123,7 @@ NotificationSchema.statics.getNotificationObject = async function (
   return notificationObject;
 };
 
+//  commentId: rootComment._id ? notification.commentId?._id : null,
 NotificationSchema.statics.sendNotification = async function (
   userId,
   title,

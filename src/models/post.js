@@ -166,7 +166,7 @@ PostSchema.statics.getPostObject = async function (
   const postcommunity = await Community.findOne({ name: post.community });
   const hasUpvoted = post.upVotes.includes(userId);
   const hasDownvoted = post.downVotes.includes(userId);
-  const savedPostIds = postUser.savedPosts || [];
+  const savedPostIds = loginUser.savedPosts || [];
   let hasVotedOnPoll = false;
   let userSelectedOption = null;
   if (post.pollOptions.length > 0 && loginUser.selectedPollOption) {
