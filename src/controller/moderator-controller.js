@@ -71,11 +71,9 @@ exports.addRule = async (req, res) => {
       username: user.username,
     });
     if (!moderator || !moderator.manageSettings) {
-      return res
-        .status(406)
-        .json({
-          message: "Moderator doesn't have permission to manage settings",
-        });
+      return res.status(406).json({
+        message: "Moderator doesn't have permission to manage settings",
+      });
     }
     await existingRule.save();
     community.rules.push(existingRule._id);
@@ -122,11 +120,9 @@ exports.removeRule = async (req, res) => {
       username: user.username,
     });
     if (!moderator || !moderator.manageSettings) {
-      return res
-        .status(406)
-        .json({
-          message: "Moderator doesn't have permission to manage settings",
-        });
+      return res.status(406).json({
+        message: "Moderator doesn't have permission to manage settings",
+      });
     }
     community.rules.splice(index, 1);
     await community.save();
@@ -172,11 +168,9 @@ exports.editRule = async (req, res) => {
       username: user.username,
     });
     if (!moderator || !moderator.manageSettings) {
-      return res
-        .status(406)
-        .json({
-          message: "Moderator doesn't have permission to manage settings",
-        });
+      return res.status(406).json({
+        message: "Moderator doesn't have permission to manage settings",
+      });
     }
 
     const rule = await Rule.findOne({
@@ -1173,11 +1167,17 @@ exports.getPermissions = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const moderator = await Moderator.findOne({ communityName, username: req.user.username });
+    const moderator = await Moderator.findOne({
+      communityName,
+      username: req.user.username,
+    });
     if (!moderator) {
       return res.status(402).json({ message: "Not a moderator" });
     }
-    const moderatorPermissions = await Moderator.findOne({ communityName, username });
+    const moderatorPermissions = await Moderator.findOne({
+      communityName,
+      username,
+    });
     if (!moderatorPermissions) {
       return res.status(403).json({ message: "This user is not a moderator" });
     }

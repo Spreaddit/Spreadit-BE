@@ -33,7 +33,6 @@ router
   .route("/settings/add-password")
   .post(auth.authentication, authController.addPasswordConnectedAccounts);
 
-
 router.route("/forgot-password").post(authController.forgotPassword);
 
 router.route("/app/forgot-password").post(authController.appForgotPassword);

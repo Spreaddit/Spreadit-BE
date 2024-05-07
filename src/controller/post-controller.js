@@ -228,11 +228,9 @@ exports.createPost = async (req, res) => {
         req.files &&
         req.files.length > 1
       ) {
-        return res
-          .status(400)
-          .json({
-            error: "This community does not allow multiple images per post",
-          });
+        return res.status(400).json({
+          error: "This community does not allow multiple images per post",
+        });
       }
       if (!isPollsAllowed && type === "Poll") {
         return res

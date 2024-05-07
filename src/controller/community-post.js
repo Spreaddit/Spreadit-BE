@@ -5,7 +5,6 @@ const Report = require("../models/report.js");
 const Community = require("../models/community.js");
 const mongoose = require("mongoose");
 const Moderator = require("../models/moderator.js");
-
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -315,7 +314,12 @@ exports.getScheduledPosts = async (req, res) => {
     }
     const postInfoArray = await Promise.all(
       scheduledPosts.map(async (post) => {
-        const postObject = await Post.getPostObject(post, req.user._id, false, true);
+        const postObject = await Post.getPostObject(
+          post,
+          req.user._id,
+          false,
+          true
+        );
         return postObject;
       })
     );

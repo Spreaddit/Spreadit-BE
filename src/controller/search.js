@@ -248,7 +248,7 @@ exports.getSearch = async (req, res) => {
         )
       );
       return res.status(200).json({ results: communityResults });
-    }  else {
+    } else {
       return res.status(400).json({ error: "Invalid search type" });
     }
   } catch (err) {
@@ -461,7 +461,6 @@ exports.logSearchActivity = async (req, res) => {
     });
 
     if (existingSearchLogs.length >= 5) {
-
       const oldestSearchLog = existingSearchLogs.sort(
         (a, b) => a.createdAt - b.createdAt
       )[0];
