@@ -19,6 +19,7 @@ beforeAll(async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+    await User.deleteMany({});
   } catch (error) {
     console.error("Mongoose connection error:", error);
   }
@@ -166,16 +167,6 @@ describe("sort post by new", () => {
     });
     const token = logIn.body.access_token;
     await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
-    const newpost = new Post({
-      userId: userOneId,
-      username: "maher",
-      title: "Test ",
-      content: "",
-      community: "testCommunity",
-      type: "Post",
-      date: "2024-04-03T14:16:22.534+00:00",
-    });
-
     await request(app)
       .get("/home/new")
       .set("Authorization", `Bearer ${token}`)
