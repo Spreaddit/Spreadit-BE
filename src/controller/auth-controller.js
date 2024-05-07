@@ -241,13 +241,19 @@ exports.addPasswordConnectedAccounts = async (req, res) => {
 };
 exports.forgotPassword = async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    const user = await User.getUserByEmailOrUsername(newUser.username);
+    const { usernameOremail } = req.body;
+
+    if (!usernameOremail) {
+      return res.status(400).send({ message: "Email or username is required" });
+    }
+
+    const user = await User.getUserByEmailOrUsername(usernameOremail);
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-    const temp = await User.getUserByEmailOrUsername(newUser.email);
-    if (!temp || temp.username !== newUser.username) {
+
+    const temp = await User.getUserByEmailOrUsername(user.email);
+    if (!temp || temp.username !== user.username) {
       return res.status(400).send({ message: "Error, wrong email" });
     }
     const resetToken = await user.generateResetToken();
@@ -365,7 +371,7 @@ exports.verifyEmail = async (req, res) => {
     const user = await User.findOne({
       email: decoded.email,
     });
-    
+
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
