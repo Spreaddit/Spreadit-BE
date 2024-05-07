@@ -3,8 +3,6 @@ const jwt = require("jsonwebtoken");
 const Report = require("../models/report.js");
 
 exports.reportUser = async (req, res) => {
-  //const followerID = req.user;
-
   try {
     const username = req.body.username;
     if (!username) {

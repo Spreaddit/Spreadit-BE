@@ -288,7 +288,7 @@ exports.appForgotPassword = async (req, res) => {
 
     const resetToken = await user.generateResetToken();
 
-    const emailContent = `app.spreaddit.me/#/reset-password-by-token/${resetToken}`;
+    const emailContent = `app.spreaddit.me/#/forget-password-verification/${resetToken}`;
     await sendEmail(
       user.email,
       "Ask and you shall receive.. a password reset",
@@ -417,7 +417,7 @@ exports.forgotUsername = async (req, res) => {
       emailContent = `Your username is ${user.username} you can login now: www.spreaddit.me/login`;
     }
     await sendEmail(
-      savedUser.email,
+      user.email,
       "So you wanna know your username, huh?",
       emailContent
     );

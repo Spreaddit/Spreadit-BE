@@ -35,6 +35,7 @@ beforeAll(async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+    await Message.deleteMany({});
   } catch (error) {
     console.error("Mongoose connection error:", error);
   }
@@ -58,7 +59,6 @@ describe("send messages", () => {
       username: "maher",
       password: "myPassw@ord123",
     });
-    console.log(userOne);
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -82,7 +82,8 @@ describe("send messages", () => {
       username: "maher",
       password: "myPassw@ord123",
     });
-    console.log(userOne);
+    const message = await Message.findOne({ senderId: userOneId });
+    const id = message._id.toString();
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -106,7 +107,6 @@ describe("send messages", () => {
       username: "maher",
       password: "myPassw@ord123",
     });
-    console.log(userOne);
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -128,7 +128,7 @@ describe("send messages", () => {
       username: "maher",
       password: "myPassw@ord123",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -151,7 +151,7 @@ describe("send messages", () => {
       username: "maher",
       password: "myPassw@ord123",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -195,21 +195,23 @@ test("It should returm bad request content not found", async () => {
     username: "maher",
     password: "myPassw@ord123",
   });
-  console.log(userOne);
+
   const token = logIn.body.access_token;
   const newUser = await User.findOneAndUpdate(
     { username: "maher" },
     { isVerified: true }
   );
+  const message = await Message.findOne({ senderId: userOneId });
+  const id = message._id.toString();
   await request(app)
-    .post("/message/reply/6637691b112648a47fe7521d")
+    .post(`/message/reply/${id}`)
     .set("Authorization", `Bearer ${token}`)
     .send({
       username: "mahmoud",
       content: "real madrid",
       subject: "football",
     })
-    .expect(404);
+    .expect(403);
 });
 
 describe("reply messages", () => {
@@ -218,14 +220,16 @@ describe("reply messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
       { isVerified: true }
     );
+    const message = await Message.findOne({ senderId: userOneId });
+    const id = message._id.toString();
     await request(app)
-      .post("/message/reply/6638cb54f5b9ea12b1837e95")
+      .post(`/message/reply/${id}`)
       .set("Authorization", `Bearer ${token}`)
       .send({
         username: "mahmoud",
@@ -240,7 +244,7 @@ describe("reply messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -264,14 +268,16 @@ describe("reply messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
       { isVerified: true }
     );
+    const message = await Message.findOne({ senderId: userOneId });
+    const id = message._id.toString();
     await request(app)
-      .post("/message/reply/6638cb54f5b9ea12b1837e95")
+      .post(`/message/reply/${id}`)
       .set("Authorization", `Bearer ${token}`)
       .send({
         username: "mahmoud",
@@ -286,14 +292,16 @@ test("it send 401 unauthorized", async () => {
     username: "mahmoud",
     password: "12345678",
   });
-  console.log(userOne);
+
   const token = logIn.body.access_token;
   const newUser = await User.findOneAndUpdate(
     { username: "maher" },
     { isVerified: true }
   );
+  const message = await Message.findOne({ senderId: userOneId });
+  const id = message._id.toString();
   await request(app)
-    .post("/message/reply/6638cb54f5b9ea12b1837e95")
+    .post(`/message/reply/${id}`)
     .set("Authorization", `Bearer `)
     .send({
       username: "mahmoud",
@@ -309,7 +317,7 @@ describe("get inbox messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -376,7 +384,7 @@ describe("get inbox messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -419,7 +427,7 @@ describe("get all messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -460,7 +468,7 @@ describe("get unread messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -479,14 +487,16 @@ describe("read messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
       { isVerified: true }
     );
+    const message = await Message.findOne({ senderId: userOneId });
+    const id = message._id.toString();
     await request(app)
-      .post("/message/readmsg/6638cb54f5b9ea12b1837e95")
+      .post(`/message/readmsg/${id}`)
       .set("Authorization", `Bearer ${token}`)
       .send({
         username: "mahmoud",
@@ -501,7 +511,7 @@ describe("read messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -525,14 +535,16 @@ describe("read messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
       { isVerified: true }
     );
+    const message = await Message.findOne({ senderId: userOneId });
+    const id = message._id.toString();
     await request(app)
-      .post("/message/readmsg/6638cb54f5b9ea12b1837e95")
+      .post(`/message/readmsg/${id}`)
       .set("Authorization", `Bearer `)
       .send({
         username: "mahmoud",
@@ -549,14 +561,16 @@ describe("unread messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
       { isVerified: true }
     );
+    const message = await Message.findOne({ senderId: userOneId });
+    const id = message._id.toString();
     await request(app)
-      .post("/message/unreadmsg/6638cb54f5b9ea12b1837e95")
+      .post(`/message/unreadmsg/${id}`)
       .set("Authorization", `Bearer ${token}`)
       .send({
         username: "mahmoud",
@@ -571,7 +585,7 @@ describe("unread messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
@@ -595,14 +609,16 @@ describe("unread messages", () => {
       username: "mahmoud",
       password: "12345678",
     });
-    console.log(userOne);
+
     const token = logIn.body.access_token;
     const newUser = await User.findOneAndUpdate(
       { username: "maher" },
       { isVerified: true }
     );
+    const message = await Message.findOne({ senderId: userOneId });
+    const id = message._id.toString();
     await request(app)
-      .post("/message/unreadmsg/6638cb54f5b9ea12b1837e95")
+      .post(`/message/unreadmsg/${id}`)
       .set("Authorization", `Bearer `)
       .send({
         username: "mahmoud",
@@ -624,8 +640,10 @@ test("It get  message by id", async () => {
     { username: "mahmoud" },
     { isVerified: true }
   );
+  const message = await Message.findOne({ senderId: userOneId });
+  const id = message._id.toString();
   await request(app)
-    .get("/message/6638cb54f5b9ea12b1837e95")
+    .get(`/message/${id}`)
     .set("Authorization", `Bearer ${token}`)
     .send({
       username: "mahmoud",
@@ -646,8 +664,10 @@ test("It get  message by id", async () => {
     { username: "mahmoud" },
     { isVerified: true }
   );
+  const message = await Message.findOne({ senderId: userOneId });
+  const id = message._id.toString();
   await request(app)
-    .get("/message/6638cb54f5b9ea12b1837e95")
+    .get(`/message/${id}`)
     .set("Authorization", `Bearer `)
     .send({
       username: "mahmoud",
@@ -684,7 +704,7 @@ test("It should report message", async () => {
     username: "mahmoud",
     password: "12345678",
   });
-  console.log(userOne);
+
   const token = logIn.body.access_token;
   const newUser = await User.findOneAndUpdate(
     { username: "maher" },
@@ -711,8 +731,10 @@ test("It   report message", async () => {
     { username: "mahmoud" },
     { isVerified: true }
   );
+  const message = await Message.findOne({ senderId: userOneId });
+  const id = message._id.toString();
   await request(app)
-    .post("/message/reportmsg/6638cb54f5b9ea12b1837e95")
+    .post(`/message/reportmsg/${id}`)
     .set("Authorization", `Bearer ${token}`)
     .send({
       reason: "spam",
@@ -732,8 +754,10 @@ test("It   report message", async () => {
     { username: "mahmoud" },
     { isVerified: true }
   );
+  const message = await Message.findOne({ senderId: userOneId });
+  const id = message._id.toString();
   await request(app)
-    .post("/message/reportmsg/6638cb54f5b9ea12b1837e95")
+    .post(`/message/reportmsg/${id}`)
     .set("Authorization", `Bearer ${token}`)
     .send({
       reason: "spam",
@@ -752,8 +776,10 @@ test("It   report message", async () => {
     { username: "mahmoud" },
     { isVerified: true }
   );
+  const message = await Message.findOne({ senderId: userOneId });
+  const id = message._id.toString();
   await request(app)
-    .post("/message/reportmsg/6638cb54f5b9ea12b1837e95")
+    .post(`/message/reportmsg/${id}`)
     .set("Authorization", `Bearer ${token}`)
     .send({
       subreason: "comment",

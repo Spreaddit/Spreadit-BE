@@ -2,8 +2,6 @@ const ShowFriend = require("../models/user");
 const jwt = require("jsonwebtoken");
 
 exports.showFriend = async (req, res) => {
-  //const followerID = req.user;
-
   try {
     const userName = req.params.username;
     if (!userName) {

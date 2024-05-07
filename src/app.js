@@ -91,7 +91,7 @@ mongoose
       } else {
         console.log(
           `${seeder.constructor.name} Seeder already executed, skipping...`
-        ); // Use backticks instead of single quotes
+        );
       }
     }
 

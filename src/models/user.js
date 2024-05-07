@@ -30,7 +30,6 @@ const UserSchema = new Schema(
       type: String,
       required: false,
       trim: true,
-      //unique: true,
     },
     googleId: {
       type: String,
@@ -542,8 +541,8 @@ UserSchema.methods.generateRandomUsername = async function () {
 };
 
 UserSchema.methods.generateRandomString = function () {
-  const length = 8; // Length of the random string
-  const characters = "abcdefghijklmnopqrstuvwxyz0123456789"; // Characters to choose from
+  const length = 8;
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
   let randomString = "";
 
   for (let i = 0; i < length; i++) {
