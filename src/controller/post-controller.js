@@ -91,7 +91,7 @@ exports.getAllUserPosts = async (req, res) => {
     if (!posts || posts.length === 0) {
       return res.status(404).json({ error: "User has no posts" });
     }
-    res.status(200).json(posts);
+    res.status(200).json({ posts: posts });
   } catch (err) {
     console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
