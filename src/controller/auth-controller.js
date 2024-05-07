@@ -8,6 +8,8 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const sendEmail = require("../models/send-email.js");
 const jwt = require("jwt-decode");
+const jwt1 = require("jsonwebtoken");
+const axios = require("axios");
 const bcrypt = require("bcryptjs");
 const upload = require("../service/fileUpload");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -369,7 +371,7 @@ exports.verifyEmail = async (req, res) => {
     if (!emailToken) {
       return res.status(401).json({ message: "Token is required" });
     }
-    const decoded = jwt.verify(token, "Spreadit-access-token-CCEC-2024", {
+    const decoded = jwt1.verify(emailToken, "Spreadit-access-token-CCEC-2024", {
       algorithms: ["HS256"],
     });
     const user = await User.findOne({
