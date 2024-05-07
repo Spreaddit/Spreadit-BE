@@ -303,7 +303,7 @@ exports.appForgotPassword = async (req, res) => {
 };
 exports.resetPasswordByToken = async (req, res) => {
   try {
-    const { emailToken } = req.params;
+    const { emailToken } = req.body;
     const decodedToken = jwt.jwtDecode(emailToken);
     const email = decodedToken.email;
     const user = await User.getUserByEmailOrUsername(email);
@@ -311,7 +311,7 @@ exports.resetPasswordByToken = async (req, res) => {
       return res.status(404).send({ message: "User not found" });
     }
     if (user) {
-      user.password = newUser.password;
+      user.password = req.body.password;
       await user.save();
       res.status(200).send({ message: "Password reset successfully" });
     } else {
