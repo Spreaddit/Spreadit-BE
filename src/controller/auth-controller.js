@@ -303,12 +303,14 @@ exports.appForgotPassword = async (req, res) => {
 };
 exports.resetPasswordByToken = async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    const user = await User.getUserByResetToken(newUser.resetToken);
+    const { emailToken } = req.params;
+    const decodedToken = jwt.jwtDecode(emailToken);
+    const email = decodedToken.email;
+    const user = await User.getUserByEmailOrUsername(email);
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-    if (newUser && user.resetTokenExpiration > Date.now()) {
+    if (user) {
       user.password = newUser.password;
       await user.save();
       res.status(200).send({ message: "Password reset successfully" });
