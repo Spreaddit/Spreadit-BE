@@ -215,7 +215,7 @@ exports.getSearch = async (req, res) => {
         })
       );
       const postResults = await Promise.all(
-        posts.map((post) => Post.getPostResultObject(post))
+        posts.map((post) => Post.getPostResultObject(post, req.user._id))
       );
 
       return res.status(200).json({ results: postResults });
@@ -305,7 +305,7 @@ exports.getProfileSearch = async (req, res) => {
         })
       );
       const postResults = await Promise.all(
-        posts.map((post) => Post.getPostResultObject(post))
+        posts.map((post) => Post.getPostResultObject(post, req.user._id))
       );
 
       return res.status(200).json({ results: postResults });
@@ -425,7 +425,7 @@ exports.getTrendingPosts = async (req, res) => {
       })
     );
     const postResults = await Promise.all(
-      topTrendingPosts.map((post) => Post.getPostResultObject(post))
+      topTrendingPosts.map((post) => Post.getPostResultObject(post, req.user._id))
     );
 
     return res.status(200).json({ results: postResults });
