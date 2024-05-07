@@ -72,68 +72,33 @@ exports.getPostById = async (req, res) => {
   }
 };
 
+
 exports.getAllUserPosts = async (req, res) => {
   try {
     const username = req.params.username;
-
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
     const userId = user._id;
-
-    const posts = await Post.find({ userId });
-
+    let query = { userId };
+    if (!user.nsfw) {
+      query.isNsfw = false;
+    }
+    const posts = await Post.find(query)
+      .sort({ createdAt: -1 })
+      .lean();
     if (!posts || posts.length === 0) {
       return res.status(404).json({ error: "User has no posts" });
     }
-
-    const postInfoArray = await Promise.all(
-      posts.map(async (post) => {
-        const postObject = await Post.getPostObject(post, userId);
-
-        return postObject;
-      })
-    );
-    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json(posts);
   } catch (err) {
     console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-exports.getAllUserPosts = async (req, res) => {
-  try {
-    const username = req.params.username;
 
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    const userId = user._id;
-
-    const posts = await Post.find({ userId });
-
-    if (!posts || posts.length === 0) {
-      return res.status(404).json({ error: "User has no posts" });
-    }
-
-    const postInfoArray = await Promise.all(
-      posts.map(async (post) => {
-        const postObject = await Post.getPostObject(post, userId);
-
-        return postObject;
-      })
-    );
-
-    const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json({ posts: filteredPostInfoArray });
-  } catch (err) {
-    console.error("Error fetching posts:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
 function scheduleScheduledPost(post, scheduledDate) {
   const [date, time] = scheduledDate.split(" ");
   const [year, month, day] = date.split("-");
@@ -358,6 +323,7 @@ exports.createPost = async (req, res) => {
       sendPostReplyNotification,
       isApproved,
       isScheduled: !!scheduledDate,
+      date: scheduledDate
     });
     if (scheduledDate) {
       await newPost.save();

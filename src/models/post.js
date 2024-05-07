@@ -221,7 +221,7 @@ PostSchema.statics.getPostObject = async function (
     isApproved: post.isApproved,
     isScheduled: post.isScheduled,
     isSpam: post.isSpam,
-    date: post.updatedAt,
+    date: post.date,
     pollOptions: post.pollOptions,
     attachments: post.attachments,
   };
@@ -253,7 +253,7 @@ PostSchema.statics.getPostResultObject = async function (post, userId) {
     isSpoiler: post.isSpoiler || false,
     votesCount: (post.upVotes.length || 0) - (post.downVotes.length || 0),
     commentsCount: post.commentsCount || 0,
-    date: post.updatedAt,
+    date: post.date,
     username: username,
     userProfilePic: userProfilePic,
     attachments: post.attachments || [],
