@@ -466,7 +466,6 @@ describe("hideNotification endpoint", () => {
       message: "Notification hidden successfully",
     });
 
-    // Check if notification is hidden in the database
     const updatedNotification = await Notification.findById(notificationId);
     expect(updatedNotification.isHidden).toBe(true);
   });

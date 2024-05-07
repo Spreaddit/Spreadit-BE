@@ -121,7 +121,6 @@ NotificationSchema.statics.getNotificationObject = async function (
   return notificationObject;
 };
 
-//  commentId: rootComment._id ? notification.commentId?._id : null,
 NotificationSchema.statics.sendNotification = async function (
   userId,
   title,

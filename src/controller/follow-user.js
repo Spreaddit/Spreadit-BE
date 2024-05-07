@@ -19,6 +19,9 @@ exports.followUser = async (req, res) => {
     const toFollowID = user._id;
     const followerID = req.user._id;
 
+    if (!user.allowFollow) {
+      return res.status(403).json({ message: "you cannot follow this user" });
+    }
     if (toFollowID.equals(followerID)) {
       console.log("user cannot follow himself");
       return res.status(400).json({ error: "user cannot follow himself" });

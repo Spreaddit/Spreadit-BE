@@ -81,14 +81,6 @@ const UserSchema = new Schema(
       index: true,
       default: userRole.defaultRole,
     },
-    resetToken: {
-      type: String,
-      default: "",
-    },
-    resetTokenExpiration: {
-      type: Date,
-      default: Date.now,
-    },
     isVerified: {
       type: Boolean,
       default: 0,
@@ -271,12 +263,6 @@ const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    /*     communities: {
-          type: [String],
-          default: function () {
-            return [this.username];
-          },
-        }, */
     savedPosts: [
       {
         type: Schema.Types.ObjectId,
@@ -392,7 +378,7 @@ UserSchema.statics.getUserByEmailOrUsername = async function (usernameOremail) {
 };
 
 UserSchema.methods.generateToken = async function () {
-  user = this;
+  const user = this;
 
   const token = jwt.sign(
     {
@@ -405,7 +391,7 @@ UserSchema.methods.generateToken = async function () {
 };
 
 UserSchema.methods.generateEmailToken = async function () {
-  user = this;
+  const user = this;
 
   const token = jwt.sign(
     {
@@ -449,7 +435,6 @@ UserSchema.statics.verifyCredentials = async function (
 
 UserSchema.statics.generateUserObject = async function (user) {
   try {
-    //const banInfo = await banUserModel.findOne({ userId: user._id });
     const userObj = {
       id: user._id,
       name: user.name,
@@ -492,40 +477,9 @@ UserSchema.statics.generateUserObject = async function (user) {
     }
     userObj.subscribedCommunities = subscribedCommunitiesNames;
 
-    // if (banInfo) {
-    //   userObj.banDuration = banInfo.banDuration;
-    //   userObj.permanentBan = banInfo.isPermanent;
-    // }
-
     return userObj;
   } catch (err) {
     return null;
-  }
-};
-
-UserSchema.statics.getUserByResetToken = async function (token) {
-  const user = await this.findOne({ resetToken: token });
-
-  if (user) {
-    return new User(user);
-  } else {
-    return null;
-  }
-};
-
-UserSchema.methods.generateResetToken = async function () {
-  try {
-    user = this;
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetTokenExpiration = new Date();
-    resetTokenExpiration.setHours(resetTokenExpiration.getHours() + 1);
-
-    user.resetToken = resetToken;
-    user.resetTokenExpiration = resetTokenExpiration;
-    await user.save();
-    return resetToken;
-  } catch (error) {
-    throw new Error("Failed to generate reset token");
   }
 };
 

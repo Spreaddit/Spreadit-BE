@@ -55,4 +55,8 @@ router
 router
   .route("/home/recentposts")
   .get(auth.authentication, listingController.recentPosts);
+
+router
+  .route("/deleterecent/")
+  .delete(auth.authentication, listingController.deleteRecentPost);
 module.exports = router;

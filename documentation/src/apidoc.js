@@ -29,7 +29,7 @@
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * {
- *      "user" : {user-object},
+ *       message: "User signed up successfully"
  * }
  * @apiError (400) {String} BadRequest  The server cannot or will not process the request due to something that is perceived to be a client error
  * @apiError (409) {String} Conflict  Indicates that the request could not be processed because of conflict in the current state of the resource
@@ -270,7 +270,7 @@
  *
  * @apiParamExample {json} Request-Example:
  * {
- *    "resetToken": "valid_reset_token",
+ *    "emailToken": "valid_reset_token",
  *    "password": "newPassword123"
  * }
  *
@@ -4031,7 +4031,7 @@
  * @apiParam {Boolean} [isSpoiler] Indicates if the post contains spoiler content.
  * @apiParam {Boolean} [isNsfw] Indicates if the post is not safe for work.
  * @apiParam {Boolean} [sendPostReplyNotification] Indicates if the user should receive notifications for post replies.
- * @apiParam {String} [scheduledDate] Date and time to schedule the post (e.g., "2024-05-15T12:00:00Z").
+ * @apiParam {String} [scheduledDate] Date and time to schedule the post (e.g., "2024-05-07 12:00").
  * @apiParam {File[]} [attachments] Array of file attachments (for image/video posts).
  *
  * @apiParamExample {json} Text Post Example:
@@ -8088,7 +8088,7 @@
  * @apiSuccess {String} message Success message indicating the moderator invite was accepted successfully.
  *
  * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (402) PaymentRequired Moderator invite not found.
+ * @apiError (402) Unacceptable Moderator invite not found.
  * @apiError (404) NotFound Community not found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
@@ -8099,7 +8099,7 @@
  *     }
  *
  * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 402 Payment Required
+ *     HTTP/1.1 402 Unacceptable
  *     {
  *       "message": "Moderator invite not found"
  *     }
@@ -8132,7 +8132,7 @@
  * @apiSuccess {String} message Success message indicating the moderator invite was declined successfully.
  *
  * @apiError (400) BadRequest Missing or invalid parameters.
- * @apiError (402) PaymentRequired Moderator invite not found.
+ * @apiError (402) Unacceptable Moderator invite not found.
  * @apiError (404) NotFound Community not found.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
@@ -8143,7 +8143,7 @@
  *     }
  *
  * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 402 Payment Required
+ *     HTTP/1.1 402 Unacceptable
  *     {
  *       "message": "Moderator invite not found"
  *     }
@@ -10778,7 +10778,8 @@
  * @apiError (400) BadRequest Invalid request parameters.
  * @apiError (401) Unauthorized Authorization token is required.
  * @apiError (404) NotFound Community or moderator not found.
- * @apiError (402) PaymentRequired Not the creator.
+ * @apiError (402) Unacceptable User is not a moderator.
+ * @apiError (403) Unacceptable Moderator doesn't have permission.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  */
 

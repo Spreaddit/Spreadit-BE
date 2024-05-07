@@ -1,6 +1,5 @@
 const User = require("../models/user.js");
 const Community = require("../models/community.js");
-const axios = require("axios");
 const auth = require("../middleware/authentication");
 const config = require("../configuration");
 const cookieParser = require("cookie-parser");
@@ -8,6 +7,8 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const sendEmail = require("../models/send-email.js");
 const jwt = require("jwt-decode");
+const jwt1 = require("jsonwebtoken");
+const axios = require("axios");
 const bcrypt = require("bcryptjs");
 const upload = require("../service/fileUpload");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -21,7 +22,6 @@ exports.signUp = async (req, res) => {
       if (!savedUser) {
         return res.status(400).send({ error: "User not saved" });
       }
-      const token = await savedUser.generateToken();
       const emailToken = await savedUser.generateEmailToken();
       let emailContent;
       if (isCross) {
@@ -34,12 +34,7 @@ exports.signUp = async (req, res) => {
         "Please Confirm Your Email",
         emailContent
       );
-
-      const userObj = await User.generateUserObject(savedUser);
-
       res.status(200).send({
-        user: userObj,
-        access_token: token,
         message: "User signed up successfully",
       });
     } else {
@@ -50,12 +45,7 @@ exports.signUp = async (req, res) => {
         if (!savedUser) {
           return res.status(400).send({ error: "User not saved" });
         } else {
-          const token = await savedUser.generateToken();
-          const userObj = await User.generateUserObject(savedUser);
-
           res.status(200).send({
-            user: userObj,
-            access_token: token,
             message: "User signed up successfully",
           });
         }
@@ -251,16 +241,21 @@ exports.addPasswordConnectedAccounts = async (req, res) => {
 };
 exports.forgotPassword = async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    const user = await User.getUserByEmailOrUsername(newUser.username);
+    const { email, username } = req.body;
+
+    if (!email || !username) {
+      return res.status(400).send({ message: "Email or username is required" });
+    }
+
+    const user = await User.getUserByEmailOrUsername(email);
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-    const temp = await User.getUserByEmailOrUsername(newUser.email);
-    if (!temp || temp.username !== newUser.username) {
+    const temp = await User.getUserByEmailOrUsername(email);
+    if (!temp || temp.username !== user.username) {
       return res.status(400).send({ message: "Error, wrong email" });
     }
-    const resetToken = await user.generateResetToken();
+    const resetToken = await user.generateEmailToken();
     const emailContent = `www.spreaddit.me/password/${resetToken}`;
     await sendEmail(
       user.email,
@@ -286,7 +281,7 @@ exports.appForgotPassword = async (req, res) => {
       return res.status(404).send({ message: "User not found" });
     }
 
-    const resetToken = await user.generateResetToken();
+    const resetToken = await user.generateEmailToken();
 
     const emailContent = `app.spreaddit.me/#/forget-password-verification/${resetToken}`;
     await sendEmail(
@@ -303,13 +298,15 @@ exports.appForgotPassword = async (req, res) => {
 };
 exports.resetPasswordByToken = async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    const user = await User.getUserByResetToken(newUser.resetToken);
+    const { emailToken } = req.body;
+    const decodedToken = jwt.jwtDecode(emailToken);
+    const email = decodedToken.email;
+    const user = await User.getUserByEmailOrUsername(email);
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-    if (newUser && user.resetTokenExpiration > Date.now()) {
-      user.password = newUser.password;
+    if (user) {
+      user.password = req.body.password;
       await user.save();
       res.status(200).send({ message: "Password reset successfully" });
     } else {
@@ -367,9 +364,12 @@ exports.verifyEmail = async (req, res) => {
     if (!emailToken) {
       return res.status(401).json({ message: "Token is required" });
     }
-    const decodedToken = jwt.jwtDecode(emailToken);
-    const email = decodedToken.email;
-    const user = await User.getUserByEmailOrUsername(email);
+    const decoded = jwt1.verify(emailToken, "Spreadit-access-token-CCEC-2024", {
+      algorithms: ["HS256"],
+    });
+    const user = await User.findOne({
+      email: decoded.email,
+    });
 
     if (!user) {
       return res.status(404).send({ message: "User not found" });
@@ -377,7 +377,9 @@ exports.verifyEmail = async (req, res) => {
     const accessToken = await user.generateToken();
     user.isVerified = 1;
     await user.save();
+    const userObj = await User.generateUserObject(user);
     res.status(200).send({
+      user: userObj,
       message: "Email verified successfully",
       accessToken: accessToken,
     });
@@ -430,9 +432,7 @@ exports.forgotUsername = async (req, res) => {
 exports.getUserInfo = async (req, res) => {
   try {
     const { username } = req.params;
-    const user1 = await User.getUserByEmailOrUsername(username);
-
-    const user = await User.findById(user1._id)
+    const user = await User.findOne({ username })
       .select(
         "username name avatar banner about createdAt subscribedCommunities isVisible isActive socialLinks"
       )
@@ -500,8 +500,10 @@ exports.updateUserInfo = async (req, res) => {
 
     if (username) {
       const exists = await User.getUserByEmailOrUsername(username);
-      if (exists.username != user.username || username.length > 14) {
-        return res.status(400).json({ message: "Username not available" });
+      if (exists) {
+        if (exists.username != user.username || username.length > 14) {
+          return res.status(400).json({ message: "Username not available" });
+        }
       }
     }
 

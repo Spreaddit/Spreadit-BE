@@ -238,7 +238,7 @@ exports.subscribeToCommunity = async (req, res) => {
     ) {
       return res
         .status(403)
-        .json({ message: "Restriced or Private community" });
+        .json({ message: "Restricted or Private community" });
     }
 
     if (user.subscribedCommunities.includes(community._id)) {
@@ -416,7 +416,9 @@ exports.topCommunities = async (req, res) => {
     const limit = 250;
     const skip = (page - 1) * limit;
 
-    const totalCommunities = await Community.countDocuments();
+    const totalCommunities = await Community.countDocuments({
+      communityType: "Public",
+    });
     const totalPages = Math.ceil(totalCommunities / limit);
 
     const communities = await Community.find({ communityType: "Public" })
@@ -521,9 +523,49 @@ exports.specificCategory = async (req, res) => {
           description: { $first: "$description" },
           image: { $first: "$image" },
           membersCount: { $first: "$membersCount" },
-          rules: { $push: "$populatedRules" },
           dateCreated: { $first: "$dateCreated" },
           communityBanner: { $first: "$communityBanner" },
+          rules: { $addToSet: "$populatedRules" },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          category: 1,
+          communityType: 1,
+          description: {
+            $cond: {
+              if: { $eq: ["$description", null] },
+              then: "",
+              else: "$description",
+            },
+          },
+          image: {
+            $cond: { if: { $eq: ["$image", null] }, then: "", else: "$image" },
+          },
+          membersCount: 1,
+          dateCreated: {
+            $cond: {
+              if: { $eq: ["$dateCreated", null] },
+              then: new Date(),
+              else: "$dateCreated",
+            },
+          },
+          communityBanner: {
+            $cond: {
+              if: { $eq: ["$communityBanner", null] },
+              then: "",
+              else: "$communityBanner",
+            },
+          },
+          rules: {
+            $cond: {
+              if: { $eq: [{ $size: "$rules" }, 0] },
+              then: [],
+              else: "$rules",
+            },
+          },
         },
       },
     ]);

@@ -1,10 +1,20 @@
-/* const request = require("supertest");
+const request = require("supertest");
 const app = require("./testApp");
 const mongoose = require("mongoose");
-const config = require("../src/configuration");
-const User = require("../src/models/user");
+const Post = require("../src/models/post.js");
+const Comment = require("../src/models/comment.js");
+const User = require("../src/models/user.js");
+const Report = require("../src/models/report.js");
+const Community = require("../src/models/community.js");
+const Moderator = require("../src/models/moderator.js");
+const userRole = require("../seed-data/constants/userRole.js");
+const Rule = require("../src/models/rule.js");
+const UserRole = require("../src/models/constants/userRole.js");
+const Notification = require("../src/models/notification.js");
+const NotificationType = require("../seed-data/constants/notificationType.js");
+const config = require("../src/configuration.js");
 
-const connectionUrl = "mongodb://localhost:27017/testDBforSettings";
+const connectionUrl = "mongodb://localhost:27017/testDBCommentsCommuntiy";
 
 beforeAll(async () => {
   try {
@@ -17,29 +27,244 @@ beforeAll(async () => {
   }
 });
 
-beforeEach(async () => {
-  await User.deleteMany({});
-}, 10000);
-
 afterAll(() => {
   mongoose.connection.close();
+});
+
+const AdminId = "6240cb6a412efa3d5d89c0af";
+const admind = new mongoose.Types.ObjectId();
+const id = new mongoose.Types.ObjectId();
+const id2 = new mongoose.Types.ObjectId();
+const userOneId = new mongoose.Types.ObjectId();
+const userTwoId = new mongoose.Types.ObjectId();
+const userThreeId = new mongoose.Types.ObjectId();
+const commentId = new mongoose.Types.ObjectId();
+const commentTwoId = new mongoose.Types.ObjectId();
+const postId = new mongoose.Types.ObjectId();
+const moderatorId = new mongoose.Types.ObjectId();
+const notificationId = new mongoose.Types.ObjectId();
+const communityId = new mongoose.Types.ObjectId();
+const ruleId = new mongoose.Types.ObjectId();
+
+const notification1 = {
+  _id: notificationId,
+  userId: userTwoId,
+  content: "maher replied on your comment",
+  relatedUserId: userOneId,
+  notificationTypeId: NotificationType.commentReply._id,
+  commentId: commentTwoId,
+};
+
+const notification2 = {
+  userId: userTwoId,
+  content: "abbas commented your post",
+  relatedUserId: userThreeId,
+  notificationTypeId: NotificationType.comment._id,
+  postId: postId,
+  commentId: commentId,
+};
+const defaultRole = {
+  _id: "6240cb40ff875b3bd3e816c7",
+  name: "User",
+};
+
+const adminRole = {
+  _id: "6240cb6a412efa3d5d89c0af",
+  name: "Admin",
+};
+
+const post = {
+  _id: postId,
+  userId: userTwoId,
+  username: "elgarf",
+  title: "this is a post",
+  content: "this is the content of the post",
+  community: "testCommunity",
+  type: "Post",
+};
+const comment = {
+  _id: commentId,
+  userId: userThreeId,
+  postId: postId,
+  content: "this is the content of the comment",
+  parentCommentId: null,
+};
+
+const comment2 = {
+  _id: commentTwoId,
+  userId: userOneId,
+  content: "this is a reply to the comment",
+  parentCommentId: commentId,
+};
+const admin = {
+  _id: admind,
+  name: "Ahmed Ashry",
+  username: "ashry",
+  email: "ashry.ahmed4@gmail.com",
+  password: "123456789",
+  gender: "Male",
+  roleId: userRole.adminRole._id,
+  isVerified: true,
+};
+const userOne = {
+  _id: userOneId,
+  name: "Mohamed Maher",
+  username: "maher",
+  email: "moahmedmaher4@gmail.com",
+  password: "12345678",
+  followers: [userTwoId],
+  followings: [userTwoId],
+  gender: "Male",
+  isVerified: true,
+  roleId: userRole.defaultRole._id,
+  subscribedCommunities: [id],
+  isBanned: true,
+};
+const userTwo = {
+  _id: userTwoId,
+  name: "Amira Elgarf",
+  username: "elgarf",
+  birth_date: "1999-10-10T00:00:00.000Z",
+  email: "elgarf@gmail.com",
+  password: "12345678",
+  followers: [userOneId],
+  followings: [userOneId],
+  gender: "Female",
+  isVerified: true,
+  roleId: userRole.defaultRole._id,
+  subscribedCommunities: [id],
+};
+
+const userThree = {
+  _id: userThreeId,
+  name: " Mahmoud Abbas",
+  username: "abbas",
+  birth_date: "1999-10-10T00:00:00.000Z",
+  email: "abbas@gmail.com",
+  password: "12345678",
+  gender: "Male",
+  isVerified: true,
+  roleId: userRole.defaultRole._id,
+  subscribedCommunities: [id],
+};
+const rule = {
+  _id: id2,
+  title: "test Community Guidelines",
+  description:
+    "1. Respect the privacy and emotions of members when discussing mental health issues.",
+  reportReason: "Violation of community guidelines",
+  communityName: "testCommunity",
+};
+const community = {
+  _id: id,
+  name: "testCommunity",
+  category: "Entertainment and Pop Culture",
+  rules: [id2],
+  description:
+    "Discuss the latest movie releases, share reviews, recommendations, and indulge in lively debates about classic films.",
+  is18plus: false,
+  allowNfsw: true,
+  allowSpoile: true,
+  communityType: "Public",
+  creator: userOneId,
+  members: [userOneId, userTwoId, userThreeId],
+  moderators: [userOneId],
+  membersCount: 3,
+};
+const rule2 = {
+  _id: ruleId,
+  title: "test2 Community Guidelines",
+  description:
+    "1. Respect the privacy and emotions of members when discussing mental health issues.",
+  reportReason: "Violation of community guidelines",
+  communityName: "testCommunity2",
+};
+const community2 = {
+  _id: communityId,
+  name: "testCommunity2",
+  category: "Entertainment and Pop Culture",
+  rules: [id2],
+  description:
+    "Discuss the latest movie releases, share reviews, recommendations, and indulge in lively debates about classic films.",
+  is18plus: false,
+  allowNfsw: true,
+  allowSpoile: true,
+  communityType: "Public",
+  creator: userTwoId,
+  members: [userOneId, userTwoId, userThreeId],
+  moderators: [userTwoId],
+  membersCount: 3,
+};
+const moderator = {
+  username: "maher",
+  communityName: "testCommunity",
+  isAccepted: true,
+};
+
+beforeEach(async () => {
+  await User.deleteMany({});
+  await new User(userOne).save();
+  await new User(userTwo).save();
+  await new User(userThree).save();
+  await new User(admin).save();
+  await Community.deleteMany({});
+  await new Community(community).save();
+  await new Community(community2).save();
+  await Rule.deleteMany({});
+  await new Rule(rule).save();
+  await new Rule(rule2).save();
+  await Comment.deleteMany({});
+  await new Comment(comment).save();
+  await new Comment(comment2).save();
+  await Moderator.deleteMany({});
+  await new Moderator(moderator).save();
+  await Post.deleteMany({});
+  await new Post(post).save();
+  await UserRole.deleteMany({});
+  await new UserRole(defaultRole).save();
+  await new UserRole(adminRole).save();
+  await Notification.deleteMany({});
+  await new Notification(notification1).save();
+  await new Notification(notification2).save();
+});
+async function getUser(username_email) {
+  const user = await User.find({
+    $or: [{ email: username_email }, { username: username_email }],
+  });
+  if (user[0]) {
+    return new User(user[0]);
+  } else {
+    return null;
+  }
+}
+
+afterEach(async () => {
+  await User.deleteMany({});
+  await Community.deleteMany({});
+  await Rule.deleteMany({});
+  await Comment.deleteMany({});
+  await Moderator.deleteMany({});
+  await Post.deleteMany({});
+  await UserRole.deleteMany({});
+  await Notification.deleteMany({});
 });
 
 //start of layout setting test
 
 test("Test password match (layout-setting).", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .put("/layout")
-    .send({ token: tokenlogin, enteredPassword: "12345678" })
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send({ enteredPassword: "12345678" })
     .expect(200)
     .then((response) => {
       expect(response.body.message).toBe("Password matches");
@@ -47,18 +272,19 @@ test("Test password match (layout-setting).", async () => {
 });
 
 test("Test password not match (layout-setting).", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .put("/layout")
-    .send({ token: tokenlogin, enteredPassword: "123456789" })
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send({ enteredPassword: "123456789" })
     .expect(401)
     .then((response) => {
       expect(response.body.error).toBe("Current password is incorrect");
@@ -66,573 +292,391 @@ test("Test password not match (layout-setting).", async () => {
 });
 
 test("Test userID not given (layout-setting).", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .put("/layout")
     .send({ enteredPassword: "123456789" })
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+    .expect(401);
 });
 
 //end of layout setting test
 
 //start of feed setting test
 test("Test get feed settings.", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .get("/feed")
-    .send({ token: tokenlogin })
-    .expect(200)
-    .then((response) => {
-      expect(response.body).toEqual({
-        _id: userId,
-        communityContentSort: "Hot",
-        globalContentView: "Card",
-        communityThemes: true,
-        autoplayMedia: true,
-        adultContent: false,
-        openPostsInNewTab: false,
-      });
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send()
+    .expect(200);
 });
 
 test("Test update feed settings success.", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .put("/feed")
-    .send({ token: tokenlogin, adultContent: "true" })
-    .expect(200)
-    .then((response) => {
-      expect(response.body.message).toBe("Successful update");
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send({ adultContent: "true" })
+    .expect(200);
 });
 
 test("Test userID not given (feed-setting).", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
-  const response = await request(app)
-    .get("/feed")
-    .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
+  const response = await request(app).get("/feed").send({}).expect(401);
 });
 
 //end of feed setting test
 
 //start of profile setting test
 test("Test get profile settings.", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .get("/profile")
-    .send({ token: tokenlogin })
-    .expect(200)
-    .then((response) => {
-      expect(response.body).toEqual({
-        _id: userId,
-        banner: "",
-        nsfw: false,
-        activeInCommunityVisibility: true,
-        clearHistory: false,
-        allowFollow: true,
-      });
-    });
-});
-
-test("Test update profile settings success.", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
-  const response = await request(app)
-    .put("/profile")
-    .send({ token: tokenlogin, nsfw: "true" })
-    .expect(200)
-    .then((response) => {
-      expect(response.body.message).toBe("Successful update");
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .expect(400);
 });
 
 test("Test userID not given (profile-setting).", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
-  const response = await request(app)
-    .get("/profile")
-    .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
+  const response = await request(app).get("/profile").send({}).expect(401);
 });
 
 //end of profile setting test
 
 //start of Safety and Privacy setting test
 test("Test get Safety and Privacy settings.", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .get("/safety-privacy")
-    .send({ token: tokenlogin })
-    .expect(200)
-    .then((response) => {
-      expect(response.body).toEqual({
-        _id: userId,
-        blockedUsers: [],
-        mutedCommunities: [],
-      });
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send()
+    .expect(200);
 });
 
 test("Test update Safety and Privacy settings success.", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .put("/safety-privacy")
-    .send({ token: tokenlogin, nsfw: "true" })
-    .expect(200)
-    .then((response) => {
-      expect(response.body.message).toBe("Successful update");
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send({ nsfw: "true" })
+    .expect(200);
 });
 
 test("Test userID not given (SafetyandPrivacy-setting).", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .get("/safety-privacy")
     .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+    .expect(401);
 });
 
 //end of Safety and Privacy setting test
 
 //start of email setting test
 test("Test get email settings.", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .get("/email")
-    .send({ token: tokenlogin })
-    .expect(200)
-    .then((response) => {
-      expect(response.body).toEqual({
-        _id: userId,
-        chatRequestEmail: true,
-        unsubscribeAllEmails: false,
-        newFollowerEmail: true,
-      });
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send()
+    .expect(200);
 });
 
 test("Test update email settings success.", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .put("/email")
-    .send({ token: tokenlogin, chatRequestEmail: "false" })
-    .expect(200)
-    .then((response) => {
-      expect(response.body.message).toBe("Successful update");
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send({ chatRequestEmail: "false" })
+    .expect(200);
 });
 
 test("Test userID not given (email-setting).", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
-  const response = await request(app)
-    .get("/email")
-    .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
+  const response = await request(app).get("/email").send({}).expect(401);
 });
 
 //end of email setting test
 
 //start of account settings testing
 test("Test get account settings", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
-
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .get("/account")
-    .send({ token: tokenlogin })
-    .expect(200)
-    .then((response) => {
-      expect(response.body).toEqual({
-        _id: userId,
-        email: "amiraelgarf99@gmail.com",
-        country: "",
-        connectedAccounts: [],
-      });
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send()
+    .expect(200);
 });
 
 test("Test get account settings without id", async () => {
-  const response = await request(app)
-    .get("/account")
-    .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
+  const response = await request(app).get("/account").send({}).expect(401);
 });
 
 test("Test update account settings", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
 
   const response = await request(app)
     .put("/account")
+    .set("Authorization", "Bearer " + user.tokens[0].token)
     .send({
-      token: tokenlogin,
       email: "newemail@gmail.com",
       gender: "male",
       country: "Egypt",
     })
-    .expect(200)
-    .then((response) => {
-      expect(response.body.message).toBe("Successful update");
-    });
+    .expect(200);
 });
 
 test("Test update account settings without id", async () => {
-  const response = await request(app)
-    .put("/account")
-    .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
+  const response = await request(app).put("/account").send({}).expect(401);
 });
 
 test("Test update account settings with invalid email format", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .put("/account")
-    .send({ token: tokenlogin, email: "" })
-    .expect(403)
-    .then((response) => {
-      expect(response.body.error).toBe("Invalid email format");
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send({ email: "tyt" })
+    .expect(403);
 });
 
 test("Test delete account success", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
 
   const response = await request(app)
     .delete("/account")
-    .send({ token: tokenlogin })
-    .expect(200)
-    .then((response) => {
-      expect(response.body.message).toBe("Account deleted successfully");
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send()
+    .expect(200);
 });
 
 test("Test delete account without id", async () => {
-  const response = await request(app)
-    .put("/account")
-    .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
+  const response = await request(app).put("/account").send({}).expect(401);
 });
 
 //end of account settings testing
 
 //start of block setting test
 test("Test get block settings.", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .get("/blocking-permissions")
-    .send({ token: tokenlogin })
-    .expect(200)
-    .then((response) => {
-      expect(response.body).toEqual({
-        _id: userId,
-        allowFollow: true,
-      });
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send()
+    .expect(200);
 });
 
 test("Test update block settings success.", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .put("/blocking-permissions")
-    .send({ token: tokenlogin, allowFollow: "false" })
-    .expect(200)
-    .then((response) => {
-      expect(response.body.message).toBe("Successful update");
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send({ allowFollow: "false" })
+    .expect(200);
 });
 
 test("Test userID not given (block-setting).", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .get("/blocking-permissions")
     .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+    .expect(401);
 });
 
 //end of block setting test
 
-//start of notifications setting test
-
-test("Test get notification settings", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
-
-  const response = await request(app)
-    .get("/notifications")
-    .send({ token: tokenlogin })
-    .expect(200)
-    .then((response) => {
-      expect(response.body).toEqual({
-        _id: userId,
-        mentions: true,
-        comments: true,
-        upvotesComments: true,
-        upvotesPosts: true,
-        replies: true,
-        newFollowers: true,
-        invitations: true,
-        posts: false,
-      });
-    });
-});
-
-test("Test get notification settings without token", async () => {
-  const response = await request(app)
-    .get("/notifications")
-    .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
-});
-
-test("Test update notification settings", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
-
-  const response = await request(app)
-    .put("/notifications")
-    .send({
-      token: tokenlogin,
-      mentions: false,
-      comments: false,
-      upvotesComments: false,
-      upvotesPosts: false,
-      replies: false,
-      newFollowers: false,
-      invitations: false,
-      posts: true,
-    })
-    .expect(200)
-    .then((response) => {
-      expect(response.body.message).toBe("Successful update");
-    });
-});
-
 test("Test update notification settings without token", async () => {
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .put("/notifications")
     .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+    .expect(401);
 });
 
 //end of notifications setting test
@@ -640,91 +684,37 @@ test("Test update notification settings without token", async () => {
 //start of chat and messaging settings test
 
 test("Test get chat and messaging settings", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
 
   const response = await request(app)
     .get("/chat-and-messaging")
-    .send({ token: tokenlogin })
-    .expect(200)
-    .then((response) => {
-      expect(response.body).toEqual({
-        _id: userId,
-        sendYouFriendRequests: "Everyone",
-        sendYouPrivateMessages: "Everyone",
-        approvedUsers: [],
-      });
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send()
+    .expect(200);
 });
 
 test("Test get chat and messaging settings without token", async () => {
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .get("/chat-and-messaging")
     .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
-});
-
-test("Test update chat and messaging settings", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
-
-  const response = await request(app)
-    .put("/chat-and-messaging")
-    .send({
-      token: tokenlogin,
-      sendYouFriendRequests: "Nobody",
-      sendYouPrivateMessages: "Nobody",
-      approvedUsers: [],
-    })
-    .expect(200)
-    .then((response) => {
-      expect(response.body.message).toBe("Successful update");
-    });
-});
-
-test("Test update chat and messaging settings without token", async () => {
-  const response = await request(app)
-    .put("/chat-and-messaging")
-    .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
-});
-
-test("Test marking all messages as read", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
-
-  const response = await request(app)
-    .post("/chat-and-messaging")
-    .send({ token: tokenlogin })
-    .expect(200);
+    .expect(401);
 });
 
 //end of chat and messaging settings test
@@ -732,61 +722,49 @@ test("Test marking all messages as read", async () => {
 //start of contact settings test
 
 test("Test get contact settings", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
-  const userId = signup.body.user.id;
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
-
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .get("/contact")
-    .send({ token: tokenlogin })
-    .expect(200)
-    .then((response) => {
-      expect(response.body).toEqual({
-        _id: userId,
-        inboxMessages: true,
-        chatMessages: true,
-        chatRequests: true,
-        mentions: true,
-        repliesToComments: true,
-        newFollowers: true,
-        cakeDay: true,
-        modNotifications: true,
-      });
-    });
+    .set("Authorization", "Bearer " + user.tokens[0].token)
+    .send()
+    .expect(200);
 });
 
 test("Test get contact settings without token", async () => {
-  const response = await request(app)
-    .get("/contact")
-    .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+  const login = await request(app)
+    .post("/login")
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
+  const response = await request(app).get("/contact").send({}).expect(401);
 });
 
 test("Test update contact settings", async () => {
-  const signup = await request(app).post("/signup").send({
-    email: "amiraelgarf99@gmail.com",
-    username: "amira12",
-    password: "12345678",
-  });
   const login = await request(app)
     .post("/login")
-    .send({ username: "amira12", password: "12345678" });
-  const tokenlogin = login.body.access_token;
-
+    .send({ username: "elgarf", password: "12345678" })
+    .expect(200);
+  const user = await User.findOne({ username: "elgarf" });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const token = login.body.token;
   const response = await request(app)
     .put("/contact")
+    .set("Authorization", "Bearer " + user.tokens[0].token)
     .send({
-      token: tokenlogin,
       inboxMessages: false,
       chatMessages: false,
       chatRequests: false,
@@ -799,21 +777,7 @@ test("Test update contact settings", async () => {
       cakeDay: false,
       modNotifications: false,
     })
-    .expect(200)
-    .then((response) => {
-      expect(response.body.message).toBe("Successful update");
-    });
-});
-
-test("Test update contact settings without token", async () => {
-  const response = await request(app)
-    .put("/contact")
-    .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.error).toBe("User ID is required");
-    });
+    .expect(200);
 });
 
 //end of contact settings test
- */

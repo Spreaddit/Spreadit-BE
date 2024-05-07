@@ -215,7 +215,7 @@ exports.getSearch = async (req, res) => {
         })
       );
       const postResults = await Promise.all(
-        posts.map((post) => Post.getPostResultObject(post))
+        posts.map((post) => Post.getPostResultObject(post, req.user._id))
       );
 
       return res.status(200).json({ results: postResults });
@@ -248,9 +248,6 @@ exports.getSearch = async (req, res) => {
         )
       );
       return res.status(200).json({ results: communityResults });
-    } else if (type === "hashtags") {
-      // Search for hashtags
-      // Implement your logic here
     } else {
       return res.status(400).json({ error: "Invalid search type" });
     }
@@ -308,7 +305,7 @@ exports.getProfileSearch = async (req, res) => {
         })
       );
       const postResults = await Promise.all(
-        posts.map((post) => Post.getPostResultObject(post))
+        posts.map((post) => Post.getPostResultObject(post, req.user._id))
       );
 
       return res.status(200).json({ results: postResults });
@@ -428,7 +425,7 @@ exports.getTrendingPosts = async (req, res) => {
       })
     );
     const postResults = await Promise.all(
-      topTrendingPosts.map((post) => Post.getPostResultObject(post))
+      topTrendingPosts.map((post) => Post.getPostResultObject(post, req.user._id))
     );
 
     return res.status(200).json({ results: postResults });
@@ -464,7 +461,6 @@ exports.logSearchActivity = async (req, res) => {
     });
 
     if (existingSearchLogs.length >= 5) {
-      // If there are already 5 or more search logs for the user, delete the oldest one
       const oldestSearchLog = existingSearchLogs.sort(
         (a, b) => a.createdAt - b.createdAt
       )[0];
@@ -479,7 +475,6 @@ exports.logSearchActivity = async (req, res) => {
     let existingSearchLog = await SearchLog.findOne(searchQuery);
 
     if (existingSearchLog) {
-      // Check if the existing search was made by the current user
       if (existingSearchLog.searchedByUserId.equals(req.user._id)) {
         existingSearchLog.communityId =
           type === "community" ? communityId : null;
@@ -488,7 +483,6 @@ exports.logSearchActivity = async (req, res) => {
         existingSearchLog.updatedAt = Date.now();
         await existingSearchLog.save();
       } else {
-        // If the existing search was not made by the current user, create a new search log
         const newSearchLog = new SearchLog({
           query,
           type,
@@ -500,7 +494,6 @@ exports.logSearchActivity = async (req, res) => {
         await newSearchLog.save();
       }
     } else {
-      // If no existing search was found, create a new search log
       const newSearchLog = new SearchLog({
         query,
         type,

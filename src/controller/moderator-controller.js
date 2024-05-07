@@ -71,11 +71,9 @@ exports.addRule = async (req, res) => {
       username: user.username,
     });
     if (!moderator || !moderator.manageSettings) {
-      return res
-        .status(406)
-        .json({
-          message: "Moderator doesn't have permission to manage settings",
-        });
+      return res.status(406).json({
+        message: "Moderator doesn't have permission to manage settings",
+      });
     }
     await existingRule.save();
     community.rules.push(existingRule._id);
@@ -122,11 +120,9 @@ exports.removeRule = async (req, res) => {
       username: user.username,
     });
     if (!moderator || !moderator.manageSettings) {
-      return res
-        .status(406)
-        .json({
-          message: "Moderator doesn't have permission to manage settings",
-        });
+      return res.status(406).json({
+        message: "Moderator doesn't have permission to manage settings",
+      });
     }
     community.rules.splice(index, 1);
     await community.save();
@@ -142,6 +138,9 @@ exports.editRule = async (req, res) => {
   try {
     const { communityName, oldTitle, newRule } = req.body;
 
+    if (!communityName || !oldTitle || !newRule) {
+      return res.status(400).json({ message: "Invalid request parameters" });
+    }
     const { title, description, reportReason, appliesTo } = newRule;
     if (!title || !communityName) {
       return res.status(400).json({ message: "Invalid rule data" });
@@ -172,11 +171,9 @@ exports.editRule = async (req, res) => {
       username: user.username,
     });
     if (!moderator || !moderator.manageSettings) {
-      return res
-        .status(406)
-        .json({
-          message: "Moderator doesn't have permission to manage settings",
-        });
+      return res.status(406).json({
+        message: "Moderator doesn't have permission to manage settings",
+      });
     }
 
     const rule = await Rule.findOne({
@@ -1104,17 +1101,26 @@ exports.removeModerator = async (req, res) => {
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-    if (community.creator) {
-      if (!community.creator.equals(req.user._id)) {
-        return res.status(402).json({ message: "Not the creator" });
-      }
-    }
-    const user = await User.findOne({ _id: req.user._id });
 
-    const moderator = await Moderator.findOne({ communityName, username });
+    const user = await User.findOne({ username: username });
+    const moderator = await Moderator.findOne({ communityName, username: username });
     if (!moderator) {
       return res.status(404).json({ message: "Moderator not found" });
     }
+    const userModerator = await Moderator.findOne({
+      communityName,
+      username: user.username,
+    });
+    if (!userModerator) {
+      return res.status(402).json({ message: "User is not a moderator" });
+    }
+
+    if (userModerator.createdAt > moderator.createdAt) {
+      return res
+        .status(403)
+        .json({ message: "Moderator doesn't have permission" });
+    }
+
     const index = user.moderatedCommunities.indexOf(community._id);
     if (index !== -1) {
       user.moderatedCommunities.splice(index, 1);
@@ -1173,13 +1179,23 @@ exports.getPermissions = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const moderator = await Moderator.findOne({ communityName, username: req.user.username });
+    const moderator = await Moderator.findOne({
+      communityName,
+      username: req.user.username,
+    });
     if (!moderator) {
       return res.status(402).json({ message: "Not a moderator" });
     }
-    const moderatorPermissions = await Moderator.findOne({ communityName, username });
+    const moderatorPermissions = await Moderator.findOne({
+      communityName,
+      username,
+    });
     if (!moderatorPermissions) {
-      return res.status(403).json({ message: "This user is not a moderator" });
+      return res.status(200).json({
+        managePostsAndComments: false,
+        manageUsers: false,
+        manageSettings: false,
+      });
     }
     res.status(200).json({
       managePostsAndComments: moderatorPermissions.managePostsAndComments,

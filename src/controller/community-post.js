@@ -5,7 +5,6 @@ const Report = require("../models/report.js");
 const Community = require("../models/community.js");
 const mongoose = require("mongoose");
 const Moderator = require("../models/moderator.js");
-
 const jwt = require("jsonwebtoken");
 const schedule = require("node-schedule");
 const { uploadMedia } = require("../service/cloudinary.js");
@@ -141,68 +140,6 @@ exports.getEdititedPostsHistory = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-/* exports.lockPost = async (req, res) => {
-    try {
-        const { communityName, postId } = req.params;
-        if (!postId || postId.length !== 24) {
-            return res.status(404).json({ message: "Post not found" });
-        }
-
-        const post = await Post.findById(postId);
-
-        if (!post) {
-            return res.status(404).json({ error: "Post not found" });
-        }
-
-        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
-        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
-            return res.status(402).json({ message: "Not a moderator or does not have permission" });
-        }
-
-        if (post.isCommentsLocked) {
-            return res.status(403).json({ message: "Post is already locked" });
-        }
-
-        post.isCommentsLocked = true;
-        await post.save();
-        return res.status(200).json({ message: "Post locked successfully" });
-    } catch (error) {
-        console.error("Error locking post:", error);
-        return res.status(500).json({ error: "Internal server error" });
-    }
-};
-
-exports.unlockPost = async (req, res) => {
-    try {
-        const { communityName, postId } = req.params;
-        if (!postId || postId.length !== 24) {
-            return res.status(404).json({ message: "Post not found" });
-        }
-
-        const post = await Post.findById(postId);
-
-        if (!post) {
-            return res.status(404).json({ error: "Post not found" });
-        }
-        const isModerator = await Moderator.findOne({ username: req.user.username, communityName });
-        if (!isModerator || !(await checkPermission(req.user.username, communityName))) {
-            return res.status(402).json({ message: "Not a moderator or does not have permission" });
-        }
-
-        if (!post.isCommentsLocked) {
-            return res.status(403).json({ message: "Post is not locked" });
-        }
-
-        post.isCommentsLocked = false;
-        await post.save();
-        return res.status(200).json({ message: "Post unlocked successfully" });
-    } catch (error) {
-        console.error("Error unlocking post:", error);
-        return res.status(500).json({ error: "Internal server error" });
-    }
-};
- */
 exports.removePost = async (req, res) => {
   try {
     const { communityName, postId } = req.params;
@@ -315,7 +252,12 @@ exports.getScheduledPosts = async (req, res) => {
     }
     const postInfoArray = await Promise.all(
       scheduledPosts.map(async (post) => {
-        const postObject = await Post.getPostObject(post, req.user._id);
+        const postObject = await Post.getPostObject(
+          post,
+          req.user._id,
+          false,
+          true
+        );
         return postObject;
       })
     );

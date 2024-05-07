@@ -17,7 +17,6 @@ router
   .route("/google/oauth")
   .post(auth.verifyGoogleToken, authController.googleOauth);
 
-//connected accounts
 router
   .route("/google/connected-accounts")
   .post(
@@ -33,8 +32,6 @@ router
 router
   .route("/settings/add-password")
   .post(auth.authentication, authController.addPasswordConnectedAccounts);
-
-//connected accounts
 
 router.route("/forgot-password").post(authController.forgotPassword);
 

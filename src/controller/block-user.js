@@ -8,7 +8,6 @@ exports.blockUser = async (req, res) => {
     }
     const user = await BlockUser.getUserByEmailOrUsername(username);
     if (!user) {
-      console.error("User not found");
       return res.status(404).json({ error: "User not found" });
     }
     const toBlockID = user._id;
@@ -16,7 +15,6 @@ exports.blockUser = async (req, res) => {
     const blockerID = req.user._id;
 
     if (toBlockID.equals(blockerID)) {
-      console.log("user cannot block himself");
       return res.status(400).json({ error: "user cannot block himself" });
     }
     if (!blockerID) {
@@ -52,7 +50,6 @@ exports.unBlock = async (req, res) => {
     }
     const user = await BlockUser.getUserByEmailOrUsername(username);
     if (!user) {
-      console.error("User not found");
       return res.status(404).json({ error: "User not found" });
     }
     const toUnblockId = user._id;
@@ -60,7 +57,6 @@ exports.unBlock = async (req, res) => {
     const unBlockerId = req.user._id;
 
     if (toUnblockId.equals(unBlockerId)) {
-      console.log("user cannot unblock himself");
       return res.status(400).json({ error: "user cannot unblock himself" });
     }
     if (!toUnblockId || !unBlockerId) {
@@ -78,7 +74,6 @@ exports.unBlock = async (req, res) => {
     };
     res.status(200).json(response);
   } catch (err) {
-    console.error("Error unBlocked user", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };

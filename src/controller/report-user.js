@@ -39,14 +39,6 @@ exports.reportUser = async (req, res) => {
     });
 
     await report.save();
-
-    // const reporterUser = await ReportUser.findByIdAndUpdate(
-    //   reporterID,
-    //   { $addToSet: { reportedUsers: { id: toReportID, reason: reason } } },
-    //   { new: true }
-    // );
-    // const toReportUser = await ReportUser.findById(toReportID);
-
     const response = {
       description: "User reported successfully",
     };

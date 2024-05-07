@@ -156,7 +156,6 @@ exports.modifyEmailSetting = async (req, res) => {
     const { newFollowerEmail, chatRequestEmail, unsubscribeAllEmails } =
       req.body;
 
-    // Create an object to store only the fields that are provided in the request body
     const updatedFields = {};
     if (newFollowerEmail !== undefined) {
       updatedFields.newFollowerEmail = newFollowerEmail;
@@ -288,9 +287,6 @@ exports.modifyProfileSettings = async (req, res) => {
       const parsedSocialLinks = JSON.parse(socialLinks);
       user.socialLinks = parsedSocialLinks;
     }
-    /*  if (avatar !== undefined) {
-             updatedFields.avatar = avatar;
-         } */
     if (avatar) {
       const avatarResult = await uploadMedia(avatar, "image");
       const avatarUrl = avatarResult.secure_url;
