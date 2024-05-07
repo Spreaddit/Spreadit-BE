@@ -50,13 +50,13 @@ app.use(
   })
 );
 startUnbanScheduler();
+app.use("/api", communityRoutes);
 app.use("/api", authRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/mobile/settings", mobileSettingsRoutes);
 app.use("/api/users", userActionRoutes);
 app.use("/api/posts", postsRoutes);
 app.use("/api", listingRoutes);
-app.use("/api", communityRoutes);
 app.use("/api", commentRoutes);
 app.use("/api", messageRoutes);
 app.use("/api/search", searchRoutes);

@@ -31,7 +31,7 @@ exports.signUp = async (req, res) => {
       } else {
         emailContent = `To confirm your email, click the link below: www.spreadit.me/verifyemail/${emailToken}`;
       }
-      await sendEmail(savedUser.email, "Please Confirm Your Email", emailContent);
+      //await sendEmail(savedUser.email, "Please Confirm Your Email", emailContent);
 
       const userObj = await User.generateUserObject(savedUser);
 
@@ -400,9 +400,7 @@ exports.forgotUsername = async (req, res) => {
 exports.getUserInfo = async (req, res) => {
   try {
     const { username } = req.params;
-    const user1 = await User.getUserByEmailOrUsername(username);
-
-    const user = await User.findById(user1._id)
+    const user = await User.findOne({ username })
       .select("username name avatar banner about createdAt subscribedCommunities isVisible isActive socialLinks")
       .populate({
         path: "subscribedCommunities",
@@ -460,9 +458,11 @@ exports.updateUserInfo = async (req, res) => {
 
     if (username) {
       const exists = await User.getUserByEmailOrUsername(username);
+      if(exists) {
       if (exists.username != user.username || username.length > 14) {
         return res.status(400).json({ message: "Username not available" });
       }
+    }
     }
 
     if (name) user.name = name;
