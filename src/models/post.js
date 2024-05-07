@@ -157,8 +157,14 @@ const PostSchema = new Schema(
 PostSchema.statics.getPostObject = async function (
   post,
   userId,
-  includeHidden = false
+  includeHidden = false,
+  includeScheduled = false
 ) {
+  if (!includeScheduled && post.isScheduled) {
+    return null;
+  } else if (includeScheduled && !post.isScheduled) {
+    return null;
+  }
   const User = mongoose.model("user");
   const Community = mongoose.model("community");
   const loginUser = await User.findById(userId);
@@ -215,7 +221,7 @@ PostSchema.statics.getPostObject = async function (
     isApproved: post.isApproved,
     isScheduled: post.isScheduled,
     isSpam: post.isSpam,
-    date: post.date,
+    date: post.updatedAt,
     pollOptions: post.pollOptions,
     attachments: post.attachments,
   };
@@ -241,7 +247,7 @@ PostSchema.statics.getPostResultObject = async function (post) {
     isSpoiler: post.isSpoiler || false,
     votesCount: (post.upVotes.length || 0) - (post.downVotes.length || 0),
     commentsCount: post.commentsCount || 0,
-    date: post.createdAt,
+    date: post.updatedAt,
     username: username,
     userProfilePic: userProfilePic,
     attachments: post.attachments || [],

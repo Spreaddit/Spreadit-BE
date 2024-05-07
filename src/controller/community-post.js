@@ -315,7 +315,7 @@ exports.getScheduledPosts = async (req, res) => {
     }
     const postInfoArray = await Promise.all(
       scheduledPosts.map(async (post) => {
-        const postObject = await Post.getPostObject(post, req.user._id);
+        const postObject = await Post.getPostObject(post, req.user._id, false, true);
         return postObject;
       })
     );
