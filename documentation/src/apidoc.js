@@ -10845,7 +10845,6 @@
  *     }
  *
  * @apiError (404) NotFound Community or user not found.
- * @apiError (402) Forbidden Not a moderator of the community.
  * @apiError (403) Forbidden This user is not a moderator.
  * @apiError (500) InternalServerError An unexpected error occurred on the server.
  *
@@ -10853,12 +10852,6 @@
  *     HTTP/1.1 404 Not Found
  *     {
  *       "message": "Community not found"
- *     }
- *
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 402 Forbidden
- *     {
- *       "message": "Not a moderator"
  *     }
  *
  * @apiErrorExample {json} Error-Response:
