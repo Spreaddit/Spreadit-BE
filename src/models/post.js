@@ -168,6 +168,9 @@ PostSchema.statics.getPostObject = async function (
   const User = mongoose.model("user");
   const Community = mongoose.model("community");
   const loginUser = await User.findById(userId);
+  if (!loginUser.adultContent && post.isNsfw) {
+    return null;
+  }
   const postUser = await User.findById(post.userId);
   const postcommunity = await Community.findOne({ name: post.community });
   const hasUpvoted = post.upVotes.includes(userId);
@@ -221,7 +224,7 @@ PostSchema.statics.getPostObject = async function (
     isApproved: post.isApproved,
     isScheduled: post.isScheduled,
     isSpam: post.isSpam,
-    date: post.updatedAt,
+    date: post.date,
     pollOptions: post.pollOptions,
     attachments: post.attachments,
   };
@@ -253,7 +256,7 @@ PostSchema.statics.getPostResultObject = async function (post, userId) {
     isSpoiler: post.isSpoiler || false,
     votesCount: (post.upVotes.length || 0) - (post.downVotes.length || 0),
     commentsCount: post.commentsCount || 0,
-    date: post.updatedAt,
+    date: post.date,
     username: username,
     userProfilePic: userProfilePic,
     attachments: post.attachments || [],
