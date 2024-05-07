@@ -168,6 +168,9 @@ PostSchema.statics.getPostObject = async function (
   const User = mongoose.model("user");
   const Community = mongoose.model("community");
   const loginUser = await User.findById(userId);
+  if (!loginUser.adultContent && post.isNsfw) {
+    return null;
+  }
   const postUser = await User.findById(post.userId);
   const postcommunity = await Community.findOne({ name: post.community });
   const hasUpvoted = post.upVotes.includes(userId);
