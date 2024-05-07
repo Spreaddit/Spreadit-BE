@@ -9602,12 +9602,11 @@
  *
  * @apiParamExample {json} Request-Example:
  * {
- *    "communityName": "Sample Community",
- *    "oldTitle": "Sample Rule",
- *    "newRule": {
- *        "title": "Updated Rule",
- *        "description": "Updated description for the rule"
- *    }
+ *      "communityName": "Sample Community",
+ *      "oldTitle": "Sample Rule",
+ *      "newRule": {
+ *      "title": "Updated Rule",
+ *      "description": "Updated description for the rule"
  * }
  *
  * @apiSuccess {String} message Success message indicating that the rule has been edited successfully.
@@ -10711,6 +10710,12 @@
  * @apiParam {Boolean} managePostsAndComments Indicates whether the moderator can manage posts and comments.
  * @apiParam {Boolean} manageUsers Indicates whether the moderator can manage users.
  * @apiParam {Boolean} manageSettings Indicates whether the moderator can manage community settings.
+ * @apiParamExample {json} Request-Body-Example:
+ * {
+ *   "managePostsAndComments": true,
+ *   "manageUsers": false,
+ *   "manageSettings": true
+ * }
  *
  * @apiSuccess {String} message Success message indicating that the moderator permissions have been updated successfully.
  *
