@@ -24,8 +24,6 @@ const userOne = {
   gender: "Male",
   isVerified: true,
 };
-  isVerified: true,
-};
 const userTwo = {
   _id: userTwoId,
   name: "Farouuuq",
@@ -71,7 +69,8 @@ const community2 = {
 const rule = {
   _id: "624a6a677c8d9c9f5fd5eb3d",
   title: "Music Maniacs Lounge Community Guidelines",
-  description: "1. Share and appreciate diverse musical tastes and genres with respect for fellow members.",
+  description:
+    "1. Share and appreciate diverse musical tastes and genres with respect for fellow members.",
   reportReason: "Violation of community guidelines",
   communityName: "MusicManiacsLounge",
   appliesTo: "both",
@@ -435,12 +434,18 @@ describe("Muting community", () => {
     });
     const token = logIn.body.access_token;
 
-    await request(app).post("/community/mute").set("Authorization", `Bearer ${token}`).send({
-      communityName: "farouqfans",
-    });
-    await request(app).post("/community/mute").set("Authorization", `Bearer ${token}`).send({
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/community/mute")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
+    await request(app)
+      .post("/community/mute")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
     const response = await request(app)
       .post("/community/mute")
       .set("Authorization", `Bearer ${token}`)
@@ -538,9 +543,12 @@ describe("Checking if community is muted", () => {
     });
     const token = logIn.body.access_token;
 
-    await request(app).post("/community/mute").set("Authorization", `Bearer ${token}`).send({
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/community/mute")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        communityName: "farouqfans",
+      });
     const response = await request(app)
       .get("/community/is-mute")
       .set("Authorization", `Bearer ${token}`)
@@ -572,7 +580,10 @@ describe("Checking if community is muted", () => {
     });
     const token = logIn.body.access_token;
 
-    const response = await request(app).get("/community/is-mute").set("Authorization", `Bearer ${token}`).expect(400);
+    const response = await request(app)
+      .get("/community/is-mute")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(400);
 
     expect(response.body.message).toBe("Invalid parameters");
   }, 10000);
@@ -608,7 +619,9 @@ describe("Subscribing to community", () => {
       .send({ communityName: "farouqfans" })
       .expect(200);
 
-    expect(response.body.message).toBe("Subscribed to the community successfully");
+    expect(response.body.message).toBe(
+      "Subscribed to the community successfully"
+    );
   });
   test("It should return 'Invalid parameters' for status 400", async () => {
     const logIn = await request(app).post("/login").send({
@@ -890,7 +903,9 @@ describe("Getting specific category communities", () => {
       .query({ category: "helloo" })
       .expect(404);
 
-    expect(response.body.message).toBe("No communities found for the specified category");
+    expect(response.body.message).toBe(
+      "No communities found for the specified category"
+    );
   });
 
   test("It should return 'Invalid request parameters' for status 400", async () => {
@@ -957,7 +972,10 @@ describe("Creating a community", () => {
     });
     const token = logIn.body.access_token;
 
-    const response = await request(app).post("/community/create").set("Authorization", `Bearer ${token}`).expect(400);
+    const response = await request(app)
+      .post("/community/create")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(400);
 
     expect(response.body.message).toBe("Invalid request parameters");
   });
@@ -974,7 +992,9 @@ describe("Getting user profile info", () => {
       password: "12345678",
     });
 
-    const response = await request(app).get("/user/profile-info/farouquser").expect(200);
+    const response = await request(app)
+      .get("/user/profile-info/farouquser")
+      .expect(200);
 
     expect(response.body).toBeDefined();
   });
