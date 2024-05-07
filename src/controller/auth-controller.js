@@ -377,7 +377,9 @@ exports.verifyEmail = async (req, res) => {
     const accessToken = await user.generateToken();
     user.isVerified = 1;
     await user.save();
+    const userObj = await User.generateUserObject(user);
     res.status(200).send({
+      user: userObj,
       message: "Email verified successfully",
       accessToken: accessToken,
     });
