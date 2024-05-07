@@ -13,7 +13,6 @@ exports.followUser = async (req, res) => {
     }
     const user = await FollowUser.getUserByEmailOrUsername(username);
     if (!user) {
-      console.error("User not found");
       return res.status(404).json({ error: "User not found" });
     }
     const toFollowID = user._id;
@@ -23,11 +22,9 @@ exports.followUser = async (req, res) => {
       return res.status(403).json({ message: "you cannot follow this user" });
     }
     if (toFollowID.equals(followerID)) {
-      console.log("user cannot follow himself");
       return res.status(400).json({ error: "user cannot follow himself" });
     }
     if (!toFollowID || !followerID) {
-      console.error("this user not found:");
       return res.status(404).json({ error: "User not found" });
     }
     const followerUser = await FollowUser.findByIdAndUpdate(
@@ -64,7 +61,6 @@ exports.followUser = async (req, res) => {
     }
     res.status(200).json(response);
   } catch (err) {
-    console.error("Internal server error", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };

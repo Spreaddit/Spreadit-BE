@@ -1,17 +1,30 @@
 const request = require("supertest");
 const app = require("./testApp");
 const mongoose = require("mongoose");
-const Post = require("../src/models/post.js");
-const Comment = require("../src/models/comment.js");
-const User = require("../src/models/user.js");
-const Report = require("../src/models/report.js");
-const Community = require("../src/models/community.js");
-const Moderator = require("../src/models/moderator.js");
-const userRole = require("../seed-data/constants/userRole.js");
-const Rule = require("../src/models/rule.js");
-const config = require("../src/configuration.js");
-
-const connectionUrl = "mongodb://localhost:27017/testDBuseraction";
+const config = require("../src/configuration");
+const User = require("../src/models/user");
+const jwt = require("jwt-decode");
+const connectionUrl = "mongodb://localhost:27017/testDBforuseraction";
+const userOneId = new mongoose.Types.ObjectId();
+const userTwoId = new mongoose.Types.ObjectId();
+const userOne = {
+  _id: userOneId,
+  name: "Mohamed Maher",
+  username: "maher12",
+  email: "moahmedmaher4@gmail.com",
+  password: "12345678",
+  gender: "Male",
+  isVerified: true,
+};
+const userTwo = {
+  _id: userTwoId,
+  name: "mahmoud aly",
+  username: "mahmoud12",
+  email: "mahmoud66@gmail.com",
+  password: "12345678",
+  gender: "Male",
+  isVerified: true,
+};
 
 beforeAll(async () => {
   try {
@@ -19,202 +32,276 @@ beforeAll(async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+    await Message.deleteMany({});
   } catch (error) {
     console.error("Mongoose connection error:", error);
   }
 });
 
+beforeEach(async () => {
+  await User.deleteMany({});
+  await User(userOne).save();
+  await User(userTwo).save();
+}, 10000);
+afterEach(async () => {
+  await User.deleteMany({});
+});
 afterAll(() => {
   mongoose.connection.close();
 });
 
-const AdminId = "6240cb6a412efa3d5d89c0af";
-id = new mongoose.Types.ObjectId();
-id2 = new mongoose.Types.ObjectId();
-const userOneId = new mongoose.Types.ObjectId();
-const userTwoId = new mongoose.Types.ObjectId();
-const userThreeId = new mongoose.Types.ObjectId();
-const commentId = new mongoose.Types.ObjectId();
-const postId = new mongoose.Types.ObjectId();
-const moderatorId = new mongoose.Types.ObjectId();
-
-const post = {
-  _id: postId,
-  userId: userTwoId,
-  username: "elgarf",
-  title: "this is a post",
-  content: "this is the content of the post",
-  community: "testCommunity",
-  type: "Post",
-};
-const comment = {
-  _id: commentId,
-  userId: userTwoId,
-  postId: postId,
-  content: "this is the content of the comment",
-  parentCommentId: null,
-};
-const admin = {
-  _id: AdminId,
-  name: "Ahmed Ashry",
-  username: "Ashry",
-  email: "ashry.ahmed4@gmail.com",
-  password: "12345678",
-  gender: "Male",
-  roleId: userRole.adminRole._id,
-  isVerified: true,
-};
-const userOne = {
-  _id: userOneId,
-  name: "Mohamed Maher",
-  username: "maher",
-  email: "moahmedmaher4@gmail.com",
-  password: "12345678",
-  followers: [userTwoId],
-  followings: [userTwoId],
-  gender: "Male",
-  isVerified: true,
-  subscribedCommunities: [id],
-};
-const userTwo = {
-  _id: userTwoId,
-  name: "Amira Elgarf",
-  username: "elgarf",
-  birth_date: "1999-10-10T00:00:00.000Z",
-  email: "elgarf@gmail.com",
-  password: "TTFTTSTTD",
-  followers: [userOneId],
-  followings: [userOneId],
-  gender: "Female",
-  isVerified: true,
-  subscribedCommunities: [id],
-};
-
-const userThree = {
-  _id: userThreeId,
-  name: " Mahmoud Abbas",
-  username: "abbas",
-  birth_date: "1999-10-10T00:00:00.000Z",
-  email: "abbas@gmail.com",
-  password: "12345678",
-  gender: "Male",
-  isVerified: true,
-  subscribedCommunities: [id],
-};
-const rule = {
-  _id: id2,
-  title: "test Community Guidelines",
-  description:
-    "1. Respect the privacy and emotions of members when discussing mental health issues.",
-  reportReason: "Violation of community guidelines",
-  communityName: "testCommunity",
-};
-const community = {
-  _id: id,
-  name: "testCommunity",
-  category: "Entertainment and Pop Culture",
-  rules: [id2],
-  description:
-    "Discuss the latest movie releases, share reviews, recommendations, and indulge in lively debates about classic films.",
-  is18plus: false,
-  allowNfsw: true,
-  allowSpoile: true,
-  communityType: "Public",
-  creator: userOneId,
-  members: [userOneId, userTwoId, userThreeId],
-  moderators: [userOneId],
-  membersCount: 3,
-};
-const moderator = {
-  username: "maher",
-  communityName: "testCommunity",
-  isAccepted: true,
-};
-
-beforeEach(async () => {
-  await User.deleteMany({});
-  await new User(userOne).save();
-  await new User(userTwo).save();
-  await new User(userThree).save();
-  await new User(admin).save();
-  await Community.deleteMany({});
-  await new Community(community).save();
-  await Rule.deleteMany({});
-  await new Rule(rule).save();
-  await Comment.deleteMany({});
-  await new Comment(comment).save();
-  await Moderator.deleteMany({});
-  await new Moderator(moderator).save();
-  await Post.deleteMany({});
-  await new Post(post).save();
-});
-
-afterEach(async () => {
-  await User.deleteMany({});
-  await Community.deleteMany({});
-  await Rule.deleteMany({});
-  await Comment.deleteMany({});
-  await Moderator.deleteMany({});
-  await Post.deleteMany({});
-});
-
 test("Test: test follow user ", async () => {
   const logIn = await request(app).post("/login").send({
-    username: "maher",
+    username: "mahmoud12",
     password: "12345678",
   });
   const token = logIn.body.access_token;
   await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
   await request(app)
-    .get("/follow/")
+    .post("/follow")
     .set("Authorization", `Bearer ${token}`)
     .send({
-      username: "elgarf",
+      username: "maher12",
     })
     .expect(200);
 });
 
-test("Test: test block user not found ", async () => {
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "mahmoud12", password: "123456789" });
-  const tokenlogin = login.body.access_token;
-
-  const block = await request(app)
-    .post("/block")
-    .send({ username: "mahmoud00", token: tokenlogin })
-    .expect(401)
-    .then((response) => {
-      expect(response.body.error).toBe("User not found");
-    });
-});
-
-test("Test: test report user not found ", async () => {
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "mahmoud12", password: "123456789" });
-  const tokenlogin = login.body.access_token;
-
-  const report = await request(app)
-    .post("/report")
-    .send({ username: "mahmoud00", token: tokenlogin, reason: "spam" })
-    .expect(404)
-    .then((response) => {
-      expect(response.body.error).toBe("User not found");
-    });
+test("Test: test follow user not found ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/follow")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "mah",
+    })
+    .expect(404);
 });
 
 test("Test: test unfollow user not found ", async () => {
-  const login = await request(app)
-    .post("/login")
-    .send({ username: "mahmoud12", password: "123456789" });
-  const tokenlogin = login.body.access_token;
-
-  const unfollow = await request(app)
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
     .post("/unfollow")
-    .send({ username: "mahmoud00", token: tokenlogin })
-    .expect(404)
-    .then((response) => {
-      expect(response.body.error).toBe("User not found");
-    });
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "mah",
+    })
+    .expect(404);
+});
+
+test("Test: test block user not found ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/block")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "mah",
+    })
+    .expect(404);
+});
+
+test("Test: test unblock user not found ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/unblock")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "mah",
+    })
+    .expect(404);
+});
+
+test("Test: test report user not found ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/report")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "mah",
+    })
+    .expect(404);
+});
+
+test("Test: test report user reason is required ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/report")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "maher12",
+    })
+    .expect(400);
+});
+
+test("Test: test follow user unauthorized ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/follow")
+    .set("Authorization", `Bearer `)
+    .send({
+      username: "maher12",
+    })
+    .expect(401);
+});
+
+test("Test: test unfollow user ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/unfollow")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "maher12",
+    })
+    .expect(200);
+});
+test("Test: test unfollow user unauthorized ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/unfollow")
+    .set("Authorization", `Bearer `)
+    .send({
+      username: "maher12",
+    })
+    .expect(401);
+});
+test("Test: test block user unauthorized ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/block")
+    .set("Authorization", `Bearer `)
+    .send({
+      username: "maher12",
+    })
+    .expect(401);
+});
+
+test("Test: test unblock user unauthorized ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/unblock")
+    .set("Authorization", `Bearer `)
+    .send({
+      username: "maher12",
+    })
+    .expect(401);
+});
+
+test("Test: test report user unauthorized ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/report")
+    .set("Authorization", `Bearer `)
+    .send({
+      username: "maher12",
+    })
+    .expect(401);
+});
+
+test("Test: test block user ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/block")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "maher12",
+    })
+    .expect(200);
+});
+
+test("Test: test unblock user ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/unblock")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "maher12",
+    })
+    .expect(200);
+});
+
+test("Test: test report user ", async () => {
+  const logIn = await request(app).post("/login").send({
+    username: "mahmoud12",
+    password: "12345678",
+  });
+  const token = logIn.body.access_token;
+  await User.findOneAndUpdate({ username: "maher" }, { isVerified: true });
+  await request(app)
+    .post("/report")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      username: "maher12",
+      reason: "spam",
+      subreason: "reggg",
+    })
+    .expect(200);
 });

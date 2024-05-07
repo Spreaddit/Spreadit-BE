@@ -10,13 +10,11 @@ exports.reportUser = async (req, res) => {
     }
     const user = await ReportUser.getUserByEmailOrUsername(username);
     if (!user) {
-      console.error("User not found");
       return res.status(404).json({ error: "User not found" });
     }
     const toReportID = user._id;
     const reporterID = req.user._id;
     if (toReportID.equals(reporterID)) {
-      console.log("user cannot report himself");
       return res.status(400).json({ error: "user cannot report himself" });
     }
     const { reason, subreason } = req.body;
@@ -44,7 +42,6 @@ exports.reportUser = async (req, res) => {
     };
     res.status(200).json(response);
   } catch (err) {
-    console.error("Error report user", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };

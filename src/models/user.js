@@ -444,6 +444,7 @@ UserSchema.statics.generateUserObject = async function (user) {
       birth_date: user.birth_date,
       phone: user.phone_number,
       avatar_url: user.avatar,
+      banner: user.banner,
       location: user.location,
       followers_count: user.followers.length,
       following_count: user.followings.length,

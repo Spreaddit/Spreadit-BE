@@ -84,11 +84,19 @@ exports.getAllUserPosts = async (req, res) => {
     if (!user.nsfw) {
       query.isNsfw = false;
     }
-    const posts = await Post.find(query).sort({ createdAt: -1 }).lean();
+    const posts = await Post.find(query).sort({ createdAt: -1 });
+
     if (!posts || posts.length === 0) {
       return res.status(404).json({ error: "User has no posts" });
     }
-    res.status(200).json(posts);
+
+    const postObjects = [];
+    for (const post of posts) {
+      const postObject = await Post.getPostObject(post, userId);
+      postObjects.push(postObject);
+    }
+    const filteredPostInfoArray = postObjects.filter((post) => post !== null);
+    res.status(200).json({ posts: filteredPostInfoArray });
   } catch (err) {
     console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -394,7 +402,7 @@ exports.getAllPostsInCommunity = async (req, res) => {
     );
 
     const filteredPostInfoArray = postInfoArray.filter((post) => post !== null);
-    res.status(200).json(filteredPostInfoArray);
+    res.status(200).json({ posts: filteredPostInfoArray });
   } catch (err) {
     console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -1262,7 +1270,7 @@ exports.getReportedPostsInCommunity = async (req, res) => {
         .json({ message: "No reported posts found in the community" });
     }
 
-    res.status(200).json({ reportedPosts });
+    res.status(200).json({ posts: reportedPosts });
   } catch (error) {
     console.error("Error fetching reported posts:", error);
     res.status(500).json({ error: "Internal server error" });

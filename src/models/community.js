@@ -152,10 +152,20 @@ const CommunitySchema = new Schema({
             default: true,
           },
         },
-        default: {},
+        default: {
+          mediaInCommentsAllowed: true,
+        },
       },
     },
-    default: {},
+    default: {
+      postTypeOptions: "any",
+      spoilerEnabled: true,
+      multipleImagesPerPostAllowed: true,
+      pollsAllowed: true,
+      commentSettings: {
+        mediaInCommentsAllowed: true,
+      },
+    },
   },
 });
 
