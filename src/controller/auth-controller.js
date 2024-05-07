@@ -1,6 +1,5 @@
 const User = require("../models/user.js");
 const Community = require("../models/community.js");
-const axios = require("axios");
 const auth = require("../middleware/authentication");
 const config = require("../configuration");
 const cookieParser = require("cookie-parser");
