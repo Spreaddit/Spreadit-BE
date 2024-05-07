@@ -30,12 +30,16 @@ exports.sendMessage = async (req, res) => {
     if (!recieverUser) {
       return res.status(400).json({ error: "User not found" });
     }
+
     const recieverId = recieverUser._id;
     if (recieverId.toString() === userId.toString())
       return res.status(400).json({ error: "user cannot message himself" });
     const newConversation = new Conversation({
       subject,
     });
+    if (recieverUser.sendYouPrivateMessages == "Nobody") {
+      return res.status(403).json({ message: "you cannot message this user" });
+    }
     await newConversation.save();
     const newMessage = new Message({
       conversationId: newConversation._id,
