@@ -255,7 +255,7 @@ exports.forgotPassword = async (req, res) => {
     if (!temp || temp.username !== user.username) {
       return res.status(400).send({ message: "Error, wrong email" });
     }
-    const resetToken = await user.generateResetToken();
+    const resetToken = await user.generateEmailToken();
     const emailContent = `www.spreaddit.me/password/${resetToken}`;
     await sendEmail(
       user.email,
