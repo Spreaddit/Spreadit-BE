@@ -241,9 +241,9 @@ exports.addPasswordConnectedAccounts = async (req, res) => {
 };
 exports.forgotPassword = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, username } = req.body;
 
-    if (!email || !password) {
+    if (!email || !username) {
       return res.status(400).send({ message: "Email or username is required" });
     }
 
