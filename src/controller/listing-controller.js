@@ -840,16 +840,14 @@ exports.sortPostTopTime = async (req, res) => {
 exports.recentPosts = async (req, res) => {
   try {
     const userId = req.user._id;
-    const user = await User.findById(userId).populate({
-      path: "recentPosts",
-      options: { sort: { createdAt: -1 } },
-    });
+    const user = await User.findById(userId).populate("recentPosts");
 
     if (!user) {
       return res.status(404).json({ error: "user not found" });
     }
 
-    const posts = user.recentPosts;
+    const post = user.recentPosts;
+    const posts = post.reverse();
     const totalPosts = posts.length;
 
     const page = req.query.page || 1;
