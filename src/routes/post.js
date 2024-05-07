@@ -98,8 +98,4 @@ router
 
 router.route("/:postId").get(auth.authentication, postController.getPostById);
 
-router
-  .route("/deleterecent/:postId")
-  .delete(auth.authentication, postController.deleteRecentPost);
-
 module.exports = router;
