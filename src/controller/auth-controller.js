@@ -375,7 +375,6 @@ exports.verifyEmail = async (req, res) => {
     });
     const user = await User.findOne({
       email: decoded.email,
-      isVerified: true,
     });
     
     if (!user) {
