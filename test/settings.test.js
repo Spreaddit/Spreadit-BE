@@ -292,7 +292,6 @@ test("Test password not match (layout-setting).", async () => {
 });
 
 test("Test userID not given (layout-setting).", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -305,7 +304,7 @@ test("Test userID not given (layout-setting).", async () => {
   const response = await request(app)
     .put("/layout")
     .send({ enteredPassword: "123456789" })
-    .expect(401)
+    .expect(401);
 });
 
 //end of layout setting test
@@ -325,8 +324,7 @@ test("Test get feed settings.", async () => {
     .get("/feed")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send()
-    .expect(200)
-
+    .expect(200);
 });
 
 test("Test update feed settings success.", async () => {
@@ -343,8 +341,7 @@ test("Test update feed settings success.", async () => {
     .put("/feed")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send({ adultContent: "true" })
-    .expect(200)
-
+    .expect(200);
 });
 
 test("Test userID not given (feed-setting).", async () => {
@@ -357,17 +354,13 @@ test("Test userID not given (feed-setting).", async () => {
     throw new Error("User not found");
   }
   const token = login.body.token;
-  const response = await request(app)
-    .get("/feed")
-    .send({})
-    .expect(401)
+  const response = await request(app).get("/feed").send({}).expect(401);
 });
 
 //end of feed setting test
 
 //start of profile setting test
 test("Test get profile settings.", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -380,12 +373,10 @@ test("Test get profile settings.", async () => {
   const response = await request(app)
     .get("/profile")
     .set("Authorization", "Bearer " + user.tokens[0].token)
-    .expect(400)
+    .expect(400);
 });
 
-
 test("Test userID not given (profile-setting).", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -395,17 +386,13 @@ test("Test userID not given (profile-setting).", async () => {
     throw new Error("User not found");
   }
   const token = login.body.token;
-  const response = await request(app)
-    .get("/profile")
-    .send({})
-    .expect(401)
+  const response = await request(app).get("/profile").send({}).expect(401);
 });
 
 //end of profile setting test
 
 //start of Safety and Privacy setting test
 test("Test get Safety and Privacy settings.", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -419,11 +406,10 @@ test("Test get Safety and Privacy settings.", async () => {
     .get("/safety-privacy")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send()
-    .expect(200)
+    .expect(200);
 });
 
 test("Test update Safety and Privacy settings success.", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -437,11 +423,10 @@ test("Test update Safety and Privacy settings success.", async () => {
     .put("/safety-privacy")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send({ nsfw: "true" })
-    .expect(200)
+    .expect(200);
 });
 
 test("Test userID not given (SafetyandPrivacy-setting).", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -454,16 +439,13 @@ test("Test userID not given (SafetyandPrivacy-setting).", async () => {
   const response = await request(app)
     .get("/safety-privacy")
     .send({})
-    .expect(401)
+    .expect(401);
 });
 
 //end of Safety and Privacy setting test
 
-
-
 //start of email setting test
 test("Test get email settings.", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -477,11 +459,10 @@ test("Test get email settings.", async () => {
     .get("/email")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send()
-    .expect(200)
+    .expect(200);
 });
 
 test("Test update email settings success.", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -495,11 +476,10 @@ test("Test update email settings success.", async () => {
     .put("/email")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send({ chatRequestEmail: "false" })
-    .expect(200)
+    .expect(200);
 });
 
 test("Test userID not given (email-setting).", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -509,10 +489,7 @@ test("Test userID not given (email-setting).", async () => {
     throw new Error("User not found");
   }
   const token = login.body.token;
-  const response = await request(app)
-    .get("/email")
-    .send({})
-    .expect(401)
+  const response = await request(app).get("/email").send({}).expect(401);
 });
 
 //end of email setting test
@@ -532,7 +509,7 @@ test("Test get account settings", async () => {
     .get("/account")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send()
-    .expect(200)
+    .expect(200);
 });
 
 test("Test get account settings without id", async () => {
@@ -545,14 +522,10 @@ test("Test get account settings without id", async () => {
     throw new Error("User not found");
   }
   const token = login.body.token;
-  const response = await request(app)
-    .get("/account")
-    .send({})
-    .expect(401)
+  const response = await request(app).get("/account").send({}).expect(401);
 });
 
 test("Test update account settings", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -571,7 +544,7 @@ test("Test update account settings", async () => {
       gender: "male",
       country: "Egypt",
     })
-    .expect(200)
+    .expect(200);
 });
 
 test("Test update account settings without id", async () => {
@@ -584,14 +557,10 @@ test("Test update account settings without id", async () => {
     throw new Error("User not found");
   }
   const token = login.body.token;
-  const response = await request(app)
-    .put("/account")
-    .send({})
-    .expect(401)
+  const response = await request(app).put("/account").send({}).expect(401);
 });
 
 test("Test update account settings with invalid email format", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -605,12 +574,10 @@ test("Test update account settings with invalid email format", async () => {
     .put("/account")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send({ email: "tyt" })
-    .expect(403)
+    .expect(403);
 });
 
 test("Test delete account success", async () => {
-
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -625,7 +592,7 @@ test("Test delete account success", async () => {
     .delete("/account")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send()
-    .expect(200)
+    .expect(200);
 });
 
 test("Test delete account without id", async () => {
@@ -638,17 +605,13 @@ test("Test delete account without id", async () => {
     throw new Error("User not found");
   }
   const token = login.body.token;
-  const response = await request(app)
-    .put("/account")
-    .send({})
-    .expect(401)
+  const response = await request(app).put("/account").send({}).expect(401);
 });
 
 //end of account settings testing
 
 //start of block setting test
 test("Test get block settings.", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -662,11 +625,10 @@ test("Test get block settings.", async () => {
     .get("/blocking-permissions")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send()
-    .expect(200)
+    .expect(200);
 });
 
 test("Test update block settings success.", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -680,11 +642,10 @@ test("Test update block settings success.", async () => {
     .put("/blocking-permissions")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send({ allowFollow: "false" })
-    .expect(200)
+    .expect(200);
 });
 
 test("Test userID not given (block-setting).", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -697,11 +658,10 @@ test("Test userID not given (block-setting).", async () => {
   const response = await request(app)
     .get("/blocking-permissions")
     .send({})
-    .expect(401)
+    .expect(401);
 });
 
 //end of block setting test
-
 
 test("Test update notification settings without token", async () => {
   const login = await request(app)
@@ -716,7 +676,7 @@ test("Test update notification settings without token", async () => {
   const response = await request(app)
     .put("/notifications")
     .send({})
-    .expect(401)
+    .expect(401);
 });
 
 //end of notifications setting test
@@ -724,7 +684,6 @@ test("Test update notification settings without token", async () => {
 //start of chat and messaging settings test
 
 test("Test get chat and messaging settings", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -739,7 +698,7 @@ test("Test get chat and messaging settings", async () => {
     .get("/chat-and-messaging")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send()
-    .expect(200)
+    .expect(200);
 });
 
 test("Test get chat and messaging settings without token", async () => {
@@ -755,16 +714,14 @@ test("Test get chat and messaging settings without token", async () => {
   const response = await request(app)
     .get("/chat-and-messaging")
     .send({})
-    .expect(401)
+    .expect(401);
 });
-
 
 //end of chat and messaging settings test
 
 //start of contact settings test
 
 test("Test get contact settings", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -778,7 +735,7 @@ test("Test get contact settings", async () => {
     .get("/contact")
     .set("Authorization", "Bearer " + user.tokens[0].token)
     .send()
-    .expect(200)
+    .expect(200);
 });
 
 test("Test get contact settings without token", async () => {
@@ -791,14 +748,10 @@ test("Test get contact settings without token", async () => {
     throw new Error("User not found");
   }
   const token = login.body.token;
-  const response = await request(app)
-    .get("/contact")
-    .send({})
-    .expect(401)
+  const response = await request(app).get("/contact").send({}).expect(401);
 });
 
 test("Test update contact settings", async () => {
-
   const login = await request(app)
     .post("/login")
     .send({ username: "elgarf", password: "12345678" })
@@ -824,9 +777,7 @@ test("Test update contact settings", async () => {
       cakeDay: false,
       modNotifications: false,
     })
-    .expect(200)
+    .expect(200);
 });
 
-
 //end of contact settings test
-
