@@ -104,7 +104,7 @@ ModeratorSchema.statics.getInvitedModerators = async function (communityName) {
   });
   const moderatorObjects = [];
   for (const moderator of moderators) {
-    const user = await User.findOne({ username: moderator.username });
+    const user = await this.model("user").findOne({ username: moderator.username });
     moderatorObjects.push({
       username: moderator.username,
       communityName,
