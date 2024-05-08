@@ -13,15 +13,24 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: true,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [
       "624a6a677c8d9c9f5fd5eb1a",
       "624a6a677c8d9c9f5fd5eb20",
       "624a6a677c8d9c9f5fd5eb22",
       "624a6a677c8d9c9f5fd5eb29",
     ], //[CodeCrafters, Writers' Haven, Mental Health Support Group, Movie Buffs Club ]
-    followers: ["624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0b"],
-    followings: ["624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0b"],
+    followers: [
+      "624a52d75ff69df002d25035",
+      "624a4fbf3f392aefdb4dd1c8",
+      "624a6a677c8d9c9f5fd5eb0b",
+    ],
+    followings: [
+      "624a52d75ff69df002d25035",
+      "624a4fbf3f392aefdb4dd1c8",
+      "624a6a677c8d9c9f5fd5eb0b",
+    ],
     moderatedCommunities: [
       "624a6a677c8d9c9f5fd5eb1a",
       "624a6a677c8d9c9f5fd5eb20",
@@ -42,7 +51,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: true,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [
       "624a6a677c8d9c9f5fd5eb1a",
       "624a6a677c8d9c9f5fd5eb1b",
@@ -51,8 +61,16 @@ const users = [
       "624a6a677c8d9c9f5fd5eb26",
       "624a6a677c8d9c9f5fd5eb1f",
     ], //[CodeCrafters, TechTalks, Creative Minds Collective, Globetrotters Community, Culinary Delights, Visual Arts Gallery]
-    followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a6a677c8d9c9f5fd5eb0b"],
-    followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a6a677c8d9c9f5fd5eb0b"],
+    followers: [
+      "624a4a94c66738f13854b474",
+      "624a52d75ff69df002d25035",
+      "624a6a677c8d9c9f5fd5eb0b",
+    ],
+    followings: [
+      "624a4a94c66738f13854b474",
+      "624a52d75ff69df002d25035",
+      "624a6a677c8d9c9f5fd5eb0b",
+    ],
     moderatedCommunities: [
       "624a6a677c8d9c9f5fd5eb1e",
       "624a6a677c8d9c9f5fd5eb24",
@@ -74,11 +92,18 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: false,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
-    subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1b", "624a6a677c8d9c9f5fd5eb1c"], //[TechTalks, CodeGeeks]
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    subscribedCommunities: [
+      "624a6a677c8d9c9f5fd5eb1b",
+      "624a6a677c8d9c9f5fd5eb1c",
+    ], //[TechTalks, CodeGeeks]
     followers: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0b"],
     followings: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0b"],
-    moderatedCommunities: ["624a6a677c8d9c9f5fd5eb1b", "624a6a677c8d9c9f5fd5eb1c"],
+    moderatedCommunities: [
+      "624a6a677c8d9c9f5fd5eb1b",
+      "624a6a677c8d9c9f5fd5eb1c",
+    ],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
@@ -92,15 +117,24 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: true,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [
       "624a6a677c8d9c9f5fd5eb1c",
       "624a6a677c8d9c9f5fd5eb1a",
       "624a6a677c8d9c9f5fd5eb25",
       "624a6a677c8d9c9f5fd5eb27",
     ], // [CodeGeeks, CodeCrafters, Adventurous Souls Society, Gourmet Adventures ]
-    followers: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
-    followings: ["624a4a94c66738f13854b474", "624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8"],
+    followers: [
+      "624a4a94c66738f13854b474",
+      "624a52d75ff69df002d25035",
+      "624a4fbf3f392aefdb4dd1c8",
+    ],
+    followings: [
+      "624a4a94c66738f13854b474",
+      "624a52d75ff69df002d25035",
+      "624a4fbf3f392aefdb4dd1c8",
+    ],
     moderatedCommunities: ["624a6a677c8d9c9f5fd5eb25"],
     mutedCommunities: ["624a6a677c8d9c9f5fd5eb1a"],
     favouriteCommunities: ["624a6a677c8d9c9f5fd5eb27"],
@@ -117,7 +151,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: true,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [
       "624a6a677c8d9c9f5fd5eb21",
       "624a6a677c8d9c9f5fd5eb25",
@@ -125,7 +160,10 @@ const users = [
       "624a6a677c8d9c9f5fd5eb28",
       "624a6a677c8d9c9f5fd5eb2a",
     ], //[Mindfulness & Meditation Community, Adventurous Souls Society, Culinary Delights, Pop Culture Fanatics, Music Maniacs Lounge]
-    moderatedCommunities: ["624a6a677c8d9c9f5fd5eb21", "624a6a677c8d9c9f5fd5eb2a"],
+    moderatedCommunities: [
+      "624a6a677c8d9c9f5fd5eb21",
+      "624a6a677c8d9c9f5fd5eb2a",
+    ],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb0d", // Basem
@@ -139,14 +177,18 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: false,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [
       "624a6a677c8d9c9f5fd5eb21",
       "624a6a677c8d9c9f5fd5eb22",
       "624a6a677c8d9c9f5fd5eb27",
       "624a6a677c8d9c9f5fd5eb29",
     ], //[Mindfulness & Meditation Community, Mental Health & Psychology, Food & Cooking, Movie Buffs Club]
-    moderatedCommunities: ["624a6a677c8d9c9f5fd5eb26", "624a6a677c8d9c9f5fd5eb27"],
+    moderatedCommunities: [
+      "624a6a677c8d9c9f5fd5eb26",
+      "624a6a677c8d9c9f5fd5eb27",
+    ],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb0e", // Basma
@@ -160,7 +202,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: true,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [
       "624a6a677c8d9c9f5fd5eb1b",
       "624a6a677c8d9c9f5fd5eb1c",
@@ -194,7 +237,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: false,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [
       "624a48f143bd949036986953",
       "624a6a677c8d9c9f5fd5eb1d",
@@ -216,7 +260,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: true,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [],
   },
   {
@@ -231,7 +276,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: false,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: ["624a4052e28fb9d9c024671a"], //[Space & Astronomy Lovers]
     mutedCommunities: ["624a4052e28fb9d9c024671a"],
     favouriteCommunities: ["624a4052e28fb9d9c024671a"],
@@ -248,7 +294,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: true,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: ["624a6a677c8d9c9f5fd5eb1d"], //[Biology Buffs Society]
   },
   {
@@ -263,7 +310,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: false,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [
       "624a4052e28fb9d9c024671a",
       "624a6a677c8d9c9f5fd5eb27",
@@ -284,7 +332,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: true,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [
       "624a48f143bd949036986953",
       "624a4052e28fb9d9c024671a",
@@ -307,7 +356,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: false,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [],
   },
   {
@@ -322,7 +372,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: true,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [
       "624a48f143bd949036986953",
       "624a6a677c8d9c9f5fd5eb36",
@@ -330,7 +381,11 @@ const users = [
       "624a6a677c8d9c9f5fd5eb28",
       "624a6a677c8d9c9f5fd5eb2a",
     ],
-    moderatedCommunities: ["624a6a677c8d9c9f5fd5eb36", "624a6a677c8d9c9f5fd5eb24", "624a6a677c8d9c9f5fd5eb28"],
+    moderatedCommunities: [
+      "624a6a677c8d9c9f5fd5eb36",
+      "624a6a677c8d9c9f5fd5eb24",
+      "624a6a677c8d9c9f5fd5eb28",
+    ],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb17", // Maher
@@ -344,7 +399,8 @@ const users = [
     roleId: userRole.defaultRole._id,
     isnsfw: false,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: [],
   },
   {
@@ -358,7 +414,8 @@ const users = [
     roleId: userRole.adminRole._id,
     isnsfw: false,
     isVerified: true,
-    avatar: "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
+    avatar:
+      "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
   },
 ];
 
