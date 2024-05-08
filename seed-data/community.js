@@ -28,7 +28,7 @@ const communitySeedData = [
     communityType: "Public",
     creator: "624a52d75ff69df002d25035", // Mahmoud
     members: ["624a52d75ff69df002d25035", "624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e"], // Mahmoud, Farouq, Basma
-    moderators: ["624a52d75ff69df002d25035"], // Mahmoud
+    moderators: ["624a52d75ff69df002d25035", "624a6a677c8d9c9f5fd5eb0e"], // Mahmoud, Basma
     membersCount: 3,
     removalReasons: ["6633ddb655d6bba0f4023c52", "6633ddb655d6bba0f4023c53"],
     membersNickname: "Techs",
@@ -115,10 +115,10 @@ const communitySeedData = [
     allowNfsw: true,
     allowSpoile: true,
     communityType: "Public",
-    creator: "624a4fbf3f392aefdb4dd1c8", // Farouq
+    creator: "624a6a677c8d9c9f5fd5eb0e", // Basma
     members: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14"], // Farouq, Basma, Karim
     contributors: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14"], // Farouq, Basma, Karim
-    moderators: ["624a4fbf3f392aefdb4dd1c8"], // Farouq
+    moderators: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e"], // Farouq, Basma
     membersCount: 3,
     removalReasons: ["6633ddb655d6bba0f4023c5c", "6633ddb655d6bba0f4023c5d"],
     membersNickname: "Creators",
@@ -137,7 +137,7 @@ const communitySeedData = [
     members: ["624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14", "624a4fbf3f392aefdb4dd1c8"], // Basma, Karim, Farouq
     moderators: ["624a6a677c8d9c9f5fd5eb0e"], // Basma
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c5e", "6633ddb655d6bba0f4023c5f"],
+    removalReasons: ["6633ddb655d6bba0f4023c5e"],
     membersNickname: "Artists",
   },
   {
@@ -155,7 +155,6 @@ const communitySeedData = [
     members: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0f"], // Amira, Basma, Farida
     moderators: ["624a4a94c66738f13854b474"], // Amira
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c60", "6633ddb655d6bba0f4023c61"],
     membersNickname: "Writers",
   },
   {
@@ -173,7 +172,6 @@ const communitySeedData = [
     members: ["624a6a677c8d9c9f5fd5eb0c", "624a6a677c8d9c9f5fd5eb0d", "624a6a677c8d9c9f5fd5eb0f"], // Mimo, Basem, Farida
     moderators: ["624a6a677c8d9c9f5fd5eb0c"], // Mimo
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c62", "6633ddb655d6bba0f4023c63"],
     membersNickname: "Genuises",
   },
   {
@@ -191,7 +189,6 @@ const communitySeedData = [
     members: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0f", "624a6a677c8d9c9f5fd5eb0d"], // Amira, Farida, Basem
     moderators: ["624a4a94c66738f13854b474"], // Amira
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c64", "6633ddb655d6bba0f4023c65"],
     contributors: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0f", "624a6a677c8d9c9f5fd5eb0d"],
   },
   {
@@ -209,7 +206,6 @@ const communitySeedData = [
     members: ["624a6a677c8d9c9f5fd5eb16", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14"], // Mahmoud, Basma, Karim
     moderators: ["624a6a677c8d9c9f5fd5eb16"], // Mahmoud
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c66", "6633ddb655d6bba0f4023c67"],
     contributors: ["624a6a677c8d9c9f5fd5eb16", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb14"],
   },
   {
@@ -223,11 +219,10 @@ const communitySeedData = [
     allowNfsw: true,
     allowSpoile: true,
     communityType: "Public",
-    creator: "624a4fbf3f392aefdb4dd1c8", // Farouq
+    creator: "624a6a677c8d9c9f5fd5eb16", // Mahmoud
     members: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0f"], // Farouq, Basma, Farida
-    moderators: ["624a4fbf3f392aefdb4dd1c8"], // Farouq
+    moderators: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb16"], // Farouq, Mahmoud
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c68", "6633ddb655d6bba0f4023c69"],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb25",
@@ -244,7 +239,6 @@ const communitySeedData = [
     members: ["624a6a677c8d9c9f5fd5eb0b", "624a6a677c8d9c9f5fd5eb16", "624a6a677c8d9c9f5fd5eb0c"], // Abdullah, Mahmoud, Mimo
     moderators: ["624a6a677c8d9c9f5fd5eb0b"], // Abdullah
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c6a", "6633ddb655d6bba0f4023c6b"],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb26",
@@ -257,11 +251,10 @@ const communitySeedData = [
     allowNfsw: true,
     allowSpoile: true,
     communityType: "Public",
-    creator: "624a4fbf3f392aefdb4dd1c8", // Farouq
+    creator: "624a6a677c8d9c9f5fd5eb0d", // Basem
     members: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0c"], // Farouq, Basma, Mimo
-    moderators: ["624a4fbf3f392aefdb4dd1c8"], // Farouq
+    moderators: ["624a4fbf3f392aefdb4dd1c8", "624a6a677c8d9c9f5fd5eb0d"], // Farouq, Basem
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c6c", "6633ddb655d6bba0f4023c6d"],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb27",
@@ -278,7 +271,6 @@ const communitySeedData = [
     members: ["624a6a677c8d9c9f5fd5eb0d", "624a6a677c8d9c9f5fd5eb0b", "624a6a677c8d9c9f5fd5eb13"], // Basem, Abdullah, Galal
     moderators: ["624a6a677c8d9c9f5fd5eb0d"], // Basem
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c6e", "6633ddb655d6bba0f4023c6f"],
     membersNickname: "Chefs",
   },
   {
@@ -296,7 +288,6 @@ const communitySeedData = [
     members: ["624a6a677c8d9c9f5fd5eb16", "624a6a677c8d9c9f5fd5eb0e", "624a6a677c8d9c9f5fd5eb0c"], // Mahmoud, Basma, Mimo
     moderators: ["624a6a677c8d9c9f5fd5eb16"], // Mahmoud
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c70", "6633ddb655d6bba0f4023c71"],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb29",
@@ -313,7 +304,6 @@ const communitySeedData = [
     members: ["624a4a94c66738f13854b474", "624a6a677c8d9c9f5fd5eb0d", "624a6a677c8d9c9f5fd5eb13"], // Amira, Basem, Galal
     moderators: ["624a4a94c66738f13854b474"], // Amira
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c72", "6633ddb655d6bba0f4023c73"],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb2a",
@@ -330,7 +320,6 @@ const communitySeedData = [
     members: ["624a6a677c8d9c9f5fd5eb0c", "624a6a677c8d9c9f5fd5eb16", "624a6a677c8d9c9f5fd5eb13"], // Mimo, Mahmoud, Galal
     moderators: ["624a6a677c8d9c9f5fd5eb0c"], // Mimo
     membersCount: 3,
-    removalReasons: ["6633ddb655d6bba0f4023c74", "6633ddb655d6bba0f4023c75"],
   },
 ];
 
@@ -381,7 +370,7 @@ communitySeedData.forEach((community) => {
 const addRandomDateCreated = () => {
   communitySeedData.forEach((community) => {
     const today = new Date();
-    const randomDaysAgo = Math.floor(Math.random() * 365);
+    const randomDaysAgo = Math.floor(Math.random() * 365) + 7;
     const randomDate = new Date(today);
     randomDate.setDate(today.getDate() - randomDaysAgo);
     community.dateCreated = randomDate;
