@@ -405,6 +405,9 @@ exports.leaveModeration = async (req, res) => {
     if (!communityName || !username) {
       return res.status(400).json({ message: "Invalid leave request" });
     }
+    if (username != req.user.username) {
+      return res.status(400).json({ message: "Invalid leave request" });
+    }
 
     const user = await User.findOne({ username });
     const community = await Community.findOne({ name: communityName });
@@ -420,22 +423,29 @@ exports.leaveModeration = async (req, res) => {
     const userIndex = community.moderators.indexOf(user._id);
     if (userIndex !== -1) {
       community.moderators.splice(userIndex, 1);
-      await community.save();
-    }
-    const creatorIndex = user._id.equals(community.creator);
-    if (creatorIndex !== -1) {
-      community.creator = null;
+      if (user.equals(community.creator)) {
+        const oldestModerator = await Moderator.findOne({
+          communityName,
+          isAccepted: true,
+          username: { $ne: user.username },
+        }).sort({
+          createdAt: 1,
+        });
+        if (oldestModerator) {
+          const oldestModuser = await User.findOne({
+            username: oldestModerator.username,
+          });
+          community.creator = oldestModuser;
+        } else {
+          community.creator = null;
+        }
+      }
       await community.save();
     }
     const communityIndex = user.moderatedCommunities.indexOf(community._id);
     if (communityIndex !== -1) {
       user.moderatedCommunities.splice(communityIndex, 1);
       await user.save();
-    }
-    const modIndex = community.moderators.indexOf(user._id);
-    if (modIndex !== -1) {
-      community.moderators.splice(userIndex, 1);
-      await community.save();
     }
 
     await Moderator.deleteOne({
@@ -1117,7 +1127,11 @@ exports.removeModerator = async (req, res) => {
     if (!userModerator) {
       return res.status(402).json({ message: "User is not a moderator" });
     }
-
+    if (community.creator.equals(user._id)) {
+      return res.status(403).json({
+        message: "Moderator doesn't have permission",
+      });
+    }
     if (userModerator.createdAt > moderator.createdAt) {
       return res
         .status(403)

@@ -96,7 +96,7 @@ exports.getAllUserPosts = async (req, res) => {
       })
     );
     if (!user.nsfw) {
-      postInfoArray = postInfoArray.filter(post => post && !post.isNsfw);
+      postInfoArray = postInfoArray.filter((post) => post && !post.isNsfw);
     }
     res.status(200).json({ posts: postInfoArray });
   } catch (err) {

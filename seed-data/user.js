@@ -75,8 +75,10 @@ const users = [
       "624a6a677c8d9c9f5fd5eb1e",
       "624a6a677c8d9c9f5fd5eb24",
       "624a6a677c8d9c9f5fd5eb26",
+      "624a6a677c8d9c9f5fd5eb1a",
     ],
     mutedCommunities: ["624a6a677c8d9c9f5fd5eb1a", "624a6a677c8d9c9f5fd5eb20"],
+    favouriteCommunities: ["624a6a677c8d9c9f5fd5eb1e"],
   },
   {
     _id: "624a52d75ff69df002d25035", // mahmoud
@@ -101,11 +103,7 @@ const users = [
     moderatedCommunities: [
       "624a6a677c8d9c9f5fd5eb1b",
       "624a6a677c8d9c9f5fd5eb1c",
-      "624a48f143bd949036986953",
-      "624a6a677c8d9c9f5fd5eb36",
-      "624a6a677c8d9c9f5fd5eb28",
     ],
-    mutedCommunities: ["624a6a677c8d9c9f5fd5eb1a", "624a6a677c8d9c9f5fd5eb20"],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb0b", // Abdullah
@@ -138,6 +136,8 @@ const users = [
       "624a4fbf3f392aefdb4dd1c8",
     ],
     moderatedCommunities: ["624a6a677c8d9c9f5fd5eb25"],
+    mutedCommunities: ["624a6a677c8d9c9f5fd5eb1a"],
+    favouriteCommunities: ["624a6a677c8d9c9f5fd5eb27"],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb0c", // Mimo
@@ -185,6 +185,10 @@ const users = [
       "624a6a677c8d9c9f5fd5eb27",
       "624a6a677c8d9c9f5fd5eb29",
     ], //[Mindfulness & Meditation Community, Mental Health & Psychology, Food & Cooking, Movie Buffs Club]
+    moderatedCommunities: [
+      "624a6a677c8d9c9f5fd5eb26",
+      "624a6a677c8d9c9f5fd5eb27",
+    ],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb0e", // Basma
@@ -215,7 +219,11 @@ const users = [
       "624a6a677c8d9c9f5fd5eb1d",
       "624a6a677c8d9c9f5fd5eb1f",
       "624a6a677c8d9c9f5fd5eb27",
+      "624a6a677c8d9c9f5fd5eb1b",
+      "624a6a677c8d9c9f5fd5eb1e",
     ],
+    mutedCommunities: ["624a6a677c8d9c9f5fd5eb24", "624a6a677c8d9c9f5fd5eb26"],
+    favouriteCommunities: ["624a6a677c8d9c9f5fd5eb28"],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb0f", // Farida
@@ -271,6 +279,8 @@ const users = [
     avatar:
       "https://res.cloudinary.com/dkkhtb4za/image/upload/v1712956886/uploads/p10qwqcvalf56f0tcr62.png",
     subscribedCommunities: ["624a4052e28fb9d9c024671a"], //[Space & Astronomy Lovers]
+    mutedCommunities: ["624a4052e28fb9d9c024671a"],
+    favouriteCommunities: ["624a4052e28fb9d9c024671a"],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb12", // Youssef
@@ -331,6 +341,8 @@ const users = [
       "624a6a677c8d9c9f5fd5eb1f",
       "624a6a677c8d9c9f5fd5eb36",
     ], //[Science, Space & Astronomy Lovers, Creative Minds Collective, Visual Arts Gallery, Psychology Insights Circle]
+    mutedCommunities: ["624a48f143bd949036986953"],
+    favouriteCommunities: ["624a4052e28fb9d9c024671a"],
   },
   {
     _id: "624a6a677c8d9c9f5fd5eb15", // Chahd
@@ -368,6 +380,11 @@ const users = [
       "624a6a677c8d9c9f5fd5eb25",
       "624a6a677c8d9c9f5fd5eb28",
       "624a6a677c8d9c9f5fd5eb2a",
+    ],
+    moderatedCommunities: [
+      "624a6a677c8d9c9f5fd5eb36",
+      "624a6a677c8d9c9f5fd5eb24",
+      "624a6a677c8d9c9f5fd5eb28",
     ],
   },
   {
