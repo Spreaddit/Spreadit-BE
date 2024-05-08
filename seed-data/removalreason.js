@@ -1,94 +1,98 @@
 const removalReasonsSeedData = [
   {
     _id: "6633ddb655d6bba0f4023c50",
-    reason: "Violation of CodeCrafters community guidelines",
+    title: "Violation of community guidelines",
     reasonMessage: "Your post/comment has violated the community guidelines of CodeCrafters.",
-    communityName: "CodeCrafters"
+    communityName: "CodeCrafters",
   },
   {
     _id: "6633ddb655d6bba0f4023c51",
-    reason: "Spamming in CodeCrafters community",
+    title: "Spamming in community",
     reasonMessage: "Your post/comment has been identified as spam in the CodeCrafters community.",
-    communityName: "CodeCrafters"
+    communityName: "CodeCrafters",
   },
   {
     _id: "6633ddb655d6bba0f4023c52",
-    reason: "Violation of TechTalks community guidelines",
+    title: "Violation of community guidelines",
     reasonMessage: "Your post/comment has violated the community guidelines of TechTalks.",
-    communityName: "TechTalks"
+    communityName: "TechTalks",
   },
   {
     _id: "6633ddb655d6bba0f4023c53",
-    reason: "Inappropriate content in TechTalks community",
+    title: "Inappropriate content",
     reasonMessage: "Your post/comment contains inappropriate content according to the TechTalks community guidelines.",
-    communityName: "TechTalks"
+    communityName: "TechTalks",
   },
   {
     _id: "6633ddb655d6bba0f4023c54",
-    reason: "Offensive language in TechTalks community",
+    title: "Offensive language",
     reasonMessage: "Your post contains offensive language and violates the TechTalks community guidelines.",
-    communityName: "CodeGeeks"
+    communityName: "CodeGeeks",
   },
   {
     _id: "6633ddb655d6bba0f4023c55",
-    reason: "Violation of CodeGeeks community guidelines",
+    title: "Violation of community guidelines",
     reasonMessage: "Your post has violated the community guidelines of CodeGeeks.",
-    communityName: "CodeGeeks"
+    communityName: "CodeGeeks",
   },
   {
     _id: "6633ddb655d6bba0f4023c56",
-    reason: "Inappropriate content in ScienceExplorersClub community",
-    reasonMessage: "Your post contains inappropriate content according to the ScienceExplorersClub community guidelines.",
-    communityName: "ScienceExplorersClub"
+    title: "Inappropriate content",
+    reasonMessage:
+      "Your post contains inappropriate content according to the ScienceExplorersClub community guidelines.",
+    communityName: "ScienceExplorersClub",
   },
   {
     _id: "6633ddb655d6bba0f4023c57",
-    reason: "Violation of ScienceExplorersClub community guidelines",
+    title: "Violation of community guidelines",
     reasonMessage: "Your post has violated the community guidelines of ScienceExplorersClub.",
-    communityName: "ScienceExplorersClub"
+    communityName: "ScienceExplorersClub",
   },
   {
     _id: "6633ddb655d6bba0f4023c58",
-    reason: "Offensive language in SpaceAndAstronomyLovers community",
-    reasonMessage: "Your post contains offensive language and violates the SpaceAndAstronomyLovers community guidelines.",
-    communityName: "SpaceAndAstronomyLovers"
+    title: "Offensive language",
+    reasonMessage:
+      "Your post contains offensive language and violates the SpaceAndAstronomyLovers community guidelines.",
+    communityName: "SpaceAndAstronomyLovers",
   },
   {
     _id: "6633ddb655d6bba0f4023c59",
-    reason: "Violation of SpaceAndAstronomyLovers community guidelines",
+    title: "Violation of community guidelines",
     reasonMessage: "Your post has violated the community guidelines of SpaceAndAstronomyLovers.",
-    communityName: "SpaceAndAstronomyLovers"
+    communityName: "SpaceAndAstronomyLovers",
   },
   {
     _id: "6633ddb655d6bba0f4023c5a",
-    reason: "Inappropriate content in BiologyBuffsSociety community",
-    reasonMessage: "Your post contains inappropriate content according to the BiologyBuffsSociety community guidelines.",
-    communityName: "BiologyBuffsSociety"
+    title: "Inappropriate content",
+    reasonMessage:
+      "Your post contains inappropriate content according to the BiologyBuffsSociety community guidelines.",
+    communityName: "BiologyBuffsSociety",
   },
   {
     _id: "6633ddb655d6bba0f4023c5b",
-    reason: "Spamming in BiologyBuffsSociety community",
+    title: "Spamming",
     reasonMessage: "Your post has been identified as spam in the BiologyBuffsSociety community.",
-    communityName: "BiologyBuffsSociety"
+    communityName: "BiologyBuffsSociety",
   },
   {
     _id: "6633ddb655d6bba0f4023c5c",
-    reason: "Violation of CreativeMindsCollective community guidelines",
+    title: "Violation of community guidelines",
     reasonMessage: "Your post has violated the community guidelines of CreativeMindsCollective.",
-    communityName: "CreativeMindsCollective"
+    communityName: "CreativeMindsCollective",
   },
   {
     _id: "6633ddb655d6bba0f4023c5d",
-    reason: "Inappropriate content in CreativeMindsCollective community",
-    reasonMessage: "Your post contains inappropriate content according to the CreativeMindsCollective community guidelines.",
-    communityName: "CreativeMindsCollective"
+    title: "Inappropriate content",
+    reasonMessage:
+      "Your post contains inappropriate content according to the CreativeMindsCollective community guidelines.",
+    communityName: "CreativeMindsCollective",
   },
   {
     _id: "6633ddb655d6bba0f4023c5e",
-    reason: "Offensive language in VisualArtsGallery community",
+    title: "Offensive language",
     reasonMessage: "Your post contains offensive language and violates the VisualArtsGallery community guidelines.",
-    communityName: "VisualArtsGallery"
-  }
+    communityName: "VisualArtsGallery",
+  },
 ];
 
 exports.data = removalReasonsSeedData;
