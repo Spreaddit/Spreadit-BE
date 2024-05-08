@@ -1,0 +1,25 @@
+pipeline {
+        agent any
+    stages {
+        stage('clone repo') {
+            steps {
+                sh 'sudo rm -rf Spreadit-BE && git clone https://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@github.com/Spreaddit/Spreadit-BE.git'
+            }
+        }
+        
+        stage('Install Dependencies') {
+            steps {
+                sh 'echo "Installing Dependencies"'
+                // Install backend dependencies
+                sh 'cd Spreadit-BE && npm install'
+
+            }
+        }
+        
+        stage('Run Server') {
+            steps {
+                sh 'cd Spreadit-BE/src && sudo pm2 delete app && sudo pm2 start app.js --name app && sudo pm2 save --force'
+            }
+        }
+    }
+}
