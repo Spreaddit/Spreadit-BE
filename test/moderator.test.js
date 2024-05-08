@@ -87,7 +87,8 @@ const community2 = {
 const rule = {
   _id: "624a6a677c8d9c9f5fd5eb3d",
   title: "Music Maniacs Lounge Community Guidelines",
-  description: "1. Share and appreciate diverse musical tastes and genres with respect for fellow members.",
+  description:
+    "1. Share and appreciate diverse musical tastes and genres with respect for fellow members.",
   reportReason: "Violation of community guidelines",
   communityName: "MusicManiacsLounge",
   appliesTo: "both",
@@ -181,7 +182,9 @@ afterAll(() => {
 
 describe("Adding a rule", () => {
   test("It should add a new rule", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
 
     const token = logIn.body.access_token;
     const response = await request(app)
@@ -195,10 +198,16 @@ describe("Adding a rule", () => {
     expect(response.body.message).toBe("Rule added successfully");
   });
   test("It should return 'Invalid rule data' for status 400", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
-    const response = await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({}).expect(400);
+    const response = await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({})
+      .expect(400);
 
     expect(response.body.message).toBe("Invalid rule data");
   });
@@ -220,7 +229,9 @@ describe("Adding a rule", () => {
       })
       .expect(402);
 
-    expect(response.body.message).toBe("You are not a moderator of this community");
+    expect(response.body.message).toBe(
+      "You are not a moderator of this community"
+    );
   });
 
   test("It should return 'Title already used' for status 403", async () => {
@@ -230,10 +241,13 @@ describe("Adding a rule", () => {
     });
     const token = logIn.body.access_token;
 
-    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
-      title: "myRule",
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "myRule",
+        communityName: "farouqfans",
+      });
 
     const response = await request(app)
       .post("/rule/add")
@@ -274,10 +288,13 @@ describe("Removing a rule", () => {
     });
     const token = logIn.body.access_token;
 
-    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
-      title: "myRule",
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "myRule",
+        communityName: "farouqfans",
+      });
 
     const response = await request(app)
       .post("/rule/remove")
@@ -337,10 +354,13 @@ describe("Removing a rule", () => {
     });
     const token2 = logIn2.body.access_token;
 
-    await request(app).post("/rule/add").set("Authorization", `Bearer ${token}`).send({
-      title: "myRule",
-      communityName: "farouqfans",
-    });
+    await request(app)
+      .post("/rule/add")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "myRule",
+        communityName: "farouqfans",
+      });
 
     const response = await request(app)
       .post("/rule/remove")
@@ -376,7 +396,9 @@ describe("Removing a rule", () => {
 
 describe("Edit rule", () => {
   test("It should edit a rule", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     await request(app)
@@ -403,16 +425,24 @@ describe("Edit rule", () => {
   });
 
   test("It should return 'Invalid request parameters' for status 400", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
-    const response = await request(app).put("/rule/edit").set("Authorization", `Bearer ${token}`).send({}).expect(400);
+    const response = await request(app)
+      .put("/rule/edit")
+      .set("Authorization", `Bearer ${token}`)
+      .send({})
+      .expect(400);
 
     expect(response.body.message).toBe("Invalid request parameters");
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -434,7 +464,9 @@ describe("Edit rule", () => {
   });
 
   test("It should return 'Not a moderator' for status 402", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -456,7 +488,9 @@ describe("Edit rule", () => {
   });
 
   test("It should return 'Rule not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -480,7 +514,9 @@ describe("Edit rule", () => {
 
 describe("Get rules", () => {
   test("It should get rules of a community", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
     const response = await request(app)
       .get("/community/farouqfans/rules")
@@ -491,7 +527,9 @@ describe("Get rules", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
     const response = await request(app)
       .get("/community/nonexistentCommunity/rules")
@@ -504,7 +542,9 @@ describe("Get rules", () => {
 
 describe("Adding a removal reason", () => {
   test("It should add a new removal reason", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -521,7 +561,9 @@ describe("Adding a removal reason", () => {
   });
 
   test("It should return 'Invalid removal reason data' for status 400", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -534,7 +576,9 @@ describe("Adding a removal reason", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -551,7 +595,9 @@ describe("Adding a removal reason", () => {
   });
 
   test("It should return 'You are not a moderator of this community' for status 402", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -564,11 +610,15 @@ describe("Adding a removal reason", () => {
       })
       .expect(402);
 
-    expect(response.body.message).toBe("You are not a moderator of this community");
+    expect(response.body.message).toBe(
+      "You are not a moderator of this community"
+    );
   });
 
   test("It should return 'Max number of removal reasons reached' for status 405", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
     removalReasonId = new mongoose.Types.ObjectId();
     await Community.findByIdAndUpdate(communityId, {
@@ -589,10 +639,15 @@ describe("Adding a removal reason", () => {
   });
 
   test("It should return 'Moderator doesn't have permission' for status 406", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
-    await Moderator.findOneAndUpdate({ username: "farouquser" }, { manageSettings: false });
+    await Moderator.findOneAndUpdate(
+      { username: "farouquser" },
+      { manageSettings: false }
+    );
 
     const response = await request(app)
       .post("/removal-reason/add")
@@ -610,7 +665,9 @@ describe("Adding a removal reason", () => {
 
 describe("Removing a removal reason", () => {
   test("It should remove a removal reason", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -626,7 +683,9 @@ describe("Removing a removal reason", () => {
   });
 
   test("It should return 'Invalid request parameters' for status 400", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -639,7 +698,9 @@ describe("Removing a removal reason", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -655,7 +716,9 @@ describe("Removing a removal reason", () => {
   });
 
   test("It should return 'Not a moderator' for status 402", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -671,7 +734,9 @@ describe("Removing a removal reason", () => {
   });
 
   test("It should return 'Removal reason not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -687,10 +752,15 @@ describe("Removing a removal reason", () => {
   });
 
   test("It should return 'Moderator doesn't have permission' for status 406", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
-    await Moderator.findOneAndUpdate({ username: "farouquser2" }, { manageSettings: false });
+    await Moderator.findOneAndUpdate(
+      { username: "farouquser2" },
+      { manageSettings: false }
+    );
 
     const response = await request(app)
       .post("/removal-reason/remove")
@@ -707,7 +777,9 @@ describe("Removing a removal reason", () => {
 
 describe("Edit Removal Reason", () => {
   test("It should edit a removal reason", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -727,7 +799,9 @@ describe("Edit Removal Reason", () => {
   });
 
   test("It should return 'Invalid removal reason data' for status 400", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -744,7 +818,9 @@ describe("Edit Removal Reason", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -764,7 +840,9 @@ describe("Edit Removal Reason", () => {
   });
 
   test("It should return 'You are not a moderator of this community' for status 402", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -780,7 +858,9 @@ describe("Edit Removal Reason", () => {
       })
       .expect(402);
 
-    expect(response.body.message).toBe("You are not a moderator of this community");
+    expect(response.body.message).toBe(
+      "You are not a moderator of this community"
+    );
   });
 
   test("It should return 'Moderator doesn't have permission' for status 406", async () => {
@@ -790,7 +870,10 @@ describe("Edit Removal Reason", () => {
     });
     const token = logIn.body.access_token;
 
-    await Moderator.findOneAndUpdate({ username: "farouquser2" }, { manageSettings: false });
+    await Moderator.findOneAndUpdate(
+      { username: "farouquser2" },
+      { manageSettings: false }
+    );
     const response = await request(app)
       .put("/removal-reason/edit")
       .set("Authorization", `Bearer ${token}`)
@@ -808,7 +891,9 @@ describe("Edit Removal Reason", () => {
   });
 
   test("It should return 'Removal Reason not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -830,7 +915,9 @@ describe("Edit Removal Reason", () => {
 
 describe("Get Removal Reasons", () => {
   test("It should get removal reasons of a community", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -842,7 +929,9 @@ describe("Get Removal Reasons", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
 
     const token = logIn.body.access_token;
 
@@ -857,7 +946,9 @@ describe("Get Removal Reasons", () => {
 
 describe("Leave Moderation", () => {
   test("It should leave moderation", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
 
     const token = logIn.body.access_token;
 
@@ -876,7 +967,9 @@ describe("Leave Moderation", () => {
   });
 
   test("It should return 'User or community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -888,7 +981,9 @@ describe("Leave Moderation", () => {
   });
 
   test("It should return 'User is not a moderator' for status 402", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -933,7 +1028,9 @@ describe("Getting community info", () => {
 
 describe("Get Contributors", () => {
   test("It should get contributors of a community", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -948,7 +1045,9 @@ describe("Get Contributors", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -960,7 +1059,9 @@ describe("Get Contributors", () => {
   });
 
   test("It should return 'Not a moderator' for status 402", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -973,7 +1074,9 @@ describe("Get Contributors", () => {
 });
 describe("Add Contributor", () => {
   test("It should add a contributor to the community", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -981,18 +1084,24 @@ describe("Add Contributor", () => {
       .set("Authorization", `Bearer ${token}`)
       .expect(200);
 
-    expect(response.body.message).toBe("User added as contributor successfully");
+    expect(response.body.message).toBe(
+      "User added as contributor successfully"
+    );
 
     const updatedCommunity = await Community.findOne({ name: "farouqfans" });
     expect(updatedCommunity.contributors).toHaveLength(1);
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
-      .post("/community/moderation/nonexistentCommunity/contributorUser/add-contributor")
+      .post(
+        "/community/moderation/nonexistentCommunity/contributorUser/add-contributor"
+      )
       .set("Authorization", `Bearer ${token}`)
       .expect(404);
 
@@ -1000,7 +1109,9 @@ describe("Add Contributor", () => {
   });
 
   test("It should return 'Not a moderator' for status 402", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1012,7 +1123,9 @@ describe("Add Contributor", () => {
   });
 
   test("It should return 'User not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1024,7 +1137,9 @@ describe("Add Contributor", () => {
   });
 
   test("It should return 'User is already a contributor' for status 405", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1038,7 +1153,9 @@ describe("Add Contributor", () => {
 
 describe("Remove Contributor", () => {
   test("It should remove a contributor from the community", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1046,18 +1163,24 @@ describe("Remove Contributor", () => {
       .set("Authorization", `Bearer ${token}`)
       .expect(200);
 
-    expect(response.body.message).toBe("User removed as contributor successfully");
+    expect(response.body.message).toBe(
+      "User removed as contributor successfully"
+    );
 
     const updatedCommunity = await Community.findOne({ name: "farouqfans2" });
     expect(updatedCommunity.contributors).toHaveLength(0);
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
-      .delete("/community/moderation/nonexistentCommunity/contributorUser/remove-contributor")
+      .delete(
+        "/community/moderation/nonexistentCommunity/contributorUser/remove-contributor"
+      )
       .set("Authorization", `Bearer ${token}`)
       .expect(404);
 
@@ -1065,7 +1188,9 @@ describe("Remove Contributor", () => {
   });
 
   test("It should return 'Not a moderator' for status 402", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1077,11 +1202,15 @@ describe("Remove Contributor", () => {
   });
 
   test("It should return 'User not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
-      .delete(`/community/moderation/farouqfans2/nonexistentUser/remove-contributor`)
+      .delete(
+        `/community/moderation/farouqfans2/nonexistentUser/remove-contributor`
+      )
       .set("Authorization", `Bearer ${token}`)
       .expect(404);
 
@@ -1089,7 +1218,9 @@ describe("Remove Contributor", () => {
   });
 
   test("It should return 'User is not a contributor' for status 405", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1103,7 +1234,9 @@ describe("Remove Contributor", () => {
 
 describe("Is Contributor", () => {
   test("It should return true if user is a contributor", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
     const response = await request(app)
       .get(`/community/moderation/farouqfans2/farouquser/is-contributor`)
@@ -1114,7 +1247,9 @@ describe("Is Contributor", () => {
   });
 
   test("It should return false if user is not a contributor", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser", password: "12345678" });
     const token = logIn.body.access_token;
     const response = await request(app)
       .get(`/community/moderation/farouqfans/farouquser/is-contributor`)
@@ -1125,10 +1260,14 @@ describe("Is Contributor", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
     const response = await request(app)
-      .get("/community/moderation/nonexistentCommunity/contributorUser/is-contributor")
+      .get(
+        "/community/moderation/nonexistentCommunity/contributorUser/is-contributor"
+      )
       .set("Authorization", `Bearer ${token}`)
       .expect(404);
 
@@ -1136,7 +1275,9 @@ describe("Is Contributor", () => {
   });
 
   test("It should return 'User not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
     const response = await request(app)
       .get(`/community/moderation/farouqfans2/nonexistentUser/is-contributor`)
@@ -1149,7 +1290,9 @@ describe("Is Contributor", () => {
 
 describe("Edit Community Info", () => {
   test("It should update community information", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1162,16 +1305,22 @@ describe("Edit Community Info", () => {
       })
       .expect(200);
 
-    expect(response.body.message).toBe("Community information updated successfully");
+    expect(response.body.message).toBe(
+      "Community information updated successfully"
+    );
 
-    const updatedCommunity = await Community.findOne({ name: "newCommunityName" });
+    const updatedCommunity = await Community.findOne({
+      name: "newCommunityName",
+    });
     expect(updatedCommunity).toBeTruthy();
     expect(updatedCommunity.description).toBe("New description");
     expect(updatedCommunity.communityType).toBe("Public");
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1184,10 +1333,15 @@ describe("Edit Community Info", () => {
   });
 
   test("It should return 'Moderator doesn't have permission' for status 406", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
-    await Moderator.findOneAndUpdate({ username: "farouquser2" }, { manageSettings: false });
+    await Moderator.findOneAndUpdate(
+      { username: "farouquser2" },
+      { manageSettings: false }
+    );
     const response = await request(app)
       .post(`/community/farouqfans2/edit-info`)
       .set("Authorization", `Bearer ${token}`)
@@ -1198,7 +1352,9 @@ describe("Edit Community Info", () => {
   });
 
   test("It should return 'Community name is used' for status 402", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1213,7 +1369,9 @@ describe("Edit Community Info", () => {
 
 describe("Get Community Settings", () => {
   test("It should return community settings", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1223,7 +1381,9 @@ describe("Get Community Settings", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1235,10 +1395,15 @@ describe("Get Community Settings", () => {
   });
 
   test("It should return 'Moderator doesn't have permission' for status 406", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
-    await Moderator.findOneAndUpdate({ username: "farouquser2" }, { manageSettings: false });
+    await Moderator.findOneAndUpdate(
+      { username: "farouquser2" },
+      { manageSettings: false }
+    );
     const response = await request(app)
       .get(`/community/farouqfans2/settings`)
       .set("Authorization", `Bearer ${token}`)
@@ -1250,7 +1415,9 @@ describe("Get Community Settings", () => {
 
 describe("Edit Community Settings", () => {
   test("It should update community settings", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1265,25 +1432,37 @@ describe("Edit Community Settings", () => {
       })
       .expect(200);
 
-    expect(response.body.message).toBe("Community settings updated successfully");
+    expect(response.body.message).toBe(
+      "Community settings updated successfully"
+    );
   });
 });
 
 describe("Get Muted Communities", () => {
   test("It should return muted communities", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
-    const response = await request(app).get("/community/muted").set("Authorization", `Bearer ${token}`).expect(200);
+    const response = await request(app)
+      .get("/community/muted")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(200);
 
     expect(response.body.length).toBe(0);
   });
 
   test("It should return empty array if user has no muted communities", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
-    const response = await request(app).get("/community/muted").set("Authorization", `Bearer ${token}`).expect(200);
+    const response = await request(app)
+      .get("/community/muted")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(200);
 
     expect(response.body).toEqual([]);
   });
@@ -1291,7 +1470,9 @@ describe("Get Muted Communities", () => {
 
 describe("Get Community Moderators", () => {
   test("It should return community moderators", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1303,7 +1484,9 @@ describe("Get Community Moderators", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1317,7 +1500,9 @@ describe("Get Community Moderators", () => {
 
 describe("Get Community Editable Moderators", () => {
   test("It should return community editable moderators", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1329,7 +1514,9 @@ describe("Get Community Editable Moderators", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1342,7 +1529,9 @@ describe("Get Community Editable Moderators", () => {
 });
 describe("Get Community Invited Moderators", () => {
   test("It should return invited moderators", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1354,7 +1543,9 @@ describe("Get Community Invited Moderators", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1368,7 +1559,9 @@ describe("Get Community Invited Moderators", () => {
 
 describe("Remove Moderator Invitation", () => {
   test("It should remove moderator invitation", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     await request(app)
@@ -1385,11 +1578,15 @@ describe("Remove Moderator Invitation", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
-      .delete("/community/moderation/nonexistentCommunity/testuser/remove-invite")
+      .delete(
+        "/community/moderation/nonexistentCommunity/testuser/remove-invite"
+      )
       .set("Authorization", `Bearer ${token}`)
       .expect(404);
 
@@ -1399,7 +1596,9 @@ describe("Remove Moderator Invitation", () => {
 
 describe("Is Moderator", () => {
   test("It should return whether the user is a moderator or not", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1411,11 +1610,15 @@ describe("Is Moderator", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
-      .get(`/community/moderation/nonexistentCommunity/farouquser2/is-moderator`)
+      .get(
+        `/community/moderation/nonexistentCommunity/farouquser2/is-moderator`
+      )
       .set("Authorization", `Bearer ${token}`)
       .expect(404);
 
@@ -1424,7 +1627,9 @@ describe("Is Moderator", () => {
 });
 describe("Is Invited", () => {
   test("It should return whether the user is invited or not", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     await request(app)
@@ -1441,7 +1646,9 @@ describe("Is Invited", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1455,7 +1662,9 @@ describe("Is Invited", () => {
 
 describe("Get Moderated Communities", () => {
   test("It should return the moderated communities for the user", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1465,7 +1674,9 @@ describe("Get Moderated Communities", () => {
   });
 
   test("It should return 'User not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1479,7 +1690,9 @@ describe("Get Moderated Communities", () => {
 
 describe("Update Moderation Permissions", () => {
   test("It should update moderation permissions successfully", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1492,7 +1705,9 @@ describe("Update Moderation Permissions", () => {
       })
       .expect(200);
 
-    expect(response.body.message).toBe("Moderator permissions changed successfully");
+    expect(response.body.message).toBe(
+      "Moderator permissions changed successfully"
+    );
 
     const updatedModerator = await Moderator.findOne({
       communityName: "farouqfans2",
@@ -1505,7 +1720,9 @@ describe("Update Moderation Permissions", () => {
   });
 
   test("It should return 'Community not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1522,7 +1739,9 @@ describe("Update Moderation Permissions", () => {
   });
 
   test("It should return 'Moderator not found' for status 404", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1540,7 +1759,9 @@ describe("Update Moderation Permissions", () => {
 });
 describe("Remove Moderator", () => {
   test("It should remove the moderator successfully", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1554,7 +1775,9 @@ describe("Remove Moderator", () => {
 
 describe("Get Community Insights", () => {
   test("It should return community insights", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)
@@ -1569,7 +1792,9 @@ describe("Get Community Insights", () => {
 
 describe("Get Permissions", () => {
   test("It should return moderator permissions", async () => {
-    const logIn = await request(app).post("/login").send({ username: "farouquser2", password: "12345678" });
+    const logIn = await request(app)
+      .post("/login")
+      .send({ username: "farouquser2", password: "12345678" });
     const token = logIn.body.access_token;
 
     const response = await request(app)

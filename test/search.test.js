@@ -16,7 +16,7 @@ const NotificationType = require("../seed-data/constants/notificationType.js");
 const config = require("../src/configuration.js");
 const SearchLog = require("../src/models/SearchLog.js");
 
-const connectionUrl = "mongodb://localhost:27017/testDBCommentsCommuntiy";
+const connectionUrl = "mongodb://localhost:27017/testDBSearch";
 
 beforeAll(async () => {
   try {

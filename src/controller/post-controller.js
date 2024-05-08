@@ -75,26 +75,30 @@ exports.getPostById = async (req, res) => {
 exports.getAllUserPosts = async (req, res) => {
   try {
     const username = req.params.username;
+
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
     const userId = user._id;
-    let query = { userId };
-    if (!user.nsfw) {
-      query.isNsfw = false;
-    }
-    const posts = await Post.find(query).sort({ createdAt: -1 }).lean();
+
+    const posts = await Post.find({ userId });
 
     if (!posts || posts.length === 0) {
       return res.status(404).json({ error: "User has no posts" });
     }
-    const postObjects = [];
-    for (const post of posts) {
-      const postObject = await Post.getPostObject(post, userId);
-      postObjects.push(postObject);
+
+    let postInfoArray = await Promise.all(
+      posts.map(async (post) => {
+        const postObject = await Post.getPostObject(post, userId);
+
+        return postObject;
+      })
+    );
+    if (!user.nsfw) {
+      postInfoArray = postInfoArray.filter((post) => post && !post.isNsfw);
     }
-    res.status(200).json({ posts: postObjects });
+    res.status(200).json({ posts: postInfoArray });
   } catch (err) {
     console.error("Error fetching posts:", err);
     res.status(500).json({ error: "Internal server error" });
