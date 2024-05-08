@@ -329,7 +329,7 @@ exports.createPost = async (req, res) => {
       sendPostReplyNotification,
       isApproved,
       isScheduled: !!scheduledDate,
-      date: scheduledDate,
+      date: scheduledDate || new Date(),
     });
     if (scheduledDate) {
       await newPost.save();
