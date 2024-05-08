@@ -34,7 +34,7 @@ const MessageSeeder = require("../seeders/message.seeder");
 const ConversationSeeder = require("../seeders/conversation.seeder");
 
 const app = express();
-const port = 80;
+const port = 5300;
 const connectionurl = config.cloudConnectString;
 
 app.use(express.json());
