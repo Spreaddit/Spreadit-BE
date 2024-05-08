@@ -5,6 +5,21 @@ const moderatorSeedData = [
     isAccepted: true,
   },
   {
+    username: "galal12",
+    communityName: "SpaceAndAstronomyLovers",
+    isAccepted: true,
+  },
+  {
+    username: "galal12",
+    communityName: "CodeCrafters",
+    isAccepted: false,
+  },
+  {
+    username: "mahmoudabbas",
+    communityName: "CodeCrafters",
+    isAccepted: false,
+  },
+  {
     username: "mahmoudabbas",
     communityName: "TechTalks",
     isAccepted: true,
@@ -20,9 +35,9 @@ const moderatorSeedData = [
     isAccepted: true,
   },
   {
-    username: "galal12",
-    communityName: "Space&AstronomyLovers",
-    isAccepted: true,
+    username: "mahmoud12",
+    communityName: "BiologyBuffsSociety",
+    isAccepted: false,
   },
   {
     username: "basma12",
@@ -46,7 +61,7 @@ const moderatorSeedData = [
   },
   {
     username: "mimo123",
-    communityName: "Mindfulness&Meditation",
+    communityName: "MindfulnessAndMeditation",
     isAccepted: true,
   },
   {
@@ -65,6 +80,11 @@ const moderatorSeedData = [
     isAccepted: true,
   },
   {
+    username: "mahmoud12",
+    communityName: "GlobetrottersCommunity",
+    isAccepted: true,
+  },
+  {
     username: "abdullah12",
     communityName: "AdventurousSoulsSociety",
     isAccepted: true,
@@ -75,8 +95,28 @@ const moderatorSeedData = [
     isAccepted: true,
   },
   {
-    username: "basma12",
+    username: "basemelgalfy",
+    communityName: "CulinaryDelights",
+    isAccepted: true,
+  },
+  {
+    username: "farouq12",
+    communityName: "CodeCrafters",
+    isAccepted: true,
+  },
+  {
+    username: "basemelgalfy",
     communityName: "GourmetAdventures",
+    isAccepted: true,
+  },
+  {
+    username: "basma12",
+    communityName: "TechTalks",
+    isAccepted: true,
+  },
+  {
+    username: "basma12",
+    communityName: "CreativeMindsCollective",
     isAccepted: true,
   },
   {
@@ -96,4 +136,29 @@ const moderatorSeedData = [
   },
 ];
 
-exports.data = moderatorSeedData;
+function addCreatedAtToModerators(moderatorData) {
+  const now = Date.now();
+  const moderatorObjects = [];
+
+  for (let i = 0; i < moderatorData.length; i++) {
+    const timeDifference = Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000);
+
+    const managePostsAndComments = Math.random() < 0.8;
+    const manageUsers = Math.random() < 0.8;
+    const manageSettings = Math.random() < 0.8;
+    const moderator = {
+      ...moderatorData[i],
+      createdAt: new Date(now - timeDifference),
+      managePostsAndComments,
+      manageUsers,
+      manageSettings,
+    };
+
+    moderatorObjects.push(moderator);
+  }
+  return moderatorObjects;
+}
+
+const moderatedWithCreatedAt = addCreatedAtToModerators(moderatorSeedData);
+
+exports.data = moderatedWithCreatedAt;
