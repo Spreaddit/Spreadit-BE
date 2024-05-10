@@ -7,3 +7,6 @@ exports.googleClientID =
   "117650718501-b2o690ebq8fun5517rpogqc2tvtl2nq6.apps.googleusercontent.com";
 
 exports.uploadPath = "./data/";
+
+exports.emailServicePath =
+  "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";

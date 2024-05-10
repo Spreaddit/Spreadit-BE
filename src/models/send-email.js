@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const config = require("../configuration");
 
 async function sendEmail(recipient, subject, content) {
   const transporter = nodemailer.createTransport({
@@ -7,7 +8,7 @@ async function sendEmail(recipient, subject, content) {
     secure: false,
     auth: {
       user: "apikey",
-      pass: "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",
+      pass: config.emailServicePath,
     },
   });
 
