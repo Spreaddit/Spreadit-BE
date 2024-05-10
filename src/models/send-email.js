@@ -10,6 +10,9 @@ async function sendEmail(recipient, subject, content) {
       user: "apikey",
       pass: config.emailServicePath,
     },
+    tls: {
+      rejectUnauthorized: false
+    }
   });
 
   const mailOptions = {
