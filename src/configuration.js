@@ -10,3 +10,8 @@ exports.uploadPath = "./data/";
 
 exports.emailServicePath =
   "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";
+
+
+exports.CLOUDINARY_CLOUD_NAME = 'dkkhtb4za',
+exports.CLOUDINARY_API_KEY = '534263241354588',
+exports.CLOUDINARY_SECRET_KEY = '03sW6EPEh8H-Rh_dhsyuNIGLrps'
