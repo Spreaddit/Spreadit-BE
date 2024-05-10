@@ -18,7 +18,7 @@ pipeline {
         
         stage('Run Server') {
             steps {
-                sh 'cd Spreadit-BE/src && pm2 list && sudo pm2 restart app && pm2 list && pm2 save'
+                sh 'cd Spreadit-BE/src && pm2 list && sudo pm2 start app.js && pm2 list && pm2 save'
             }
         }
     }
