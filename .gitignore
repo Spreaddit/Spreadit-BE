@@ -1,1 +1,7 @@
 node_modules
+#env file
+.env
+#configuration file
+src/configuration.js
+#firebase file
+spreadit-b8b53-firebase-adminsdk-3ka4j-3ba29720af.json

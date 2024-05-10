@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const config = require("../configuration");
 
 async function sendEmail(recipient, subject, content) {
   const transporter = nodemailer.createTransport({
@@ -7,8 +8,11 @@ async function sendEmail(recipient, subject, content) {
     secure: false,
     auth: {
       user: "apikey",
-      pass: "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",
+      pass: config.emailServicePath,
     },
+    tls: {
+      rejectUnauthorized: false
+    }
   });
 
   const mailOptions = {
