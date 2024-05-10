@@ -7,7 +7,7 @@ async function sendEmail(recipient, subject, content) {
     secure: false,
     auth: {
       user: "apikey",
-      pass: "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",
+      pass: "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",
     },
   });
 
