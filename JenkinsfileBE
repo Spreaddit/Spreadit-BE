@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('clone repo') {
             steps {
-                sh 'sudo rm -rf Spreadit-BE && git clone https://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@github.com/Spreaddit/Spreadit-BE.git'
+                sh 'sudo rm -rf Spreadit-BE && git clone https://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@github.com/Spreaddit/Spreadit-BE.git'
             }
         }
         
@@ -18,7 +18,7 @@ pipeline {
         
         stage('Run Server') {
             steps {
-                sh 'cd Spreadit-BE/src && sudo pm2 delete app && sudo pm2 start app.js --name app && sudo pm2 save --force'
+                sh 'cd Spreadit-BE/src && pm2 list && sudo pm2 restart app && pm2 list && pm2 save'
             }
         }
     }
