@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('clone repo') {
             steps {
-                sh 'sudo rm -rf Spreadit-BE && git clone https://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@github.com/Spreaddit/Spreadit-BE.git'
+                sh 'sudo rm -rf Spreadit-BE && git clone https://github.com/Spreaddit/Spreadit-BE.git'
             }
         }
         
